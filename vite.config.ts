@@ -1,23 +1,33 @@
+import path from "node:path"
+import { fileURLToPath } from "node:url"
+import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import { VitePWA } from "vite-plugin-pwa"
+
+const root = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   base: "./",
   preview: { host: true, allowedHosts: true },
   server: { host: true, allowedHosts: true },
+  resolve: {
+    alias: {
+      "@": path.resolve(root, "src"),
+    },
+  },
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "icons.svg", "icons/apple-touch-icon.png"],
+      includeAssets: ["favicon.svg", "wedding-washi.png", "icons/apple-touch-icon.png"],
       manifest: {
-        name: "結婚ロードマップ",
-        short_name: "結婚RM",
-        description:
-          "広島市・共働き800万超・式なしLean向け結婚手続きスタンプラリー。結婚新生活は賞品に出さない。",
-        theme_color: "#f6f0e6",
-        background_color: "#f6f0e6",
+        name: "ふたりの未来帖",
+        short_name: "未来帖",
+        description: "広島市向け結婚ロードマップ／ふたりの未来帖。端末内に保存。",
+        theme_color: "#183645",
+        background_color: "#f6f4ee",
         display: "standalone",
         orientation: "portrait",
         lang: "ja",
@@ -32,6 +42,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,json,woff2}"],
         navigateFallback: "index.html",
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
       devOptions: { enabled: false },
     }),

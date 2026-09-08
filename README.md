@@ -1,27 +1,37 @@
-# 結婚ロードマップ
+# ふたりの未来帖（結婚ロードマップ）
 
-結婚手続きのスタンプラリー PWA（広島市・共働き向け）。
+広島市向けの結婚・新生活ハンドブック UI です。  
+公開 URL: **https://kenji0618y.github.io/kekkon-roadmap/**
 
-## 公開 URL
+## 使い方
 
-https://kenji0618y.github.io/kekkon-roadmap/
+1. 上の URL を開く
+2. 「ふたりに合わせる」から呼び名・働き方などを設定（初期値は共働き寄り）
+3. ロードマップ／期限／記念手帳／制度検索を使う
+4. 記録は **この端末のブラウザ（localStorage）** に保存されます
+5. 「設定」からバックアップ JSON の書き出し／読み込みができます
 
-## スマホでホーム画面に追加
+### iPhone（ホーム画面に追加）
 
-1. 上記 URL を Safari（iPhone）または Chrome（Android）で開く
-2. iPhone: 共有ボタン →「ホーム画面に追加」
-3. Android: メニュー（⋮）→「アプリをインストール」または「ホーム画面に追加」
-4. ホーム画面のアイコンから起動（スタンドアロン表示）
+1. Safari で上記 URL を開く
+2. 共有ボタン → **ホーム画面に追加**
 
-## ローカル開発
+### Android
+
+1. Chrome で上記 URL を開く
+2. メニュー → **ホーム画面に追加**／アプリをインストール
+
+## 技術メモ
+
+- Vite + React + TypeScript の静的 SPA（GitHub Pages）
+- ChatGPT Sites / D1 / vinext は使いません（端末内保存のみ）
+- 以前このリポジトリにあった Vite スタンプラリー UI は、ノートブック UI に置き換えました
+- 結婚新生活支援事業は広島市では未実施の案内のまま（賞品扱いしません）
+
+## 開発
 
 ```bash
-npm ci
-npm run dev
+# install / build / preview with local tooling
 ```
 
-ビルド: `npm run build` / プレビュー: `npm run preview`
-
-## 注意
-
-進捗は端末の LocalStorage に保存されます。
+Pages へは `dist` を `gh-pages` ブランチへ配置します（Actions ワークフローは使いません）。
