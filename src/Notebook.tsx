@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {ArrowDownToLine,ArrowRight,ArrowUpRight,BookHeart,BookOpen,CalendarDays,Check,ChevronRight,ClipboardCopy,CloudCheck,Download,ExternalLink,Gift,Heart,House,Info,LayoutGrid,List,LoaderCircle,MapPin,MessageCircle,Plus,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,Wallet,X} from 'lucide-react';
+import {ArrowDownToLine,ArrowRight,ArrowUpRight,BookHeart,BookOpen,CalendarDays,Check,ChevronRight,ClipboardCopy,CloudCheck,Download,ExternalLink,Gauge,Gift,Heart,House,Info,LayoutGrid,List,LoaderCircle,MapPin,MessageCircle,Plus,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,Wallet,X} from 'lucide-react';
 import {toast} from 'sonner';
 import {Tabs,TabsContent,TabsList,TabsTrigger} from './components/ui/tabs';
 import {Sheet,SheetContent,SheetDescription,SheetHeader,SheetTitle} from './components/ui/sheet';
@@ -17,11 +17,12 @@ import {calendarFile,deadlineText,difference,formatMoney,moneyTotals,monthDay,ne
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
 import {groups,reviewedOn,sources,taskById,tasks} from './data/catalog';
+import {MarriageDesk} from './components/MarriageDesk';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
-const nav=[{id:'journey',label:'ロードマップ',icon:House},{id:'deadlines',label:'期限と予定',icon:CalendarDays},{id:'memories',label:'記念手帳',icon:BookHeart},{id:'find',label:'制度を探す',icon:Search},{id:'settings',label:'ふたりの設定',icon:Settings2}];
+const nav=[{id:'desk',label:'デスク',icon:Gauge},{id:'journey',label:'ロードマップ',icon:House},{id:'deadlines',label:'期限と予定',icon:CalendarDays},{id:'memories',label:'記念手帳',icon:BookHeart},{id:'find',label:'制度を探す',icon:Search},{id:'settings',label:'ふたりの設定',icon:Settings2}];
 type Modal='profile'|'pair'|'letter'|'memory'|'gift'|null;
 export default function FutureNotebook(){
- const [tab,setTab]=useState('journey'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[mapView,setMapView]=useState('board');
+ const [tab,setTab]=useState('desk'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[mapView,setMapView]=useState('board');
  const [taskId,setTaskId]=useState<string|null>(null),[modal,setModal]=useState<Modal>(null),[dirty,setDirty]=useState(false),[pendingClose,setPendingClose]=useState<(()=>void)|null>(null);
  const [query,setQuery]=useState(''),[category,setCategory]=useState('all'),[scopeOnly,setScopeOnly]=useState(false),[statusFilter,setStatusFilter]=useState('all');
  const [memoryDraft,setMemoryDraft]=useState<Memory|null>(null),[memoryFilter,setMemoryFilter]=useState('all'),[deleteMemory,setDeleteMemory]=useState<Memory|null>(null);
@@ -63,10 +64,13 @@ export default function FutureNotebook(){
  useEffect(()=>{if(!celebration)return;const id=setTimeout(()=>setCelebration(''),4500);return()=>clearTimeout(id);},[celebration]);
  const renderTask=(t:Task,compact=false)=>{const r=book.records[t.id],deadline=nearestDeadline(t,p,r);return <button key={t.id} className={`task-row ${compact?'compact':''} ${r?.status==='done'?'task-done':''}`} onClick={()=>openTask(t.id)}><span className="task-circle">{r?.status==='done'?<Check size={17}/>:t.type==='conversation'?<Heart size={16}/>:<span/>}</span><span className="task-row-body"><span className="task-row-top"><span className="task-type">{typeLabels[t.type]}</span>{r&&<StatusMark status={r.status}/>}</span><strong>{t.title}</strong>{!compact&&<span className="task-summary">{t.summary}</span>}<span className="task-meta">{deadline&&!['done','na'].includes(r?.status||'')&&<span className={difference(deadline.date,today)<=7?'urgency':''}><CalendarDays size={13}/>{monthDay(deadline.date)} · {deadline.kind==='personal'?'予定':deadline.uncertain?'原則日':'届出期限'}</span>}{r?.assignee&&<span><Users size={13}/>{r.assignee==='together'?'二人で':r.assignee==='one'?p.name1||'一人目':p.name2||'二人目'}</span>}</span></span><ChevronRight size={17}/></button>;};
  return <><a className="skip-link" href="#main-content">本文へ進む</a><Toaster theme="light" position="top-center" richColors/>
- <header className="masthead"><div className="masthead-inner"><button className="brand" onClick={()=>setTab('journey')} aria-label="ふたりの未来帖 ホーム"><span className="brand-seal">結</span><span className="wordmark">ふたりの未来帖<small>FUTARI NO MIRAICHO</small></span></button><div className="header-right"><span className="city-tag"><MapPin size={15}/>広島市{p.ward!=='未設定'?` ${p.ward}`:''}</span><button className="pair-pill" onClick={()=>{setInvite(null);setModal('pair');}}><Users size={16}/><span>{data.members.length===2?'二人の手帳':'ふたりで使う'}</span></button></div></div></header>
+ <header className="masthead"><div className="masthead-inner"><button className="brand" onClick={()=>setTab('desk')} aria-label="ふたりの未来帖 ホーム"><span className="brand-seal">結</span><span className="wordmark">ふたりの未来帖<small>FUTARI NO MIRAICHO</small></span></button><div className="header-right"><span className="city-tag"><MapPin size={15}/>広島市{p.ward!=='未設定'?` ${p.ward}`:''}</span><button className="pair-pill" onClick={()=>{setInvite(null);setModal('pair');}}><Users size={16}/><span>{data.members.length===2?'二人の手帳':'ふたりで使う'}</span></button></div></div></header>
  <Tabs value={tab} onValueChange={setTab} className="notebook-tabs"><div className="nav-wrap"><TabsList className="main-nav" aria-label="メインメニュー">{nav.map(n=><TabsTrigger key={n.id} value={n.id}><n.icon/><span>{n.label}</span>{n.id==='deadlines'&&soon.length>0&&<i className="nav-dot"/>}</TabsTrigger>)}</TabsList><span className="save-status" role="status">{data.busy?<><LoaderCircle className="spin" size={14}/>保存中</>:data.phase==='loading'?<>読み込み中…</>:data.phase==='error'?<>接続を確認</>:data.book?<><CloudCheck size={15}/>この端末に保存済み</>:<>まだ手帳を始めていません</>}</span></div>
  <main className="workspace" id="main-content">
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p>{data.phase==='signin'?<a href="/signin-with-chatgpt?return_to=%2F" target="_top">ログインする</a>:<button onClick={()=>void data.refresh()}>再読み込み</button>}</div>}
+ <TabsContent value="desk" className="tab-surface">
+ <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} onOpenTask={openTask} onOpenProfile={openProfile} onGoJourney={()=>setTab('journey')}/>
+ </TabsContent>
  <TabsContent value="journey" className="tab-surface">
  <div className="welcome-line"><div><p className="eyebrow">A LITTLE STEP, A LOVELY FUTURE</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">知って安心。進めて、うれしい。二人のペースで育てる手帳。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
  <div className="home-top"><section className="today-panel"><div className="panel-label"><span><span className="gold-dot"/>今日のひとつ、ここから。</span><small>{today.replace(/-/g,'.')}</small></div>
