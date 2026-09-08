@@ -21,7 +21,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "wedding-washi.png", "icons/apple-touch-icon.png"],
+      includeAssets: ["favicon.svg", "wedding-washi.png", "desk-mascot.png", "icons/apple-touch-icon.png"],
       manifest: {
         name: "ふたりの未来帖",
         short_name: "未来帖",

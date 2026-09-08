@@ -3,6 +3,8 @@ import {validateCatalogBook} from './backup';
 
 /** localStorage key for Gist sync settings (token stays on-device only). */
 export const GIST_SYNC_KEY='futari-gist-sync-v1';
+/** Prefill for couple sync — secret gist already provisioned; never a PAT. */
+export const DEFAULT_GIST_ID='4962ce100b42c446015825282f28b774';
 const GIST_FILENAME='futari-miraicho.json';
 const API='https://api.github.com';
 
@@ -21,22 +23,23 @@ export type GistPayload={
 export function readSyncConfig():GistSyncConfig{
   try{
     const raw=localStorage.getItem(GIST_SYNC_KEY);
-    if(!raw)return {token:'',gistId:'',enabled:false};
+    if(!raw)return {token:'',gistId:DEFAULT_GIST_ID,enabled:false};
     const data=JSON.parse(raw) as Partial<GistSyncConfig>;
+    const stored=typeof data.gistId==='string'?data.gistId.trim():'';
     return {
       token:typeof data.token==='string'?data.token:'',
-      gistId:typeof data.gistId==='string'?data.gistId.trim():'',
+      gistId:stored||DEFAULT_GIST_ID,
       enabled:Boolean(data.enabled),
     };
   }catch{
-    return {token:'',gistId:'',enabled:false};
+    return {token:'',gistId:DEFAULT_GIST_ID,enabled:false};
   }
 }
 
 export function writeSyncConfig(config:GistSyncConfig){
   const next:GistSyncConfig={
     token:config.token.trim(),
-    gistId:config.gistId.trim(),
+    gistId:config.gistId.trim()||DEFAULT_GIST_ID,
     enabled:Boolean(config.enabled),
   };
   localStorage.setItem(GIST_SYNC_KEY,JSON.stringify(next));

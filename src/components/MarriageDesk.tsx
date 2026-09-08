@@ -143,6 +143,13 @@ function LatticeWire(){
   );
 }
 
+const DESK_TIPS=[
+  '次のスタンプはロードマップから。小さな一歩で大丈夫。',
+  '期限が近い項目は「期限と予定」でまとめて確認できるよ。',
+  '端末どうしの同期は設定で PAT を入れるだけ。Gist は用意済み。',
+  '進捗はここでひと目。LIVE の時計は東京時間だよ。',
+] as const;
+
 export type MarriageDeskProps={
   book:Book;
   profile:Profile;
@@ -156,12 +163,18 @@ export type MarriageDeskProps={
   onOpenTask:(id:string)=>void;
   onOpenProfile:()=>void;
   onGoJourney:()=>void;
+  onOpenSettings?:()=>void;
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoJourney}:MarriageDeskProps){
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoJourney,onOpenSettings}:MarriageDeskProps){
   const [clock,setClock]=useState(()=>japanClock());
+  const [tipIdx,setTipIdx]=useState(0);
   useEffect(()=>{
     const id=window.setInterval(()=>setClock(japanClock()),1000);
+    return ()=>window.clearInterval(id);
+  },[]);
+  useEffect(()=>{
+    const id=window.setInterval(()=>setTipIdx(i=>(i+1)%DESK_TIPS.length),5200);
     return ()=>window.clearInterval(id);
   },[]);
 
@@ -232,6 +245,28 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <time className="desk-clock" dateTime={clock}>{clock}</time>
         </div>
       </header>
+
+      <div className="desk-navi">
+        <button
+          type="button"
+          className="desk-navi-mascot"
+          onClick={()=>{
+            if(tipIdx%2===0)onGoJourney();
+            else if(onOpenSettings)onOpenSettings();
+            else onOpenProfile();
+          }}
+          aria-label="ナビちゃん。タップでロードマップまたは同期設定へ"
+        >
+          <img src="./desk-mascot.png" alt="" width={96} height={96} decoding="async"/>
+        </button>
+        <div className="desk-navi-bubble" role="status">
+          <p key={tipIdx}>{DESK_TIPS[tipIdx]}</p>
+          <div className="desk-navi-actions">
+            <button type="button" onClick={onGoJourney}>ロードマップ</button>
+            {onOpenSettings&&<button type="button" onClick={onOpenSettings}>同期の設定</button>}
+          </div>
+        </div>
+      </div>
 
       <section className="desk-metrics" aria-label="主要指標">
         <article className="desk-metric">

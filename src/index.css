@@ -76,6 +76,23 @@
 .desk-sync-pill.sync-error{border-color:#d4a090;color:#8a4332;background:#f8ebe6}
 @keyframes desk-pulse{0%{box-shadow:0 0 0 0 #10b98188}70%{box-shadow:0 0 0 9px #10b98100}100%{box-shadow:0 0 0 0 #10b98100}}
 .desk-clock{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;font-variant-numeric:tabular-nums;color:var(--desk-ink);letter-spacing:.04em}
+.desk-navi{display:flex;align-items:flex-end;gap:12px;margin:0 0 14px;padding:10px 12px;border:1px solid var(--desk-border);border-radius:12px;background:linear-gradient(180deg,#ffffffee,#f3f7f2cc)}
+.desk-navi-mascot{flex:0 0 auto;width:88px;height:88px;padding:0;border:0;border-radius:18px;background:transparent;cursor:pointer;transition:transform .18s ease}
+.desk-navi-mascot:hover{transform:translateY(-2px) scale(1.03)}
+.desk-navi-mascot:active{transform:scale(.97)}
+.desk-navi-mascot img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;filter:drop-shadow(0 6px 10px #0f766e18)}
+.desk-navi-bubble{position:relative;flex:1;min-width:0;background:#fff;border:1px solid #d7e3d8;border-radius:12px;padding:10px 12px 10px 14px;box-shadow:0 8px 18px #1a33400a}
+.desk-navi-bubble::before{content:"";position:absolute;left:-7px;bottom:22px;width:12px;height:12px;background:#fff;border-left:1px solid #d7e3d8;border-bottom:1px solid #d7e3d8;transform:rotate(45deg)}
+.desk-navi-bubble p{margin:0;font-size:13px;line-height:1.55;color:#294652;min-height:2.6em;animation:desk-tip-in .35s ease}
+.desk-navi-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.desk-navi-actions button{font-size:11px;font-weight:700;letter-spacing:.02em;padding:4px 9px;border-radius:999px;border:1px solid #b7cdc0;background:#f3faf6;color:#0f766e;cursor:pointer}
+.desk-navi-actions button:hover{background:#dff5ea}
+@keyframes desk-tip-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (max-width:640px){
+  .desk-navi{align-items:center;gap:10px;padding:8px 10px}
+  .desk-navi-mascot{width:72px;height:72px}
+  .desk-navi-bubble p{font-size:12px;min-height:2.4em}
+}
 .desk-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
 .desk-metric{background:#fff;border:1px solid var(--desk-border);border-radius:10px;padding:12px 13px;min-height:92px;display:flex;flex-direction:column;gap:4px}
 .desk-metric-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--desk-muted);font-weight:700}
