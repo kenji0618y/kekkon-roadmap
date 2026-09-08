@@ -39,22 +39,27 @@ function normalize(s: string): string {
 
 function tokenize(q: string): string[] {
   const n = normalize(q);
-  const parts = n
-    .replace(/[！？!?,.。、・／/（）()「」『』【】\[\]{}<>「」]/g, ' ')
-    .split(/\s+/)
-    .flatMap((p) => {
-      // also split long Japanese runs lightly by common particles already stripped
-      if (p.length <= 1) return [];
-      if (STOP.has(p)) return [];
-      return [p];
-    });
-  // unique, keep order
+  // Split punctuation and common Japanese particles so「転入届の期限は」→ 転入届 / 期限
+  const spaced = n
+    .replace(/[！？!?,.。、・／/（）()「」『』【】\[\]{}<>]/g, ' ')
+    .replace(/(について|教えて|知りたい|ください|みたい|とは|って)/g, ' ')
+    .replace(/[のにをはがとでもへやかねよな]/g, ' ');
+  const parts = spaced.split(/\s+/).filter(Boolean);
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const p of parts) {
-    if (seen.has(p)) continue;
+  const push = (p: string) => {
+    if (p.length < 2 || STOP.has(p) || seen.has(p)) return;
     seen.add(p);
     out.push(p);
+  };
+  for (const p of parts) {
+    push(p);
+    // Character n-grams (2–4) help compound nouns like 転入届
+    if (/[\u3040-\u30ff\u4e00-\u9fff]/.test(p) && p.length >= 2) {
+      for (let len = Math.min(4, p.length); len >= 2; len--) {
+        for (let i = 0; i + len <= p.length; i++) push(p.slice(i, i + len));
+      }
+    }
   }
   return out;
 }
@@ -89,11 +94,13 @@ function scoreTask(t: Task, tokens: string[], raw: string): number {
   if (raw && title.includes(raw)) score += 48;
   if (raw && summary.includes(raw)) score += 18;
   if (raw && hay.includes(raw)) score += 8;
+  // Reverse: key title fragments appear inside the question
+  if (raw && title.length >= 2 && raw.includes(title.slice(0, Math.min(title.length, 6)))) score += 20;
   for (const tok of tokens) {
-    if (title.includes(tok)) score += 22;
-    else if (summary.includes(tok)) score += 12;
-    else if (hay.includes(tok)) score += 7;
-    // light prefix bonus for Japanese compounds
+    const w = tok.length >= 4 ? 28 : tok.length >= 3 ? 18 : 10;
+    if (title.includes(tok)) score += w;
+    else if (summary.includes(tok)) score += Math.round(w * 0.55);
+    else if (hay.includes(tok)) score += Math.round(w * 0.35);
     if (tok.length >= 2 && title.startsWith(tok)) score += 6;
   }
   return score;
@@ -185,7 +192,7 @@ export function answerDeskQuery(query: string, limit = 3): DeskChatAnswer {
   const tokens = tokenize(q);
   const scored = tasks
     .map((t) => ({t, score: scoreTask(t, tokens, raw)}))
-    .filter((x) => x.score > 0)
+    .filter((x) => x.score >= 18)
     .sort((a, b) => b.score - a.score || a.t.id.localeCompare(b.t.id));
 
   const top = scored.slice(0, limit);
