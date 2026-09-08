@@ -37,7 +37,7 @@ export function ProfileForm({profile,onSave,busy,onDirty,hasBook}:{profile:Profi
  <TextField label="実際に住み始めた日" type="date" value={p.movedate} onChange={v=>change('movedate',v)}/><TextField label="転入届を出した日" type="date" value={p.reported} onChange={v=>change('reported',v)}/>
  <TextField label="不動産：最も早い未登記の変更日" type="date" value={p.propertydate} onChange={v=>change('propertydate',v)}/><TextField label="普通車：未手続きの氏名変更日" type="date" value={p.carNameDate} onChange={v=>change('carNameDate',v)}/><TextField label="普通車：未手続きの住所変更日" type="date" value={p.carAddressDate} onChange={v=>change('carAddressDate',v)}/>
  </div></AccordionContent></AccordionItem>
- <AccordionItem value="letter"><AccordionTrigger>お祝いの言葉を整える</AccordionTrigger><AccordionContent><TextField label="贈る方の名前（任意）" value={p.giver} onChange={v=>change('giver',v)} placeholder="例：けんじ"/><div className="field"><Label htmlFor="gift-letter">お祝いのメッセージ</Label><Textarea id="gift-letter" value={p.letter} maxLength={3000} rows={7} onChange={e=>change('letter',e.target.value)}/></div></AccordionContent></AccordionItem>
+ 
  </Accordion>
  <p className="hint"><ShieldCheck size={15}/> 名前・日付・記録は、同じ手帳に参加した二人に共有されます。収入の詳細や本人確認番号は入力不要です。</p>
  {validation&&<p role="alert" className="inline-error">{validation}</p>}

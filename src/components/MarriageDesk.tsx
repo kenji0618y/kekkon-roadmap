@@ -169,11 +169,11 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
   const progressPct=actionable.length?Math.round(done.length/actionable.length*100):0;
 
   const weddingMetric=useMemo(()=>{
-    if(!validDate(p.wdate))return {label:'門出の日',value:'—',sub:'婚姻日を設定',tone:'' as string};
+    if(!validDate(p.wdate))return {label:'婚姻日',value:'—',sub:'婚姻日を設定',tone:'' as string};
     const days=difference(p.wdate,today);
     if(days>0)return {label:'届出まで',value:`${days}`,sub:'日',tone:'warn'};
-    if(days===0)return {label:'門出の日',value:'今日',sub:'',tone:'live'};
-    return {label:'門出から',value:`${-days+1}`,sub:'日目',tone:'ok'};
+    if(days===0)return {label:'婚姻日',value:'今日',sub:'',tone:'live'};
+    return {label:'婚姻から',value:`${-days+1}`,sub:'日目',tone:'ok'};
   },[p.wdate,today]);
 
   const stages=useMemo(()=>chapters.map(c=>{
