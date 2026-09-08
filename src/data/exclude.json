@@ -1,0 +1,297 @@
+{
+  "description": "H対象外。獲得可能賞品・あと○円として絶対に出さない",
+  "source_file": "08",
+  "items": [
+    {
+      "id": "H01",
+      "title": "結婚新生活支援（広島市）",
+      "why": "市は未導入。補助額0円",
+      "hidden_if": [
+        "marriage_subsidy"
+      ],
+      "source": "市FAQ1002903"
+    },
+    {
+      "id": "H02",
+      "title": "結婚新生活支援（他市町村・天井30万）",
+      "why": "所得合計500万未満に届かず外れ。ジョブロックとも矛盾",
+      "hidden_if": [
+        "marriage_subsidy_other_city"
+      ]
+    },
+    {
+      "id": "H03",
+      "title": "配偶者控除／配偶者特別控除",
+      "why": "既定共働きは双方所得が大幅超過",
+      "hidden_if": [
+        "spouse_deduction"
+      ]
+    },
+    {
+      "id": "H04",
+      "title": "健保被扶養・第3号",
+      "why": "双方130万超。落とすと傷病手当等が消える",
+      "hidden_if": [
+        "dependent_enrollment"
+      ]
+    },
+    {
+      "id": "H05",
+      "title": "家族手当（収入制限つき）",
+      "why": "103万／130万制限なら既定で0候補",
+      "hidden_if": [
+        "income_capped_family_allowance"
+      ]
+    },
+    {
+      "id": "H06",
+      "title": "高額療養の世帯合算",
+      "why": "別会社健保では合算対象とならない",
+      "hidden_if": [
+        "kogaku_household_sum"
+      ]
+    },
+    {
+      "id": "H07",
+      "title": "市営住宅（公営）",
+      "why": "月額収入15.8万以下",
+      "hidden_if": [
+        "municipal_housing"
+      ]
+    },
+    {
+      "id": "H08",
+      "title": "特賃の子育て家賃助成",
+      "why": "月額収入21.4万以下",
+      "hidden_if": [
+        "tokuchin_rent_aid"
+      ]
+    },
+    {
+      "id": "H09",
+      "title": "UR子育て割の減額",
+      "why": "減額は月所得25.9万以下",
+      "hidden_if": [
+        "ur_child_discount"
+      ]
+    },
+    {
+      "id": "H10",
+      "title": "0–2歳保育の無償化",
+      "why": "住民税非課税世帯に限る",
+      "hidden_if": [
+        "free_infant_care"
+      ]
+    },
+    {
+      "id": "H11",
+      "title": "副食費免除",
+      "why": "所得割が低い階層のみ",
+      "hidden_if": [
+        "fukushoku_exemption"
+      ]
+    },
+    {
+      "id": "H12",
+      "title": "がん検診の自己負担無料",
+      "why": "非課税世帯等。子宮頸がん自体は1,000円で可",
+      "hidden_if": [
+        "free_cancer_screening"
+      ]
+    },
+    {
+      "id": "H13",
+      "title": "風しん第5期（クーポン）",
+      "why": "1962-04-02〜1979-04-01生男性。約30歳は対象外",
+      "hidden_if": [
+        "rubella_5th"
+      ]
+    },
+    {
+      "id": "H14",
+      "title": "胃・肺・大腸・乳がん検診",
+      "why": "対象年齢が40歳または50歳",
+      "hidden_if": [
+        "age_gated_cancer_screening"
+      ]
+    },
+    {
+      "id": "H15",
+      "title": "広島市の不妊上乗せ",
+      "why": "県一覧で市欄「－」。使えるのは県分と市の不育のみ",
+      "hidden_if": [
+        "city_infertility_topup"
+      ]
+    },
+    {
+      "id": "H16",
+      "title": "すまい給付金",
+      "why": "終了",
+      "hidden_if": [
+        "sumai_kyufukin"
+      ]
+    },
+    {
+      "id": "H17",
+      "title": "子育てエコホーム支援事業（旧）",
+      "why": "終了。後継は住宅省エネ2026",
+      "hidden_if": [
+        "ended_eco_home"
+      ]
+    },
+    {
+      "id": "H18",
+      "title": "三世代近居／団地リフォーム／家賃補助を子なし今で取る",
+      "why": "小学生以下または出産予定が必須",
+      "hidden_if": [
+        "no_child_now",
+        "sandaisei_now",
+        "danichi_now"
+      ]
+    },
+    {
+      "id": "H19",
+      "title": "県の奨学金返済支援",
+      "why": "企業向け補助金。個人は勤務先次第",
+      "hidden_if": [
+        "pref_scholarship_repay"
+      ]
+    },
+    {
+      "id": "H20",
+      "title": "就学援助・児童扶養手当",
+      "why": "所得・ひとり親",
+      "hidden_if": [
+        "school_aid_jido_fuyo"
+      ]
+    },
+    {
+      "id": "H21",
+      "title": "おしどり贈与（居住用2,000万）",
+      "why": "婚姻期間20年超",
+      "hidden_if": [
+        "oshidori_gift"
+      ]
+    },
+    {
+      "id": "H22",
+      "title": "加給年金を24か月の現金として売る",
+      "why": "約35年先。双方厚生20年以上だと停止も",
+      "hidden_if": [
+        "kakyuu_nenkin"
+      ]
+    },
+    {
+      "id": "H23",
+      "title": "3号分割",
+      "why": "双方第2号なら対象期間0",
+      "hidden_if": [
+        "no3_split"
+      ]
+    },
+    {
+      "id": "H24",
+      "title": "遺族厚生を30歳夫の保険として売る",
+      "why": "子のない夫は死亡当時55歳以上に限る（現行）",
+      "hidden_if": [
+        "survivor_pension_young_husband"
+      ]
+    },
+    {
+      "id": "H25",
+      "title": "配偶者の明文の医療同意権",
+      "why": "配偶者にも無い。届出では買えない",
+      "hidden_if": [
+        "medical_consent_by_marriage"
+      ]
+    },
+    {
+      "id": "H26",
+      "title": "内縁の法定相続・税額軽減1.6億",
+      "why": "法律婚のみ",
+      "hidden_if": [
+        "common_law_inheritance"
+      ]
+    },
+    {
+      "id": "H27",
+      "title": "式の補助金で埋められる",
+      "why": "自己負担平均158.9万は市の結婚支援0では埋まらない",
+      "hidden_if": [
+        "ceremony_subsidy_covers"
+      ]
+    },
+    {
+      "id": "H28",
+      "title": "扶養に入れて得",
+      "why": "傷病手当・厚生年金・NISA原資を捨てる取引",
+      "hidden_if": [
+        "dependent_is_gain"
+      ]
+    },
+    {
+      "id": "H29",
+      "title": "県外転出で家賃を取る",
+      "why": "失う所得が家賃差を潰す",
+      "hidden_if": [
+        "migrate_for_rent"
+      ]
+    },
+    {
+      "id": "H30",
+      "title": "東広島・呉へ2人通勤で得",
+      "why": "定期が家賃差以上（会社が定期を出すなら再判定）",
+      "hidden_if": [
+        "higashihiroshima_kure_gain"
+      ]
+    },
+    {
+      "id": "H31",
+      "title": "中国電力×水島ガスまとめ割",
+      "why": "水島ガス契約が条件。広島ガスでは使えない",
+      "hidden_if": [
+        "chuden_mizushima_set"
+      ]
+    },
+    {
+      "id": "H32",
+      "title": "医療保険の配偶者割引％",
+      "why": "夫婦型は販売減。一つの契約は無いと公式回答の例あり",
+      "hidden_if": [
+        "spouse_medical_insurance_discount"
+      ]
+    },
+    {
+      "id": "H33",
+      "title": "ふるさと「世帯800万なら上限○円」表",
+      "why": "共働きは各自。公式はシミュ",
+      "hidden_if": [
+        "furusato_household_cap_table"
+      ]
+    },
+    {
+      "id": "H34",
+      "title": "通勤手当を結婚の得として足す",
+      "why": "03の家賃数学に使用済み",
+      "hidden_if": [
+        "commute_as_marriage_gain"
+      ]
+    },
+    {
+      "id": "H35",
+      "title": "選択的夫婦別氏",
+      "why": "未導入。届書で氏を一つ選ぶ",
+      "hidden_if": [
+        "selective_separate_surname"
+      ]
+    },
+    {
+      "id": "H36",
+      "title": "市の婚姻祝金（全市）",
+      "why": "一次未検出。西区写真のみ。創作しない",
+      "hidden_if": [
+        "citywide_marriage_gift"
+      ]
+    }
+  ]
+}

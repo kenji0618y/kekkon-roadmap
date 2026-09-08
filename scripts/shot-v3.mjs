@@ -1,0 +1,17 @@
+import { chromium } from "playwright";
+import { mkdirSync } from "fs";
+const out = "/workspace/marriage-guide-app/screenshots";
+mkdirSync(out, { recursive: true });
+const browser = await chromium.launch({ headless: true });
+const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+const page = await context.newPage();
+await page.goto("http://127.0.0.1:4173/#/map", { waitUntil: "networkidle" });
+await page.evaluate(() => { const state = { settings: { hasChild: true, buyingHome: false }, statuses: { "A必1": "done", "A必2": "checked", "A必3": "unknown", "A無1": "done", B1: "todo", "C即1": "checked" }, notes: { "A必3": "市区町村の窓口に聞くこと" }, customIn: {}, streak: 2, lastVisitDate: "2026-09-06" }; localStorage.setItem("marriage-guide-hiroshima-v2", JSON.stringify(state)); });
+await page.reload({ waitUntil: "networkidle" });
+await page.waitForTimeout(900);
+await page.screenshot({ path: out + "/v3-sugoroku-stamps.png", fullPage: true });
+await page.goto("http://127.0.0.1:4173/#/stamp/" + encodeURIComponent("A必3"), { waitUntil: "networkidle" });
+await page.waitForTimeout(700);
+await page.screenshot({ path: out + "/v3-stamp-unknown.png", fullPage: true });
+await browser.close();
+console.log("ok");

@@ -1,0 +1,6 @@
+{
+  "data_year": 2026,
+  "schema_version": 2,
+  "updated_at": "2026-09-06T04:20:00Z",
+  "notes": "stamps-v2.json を取り込み。why/steps/faq を補完。円は v2 seed を厳密保持。結婚新生活は exclude のみ。"
+}
