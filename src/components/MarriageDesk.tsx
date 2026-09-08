@@ -1,5 +1,6 @@
 import {useEffect,useMemo,useState} from 'react';
-import {ArrowRight,Gauge} from 'lucide-react';
+import {ArrowRight,Gauge,MessageCircle} from 'lucide-react';
+import {DeskChatPanel} from './DeskChatPanel';
 import {chapters,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
 import {difference,formatMoney,moneyTotals,todayJapan,validDate} from '../lib/dates';
 import {groups} from '../data/catalog';
@@ -144,6 +145,7 @@ function LatticeWire(){
 }
 
 const DESK_TIPS=[
+  'わからないことは、わたし（デスクちゃん）に聞いてね。',
   '次のスタンプはロードマップから。小さな一歩で大丈夫。',
   '期限が近い項目は「期限と予定」でまとめて確認できるよ。',
   '端末どうしの同期は設定で PAT を入れるだけ。Gist は用意済み。',
@@ -164,11 +166,13 @@ export type MarriageDeskProps={
   onOpenProfile:()=>void;
   onGoJourney:()=>void;
   onOpenSettings?:()=>void;
+  onGoFind?:(keyword?:string)=>void;
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoJourney,onOpenSettings}:MarriageDeskProps){
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoJourney,onOpenSettings,onGoFind}:MarriageDeskProps){
   const [clock,setClock]=useState(()=>japanClock());
   const [tipIdx,setTipIdx]=useState(0);
+  const [chatOpen,setChatOpen]=useState(false);
   useEffect(()=>{
     const id=window.setInterval(()=>setClock(japanClock()),1000);
     return ()=>window.clearInterval(id);
@@ -250,23 +254,27 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         <button
           type="button"
           className="desk-navi-mascot"
-          onClick={()=>{
-            if(tipIdx%2===0)onGoJourney();
-            else if(onOpenSettings)onOpenSettings();
-            else onOpenProfile();
-          }}
-          aria-label="ナビちゃん。タップでロードマップまたは同期設定へ"
+          onClick={()=>setChatOpen(true)}
+          aria-label="デスクちゃん。タップして質問する"
         >
           <img src="./desk-mascot.png" alt="" width={96} height={96} decoding="async"/>
         </button>
         <div className="desk-navi-bubble" role="status">
           <p key={tipIdx}>{DESK_TIPS[tipIdx]}</p>
           <div className="desk-navi-actions">
+            <button type="button" className="desk-navi-ask" onClick={()=>setChatOpen(true)}><MessageCircle size={12} aria-hidden/>聞く</button>
             <button type="button" onClick={onGoJourney}>ロードマップ</button>
             {onOpenSettings&&<button type="button" onClick={onOpenSettings}>同期の設定</button>}
           </div>
         </div>
       </div>
+
+      <DeskChatPanel
+        open={chatOpen}
+        onClose={()=>setChatOpen(false)}
+        onOpenTask={(id)=>{setChatOpen(false);onOpenTask(id);}}
+        onGoFind={onGoFind?(kw)=>{setChatOpen(false);onGoFind(kw);}:undefined}
+      />
 
       <section className="desk-metrics" aria-label="主要指標">
         <article className="desk-metric">
