@@ -1,5 +1,5 @@
 import {useEffect, useId, useMemo, useRef, useState} from 'react';
-import {MessageCircle, Send, X} from 'lucide-react';
+import {LoaderCircle, MessageCircle, Send, X} from 'lucide-react';
 import {
   answerDeskQuery,
   clearChatHistory,
@@ -7,6 +7,7 @@ import {
   saveChatHistory,
   type ChatMessage,
 } from '../lib/desk-chat';
+import {askGrokResearch, loadGrokKey} from '../lib/amity-grok';
 
 export type DeskChatPanelProps = {
   open: boolean;
@@ -22,15 +23,19 @@ function uid() {
 const WELCOME: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
-  text: 'デスクちゃんです。スタンプや手続き・期限・広島の制度、なんでも聞いてね。端末の中だけで答えるよ（通信なし）。',
+  text: 'Amityちゃんです。スタンプや手続き・期限・広島の制度、なんでも聞いてね。端末内の検索に加えて、設定にキーがあれば Grok で深掘りするよ。',
   at: 0,
 };
+
+const NO_KEY_TIP = '設定に xAI (Grok) APIキーを入れると深掘りできる';
 
 export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPanelProps) {
   const titleId = useId();
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const [input, setInput] = useState('');
+  const [busy, setBusy] = useState(false);
   const [msgs, setMsgs] = useState<ChatMessage[]>(() => {
     const saved = loadChatHistory();
     return saved.length ? saved : [WELCOME];
@@ -46,39 +51,94 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPan
     if (!open) return;
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [open, msgs]);
+  }, [open, msgs, busy]);
 
   useEffect(() => {
     if (msgs.length === 1 && msgs[0].id === 'welcome') return;
     saveChatHistory(msgs);
   }, [msgs]);
 
-  const canSend = useMemo(() => input.trim().length > 0 && input.trim().length <= 200, [input]);
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
-  function ask(raw: string) {
+  const canSend = useMemo(
+    () => !busy && input.trim().length > 0 && input.trim().length <= 200,
+    [input, busy],
+  );
+
+  async function ask(raw: string) {
     const q = raw.trim().slice(0, 200);
-    if (!q) return;
+    if (!q || busy) return;
     const userMsg: ChatMessage = {id: uid(), role: 'user', text: q, at: Date.now()};
     const ans = answerDeskQuery(q);
-    const botMsg: ChatMessage = {
+    const localText = ans.text;
+    const hasKey = !!loadGrokKey();
+
+    const localMsg: ChatMessage = {
       id: uid(),
       role: 'assistant',
-      text: ans.text,
+      text: hasKey
+        ? localText
+        : `${localText}\n\n💡 ${NO_KEY_TIP}`,
       matches: ans.matches,
       suggestedKeywords: ans.suggestedKeywords,
       at: Date.now(),
     };
-    setMsgs((prev) => [...prev, userMsg, botMsg]);
+    setMsgs((prev) => [...prev, userMsg, localMsg]);
     setInput('');
+
+    if (!hasKey) return;
+
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    setBusy(true);
+    try {
+      const localContext = [
+        localText,
+        ans.matches.length
+          ? `候補項目：${ans.matches.map((m) => `${m.title} — ${m.snippet}`).join(' / ')}`
+          : '',
+      ]
+        .filter(Boolean)
+        .join('\n');
+      const grok = await askGrokResearch(q, localContext, ac.signal);
+      if (ac.signal.aborted) return;
+      if (grok.ok) {
+        const grokMsg: ChatMessage = {
+          id: uid(),
+          role: 'assistant',
+          text: `🔎 Grok調べ：\n${grok.text}`,
+          at: Date.now(),
+        };
+        setMsgs((prev) => [...prev, grokMsg]);
+      } else if (grok.error !== 'aborted' && grok.error !== 'no-key') {
+        const errMsg: ChatMessage = {
+          id: uid(),
+          role: 'assistant',
+          text: `Grokに聞けなかったよ（${grok.error}）。上の端末内の答えを見てね。キーや通信を設定で確認して。`,
+          at: Date.now(),
+        };
+        setMsgs((prev) => [...prev, errMsg]);
+      }
+    } finally {
+      if (abortRef.current === ac) abortRef.current = null;
+      setBusy(false);
+    }
   }
 
   function onSubmit(e: {preventDefault(): void}) {
     e.preventDefault();
     if (!canSend) return;
-    ask(input);
+    void ask(input);
   }
 
   function reset() {
+    abortRef.current?.abort();
+    setBusy(false);
     clearChatHistory();
     setMsgs([{...WELCOME, at: Date.now()}]);
   }
@@ -93,8 +153,8 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPan
           <div className="desk-chat-title">
             <img src="./desk-mascot.png" alt="" width={36} height={36} decoding="async" />
             <div>
-              <h2 id={titleId}>デスクちゃんに聞く</h2>
-              <p>オンデバイス検索 · 通信なし</p>
+              <h2 id={titleId}>Amityちゃんに聞く</h2>
+              <p>端末内検索 · 任意で Grok 深掘り</p>
             </div>
           </div>
           <div className="desk-chat-head-actions">
@@ -132,7 +192,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPan
                       type="button"
                       onClick={() => {
                         if (onGoFind) onGoFind(k);
-                        else ask(k);
+                        else void ask(k);
                       }}
                     >
                       {k}
@@ -142,6 +202,12 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPan
               )}
             </div>
           ))}
+          {busy && (
+            <div className="desk-chat-bubble assistant desk-chat-loading" role="status">
+              <LoaderCircle size={14} className="spin" aria-hidden />
+              <span>AmityがGrokで調べてる…</span>
+            </div>
+          )}
         </div>
 
         <form className="desk-chat-compose" onSubmit={onSubmit}>
@@ -156,6 +222,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPan
             placeholder="例：転入届の期限は？／結婚新生活って？"
             onChange={(e) => setInput(e.target.value)}
             autoComplete="off"
+            disabled={busy}
           />
           <button type="submit" disabled={!canSend} aria-label="送信">
             <Send size={16} />

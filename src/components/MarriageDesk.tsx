@@ -145,7 +145,7 @@ function LatticeWire(){
 }
 
 const DESK_TIPS=[
-  'わからないことは、わたし（デスクちゃん）に聞いてね。',
+  'わからないことは、わたし（Amityちゃん）に聞いてね。',
   '次のスタンプはロードマップから。小さな一歩で大丈夫。',
   '期限が近い項目は「期限と予定」でまとめて確認できるよ。',
   '端末どうしの同期は設定で PAT を入れるだけ。Gist は用意済み。',
@@ -255,7 +255,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           type="button"
           className="desk-navi-mascot"
           onClick={()=>setChatOpen(true)}
-          aria-label="デスクちゃん。タップして質問する"
+          aria-label="Amityちゃん。タップして質問する"
         >
           <img src="./desk-mascot.png" alt="" width={96} height={96} decoding="async"/>
         </button>

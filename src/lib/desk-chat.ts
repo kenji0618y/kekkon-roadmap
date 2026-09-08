@@ -14,12 +14,13 @@ export type DeskChatAnswer = {
   suggestedKeywords: string[];
 };
 
-const HISTORY_KEY = 'desk-chan-chat-v1';
+const HISTORY_KEY = 'amity-chat-v1';
+const LEGACY_HISTORY_KEY = 'desk-chan-chat-v1';
 const MAX_HISTORY = 40;
 
-/** Soft mission-control preamble / hard rules for デスクちゃん. */
+/** Soft mission-control preamble / hard rules for Amityちゃん. */
 export const DESK_CHAT_RULES = [
-  '私はデスクちゃん。結婚ロードマップのナビだよ。短く、やさしく答えるね。',
+  '私はAmityちゃん。結婚ロードマップのサメナビだよ。短く、やさしく答えるね。',
   '金額の円はデータにある案内だけ。勝手に金額を作らない。',
   '結婚新生活支援は広島市では未実施。30万・60万の賞品扱いにはしない。',
   '広島市・共働きで世帯所得がおおむね800万円超なら、所得制限のある支援は当てはまりにくい。Lean（ムダを減らし確認を絞る）で進もう。',
@@ -239,7 +240,19 @@ export type ChatMessage = {
 
 export function loadChatHistory(): ChatMessage[] {
   try {
-    const raw = localStorage.getItem(HISTORY_KEY);
+    let raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) {
+      const legacy = localStorage.getItem(LEGACY_HISTORY_KEY);
+      if (legacy) {
+        raw = legacy;
+        try {
+          localStorage.setItem(HISTORY_KEY, legacy);
+          localStorage.removeItem(LEGACY_HISTORY_KEY);
+        } catch {
+          /* ignore migrate write */
+        }
+      }
+    }
     if (!raw) return [];
     const data = JSON.parse(raw) as ChatMessage[];
     if (!Array.isArray(data)) return [];
@@ -260,6 +273,7 @@ export function saveChatHistory(msgs: ChatMessage[]) {
 export function clearChatHistory() {
   try {
     localStorage.removeItem(HISTORY_KEY);
+    localStorage.removeItem(LEGACY_HISTORY_KEY);
   } catch {
     /* ignore */
   }
