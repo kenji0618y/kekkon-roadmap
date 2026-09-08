@@ -5,7 +5,7 @@ export function AmbientBg() {
   return (
     <div className="ambient-bg" aria-hidden>
       <div className="ambient-kenburns">
-        <img className="ambient-kenburns-img" src="/app-bg-lux.png" alt="" />
+        <img className="ambient-kenburns-img" src={`${import.meta.env.BASE_URL}app-bg-lux.png`} alt="" />
       </div>
       <div className="ambient-veil" />
       <GoldParticles sitewide />
