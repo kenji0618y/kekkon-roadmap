@@ -1,0 +1,430 @@
+[
+  {
+    "id": "sq-filing-1",
+    "title": "婚姻届",
+    "short": "婚姻届",
+    "kanji": "届",
+    "chapter": "prepare",
+    "ids": [
+      "A無1",
+      "C即1",
+      "B2",
+      "B3",
+      "B4",
+      "B6",
+      "B12",
+      "C即2"
+    ]
+  },
+  {
+    "id": "sq-filing-2",
+    "title": "証明書",
+    "short": "証明書",
+    "kanji": "証",
+    "chapter": "prepare",
+    "ids": [
+      "B13",
+      "C即3",
+      "C即4",
+      "A無7"
+    ]
+  },
+  {
+    "id": "sq-namechange-1",
+    "title": "称する氏",
+    "short": "称する氏",
+    "kanji": "氏",
+    "chapter": "prepare",
+    "ids": [
+      "A必2",
+      "A必3",
+      "A必4",
+      "B1",
+      "C即7",
+      "C即8",
+      "C即9",
+      "C即10"
+    ]
+  },
+  {
+    "id": "sq-namechange-2",
+    "title": "名義変更",
+    "short": "名義変更",
+    "kanji": "名",
+    "chapter": "prepare",
+    "ids": [
+      "C即11",
+      "C即12",
+      "C即13",
+      "C即14"
+    ]
+  },
+  {
+    "id": "sq-wedding",
+    "title": "挙式",
+    "short": "挙式",
+    "kanji": "式",
+    "chapter": "prepare",
+    "ids": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ]
+  },
+  {
+    "id": "sq-company-1",
+    "title": "祝金・休暇",
+    "short": "祝金・休暇",
+    "kanji": "社",
+    "chapter": "prepare",
+    "ids": [
+      "A必1",
+      "B7",
+      "C即5",
+      "C即6",
+      "D1",
+      "D2",
+      "C他7",
+      "C他1"
+    ]
+  },
+  {
+    "id": "sq-company-2",
+    "title": "年末調整",
+    "short": "年末調整",
+    "kanji": "休",
+    "chapter": "annual",
+    "ids": [
+      "C他2"
+    ]
+  },
+  {
+    "id": "sq-selfemployed",
+    "title": "自営の届出",
+    "short": "自営の届出",
+    "kanji": "営",
+    "chapter": "annual",
+    "ids": [
+      "S1",
+      "S2",
+      "S3",
+      "S4"
+    ]
+  },
+  {
+    "id": "sq-cohabit-1",
+    "title": "引っ越し",
+    "short": "引っ越し",
+    "kanji": "住",
+    "chapter": "life",
+    "ids": [
+      "A必5",
+      "C14-1",
+      "C14-2",
+      "C15-1",
+      "C90-1",
+      "C90-2",
+      "A得13",
+      "D4"
+    ]
+  },
+  {
+    "id": "sq-cohabit-2",
+    "title": "手当と名義",
+    "short": "手当と名義",
+    "kanji": "移",
+    "chapter": "life",
+    "ids": [
+      "D5"
+    ]
+  },
+  {
+    "id": "sq-familyplan-1",
+    "title": "家族割",
+    "short": "家族割",
+    "kanji": "割",
+    "chapter": "life",
+    "ids": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+    ]
+  },
+  {
+    "id": "sq-familyplan-2",
+    "title": "光熱・ポイント",
+    "short": "光熱・ポイント",
+    "kanji": "契",
+    "chapter": "life",
+    "ids": [
+      "E9",
+      "E10"
+    ]
+  },
+  {
+    "id": "sq-partners",
+    "title": "二人で決める",
+    "short": "二人で決める",
+    "kanji": "絆",
+    "chapter": "life",
+    "ids": [
+      "P1",
+      "P2",
+      "P3",
+      "P4"
+    ]
+  },
+  {
+    "id": "sq-prep-health",
+    "title": "妊娠前の健診",
+    "short": "妊娠前の健診",
+    "kanji": "診",
+    "chapter": "child",
+    "ids": [
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "A無2"
+    ]
+  },
+  {
+    "id": "sq-prep-consult",
+    "title": "相談と健診",
+    "short": "相談と健診",
+    "kanji": "談",
+    "chapter": "care",
+    "ids": [
+      "A無4",
+      "A無5",
+      "A無6",
+      "A無3",
+      "A無8"
+    ]
+  },
+  {
+    "id": "sq-prep-money-1",
+    "title": "NISA・控除",
+    "short": "NISA・控除",
+    "kanji": "資",
+    "chapter": "annual",
+    "ids": [
+      "A得1",
+      "A得2",
+      "A得3",
+      "A得5",
+      "A得6",
+      "A得8",
+      "A得9",
+      "A得10"
+    ]
+  },
+  {
+    "id": "sq-prep-money-2",
+    "title": "iDeCo・贈与",
+    "short": "iDeCo・贈与",
+    "kanji": "蓄",
+    "chapter": "annual",
+    "ids": [
+      "A得11",
+      "A得16",
+      "A得17",
+      "C他3",
+      "C他4",
+      "C他6"
+    ]
+  },
+  {
+    "id": "sq-pregnant",
+    "title": "妊婦健診",
+    "short": "妊婦健診",
+    "kanji": "妊",
+    "chapter": "child",
+    "ids": [
+      "G5",
+      "G6",
+      "G7",
+      "G8",
+      "G9"
+    ]
+  },
+  {
+    "id": "sq-birth-money",
+    "title": "出産",
+    "short": "出産",
+    "kanji": "産",
+    "chapter": "child",
+    "ids": [
+      "G11",
+      "G12",
+      "G13",
+      "G16",
+      "G17",
+      "G18",
+      "G19"
+    ]
+  },
+  {
+    "id": "sq-allowance",
+    "title": "児童手当",
+    "short": "児童手当",
+    "kanji": "児",
+    "chapter": "child",
+    "ids": [
+      "G14",
+      "G15"
+    ]
+  },
+  {
+    "id": "sq-daycare",
+    "title": "保育園",
+    "short": "保育園",
+    "kanji": "保",
+    "chapter": "child",
+    "ids": [
+      "G23",
+      "G25",
+      "D15"
+    ]
+  },
+  {
+    "id": "sq-infant-other",
+    "title": "0〜2歳",
+    "short": "0〜2歳",
+    "kanji": "育",
+    "chapter": "child",
+    "ids": [
+      "G10",
+      "G20",
+      "G21",
+      "G22"
+    ]
+  },
+  {
+    "id": "sq-preschool",
+    "title": "就学後の備え",
+    "short": "就学後の備え",
+    "kanji": "学",
+    "chapter": "child",
+    "ids": [
+      "G24"
+    ]
+  },
+  {
+    "id": "sq-home-1",
+    "title": "家を買う",
+    "short": "家を買う",
+    "kanji": "家",
+    "chapter": "home",
+    "ids": [
+      "A得12",
+      "B8",
+      "C2年1",
+      "C他5",
+      "F1",
+      "F2",
+      "F3",
+      "F4"
+    ]
+  },
+  {
+    "id": "sq-home-2",
+    "title": "住宅ローン",
+    "short": "住宅ローン",
+    "kanji": "融",
+    "chapter": "home",
+    "ids": [
+      "F7",
+      "F8",
+      "F9",
+      "F10",
+      "F11"
+    ]
+  },
+  {
+    "id": "sq-home-3",
+    "title": "改修の支援",
+    "short": "改修の支援",
+    "kanji": "修",
+    "chapter": "home",
+    "ids": [
+      "F5",
+      "F6",
+      "F12"
+    ]
+  },
+  {
+    "id": "sq-hedge-med",
+    "title": "医療と控除",
+    "short": "医療と控除",
+    "kanji": "医",
+    "chapter": "care",
+    "ids": [
+      "A必6",
+      "A必7",
+      "A得4",
+      "A得7",
+      "A得14",
+      "A得15"
+    ]
+  },
+  {
+    "id": "sq-hedge-legal",
+    "title": "遺言と後見",
+    "short": "遺言と後見",
+    "kanji": "遺",
+    "chapter": "care",
+    "ids": [
+      "B9",
+      "B10",
+      "B11"
+    ]
+  },
+  {
+    "id": "sq-hedge-company-1",
+    "title": "福利厚生",
+    "short": "福利厚生",
+    "kanji": "福",
+    "chapter": "annual",
+    "ids": [
+      "D3",
+      "D6",
+      "D7",
+      "D8",
+      "D9",
+      "D10",
+      "D11",
+      "D12"
+    ]
+  },
+  {
+    "id": "sq-hedge-company-2",
+    "title": "育休・転勤",
+    "short": "育休・転勤",
+    "kanji": "備",
+    "chapter": "annual",
+    "ids": [
+      "D13",
+      "D14"
+    ]
+  },
+  {
+    "id": "sq-divorce",
+    "title": "財産の約束",
+    "short": "財産の約束",
+    "kanji": "約",
+    "chapter": "care",
+    "ids": [
+      "B5"
+    ]
+  }
+]

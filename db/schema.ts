@@ -1,0 +1,4 @@
+import { integer, sqliteTable, text, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
+export const books=sqliteTable('future_books',{id:text('id').primaryKey(),data:text('data').notNull(),revision:integer('revision').notNull().default(0),createdAt:text('created_at').notNull()});
+export const members=sqliteTable('future_members',{userId:text('user_id').primaryKey(),bookId:text('book_id').notNull().references(()=>books.id),slot:integer('slot').notNull(),displayName:text('display_name').notNull()},t=>[uniqueIndex('future_member_slot').on(t.bookId,t.slot),index('future_member_book').on(t.bookId)]);
+export const invites=sqliteTable('future_invites',{hash:text('hash').primaryKey(),bookId:text('book_id').notNull().references(()=>books.id),slot:integer('slot').notNull().default(2),expiresAt:text('expires_at').notNull()},t=>[uniqueIndex('future_invite_book').on(t.bookId)]);

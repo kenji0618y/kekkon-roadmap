@@ -1,0 +1,546 @@
+{
+  "marry": {
+    "id": "marry",
+    "title": "広島市：婚姻届と必要書類",
+    "url": "https://www.city.hiroshima.lg.jp/faq/koseki/1001555/1001746.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "certificate": {
+    "id": "certificate",
+    "title": "広島市：婚姻届の受理証明",
+    "url": "https://www.city.hiroshima.lg.jp/faq/koseki/1001555/1001757.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "move": {
+    "id": "move",
+    "title": "広島市：転入届",
+    "url": "https://www.city.hiroshima.lg.jp/living/koseki/1003055/1025560/1003292.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "moving": {
+    "id": "moving",
+    "title": "広島市：引っ越しの手続き",
+    "url": "https://www.city.hiroshima.lg.jp/living/koseki/1003055/1025560/index.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "card": {
+    "id": "card",
+    "title": "広島市：マイナンバーカードの継続利用",
+    "url": "https://www.city.hiroshima.lg.jp/living/koseki/1003055/1003309.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "card90": {
+    "id": "card90",
+    "title": "東広島市：転入後のカード継続利用期限（全国共通の取扱い）",
+    "url": "https://www.city.higashihiroshima.lg.jp/soshiki/seikatsukankyo/4/8/3312.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "pension": {
+    "id": "pension",
+    "title": "日本年金機構：氏名・住所が変わったとき",
+    "url": "https://www.nenkin.go.jp/section/faq/seidozenpan/kisoban/henkotodoke/20140807.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "car": {
+    "id": "car",
+    "title": "国土交通省：自動車登録のよくある質問",
+    "url": "https://www.jidoushatouroku-portal.mlit.go.jp/jidousha/kensatoroku/faq/index.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "property": {
+    "id": "property",
+    "title": "法務省：住所等変更登記の義務化",
+    "url": "https://www.moj.go.jp/MINJI/minji05_00687.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "propertyfaq": {
+    "id": "propertyfaq",
+    "title": "法務省：住所等変更登記Q＆A",
+    "url": "https://www.moj.go.jp/MINJI/minji05_00694.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "nisa": {
+    "id": "nisa",
+    "title": "金融庁：NISAを知る",
+    "url": "https://www.fsa.go.jp/policy/nisa2/know/",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "ideco": {
+    "id": "ideco",
+    "title": "iDeCo公式：制度改正・手続きのお知らせ",
+    "url": "https://www.ideco-koushiki.jp/news/procedure/",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "medicaltax": {
+    "id": "medicaltax",
+    "title": "国税庁：医療費控除",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1120.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "selfmed": {
+    "id": "selfmed",
+    "title": "国税庁：セルフメディケーション税制",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1129.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "furusato": {
+    "id": "furusato",
+    "title": "国税庁：寄附金控除",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1150.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "lifetax": {
+    "id": "lifetax",
+    "title": "国税庁：生命保険料控除",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "spousetax": {
+    "id": "spousetax",
+    "title": "国税庁：配偶者控除",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1191.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "specialtax": {
+    "id": "specialtax",
+    "title": "国税庁：配偶者特別控除",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1195.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "gift": {
+    "id": "gift",
+    "title": "国税庁：贈与税がかかる場合",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/zoyo/4402.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "giftmarry": {
+    "id": "giftmarry",
+    "title": "国税庁：結婚・子育て資金の一括贈与",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/zoyo/4511.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "loan": {
+    "id": "loan",
+    "title": "国税庁：住宅借入金等特別控除",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1211-1.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "highcost": {
+    "id": "highcost",
+    "title": "協会けんぽ：高額療養費・世帯合算",
+    "url": "https://www.kyoukaikenpo.or.jp/benefit/high_cost_medical_expenses/002/index.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "birthmoney": {
+    "id": "birthmoney",
+    "title": "協会けんぽ：出産育児一時金",
+    "url": "https://www.kyoukaikenpo.or.jp/benefit/childbirth/002/index.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "maternity": {
+    "id": "maternity",
+    "title": "協会けんぽ：出産手当金",
+    "url": "https://www.kyoukaikenpo.or.jp/benefit/childbirth/001/index.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "leave": {
+    "id": "leave",
+    "title": "厚生労働省：育児休業等給付",
+    "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000135090_00001.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "rubella": {
+    "id": "rubella",
+    "title": "広島市：風しん抗体検査",
+    "url": "https://www.city.hiroshima.lg.jp/living/medical/1021221/1027985/1022972.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "hepatitis": {
+    "id": "hepatitis",
+    "title": "広島市：肝炎ウイルス検査",
+    "url": "https://www.city.hiroshima.lg.jp/living/medical/1021213/1003475.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "cancer": {
+    "id": "cancer",
+    "title": "広島市：健康診査・がん検診",
+    "url": "https://www.city.hiroshima.lg.jp/living/kenkou/1021215/1003184.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "consult": {
+    "id": "consult",
+    "title": "広島市：市民相談センター",
+    "url": "https://www.city.hiroshima.lg.jp/living/soudan/1025721/index.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "legal": {
+    "id": "legal",
+    "title": "広島市：弁護士による法律相談",
+    "url": "https://www.city.hiroshima.lg.jp/living/soudan/1025721/1003275.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "civil": {
+    "id": "civil",
+    "title": "広島市：民事相談",
+    "url": "https://www.city.hiroshima.lg.jp/living/soudan/1025721/1016740.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "fertility": {
+    "id": "fertility",
+    "title": "広島県：不妊検査・一般不妊治療費の助成",
+    "url": "https://www.pref.hiroshima.lg.jp/site/funin/kennsa.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "advanced": {
+    "id": "advanced",
+    "title": "広島県：特定不妊治療支援事業",
+    "url": "https://www.pref.hiroshima.lg.jp/site/funin/tokutei.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "loss": {
+    "id": "loss",
+    "title": "広島市：不妊・不育でお悩みの方へ",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1003057/1023793.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "mother": {
+    "id": "mother",
+    "title": "広島市：妊娠届・母子健康手帳",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1003057/1003488.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "prenatal": {
+    "id": "prenatal",
+    "title": "広島市：妊婦健康診査",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1003057/1025816/1003511.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "support": {
+    "id": "support",
+    "title": "広島市：妊婦支援給付金",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1003057/1025816/1032170.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "postcare": {
+    "id": "postcare",
+    "title": "広島市：産後ケア事業",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1021253/1025913/1023754.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "postcheck": {
+    "id": "postcheck",
+    "title": "広島市：産婦健康診査",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1003057/1025816/1023810.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "birth": {
+    "id": "birth",
+    "title": "広島市：子どもが生まれたとき",
+    "url": "https://www.city.hiroshima.lg.jp/language/yasashii/1033464/1033476.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "birthholiday": {
+    "id": "birthholiday",
+    "title": "東広島市：出生届の期限と閉庁日",
+    "url": "https://www.city.higashihiroshima.lg.jp/jpn/3/40144.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "allowance": {
+    "id": "allowance",
+    "title": "こども家庭庁：児童手当のご案内",
+    "url": "https://www.cfa.go.jp/policies/kokoseido/jidouteate/annai",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "childmedical": {
+    "id": "childmedical",
+    "title": "広島市：こども医療費補助制度",
+    "url": "https://www.city.hiroshima.lg.jp/living/medical/1021209/1027972/1003459.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "nearfamily": {
+    "id": "nearfamily",
+    "title": "広島市：三世代同居・近居支援",
+    "url": "https://www.city.hiroshima.lg.jp/living/community/1021315/1018432.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "reform": {
+    "id": "reform",
+    "title": "広島市：団地空き家リフォーム費補助",
+    "url": "https://www.city.hiroshima.lg.jp/living/sumai/1021346/1026338/1018591.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "renthelp": {
+    "id": "renthelp",
+    "title": "広島市：団地空き家家賃補助",
+    "url": "https://www.city.hiroshima.lg.jp/living/sumai/1021346/1026338/1018592.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "daycare": {
+    "id": "daycare",
+    "title": "広島市：保育園等の入園案内",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1021251/1025852/1003487.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "nurseryfee": {
+    "id": "nurseryfee",
+    "title": "広島市：保育料・副食費",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1021251/1025850/1003481.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "afterclass": {
+    "id": "afterclass",
+    "title": "広島市：放課後児童クラブ",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1021263/1043593.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "mirai": {
+    "id": "mirai",
+    "title": "みらいエコ住宅2026：注文住宅の対象要件",
+    "url": "https://mirai-eco2026.mlit.go.jp/new-house/",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "nogrant": {
+    "id": "nogrant",
+    "title": "広島市：結婚新生活支援事業の実施について",
+    "url": "https://www.city.hiroshima.lg.jp/faq/life/1001687/1028213/1002903.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "holidays": {
+    "id": "holidays",
+    "title": "内閣府：国民の祝日（2026・2027年）",
+    "url": "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "ur": {
+    "id": "ur",
+    "title": "UR賃貸住宅：U35割",
+    "url": "https://www.ur-net.go.jp/chintai/whats/system/u35/",
+    "checked": "2026-09-07",
+    "kind": "provider",
+    "note": ""
+  },
+  "company": {
+    "id": "company",
+    "title": "二人それぞれの就業規則・福利厚生の案内",
+    "url": "",
+    "checked": "",
+    "kind": "document",
+    "note": "勤務先ごとの制度です。人事窓口で対象・期限・書類を確認してください。"
+  },
+  "contract": {
+    "id": "contract",
+    "title": "契約書・保険証券・事業者の最新見積書",
+    "url": "",
+    "checked": "",
+    "kind": "document",
+    "note": "契約先やプランごとに条件が異なります。契約書・公式窓口で確認してください。"
+  },
+  "planning": {
+    "id": "planning",
+    "title": "ふたりの話し合いメモ",
+    "url": "",
+    "checked": "",
+    "kind": "planning",
+    "note": "手帳からの提案です。二人に合う方法を自由に決められます。"
+  },
+  "furigana": {
+    "id": "furigana",
+    "title": "法務省：戸籍にフリガナが記載されます",
+    "url": "https://www.moj.go.jp/MINJI/furigana/index.html",
+    "checked": "",
+    "kind": "official",
+    "note": "最新の受付・対象条件はリンク先で確認してください。"
+  },
+  "passport": {
+    "id": "passport",
+    "title": "外務省：パスポート",
+    "url": "https://www.mofa.go.jp/mofaj/toko/passport/",
+    "checked": "",
+    "kind": "official",
+    "note": "最新の受付・対象条件はリンク先で確認してください。"
+  },
+  "license": {
+    "id": "license",
+    "title": "広島県警察：運転免許",
+    "url": "https://www.pref.hiroshima.lg.jp/site/police/menkyo-index.html",
+    "checked": "",
+    "kind": "official",
+    "note": "最新の受付・対象条件はリンク先で確認してください。"
+  },
+  "training": {
+    "id": "training",
+    "title": "厚生労働省：教育訓練給付制度",
+    "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/jinzaikaihatsu/kyouiku.html",
+    "checked": "",
+    "kind": "official",
+    "note": "最新の受付・対象条件はリンク先で確認してください。"
+  },
+  "earthtax": {
+    "id": "earthtax",
+    "title": "国税庁：地震保険料控除",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1145.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "gifthouse": {
+    "id": "gifthouse",
+    "title": "国税庁：住宅取得等資金の贈与",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/zoyo/4508.htm",
+    "checked": "",
+    "kind": "official",
+    "note": "最新の受付・対象条件はリンク先で確認してください。"
+  },
+  "settlement": {
+    "id": "settlement",
+    "title": "国税庁：相続時精算課税",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4103.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "familywork": {
+    "id": "familywork",
+    "title": "国税庁：青色事業専従者給与・事業専従者控除",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2075.htm",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "will": {
+    "id": "will",
+    "title": "法務省：自筆証書遺言書保管制度",
+    "url": "https://www.moj.go.jp/MINJI/minji03_00051.html",
+    "checked": "",
+    "kind": "official",
+    "note": "最新の受付・対象条件はリンク先で確認してください。"
+  },
+  "notary": {
+    "id": "notary",
+    "title": "日本公証人連合会：公証役場の手続き",
+    "url": "https://www.koshonin.gr.jp/",
+    "checked": "",
+    "kind": "official",
+    "note": "最新の受付・対象条件はリンク先で確認してください。"
+  },
+  "window": {
+    "id": "window",
+    "title": "先進的窓リノベ2026事業",
+    "url": "https://window-renovation2026.env.go.jp/",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  },
+  "waterheater": {
+    "id": "waterheater",
+    "title": "給湯省エネ2026事業",
+    "url": "https://kyutou-shoene2026.meti.go.jp/",
+    "checked": "2026-09-07",
+    "kind": "official",
+    "note": ""
+  }
+}
