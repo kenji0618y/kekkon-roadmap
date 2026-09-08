@@ -95,7 +95,7 @@ async function api(path:string,token:string,init:RequestInit={}):Promise<Respons
 
 export async function createSecretGist(token:string,payload:GistPayload):Promise<string>{
   const body={
-    description:'ふたりの未来帖 · progress sync (secret)',
+    description:'Amityちゃんにきく · progress sync (secret)',
     public:false,
     files:{
       [GIST_FILENAME]:{content:JSON.stringify(payload)},

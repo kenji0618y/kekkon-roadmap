@@ -3,16 +3,6 @@ import type {Group, Status, Task} from '../lib/model'
 import {statusNames} from '../lib/model'
 import {phaseImage} from '../data/catalog'
 
-/** Relative positions matching the 4 built-in pads on lux/pregnancy-style cards. */
-const PAD_SLOTS: CSSProperties[] = [
-  {top: '12%', left: '8%'},
-  {top: '12%', right: '8%'},
-  {bottom: '14%', left: '8%'},
-  {bottom: '14%', right: '8%'},
-  {top: '42%', left: '6%'},
-  {top: '42%', right: '6%'},
-]
-
 function shortLabel(title: string) {
   const t = title.replace(/（.*?）/g, '').replace(/\(.*?\)/g, '').trim()
   return t.length > 8 ? `${t.slice(0, 7)}…` : t
@@ -70,9 +60,9 @@ export function StampIllustBoard({
         }).length
         const complete = ts.length > 0 && done === ts.length
         const image = phaseImage(g.id)
-        const onArt = ts.slice(0, 4)
-        const overflow = ts.slice(4)
         const selected = activeId === g.id
+        const cols = ts.length <= 1 ? 1 : 2
+        const gridStyle = {'--pad-cols': String(cols)} as CSSProperties
 
         return (
           <article
@@ -94,7 +84,8 @@ export function StampIllustBoard({
               </span>
             </button>
 
-            <div className="illust-frame">
+            <div className="illust-frame stamp-chrome">
+              <div className="stamp-chrome-mat" aria-hidden />
               <img
                 className="illust-art"
                 src={image}
@@ -102,58 +93,42 @@ export function StampIllustBoard({
                 loading="lazy"
                 decoding="async"
               />
-              <div className="illust-pads" role="group" aria-label={`${g.title}のスタンプ台`}>
-                {onArt.map((t, idx) => {
-                  const st = recordStatus(t.id)
-                  const slot = PAD_SLOTS[idx]
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      className={`stamp-pad on-art ${padClass(st)}`}
-                      style={slot}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onSelectGroup(g.id)
-                        onPressStamp(t.id)
-                      }}
-                      aria-label={`${t.title}（${statusAria(st)}）`}
-                    >
-                      <span className="stamp-pad-mark">{padMark(st)}</span>
-                      <span className="stamp-pad-label">{shortLabel(t.title)}</span>
-                    </button>
-                  )
-                })}
-                {ts.length === 0 && (
+              <div className="stamp-chrome-oval" aria-hidden />
+              <div className="stamp-chrome-corners" aria-hidden>
+                <i /><i /><i /><i />
+              </div>
+              <div
+                className="illust-pads-scroll"
+                role="group"
+                aria-label={`${g.title}のスタンプ台`}
+              >
+                {ts.length === 0 ? (
                   <span className="stamp-pad-empty">この設定では対象項目なし</span>
+                ) : (
+                  <div className="illust-pads-grid" style={gridStyle}>
+                    {ts.map((t) => {
+                      const st = recordStatus(t.id)
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          className={`stamp-pad in-frame ${padClass(st)}`}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onSelectGroup(g.id)
+                            onPressStamp(t.id)
+                          }}
+                          aria-label={`${t.title}（${statusAria(st)}）`}
+                        >
+                          <span className="stamp-pad-mark">{padMark(st)}</span>
+                          <span className="stamp-pad-label">{shortLabel(t.title)}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
                 )}
               </div>
             </div>
-
-            {overflow.length > 0 && (
-              <div className="stamp-pad-below" role="group" aria-label={`${g.title}の追加スタンプ`}>
-                <div className="stamp-pad-grid">
-                  {overflow.map((t) => {
-                    const st = recordStatus(t.id)
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        className={`stamp-pad ${padClass(st)}`}
-                        onClick={() => {
-                          onSelectGroup(g.id)
-                          onPressStamp(t.id)
-                        }}
-                        aria-label={`${t.title}（${statusAria(st)}）`}
-                      >
-                        <span className="stamp-pad-mark">{padMark(st)}</span>
-                        <span className="stamp-pad-label">{shortLabel(t.title)}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
 
             <p className="illust-hint">マスの白い枠を押して、スタンプを押す</p>
           </article>

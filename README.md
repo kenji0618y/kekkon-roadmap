@@ -1,4 +1,4 @@
-# ふたりの未来帖（結婚ロードマップ）
+# Amityちゃんにきく（結婚ロードマップ）
 
 広島市向けの結婚・新生活ハンドブック UI です。  
 公開 URL: **https://kenji0618y.github.io/kekkon-roadmap/**

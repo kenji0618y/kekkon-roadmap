@@ -184,6 +184,9 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
 
   const totals=useMemo(()=>moneyTotals(book),[book]);
   const hasReceived=useMemo(()=>Object.values(book.records).some(r=>r.moneyKind==='received'&&r.amount!==null&&r.status!=='na'),[book.records]);
+  const hasEstimate=useMemo(()=>Object.values(book.records).some(r=>r.moneyKind==='estimate'&&r.amount!==null&&r.status!=='na'),[book.records]);
+  const hasAvoided=useMemo(()=>Object.values(book.records).some(r=>(r.moneyKind==='monthlySaving'||r.moneyKind==='taxEstimate')&&r.amount!==null&&r.status!=='na'),[book.records]);
+  const avoidedTotal=totals.monthlySaving+totals.taxEstimate;
   const progressPct=actionable.length?Math.round(done.length/actionable.length*100):0;
 
   const weddingMetric=useMemo(()=>{
@@ -236,7 +239,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
       <header className="desk-titlebar">
         <div className="desk-title-left">
           <Gauge size={18} aria-hidden/>
-          <h1>結婚ロードマップ｜DESK</h1>
+          <h1>Amityちゃんにきく｜DESK</h1>
           <span className="desk-subtitle">{names}</span>
         </div>
         <div className="desk-title-right">
@@ -284,9 +287,14 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <div className="desk-metric-bar" aria-hidden><i style={{width:`${progressPct}%`}}/></div>
         </article>
         <article className="desk-metric">
-          <span className="desk-metric-label">受取記録</span>
+          <span className="desk-metric-label">得した記録</span>
           <strong className="desk-metric-value">{hasReceived?formatMoney(totals.received):'—'}{hasReceived&&<small>円</small>}</strong>
-          <span className="desk-metric-sub">入力した受取のみ集計</span>
+          <span className="desk-metric-sub">{hasEstimate?`見込み ${formatMoney(totals.estimate)}円（入力のみ）`:'入力した受取のみ · 未入力は —'}</span>
+        </article>
+        <article className="desk-metric">
+          <span className="desk-metric-label">損回避・節約</span>
+          <strong className="desk-metric-value">{hasAvoided?formatMoney(avoidedTotal):'—'}{hasAvoided&&<small>円</small>}</strong>
+          <span className="desk-metric-sub">月額節約＋税軽減の入力合計 · 未入力は —</span>
         </article>
         <article className={`desk-metric ${weddingMetric.tone?`tone-${weddingMetric.tone}`:''}`}>
           <span className="desk-metric-label">{weddingMetric.label}</span>
@@ -403,7 +411,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
 
       <div className="desk-footer-actions">
         <button type="button" className="desk-cta secondary" onClick={onGoJourney}>ロードマップを開く <ArrowRight size={15}/></button>
-        <p className="desk-footnote">金額は二人が入力した受取のみ。結婚新生活支援は市未実施のため賞品扱いしません。</p>
+        <p className="desk-footnote">金額は二人が各項目に入力した記録のみ（得した記録＝受取／損回避・節約＝月額節約＋税軽減）。未入力は —。結婚新生活支援は市未実施のため賞品扱いしません。</p>
       </div>
     </div>
   );

@@ -23,9 +23,9 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "wedding-washi.png", "desk-mascot.png", "amity-shark.png", "icons/apple-touch-icon.png"],
       manifest: {
-        name: "ふたりの未来帖",
-        short_name: "未来帖",
-        description: "広島市向け結婚ロードマップ／ふたりの未来帖。端末内に保存。",
+        name: "Amityちゃんにきく",
+        short_name: "Amity",
+        description: "広島市向け結婚ロードマップ／Amityちゃんにきく。端末内に保存。",
         theme_color: "#183645",
         background_color: "#f6f4ee",
         display: "standalone",

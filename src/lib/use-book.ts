@@ -238,6 +238,10 @@ export function useBook(_paused:boolean){
       }else if(action==='import'){
         book=structuredClone(payload.book as Book);
         revision=0;
+      }else if(action==='resetRecords'){
+        ensureBook();
+        // Clear stamp statuses / amounts / notes on task records only. Profile & memories stay.
+        book!.records={};
       }else{
         throw new Error('未対応の操作です。');
       }
