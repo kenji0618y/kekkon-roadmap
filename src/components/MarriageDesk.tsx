@@ -152,12 +152,13 @@ export type MarriageDeskProps={
   soonCount:number;
   today:string;
   hasBook:boolean;
+  syncStatus?:'off'|'ok'|'error'|'syncing';
   onOpenTask:(id:string)=>void;
   onOpenProfile:()=>void;
   onGoJourney:()=>void;
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,onOpenTask,onOpenProfile,onGoJourney}:MarriageDeskProps){
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoJourney}:MarriageDeskProps){
   const [clock,setClock]=useState(()=>japanClock());
   useEffect(()=>{
     const id=window.setInterval(()=>setClock(japanClock()),1000);
@@ -222,6 +223,11 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <span className="desk-subtitle">{names}</span>
         </div>
         <div className="desk-title-right">
+          {syncStatus!=='off'&&(
+            <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
+              {syncStatus==='syncing'?'SYNC…':syncStatus==='ok'?'SYNC':syncStatus==='error'?'SYNC!':'SYNC'}
+            </span>
+          )}
           <span className="desk-live" aria-label="ライブ"><i/><span>LIVE</span></span>
           <time className="desk-clock" dateTime={clock}>{clock}</time>
         </div>

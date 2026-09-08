@@ -70,6 +70,10 @@
 .desk-title-right{display:flex;align-items:center;gap:10px}
 .desk-live{display:inline-flex;align-items:center;gap:7px;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;border-radius:999px;padding:5px 11px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;letter-spacing:.12em}
 .desk-live i{width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 0 0 #10b981aa;animation:desk-pulse 1.6s ease-out infinite}
+.desk-sync-pill{font-size:10px;letter-spacing:.08em;font-weight:700;padding:3px 8px;border-radius:999px;border:1px solid #c5d0c4;color:#5d7a62;background:#eef3ea;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.desk-sync-pill.sync-ok{border-color:#9cbc9a;color:#3f6b48;background:#e5f0e4}
+.desk-sync-pill.sync-syncing{border-color:#b7c4d8;color:#3f5f8a;background:#e8eef8}
+.desk-sync-pill.sync-error{border-color:#d4a090;color:#8a4332;background:#f8ebe6}
 @keyframes desk-pulse{0%{box-shadow:0 0 0 0 #10b98188}70%{box-shadow:0 0 0 9px #10b98100}100%{box-shadow:0 0 0 0 #10b98100}}
 .desk-clock{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;font-variant-numeric:tabular-nums;color:var(--desk-ink);letter-spacing:.04em}
 .desk-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
