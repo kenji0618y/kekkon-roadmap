@@ -7,13 +7,15 @@ import {
   saveChatHistory,
   type ChatMessage,
 } from '../lib/desk-chat';
-import {askGrokResearch, loadGrokKey} from '../lib/amity-grok';
+import {askGrokResearch, hasBundledGrokKey, loadGrokKey} from '../lib/amity-grok';
 
 export type DeskChatPanelProps = {
   open: boolean;
   onClose: () => void;
   onOpenTask: (id: string) => void;
   onGoFind?: (keyword?: string) => void;
+  /** When true, render as full in-page panel (no modal/backdrop). */
+  embedded?: boolean;
 };
 
 function uid() {
@@ -23,13 +25,13 @@ function uid() {
 const WELCOME: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
-  text: 'Amityちゃんです。スタンプや手続き・期限・広島の制度、なんでも聞いてね。端末内の検索に加えて、設定にキーがあれば Grok で深掘りするよ。',
+  text: 'Amityちゃんです。スタンプや手続き・期限・広島の制度、なんでも聞いてね。端末内の検索に加えて、キーがあれば Grok で深掘りするよ。',
   at: 0,
 };
 
-const NO_KEY_TIP = '設定に xAI (Grok) APIキーを入れると深掘りできる';
+const NO_KEY_TIP = '設定に xAI (Grok) APIキーを入れると深掘りできる（ビルドにキーがある場合は不要）';
 
-export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPanelProps) {
+export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = false}: DeskChatPanelProps) {
   const titleId = useId();
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,16 +44,16 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPan
   });
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !embedded) return;
     const t = window.setTimeout(() => inputRef.current?.focus(), 80);
     return () => window.clearTimeout(t);
-  }, [open]);
+  }, [open, embedded]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !embedded) return;
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [open, msgs, busy]);
+  }, [open, embedded, msgs, busy]);
 
   useEffect(() => {
     if (msgs.length === 1 && msgs[0].id === 'welcome') return;
@@ -143,95 +145,115 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind}: DeskChatPan
     setMsgs([{...WELCOME, at: Date.now()}]);
   }
 
-  if (!open) return null;
+  if (!embedded && !open) return null;
+
+  const keyHint = loadGrokKey()
+    ? hasBundledGrokKey()
+      ? '端末内検索 · Grok 深掘り（ビルドキーまたは設定）'
+      : '端末内検索 · Grok 深掘り'
+    : '端末内検索 · 設定で Grok キー可';
+
+  const panel = (
+    <div className={`desk-chat-panel${embedded ? ' embedded' : ''}`}>
+      <header className="desk-chat-head">
+        <div className="desk-chat-title">
+          <img src="./desk-mascot.png" alt="" width={36} height={36} decoding="async" />
+          <div>
+            <h2 id={titleId}>Amityちゃんに聞く</h2>
+            <p>{keyHint}</p>
+          </div>
+        </div>
+        <div className="desk-chat-head-actions">
+          <button type="button" className="desk-chat-textbtn" onClick={reset}>
+            履歴クリア
+          </button>
+          {!embedded && (
+            <button type="button" className="desk-chat-iconbtn" onClick={onClose} aria-label="閉じる">
+              <X size={18} />
+            </button>
+          )}
+        </div>
+      </header>
+
+      <div className="desk-chat-list" ref={listRef} role="log" aria-live="polite">
+        {msgs.map((m) => (
+          <div key={m.id} className={`desk-chat-bubble ${m.role}`}>
+            <p>{m.text}</p>
+            {!!m.matches?.length && (
+              <ul className="desk-chat-matches">
+                {m.matches.map((hit) => (
+                  <li key={hit.id}>
+                    <button type="button" onClick={() => onOpenTask(hit.id)}>
+                      <strong>{hit.title}</strong>
+                      <span>{hit.snippet}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {!!m.suggestedKeywords?.length && (
+              <div className="desk-chat-suggest">
+                <span>探すタブの例：</span>
+                {m.suggestedKeywords.map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => {
+                      if (onGoFind) onGoFind(k);
+                      else void ask(k);
+                    }}
+                  >
+                    {k}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+        {busy && (
+          <div className="desk-chat-bubble assistant desk-chat-loading" role="status">
+            <LoaderCircle size={14} className="spin" aria-hidden />
+            <span>AmityがGrokで調べてる…</span>
+          </div>
+        )}
+      </div>
+
+      <form className="desk-chat-compose" onSubmit={onSubmit}>
+        <label className="sr-only" htmlFor="desk-chat-input">
+          質問
+        </label>
+        <input
+          id="desk-chat-input"
+          ref={inputRef}
+          value={input}
+          maxLength={200}
+          placeholder="例：転入届の期限は？／児童手当って？"
+          onChange={(e) => setInput(e.target.value)}
+          autoComplete="off"
+          disabled={busy}
+        />
+        <button type="submit" disabled={!canSend} aria-label="送信">
+          <Send size={16} />
+        </button>
+      </form>
+      <p className="desk-chat-foot">
+        <MessageCircle size={12} aria-hidden /> 金額の円は捏造しない · 結婚新生活は賞品扱いしない
+      </p>
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="desk-chat desk-chat-embedded" role="region" aria-labelledby={titleId}>
+        {panel}
+      </div>
+    );
+  }
 
   return (
     <div className="desk-chat" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="desk-chat-backdrop" onClick={onClose} aria-hidden="true" />
-      <div className="desk-chat-panel">
-        <header className="desk-chat-head">
-          <div className="desk-chat-title">
-            <img src="./desk-mascot.png" alt="" width={36} height={36} decoding="async" />
-            <div>
-              <h2 id={titleId}>Amityちゃんに聞く</h2>
-              <p>端末内検索 · 任意で Grok 深掘り</p>
-            </div>
-          </div>
-          <div className="desk-chat-head-actions">
-            <button type="button" className="desk-chat-textbtn" onClick={reset}>
-              履歴クリア
-            </button>
-            <button type="button" className="desk-chat-iconbtn" onClick={onClose} aria-label="閉じる">
-              <X size={18} />
-            </button>
-          </div>
-        </header>
-
-        <div className="desk-chat-list" ref={listRef} role="log" aria-live="polite">
-          {msgs.map((m) => (
-            <div key={m.id} className={`desk-chat-bubble ${m.role}`}>
-              <p>{m.text}</p>
-              {!!m.matches?.length && (
-                <ul className="desk-chat-matches">
-                  {m.matches.map((hit) => (
-                    <li key={hit.id}>
-                      <button type="button" onClick={() => onOpenTask(hit.id)}>
-                        <strong>{hit.title}</strong>
-                        <span>{hit.snippet}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {!!m.suggestedKeywords?.length && (
-                <div className="desk-chat-suggest">
-                  <span>探すタブの例：</span>
-                  {m.suggestedKeywords.map((k) => (
-                    <button
-                      key={k}
-                      type="button"
-                      onClick={() => {
-                        if (onGoFind) onGoFind(k);
-                        else void ask(k);
-                      }}
-                    >
-                      {k}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-          {busy && (
-            <div className="desk-chat-bubble assistant desk-chat-loading" role="status">
-              <LoaderCircle size={14} className="spin" aria-hidden />
-              <span>AmityがGrokで調べてる…</span>
-            </div>
-          )}
-        </div>
-
-        <form className="desk-chat-compose" onSubmit={onSubmit}>
-          <label className="sr-only" htmlFor="desk-chat-input">
-            質問
-          </label>
-          <input
-            id="desk-chat-input"
-            ref={inputRef}
-            value={input}
-            maxLength={200}
-            placeholder="例：転入届の期限は？／結婚新生活って？"
-            onChange={(e) => setInput(e.target.value)}
-            autoComplete="off"
-            disabled={busy}
-          />
-          <button type="submit" disabled={!canSend} aria-label="送信">
-            <Send size={16} />
-          </button>
-        </form>
-        <p className="desk-chat-foot">
-          <MessageCircle size={12} aria-hidden /> 金額の円は捏造しない · 結婚新生活は賞品扱いしない
-        </p>
-      </div>
+      {panel}
     </div>
   );
 }

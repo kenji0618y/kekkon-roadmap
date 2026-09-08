@@ -1,4 +1,7 @@
-/** Amityちゃん × Grok (xAI) research helper. Key stays in localStorage only. */
+/** Amityちゃん × Grok (xAI) research helper.
+ * Key: localStorage override, else build-time VITE_AMITY_GROK_KEY (from gitignored .env*.local).
+ * Never commit raw keys to tracked files. Pages bundles may embed the Vite key — rotate/limit on xAI.
+ */
 
 export const GROK_KEY_LS = 'amity-grok-key';
 export const GROK_BASE_LS = 'amity-grok-base';
@@ -14,12 +17,27 @@ export const AMITY_GROK_SYSTEM = [
   '回答は簡潔に（目安3〜8文）。箇条書き可。断定しすぎず、窓口確認を促す。',
 ].join('\n');
 
-export function loadGrokKey(): string {
+function bundledGrokKey(): string {
   try {
-    return localStorage.getItem(GROK_KEY_LS)?.trim() || '';
+    const v = (import.meta.env.VITE_AMITY_GROK_KEY as string | undefined)?.trim();
+    return v || '';
   } catch {
     return '';
   }
+}
+
+export function hasBundledGrokKey(): boolean {
+  return !!bundledGrokKey();
+}
+
+export function loadGrokKey(): string {
+  try {
+    const fromLs = localStorage.getItem(GROK_KEY_LS)?.trim() || '';
+    if (fromLs) return fromLs;
+  } catch {
+    /* ignore */
+  }
+  return bundledGrokKey();
 }
 
 export function saveGrokKey(key: string) {

@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST） / 最終公開コミット目安: `e0f2fef`
+最終更新: 2026-09-09（JST）
 
 ## 公開 URL
 
@@ -33,11 +33,12 @@
 
 ## ナビ構成（現状）
 
-左から: **デスク** → ロードマップ → 期限と予定 → 記念手帳 → 制度を探す → ふたりの設定
+左から: **聞く** → ロードマップ → 期限と予定 → 記念手帳 → 制度を探す → ふたりの設定
 
-- デスク: 司令室 UI + Amity ナビ + 得した記録 / 損回避・節約 + チャット
-- ロードマップ: イラストマス + スタンプ（枠は帳内にクリップ）
+- **聞く（旧デスク）:** Amity チャット全画面（マスコット＋チャット）。司令室ダッシュボードは廃止。得した記録／損回避はチャット上の細いストリップのみ。
+- ロードマップ: **スタンプ帳／ボード**（マス枠内にパッド）。**スクロールギャラリーにはしない**。追加イラストは `public/phases/gen-*.png`。
 - CHECK FIRST は **OUR JOURNEY の下**
+- 設定: 「今の制度を調べる」（Grok / 探すタブ導線）あり
 
 ## 同期（Gist）
 
@@ -51,9 +52,9 @@
 ## Amity × Grok
 
 - `src/lib/amity-grok.ts` — xAI `https://api.x.ai/v1`、モデル `grok-3`
-- キー localStorage: `amity-grok-key`（設定画面で入力）
-- チャット: `DeskChatPanel` + 端末内 tasks 検索 → キーがあれば Grok 深掘り
-- ユーザーは xAI API キーを Grok Bot 側の secret として提供済み（**値はリポに書かない・この MD にも書かない**）。登録をアプリ初期値に載せる作業は **未完了**（下記）
+- キー優先順位: **localStorage `amity-grok-key`** → なければ **`import.meta.env.VITE_AMITY_GROK_KEY`**（`.env.production.local` 等・**gitignore**）
+- チャット: `DeskChatPanel`（embedded）+ 端末内 tasks 検索 → キーがあれば Grok 深掘り
+- **注意:** Pages 静的 JS に Vite キーが焼かれると抽出可能。xAI 側で制限・ローテ推奨。生キーを `docs/` や git 追跡ファイルに書かない。
 
 ## リセット
 
@@ -64,18 +65,18 @@
 
 ```
 src/Notebook.tsx          # シェル・タブ
-src/components/MarriageDesk.tsx
-src/components/DeskChatPanel.tsx
-src/components/StampIllustBoard.tsx
-src/lib/use-book.ts       # localStorage + Gist sync
+src/components/MarriageDesk.tsx   # 聞く＝チャット専用
+src/components/DeskChatPanel.tsx  # embedded / modal
+src/components/StampIllustBoard.tsx  # ボード配置（スクロールギャラリー禁止）
+src/lib/use-book.ts
 src/lib/gist-sync.ts
 src/lib/amity-grok.ts
-src/lib/desk-chat.ts      # オンデバイス検索
+src/lib/desk-chat.ts
 src/data/tasks.json / groups.json / sources.json / phase-images.json
-public/phases/            # マスイラスト
-public/desk-mascot.png    # Amity サメ
+public/phases/            # マスイラスト（gen-*.png 追加済み）
+public/desk-mascot.png
 docs/MERGE_OVERLAPS.md
-docs/HANDOFF.md           # 本ファイル
+docs/HANDOFF.md
 ```
 
 ## ビルド・公開手順
@@ -83,44 +84,27 @@ docs/HANDOFF.md           # 本ファイル
 ```bash
 cd /path/to/kekkon-roadmap
 npm ci
+# optional: write gitignored .env.production.local with VITE_AMITY_GROK_KEY=...
 npm run build
 # dist を gh-pages へ（例）
 npx gh-pages -d dist
-# または既存のデプロイスクリプトに従う。dist 直下に .nojekyll を置くこと
+# dist 直下に .nojekyll を置くこと
 ```
 
 `gh` は `kenji0618y` でログイン済みの環境あり。`workflow` scope なし。
 
-## ユーザー要望 — 進行中 / 未完了（2026-09-09）
+## ユーザー要望 — 進捗（2026-09-09）
 
-優先して実装すること:
-
-1. **「Amityちゃんにきく」はチャットだけ**  
-   デスクの司令室ダッシュボード等を削り、聞く体験をチャット中心にする（タブ名/ブランドと整合）。
-
-2. **Grok API を登録済みにする**  
-   ユーザーは xAI キーを secret 提供済み。アプリ側でキー入力なしでも Grok が使えるようにする。  
-   **注意:** GitHub Pages の静的 JS に生キーを焼くと誰でも抽出できる。推奨は  
-   - ビルド時のみ `.env*.local`（gitignore）から注入しつつ利用制限を xAI 側でかける、または  
-   - 小さなプロキシ / 秘密の設定経路  
-   生キーを `docs/` や git 追跡ファイルに書かない。
-
-3. **写真はスタンプ帳グリッドではなくスクロールで並べ、画像を増やす**  
-   新規イラスト生成済み（box 上、未取り込みの可能性あり）:  
-   - `/home/box/sand-data/agents/0a106625-f2e9-46f5-9fd1-91b0c0cfa40b/assets/826d85fd41c8825a4e0deb87cffb874d0a434ccdd901ae764c41b4b74ecc48a9.png`（filing 系）  
-   - `.../0a28d85cd127a718e16408c489d9213a024f10d81bd7402b905643834d9b4d60.png`（pregnant 系）  
-   - `.../682bbc018dc9540ccb4bd6dd6a2bf05e04887da9e5b76521b61c2ceb6b0327d7.png`（cohabit 系）  
-   - `.../5f45c19a9e8d27839a760a2e746caed49ca4df04840c61a8e372f9dba80dd8ad.png`（birth 系）  
-   - `.../adc6a2353d7bf16eff9fd082f50675c4f3cb3855053a516851dec6250ff1801e.png`（daycare 系）  
-   → `public/` へコピーし、横 or 縦スクロールギャラリーに変更（スタンプ押し UX は維持しつつ帳グリッド感を減らす）。
-
-4. **設定に「今の制度を調べる」項目**  
-   Amity/Grok または既存検索への導線（クエリ入力 → 深掘り / 制度を探す）。
+1. **「Amityちゃんにきく」はチャットだけ** — **DONE**（ナビ「聞く」、司令室UI削除、薄い得/損ストリップ）
+2. **Grok API を登録済みにする** — **コード DONE**（`VITE_AMITY_GROK_KEY` フォールバック）。ビルド環境に `XAI_API_KEY` が無い場合は `.env.production.local` を再投入すること。キーはコミットしない。
+3. **写真はスタンプ帳ボードのまま＋画像を増やす** — **DONE**（**スクロールギャラリーにはしない**。`gen-*.png` を取り込み `phase-images.json` で分散）
+4. **設定に「今の制度を調べる」** — **DONE**（Grok調べ + 探すタブへ）
 
 ## 意図的にやらないこと
 
 - 国の結婚新生活をメインの得として推す
 - お祝い演出の復活
+- スタンプを横スクロール・ギャラリー化する
 - Origin / Cloud Agents 必須化（プラン制約あり）
 - 他エージェントの秘密・トークンをチャットや MD に貼る
 
@@ -129,4 +113,4 @@ npx gh-pages -d dist
 - ユーザー: Kenji Kadomoto（GitHub `kenji0618y`）
 - タイムゾーン: Asia/Tokyo
 
-引き継いだら、上記「未完了」を実装 → `npm run build` → `gh-pages` 更新 → スマホでハードリロード確認。
+引き継いだら、要望を確認 → `npm run build` → `gh-pages` 更新 → スマホでハードリロード確認。
