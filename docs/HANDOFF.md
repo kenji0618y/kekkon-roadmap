@@ -4,7 +4,7 @@
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· 再点検: 主要パス補強 · Lean式なし=非表示のみ · YEARLY docs↔src/data 同一検査 · SoT=`src/data` · Pages≈lean5
+最終更新: 2026-09-09（JST）· 再々点検: FAQ件数・YEARLY表記・box-secrets/Claude表記を修正 · SoT=`src/data` · Pages≈lean5
 
 ## 公開 URL
 
@@ -230,14 +230,16 @@ npx gh-pages -d dist
 45. **友人 handoff カード** — デスクに3行（①URL ②ホーム画面追加 ③区・式なしオンボード）＋ Pages URL コピー。
 
 ### 残リスク・未解決
-- Grok 実通信はバンドル鍵／設定鍵と xAI 可用性に依存
+- Grok 実通信はバンドル鍵／設定鍵と xAI 可用性（クレジット）に依存。アプリから購入不可 → https://console.x.ai/
 - 6パッド時はイラスト中央がやや狭まる（意図的なハイブリッド）
-- Claude remote との drift: ローカル main を正として前進。スマホはハードリロード推奨
+- **正本は常に GitHub `main`（このリポ）。** 他ツール／別クローンとの差は `main` に合わせて解消。アプリ更新後はスマホでハードリロード
 - （解消）`.view-switch` CSS 削除済み
+- （解消）continuity docs の SoT／Vite／HashRouter 誤解（`e257c2f` / `c63a1bb`）
 
 ## 直近コミット目安
-- （本更新）continuity docs: AI_START_HERE + HISTORY; README/HANDOFF pointers
-- （直前）lean5: ceremony hide / pair backup-Gist / desk slim / credits link / friend handoff
+- （本更新）docs recheck: FAQ 658・YEARLY 表記・clone-AI 向け罠の除去
+- （直前）`c63a1bb` Lean hide≠delete + YEARLY identity in verify:seed；`e257c2f` SoT=`src/data`
+- （直前）lean5 `8a90775`: ceremony hide / pair backup-Gist / desk slim / credits link / friend handoff
 - （直前）prune+add: decor fold / onboarding / near deadlines / local-only / PWA prompt / nav scroll
 - （直前）remaining gaps: headline/tomorrow/money seed + CONTENT_GUARD/verify:seed
 - （直前）app-seed restore: deadlines/exclude/home/phases + square subtitle/chips + UI
@@ -258,7 +260,7 @@ npx gh-pages -d dist
 | why | 150 (stamps-v2) | 137 tasks | TaskForm カード |
 | miss | 150 | 137 | TaskForm カード |
 | window | 150 | 137 | TaskForm カード |
-| faq pairs | 681 | 656（MERGE_OVERLAPS 吸収済・drop 13 stamps の余剰は非タスク化） | TaskForm FAQ |
+| faq pairs | 681 | **658**（≥650 · MERGE_OVERLAPS 吸収済。`npm run verify:seed` が正） | TaskForm FAQ |
 | absolute deadlines | 10 next_absolute | 10 in `deadlines.json` | 期限タブ「制度・カレンダー締切」 |
 | relative deadlines | 6 | 6 | 同タブ・相対リスト |
 | exclude | 36 | 36 | デスク HomeInsightPanels「もらえない制度と理由」 |
@@ -274,7 +276,7 @@ npx gh-pages -d dist
 | money_in on tasks | 110 stamps / 0 tasks | **99**（マッチ＋吸収） | TaskForm「シード金額メモ」入 |
 | money_out on tasks | 56 stamps / 0 tasks | **54** | TaskForm「シード金額メモ」出 |
 | track / eligibility | 150 / 0 | **137** / **137** | track バッジ・eligibility≠always ラベル |
-| YEARLY_UPDATE.md | seed only | `docs/` + settings「毎年更新メモ」 | 原文のみ |
+| YEARLY_UPDATE.md | seed only | `src/data/`（設定 UI import）+ `docs/`（同一必須・verify） | settings「毎年更新メモ」 |
 | F13（stamp-only） | 未吸収 | **F2 に why/miss/faq 吸収** | 旧エコホーム警告 |
 
 ### Remaining-gap checklist（e9d5bae 後 → 本更新で FIXED）
@@ -284,7 +286,7 @@ npx gh-pages -d dist
 | headline UI | data=1 / UI=false | data=1 / UI=**true** |
 | money_in/out on tasks | stamps only / tasks=0 | tasks mi=99 mo=54 / UI=**true** |
 | track/eligibility/hidden_if | stamps only | on tasks + UI badges |
-| YEARLY_UPDATE | seed only | docs + settings |
+| YEARLY_UPDATE | seed only | src/data + docs（同一）+ settings |
 | 13 stamp-only ids | FAQ absorbed; F13 not | F13 → F2; 12 MERGE keepers already |
 
 ### 絶対日付 10（Pages 掲載）
@@ -308,5 +310,6 @@ npx gh-pages -d dist
 
 平文の xAI キーを Pages に焼くと **GitHub secret scanning が push を拒否**する。
 
-**現行:** `src/lib/amity-grok-bundle.ts` に XOR+分割 Base64 のシファーのみコミット。実行時デコード。設定欄はオーバーライド用。
-再生成: box-secrets の `XAI_API_KEY` からローカルスクリプトで bundle を作り直す（平文をログしない）。
+**現行:** `src/lib/amity-grok-bundle.ts` に XOR+分割 Base64 のシファーのみコミット。実行時デコード。設定欄（localStorage）はオーバーライド用。**`VITE_*` は読まない。**
+
+**バンドル再生成:** Kenji／運用者のみ。平文キーを git / Pages / チャット / ログに出さない。クローンした AI は **再生成を必須にしない**（キーが無いときは設定 UI のオーバーライドか端末内フォールバックでよい）。「box-secrets」等のローカル秘密ストアは **この GitHub リポに含まれない**。

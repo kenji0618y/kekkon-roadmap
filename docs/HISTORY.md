@@ -79,7 +79,7 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 
 ## Anti-patterns checklist
 
-- [ ] Treating `/workspace/marriage-research/` as required (not in this repo)  
+- [ ] Treating `/workspace/marriage-research/` or `box-secrets` as required (not in this repo)  
 - [ ] Wiring Grok via `VITE_*` env (app does not read it; use localStorage / bundle)  
 - [ ] Replacing `tasks.json` from a thinner notebook export  
 - [ ] Deleting MarriageDesk because Amity is chat-only  

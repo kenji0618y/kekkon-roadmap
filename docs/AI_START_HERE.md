@@ -11,8 +11,9 @@ Do **not** rediscover product history by chatting with Kenji.
 | Pages URL | https://kenji0618y.github.io/kekkon-roadmap/ |
 | Repo | https://github.com/kenji0618y/kekkon-roadmap |
 | Owner | Kenji Kadomoto · GitHub `kenji0618y` · timezone **Asia/Tokyo** |
-| Docs tip (main) | 2026-09-09 continuity SoT + recheck (SoT=`src/data`, Lean hide≠delete, YEARLY sync). **App** on Pages ≈ lean5 `8a90775` |
-| App Pages | https://kenji0618y.github.io/kekkon-roadmap/ · branch `gh-pages` (manual `npx gh-pages -d dist`) |
+| Docs tip (main) | 2026-09-09 recheck · SoT=`src/data` · Lean hide≠delete · YEARLY sync guard |
+| Live app | Pages branch `gh-pages` ≈ lean5 `8a90775`（docs-only commits do **not** redeploy the app） |
+| Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
 
 ## Read order (mandatory)
 
