@@ -4,7 +4,7 @@
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· bugfix: Lean空マス・Amity端末内もinScope・空章EmptyState · SoT=`src/data`
+最終更新: 2026-09-09（JST）· tip `5398ec3` · handoff ready · deploy後は index の JS が 200 か確認（CDNずれ注意）
 
 ## 公開 URL
 
@@ -129,6 +129,8 @@ npm run build                # prebuild → verify:seed
 npx gh-pages -d dist
 # dist 直下に .nojekyll を置くこと
 # Grok キーは Vite env では読まない。設定 UI の localStorage、または amity-grok-bundle.ts
+# 公開後: Pages の index.html が指す assets/index-*.js が 200 か確認（CDNが古いHTMLのまま新JS未配置だと壊れる）
+# スマホはハードリロード or PWA「更新があります」
 ```
 
 `gh` は `kenji0618y` でログイン済みの環境あり。`workflow` scope なし。

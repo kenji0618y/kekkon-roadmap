@@ -86,3 +86,4 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 - [ ] Adding a journey “一覧” escape hatch for overflow stamps  
 - [ ] Committing plaintext `xai-` / PAT / `.env*.local`  
 - [ ] Claiming done without `npm run verify:seed` output  
+- [ ] Shipping `gh-pages` without confirming the new `assets/index-*.js` returns 200  

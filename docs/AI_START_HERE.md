@@ -12,7 +12,7 @@ Do **not** rediscover product history by chatting with Kenji.
 | Repo | https://github.com/kenji0618y/kekkon-roadmap |
 | Owner | Kenji Kadomoto · GitHub `kenji0618y` · timezone **Asia/Tokyo** |
 | Docs tip (main) | 2026-09-09 recheck · SoT=`src/data` · Lean hide≠delete · YEARLY sync guard |
-| Live app | Pages branch `gh-pages` ≈ lean5 `8a90775`（docs-only commits do **not** redeploy the app） |
+| Live app | Pages `gh-pages`（lean5 `8a90775` + その後の bugfix。**docs-only では再デプロイしない**） |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
 
 ## Read order (mandatory)
@@ -85,6 +85,7 @@ npx gh-pages -d dist         # ensure dist has .nojekyll
 - Continuity markdown (`docs/*`, README) → commit + **push `origin main` only**.  
 - Rebuild + `gh-pages` **only when the shipped app / asset paths change** — not for docs-only edits.  
 - GitHub Actions workflow push often fails (OAuth missing `workflow` scope) → manual `gh-pages` is fine.
+- **After app deploy:** open Pages, confirm `index.html`’s `assets/index-*.js` returns **HTTP 200** (CDN can briefly serve old HTML while the new hashed JS is missing → blank/old app). Phone: hard reload or tap PWA「更新があります」.
 
 ## External (not in-repo)
 
