@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {ArrowDownToLine,ArrowRight,ArrowUpRight,BookHeart,CalendarDays,Check,ChevronRight,ClipboardCopy,Cloud,CloudCheck,Download,ExternalLink,Heart,House,Info,LayoutGrid,List,LoaderCircle,MapPin,MessageCircle,Plus,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,X} from 'lucide-react';
+import {ArrowDownToLine,ArrowRight,ArrowUpRight,BookHeart,CalendarDays,Check,ChevronRight,ClipboardCopy,Cloud,CloudCheck,Download,ExternalLink,Heart,House,Info,LoaderCircle,MapPin,MessageCircle,Plus,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,X} from 'lucide-react';
 import {toast} from 'sonner';
 import {Tabs,TabsContent,TabsList,TabsTrigger} from './components/ui/tabs';
 import {Sheet,SheetContent,SheetDescription,SheetHeader,SheetTitle} from './components/ui/sheet';
@@ -26,7 +26,7 @@ const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制
 const nav=[{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:House},{id:'deadlines',label:'期限と予定',short:'期限',icon:CalendarDays},{id:'memories',label:'記念手帳',short:'記念',icon:BookHeart},{id:'find',label:'制度を探す',short:'探す',icon:Search},{id:'settings',label:'ふたりの設定',short:'設定',icon:Settings2}];
 type Modal='profile'|'pair'|'memory'|null;
 export default function FutureNotebook(){
- const [tab,setTab]=useState('journey'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[mapView,setMapView]=useState('board'),[chatOpen,setChatOpen]=useState(false);
+ const [tab,setTab]=useState('journey'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[chatOpen,setChatOpen]=useState(false);
  const [taskId,setTaskId]=useState<string|null>(null),[modal,setModal]=useState<Modal>(null),[dirty,setDirty]=useState(false),[pendingClose,setPendingClose]=useState<(()=>void)|null>(null);
  const [query,setQuery]=useState(''),[category,setCategory]=useState('all'),[scopeOnly,setScopeOnly]=useState(false),[statusFilter,setStatusFilter]=useState('all');
  const [resetOpen,setResetOpen]=useState(false),[resetTyped,setResetTyped]=useState(''),[resetAck,setResetAck]=useState(false);
@@ -87,11 +87,11 @@ export default function FutureNotebook(){
  {!data.book&&data.phase==='ready'&&<div className="start-note"><div><strong>二人だけの手帳をはじめよう</strong><p>呼び名や予定を入れると、今の二人に合わせて表示できます。</p></div><Action onClick={openProfile}>手帳を整える<ArrowRight/></Action></div>}
  <div className="next-actions">{next.length?next.map((t,i)=><button className="next-action" key={t.id} onClick={()=>openTask(t.id)}><span className="next-num">0{i+1}</span><span><small>{nearestDeadline(t,p,book.records[t.id])?'期限・予定を確認':typeLabels[t.type]}</small><strong>{t.title}</strong></span><ArrowUpRight size={19}/></button>):<div className="small-empty"><Sparkles size={20}/><p>今の候補はひと通り確認できました。結果待ちや、次の楽しみを手帳で確かめましょう。</p></div>}</div>
  <div className="progress-strip"><div><span>これまでの一歩</span><strong>{done.length}<small> / {actionable.length} 項目</small></strong></div><Progress value={actionable.length?done.length/actionable.length*100:0} aria-label="対象項目の完了率"/><span className="stamp-mini">歩</span></div></section></div>
- <div className="section-heading"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2></div><div className="view-switch" role="group" aria-label="表示方法"><button className={mapView==='board'?'active':''} onClick={()=>setMapView('board')} aria-label="ロードマップで見る"><LayoutGrid size={16}/></button><button className={mapView==='list'?'active':''} onClick={()=>setMapView('list')} aria-label="一覧で見る"><List size={17}/></button></div></div>
+ <div className="section-heading"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2></div></div>
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
- <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.en}</span><h3>{activeChapter.description}</h3></div><span className="hint">イラストの角のスタンプを押して進める。多い章はカードが分かれる。</span></div>
+ <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.en}</span><h3>{activeChapter.description}</h3></div><span className="hint">イラストの縁のスタンプを押して進める。1マスに最大6つ。多い章はカードが分かれる。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:<>
- {mapView==='board'?<StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} onSelectGroup={setGroupId} onPressStamp={openTask}/>:<div className="chapter-list">{scoped.filter(t=>t.chapter===chapter).map(t=>renderTask(t,true))}</div>}
+ <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} onSelectGroup={setGroupId} onPressStamp={openTask}/>
 
  </>}
  </section>

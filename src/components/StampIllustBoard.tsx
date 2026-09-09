@@ -2,18 +2,20 @@ import type {Status, Group, Task} from '../lib/model'
 import {statusNames} from '../lib/model'
 import {phaseImage} from '../data/catalog'
 
-/** Max stamps per card — overflow splits into another on-image card (sub-mass) */
-const MAX_CORNER_PADS = 4
+/** Max stamps per card (4 corners + mid-left/mid-right). Overflow → sub-mass split */
+const MAX_CORNER_PADS = 6
 
-/** Prefer bottom corners when few stamps so the scene stays open */
+/** Prefer bottom corners when few stamps so the scene stays open; 5–6 use edge mids */
 function cornerSlot(count: number, index: number) {
   const map: Record<number, number[]> = {
     1: [3],
     2: [2, 3],
     3: [0, 2, 3],
     4: [0, 1, 2, 3],
+    5: [0, 1, 2, 3, 4],
+    6: [0, 1, 2, 3, 4, 5],
   }
-  return (map[count] || map[4])[index] ?? index
+  return (map[count] || map[6])[index] ?? index
 }
 
 function tinyLabel(title: string) {

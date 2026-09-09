@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· サブマス分割 + FAB/Sheet 回帰修正
+最終更新: 2026-09-09（JST）· ハイブリッド縁パッド MAX=6 + 一覧トグル削除
 
 ## 公開 URL
 
@@ -37,7 +37,7 @@
 
 **Amityちゃんにきく**は全タブ右下の丸 FAB（`overflow:hidden` + `clip-path:circle`）→ 前景チャット。
 
-- ロードマップ: **スタンプ帳／ボード**。1マス＝1枚の大きいイラスト（フル表示）。四隅パッド。**多い章はサブマス分割**（同じ絵のカードが 1/2・2/2）。見出し→別UI一覧は主導線にしない。白グリッドで絵を覆わない。横スクロールギャラリー禁止。
+- ロードマップ: **スタンプ帳／ボードのみ**（view-switch 一覧なし）。1マス＝1枚の大きいイラスト（フル表示）。縁パッド最大 **6**（四隅 + mid-left/mid-right）。**>6 はサブマス分割**（同じ絵のカードが 1/2・2/2）。「探す」タブで一覧検索。白グリッドで絵を覆わない。横スクロールギャラリー禁止。
 - CHECK FIRST は **OUR JOURNEY の下**
 - 設定: 「今の制度を調べる」+ Grok キー上書き欄
 
@@ -122,22 +122,26 @@ npx gh-pages -d dist
 3. Grok: `amity-grok-bundle.ts` 難読化デコード（平文 `xai-` を git/Pages に置かない）。設定のキー欄は上書き用
 4. スタンプ帳を一度「イラスト主役」に作り直し（commit `fc54aac` 付近）: 1マス＝1絵、四隅小パッド
 
-### 完了（本更新）
-5. **サブマス分割（案 A）** — `StampIllustBoard` で実行時 chunk（`MAX_CORNER_PADS=4`）。超過グループは同じ phase 絵のカードに分割（例: 「婚姻届 1/2」）。全スタンプは絵の上。旧 `pickCornerTasks` / キャプション「· 一覧」削除。Notebook ヒントを「イラストの角のスタンプを押して進める。多い章はカードが分かれる。」に更新。ボード上の `square-detail` は非表示（一覧タブは残存）
+### 完了（前回）
+5. **サブマス分割（案 A）** — `StampIllustBoard` で実行時 chunk。超過グループは同じ phase 絵のカードに分割。全スタンプは絵の上。旧 `pickCornerTasks` / キャプション「· 一覧」削除。
 6. **回帰修正（FAB / TaskForm Sheet）** — Sheet/Dialog/Alert の z-index を FAB(70)・desk-chat(90) より上へ（sheet 110 / dialog 120 / alert 130）。タスク Sheet が FAB に隠れない。FAB は chat または task Sheet 開中は `hidden`
+
+### 完了（本更新）
+7. **ハイブリッド縁パッド MAX=6** — `MAX_CORNER_PADS=6`。`cornerSlot` に 5–6（c4 mid-left / c5 mid-right）。CSS `.stamp-pad.corner.c4`/`.c5`（縦中央・min ~44px tap）。>6 は従来どおりサブマス分割。アート優先・一覧エスケープなし。
+8. **一覧 view-switch 削除** — Notebook から `mapView` / LayoutGrid·List トグル / `chapter-list` ボード分岐を削除。ロードマップは常に `StampIllustBoard`。「探す」タブと TaskForm Sheet は維持。ヒントを「縁のスタンプ・1マス最大6・多い章はカード分割」に更新。
 
 ### 残リスク・未解決
 - Grok 実通信はバンドル鍵／設定鍵と xAI 可用性に依存
-- サブマス MAX=4（ハイブリッドで縁6は未採用）。必要なら定数変更
+- 6パッド時はイラスト中央がやや狭まる（意図的なハイブリッド）
 - Claude remote との drift: ローカル main を正として前進。スマホはハードリロード推奨
-- view-switch の List 一覧は残存（ボード主導線ではない）
+- `.view-switch` CSS は未使用のまま残存（無害）。必要なら後で掃除
 
 ## 直近コミット目安
-- （本更新）サブマス分割 + FAB/Sheet z-index 回帰修正
+- （本更新）pads MAX=6 + journey list view-switch 削除
+- `6a172af` — サブマス分割 + FAB/Sheet z-index
 - `f9c9843` — HANDOFF: stamp overflow must stay on-image
 - `fc54aac` — art-first stamp board
 - `67e1f81` — header tabs, FAB clip, Grok bundle
-- `05843f8` — Amity FAB
 
 
 ## Grok API キーについて（重要・2026-09-09）
