@@ -63,7 +63,7 @@ Stamps: art-first squares, corner pads **MAX=6**, overflow = **sub-mass split** 
 
 ### Lean / ceremony (do not delete tasks)
 - Default friend profile leans **式なし** (`ceremony==='no'`).
-- Then `isCeremonyTask` (eligibility/need ceremony / id `W*`) is **hidden from UI scopes** — **kept in `src/data/tasks.json`**. Switching ceremony back must re-show them. Never delete W* to “clean Lean”.
+- Then `isCeremonyTask` (eligibility/need ceremony / id `W*`) is **hidden from UI scopes** — **kept in `src/data/tasks.json`**. Switching ceremony back must re-show them. Never delete W* to “clean Lean”. Stamp board must **not** show an empty 挙式 card when all its stamps are hidden.
 - First-run: `OnboardingSheet`. PWA update: `PwaUpdateBanner`. Friend how-to card: desk `MarriageDesk`.
 
 ## Famous past mistakes (do not repeat)

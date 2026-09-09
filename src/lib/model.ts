@@ -23,7 +23,7 @@ export const chapters=[{id:'prepare',label:'結婚準備',en:'THE BEGINNING',kan
 /** Ceremony / wedding-stamp tasks (W* + eligibility/need). Kept in tasks.json; lean-hidden when ceremony==='no'. */
 export function isCeremonyTask(t:Task){
   if(t.eligibility==='ceremony')return true;
-  if(t.need.includes('ceremony'))return true;
+  if((t.need||[]).includes('ceremony'))return true;
   if(/^W\d+$/i.test(t.id))return true;
   return false;
 }

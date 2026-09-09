@@ -48,7 +48,7 @@ export default function FutureNotebook(){
  const scoped=useMemo(()=>tasks.filter(t=>inScope(t,p)),[p]);
  const actionable=scoped.filter(t=>book.records[t.id]?.status!=='na'),done=actionable.filter(t=>book.records[t.id]?.status==='done');
  const activeChapter=chapters.find(c=>c.id===chapter)!;
- const chapterGroups=groups.filter(g=>g.chapter===chapter);
+ const chapterGroups=groups.filter(g=>g.chapter===chapter&&scoped.some(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na'));
  const activeGroup=chapterGroups.find(g=>g.id===groupId)||chapterGroups[0];
  const task=taskId?taskById[taskId]:null;
  const dates=useMemo(()=>scoped.filter(t=>!['done','na'].includes(book.records[t.id]?.status||'todo')).flatMap(task=>taskDeadlines(task,p,book.records[task.id]).map(deadline=>({task,deadline}))).sort((a,b)=>(a.deadline.date||'9999').localeCompare(b.deadline.date||'9999')),[scoped,p,book.records]);
@@ -65,7 +65,7 @@ export default function FutureNotebook(){
  const forceClose=()=>{setDirty(false);setTaskId(null);setModal(null);};
  const openTask=(id:string)=>{setDirty(false);setTaskId(id);};
  const openProfile=()=>{callClose(()=>{setTaskId(null);setDirty(false);setModal('profile');});};
- const selectChapter=(id:string)=>{setChapter(id);setGroupId(groups.find(g=>g.chapter===id)?.id||'');};
+ const selectChapter=(id:string)=>{setChapter(id);setGroupId(groups.find(g=>g.chapter===id&&scoped.some(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na'))?.id||groups.find(g=>g.chapter===id)?.id||'');};
  const newMemory=(kind:Memory['kind']='memory')=>{setMemoryDraft({id:crypto.randomUUID(),date:today,title:kind==='monthly'?`${Number(today.slice(5,7))}月のふたり会議`:'',text:kind==='monthly'?'今月うれしかったこと：\n\nありがとうを伝えたいこと：\n\n来月の楽しみ：\n\n見直したい予定・お金のこと：\n':'',kind,complete:false});setModal('memory');setDirty(false);};
  const saveRecord=async(r:TaskRecord)=>{if(!task)return;const result=await data.mutate({action:'record',id:task.id,record:r},r.status==='done'?'記録を保存しました':'ふたりの記録を保存しました');if(result)forceClose();};
  const saveProfile=async(profile:Profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'))forceClose();};
@@ -101,7 +101,7 @@ export default function FutureNotebook(){
  <header className="masthead site-header"><div className="masthead-inner"><button className="brand" onClick={()=>setTab('desk')} aria-label="Amityちゃんにきく ホーム"><span className="brand-seal">結</span><span className="wordmark">Amityちゃんにきく<small>AMITY CHAN NI KIKU · 広島</small></span></button><div className="header-right"><span className="city-tag"><MapPin size={15}/>広島市{p.ward!=='未設定'?` ${p.ward}`:''}</span><button className="pair-pill" onClick={()=>setModal('pair')}><Users size={16}/><span>{data.members.length===2?'二人の手帳':'ふたりで使う'}</span></button><span className="save-status header-save" role="status">{data.busy?<><LoaderCircle className="spin" size={14}/>保存中</>:data.phase==='loading'?<>読み込み中…</>:data.phase==='error'?<>接続を確認</>:data.book?<><CloudCheck size={15}/>この端末に保存済み</>:<>まだ手帳を始めていません</>}</span></div></div>
  <div className="nav-wrap"><TabsList className="main-nav" aria-label="メインメニュー">{nav.map(n=><TabsTrigger key={n.id} value={n.id}><n.icon/><span className="nav-label-full">{n.label}</span><span className="nav-label-short">{n.short}</span>{n.id==='deadlines'&&soon.length>0&&<i className="nav-dot"/>}</TabsTrigger>)}</TabsList></div></header>
  <main className="workspace" id="main-content">
- {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p>{data.phase==='signin'?<a href="/signin-with-chatgpt?return_to=%2F" target="_top">ログインする</a>:<button onClick={()=>void data.refresh()}>再読み込み</button>}</div>}
+ {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p><button onClick={()=>void data.refresh()}>再読み込み</button></div>}
  <TabsContent value="desk" className="tab-surface">
  <div className="welcome-line"><div><p className="eyebrow">COMMAND DESK</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">司令室 HUD と次のアクション（1ブロック）。スタンプはマップ、締切は期限、時期は時期タブ。金額の詳細は記念へ。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} localOnlyMode={localOnlyMode} onOpenTask={openTask} onOpenProfile={openProfile} onGoJourney={()=>setTab('journey')} onOpenSettings={()=>setTab('settings')} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('institutional-deadlines')?.scrollIntoView({behavior:'smooth',block:'start'}));}} onGoFind={(kw)=>{if(kw)setQuery(kw);setTab('find');}} onAskAmity={()=>setChatOpen(true)}/>

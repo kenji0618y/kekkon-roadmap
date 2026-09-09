@@ -49,7 +49,9 @@ function statusAria(status: Status | undefined) {
 
 /** Split a group's tasks into cards of ≤MAX pads (sub-mass split). */
 export function chunkTasksForCards(ts: Task[], maxPads = MAX_CORNER_PADS): Task[][] {
-  if (ts.length === 0) return [[]]
+  // Lean / inScope may hide every stamp in a group (e.g. 挙式 when ceremony==='no').
+  // Do not emit an empty illustration card.
+  if (ts.length === 0) return []
   if (ts.length <= maxPads) return [ts]
   const chunks: Task[][] = []
   for (let i = 0; i < ts.length; i += maxPads) {

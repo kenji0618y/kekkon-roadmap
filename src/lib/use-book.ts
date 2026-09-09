@@ -52,7 +52,7 @@ function localMember(book:Book|null){
 
 export function useBook(_paused:boolean){
   const [snapshot,setSnapshot]=useState<Snapshot>({book:null,revision:0,members:[],slot:0});
-  const [phase,setPhase]=useState<'loading'|'ready'|'error'|'signin'>('loading');
+  const [phase,setPhase]=useState<'loading'|'ready'|'error'>('loading');
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[savedAt,setSavedAt]=useState('');
   const [syncStatus,setSyncStatus]=useState<SyncStatus>(()=>readSyncConfig().enabled?'ok':'off');
   const [lastSyncAt,setLastSyncAt]=useState('');
