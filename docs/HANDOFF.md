@@ -1,7 +1,10 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
+> **First file for incoming AI:** [`docs/AI_START_HERE.md`](./AI_START_HERE.md)  
+> **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
+
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· lean5（式なし非表示・pair=backup/Gist・desk slim・Grok credits案内・友人handoff）
+最終更新: 2026-09-09（JST）· continuity docs（AI_START_HERE / HISTORY）+ lean5（式なし非表示・pair=backup/Gist・desk slim・Grok credits案内・友人handoff）
 
 ## 公開 URL
 
@@ -101,6 +104,8 @@ src/data/tasks.json / groups.json / sources.json / phase-images.json
 src/data/deadlines.json / exclude.json / home.json / phases.json / sugoroku.json
 public/phases/            # マスイラスト（gen-*.png 追加済み）
 public/desk-mascot.png
+docs/AI_START_HERE.md   # incoming AI first file
+docs/HISTORY.md         # 2026-09 decision log + famous mistakes
 docs/MERGE_OVERLAPS.md  # drop→keep マッピング（本復元で吸収済み）
 docs/HANDOFF.md
 docs/CONTENT_GUARD.md
@@ -225,7 +230,8 @@ npx gh-pages -d dist
 - （解消）`.view-switch` CSS 削除済み
 
 ## 直近コミット目安
-- （本更新）lean5: ceremony hide / pair backup-Gist / desk slim / credits link / friend handoff
+- （本更新）continuity docs: AI_START_HERE + HISTORY; README/HANDOFF pointers
+- （直前）lean5: ceremony hide / pair backup-Gist / desk slim / credits link / friend handoff
 - （直前）prune+add: decor fold / onboarding / near deadlines / local-only / PWA prompt / nav scroll
 - （直前）remaining gaps: headline/tomorrow/money seed + CONTENT_GUARD/verify:seed
 - （直前）app-seed restore: deadlines/exclude/home/phases + square subtitle/chips + UI
