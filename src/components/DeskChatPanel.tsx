@@ -8,7 +8,7 @@ import {
   saveChatHistory,
   type ChatMessage,
 } from '../lib/desk-chat';
-import {askGrokResearch, GROK_CREDITS_LIMIT_JA, hasBundledGrokKey, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
+import {askGrokResearch, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, hasBundledGrokKey, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
 import {markGrokLocalOnly, readGrokLocalOnlyFlag, GROK_MODE_EVENT} from '../lib/grok-mode';
 
 export type DeskChatPanelProps = {
@@ -142,7 +142,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
           setLocalOnly(true);
         }
         const chatText = credits
-          ? GROK_CREDITS_LIMIT_JA
+          ? `${GROK_CREDITS_LIMIT_JA}\n\nクレジットを増やす（アプリでは購入不可）→ ${GROK_CREDITS_CONSOLE_URL}`
           : `Grokに聞けなかったよ（${grok.error}）。上の端末内の答えを見てね。キーや通信を設定で確認して。`;
         toast.error(credits ? GROK_CREDITS_LIMIT_JA : `Grokに聞けなかったよ（${grok.error}）`, {
           duration: 7000,
@@ -193,6 +193,10 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
             {localOnly && (
               <span className="desk-local-only-chip chat-chip" title="Grok深掘りなし・端末内案内のみ">
                 端末内のみモード
+                {' '}
+                <a className="desk-credits-link" href={GROK_CREDITS_CONSOLE_URL} target="_blank" rel="noopener noreferrer">
+                  クレジットを増やす（xAI）
+                </a>
               </span>
             )}
           </div>

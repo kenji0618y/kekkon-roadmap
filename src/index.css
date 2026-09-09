@@ -723,3 +723,16 @@
   .site-header .main-nav [data-slot=tabs-trigger] svg{width:15px;height:15px}
   .pwa-update-banner{bottom:max(12px,env(safe-area-inset-bottom));font-size:12px}
 }
+
+
+/* Friend handoff + credits + pair legacy (2026-09-09) */
+.desk-friend-handoff{margin-bottom:12px}
+.desk-friend-steps{margin:0 0 10px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:#3f5d48;line-height:1.55}
+.desk-friend-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.desk-friend-url{flex:1;min-width:0;font-size:11px;padding:8px 10px;background:#f4f7f1;border:1px solid #d9e3d4;border-radius:6px;color:#4a6352;word-break:break-all}
+.desk-friend-copy{display:inline-flex;align-items:center;gap:6px;min-height:36px;font-size:12px}
+.desk-credits-link{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;color:#0f766e;text-decoration:underline;text-underline-offset:2px}
+.desk-local-only-chip{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 0}
+.pair-legacy-fold{margin-top:14px;border:1px dashed #d5dcd1;border-radius:6px;padding:10px 12px;background:#fafbf6}
+.pair-legacy-fold>summary{cursor:pointer;font-size:12px;font-weight:700;color:#6a7c6c}
+.pair-legacy-fold[open]>summary{margin-bottom:8px}

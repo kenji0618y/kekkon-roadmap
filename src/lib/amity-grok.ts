@@ -10,9 +10,13 @@ export const GROK_BASE_LS = 'amity-grok-base';
 export const DEFAULT_GROK_BASE = 'https://api.x.ai/v1';
 export const DEFAULT_GROK_MODEL = 'grok-3';
 
+/** App cannot buy credits — open xAI console / docs. */
+export const GROK_CREDITS_CONSOLE_URL = 'https://console.x.ai/';
+export const GROK_CREDITS_DOCS_URL = 'https://docs.x.ai/';
+
 /** User-facing copy when xAI returns 403 credits / spending-limit. */
 export const GROK_CREDITS_LIMIT_JA =
-  'Grokの利用枠（クレジット）が上限です。xAIコンソールで枠を増やすか、設定で別キーを入れてね。いまは端末内の案内で答えるよ。';
+  'Grokの利用枠（クレジット）が上限です。このアプリからは購入できません。xAIコンソール（https://console.x.ai/）で枠を増やすか、設定で別キーを入れてね。いまは端末内の案内で答えるよ。';
 
 export const GROK_ERROR_CREDITS = 'credits-limit';
 

@@ -1,8 +1,14 @@
 import {useEffect,useMemo,useState} from 'react';
-import {ArrowRight,Gauge,MessageCircle} from 'lucide-react';
+import {ArrowRight,ClipboardCopy,Gauge,MessageCircle} from 'lucide-react';
+import {toast} from 'sonner';
 import {chapters,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
 import {difference,formatMoney,moneyTotals,validDate} from '../lib/dates';
 import {absoluteDeadlines,groups} from '../data/catalog';
+import {GROK_CREDITS_CONSOLE_URL} from '../lib/amity-grok';
+import {readGrokLocalOnlyFlag} from '../lib/grok-mode';
+
+/** Public Pages URL for friend handoff (copy button). */
+export const FRIEND_HANDOFF_URL = 'https://kenji0618y.github.io/kekkon-roadmap/';
 
 const typeLabels={procedure:'手続き',benefit:'給付',tax:'税',investment:'資産',contract:'契約',conversation:'対話'} as const;
 const typeColors:Record<string,string>={procedure:'#3b82f6',benefit:'#10b981',tax:'#f59e0b',investment:'#8b5cf6',contract:'#ef4444',conversation:'#ec4899'};
@@ -260,7 +266,12 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         </div>
         <div className="desk-title-right">
           {localOnlyMode&&(
-            <span className="desk-local-only-chip" title="Grok深掘りなし・端末内案内のみ">端末内のみモード</span>
+            <span className="desk-local-only-chip" title="Grok深掘りなし・端末内案内のみ">
+              端末内のみモード
+              {readGrokLocalOnlyFlag()==='credits-limit'&&(
+                <a className="desk-credits-link" href={GROK_CREDITS_CONSOLE_URL} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}>クレジットを増やす（xAI）</a>
+              )}
+            </span>
           )}
           {syncStatus!=='off'&&(
             <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
@@ -361,58 +372,79 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         </section>
       )}
 
-      <div className="desk-main-grid">
-        <section className="desk-card desk-ridge-card">
-          <div className="desk-card-head"><span className="desk-dot"/>ロードマップ進捗 · Ridge</div>
-          <div className="desk-ridge-body">
-            <ul className="desk-ridge-stats">
-              {stages.map(s=>(
-                <li key={s.id}>
-                  <span>{s.kanji} {s.label}</span>
-                  <strong>{s.total?`${Math.round(s.ratio*100)}%`:'—'}</strong>
-                  <small>{s.done}/{s.total||'—'}</small>
-                </li>
-              ))}
-            </ul>
-            <div className="desk-ridge-plot">
-              <StageRidge stages={stages}/>
-              <div className="desk-ridge-callout" aria-hidden>
-                <span>P[+DONE]</span>
-                <strong>{progressPct}%</strong>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="desk-card desk-log-card">
-          <div className="desk-card-head"><span className="desk-dot"/>活動ログ · Activity</div>
-          <div className="desk-log" role="list">
-            {activity.length?activity.map(a=>{
-              const meta=statusTag[a.status]||{tag:'EVNT',tone:'gray'};
-              return (
-                <button type="button" className="desk-log-row" key={a.id} role="listitem" onClick={()=>onOpenTask(a.id)}>
-                  <span className="desk-log-time">{activityStamp(a.at,today)}</span>
-                  <span className={`desk-tag tone-${meta.tone}`}>{meta.tag}</span>
-                  <span className="desk-log-text">{a.title}<small>{statusNames[a.status]}</small></span>
-                </button>
-              );
-            }):(
-              <div className="desk-empty">まだ記録の変化がありません。ロードマップで一歩進めるとここに流れます。</div>
-            )}
-          </div>
-        </section>
-      </div>
+      <section className="desk-card desk-friend-handoff" aria-label="友人への渡し方">
+        <div className="desk-card-head"><span className="desk-dot"/>友人への渡し方（3行）</div>
+        <ol className="desk-friend-steps">
+          <li>①このURLを開く</li>
+          <li>②ホーム画面に追加</li>
+          <li>③初回オンボードで区・式なしを設定</li>
+        </ol>
+        <div className="desk-friend-actions">
+          <code className="desk-friend-url">{FRIEND_HANDOFF_URL}</code>
+          <button
+            type="button"
+            className="desk-cta secondary desk-friend-copy"
+            onClick={()=>void(async()=>{
+              try{await navigator.clipboard.writeText(FRIEND_HANDOFF_URL);toast.success('URLをコピーしました');}
+              catch{toast.error('コピーできませんでした。URLを長押しでコピーしてください。');}
+            })}
+          >
+            <ClipboardCopy size={14} aria-hidden/>URLをコピー
+          </button>
+        </div>
+      </section>
 
       <div className="desk-decor-fold">
         {!showDecor?(
           <button type="button" className="desk-more-viz" onClick={()=>setShowDecor(true)}>
-            くわしく見る · Chord / Lattice / Network
+            くわしく見る · Ridge / Activity / Chord / Lattice / Network
           </button>
         ):(
           <>
             <div className="desk-decor-toolbar">
-              <span className="hint">装飾ビジュアル（進捗の補助）</span>
+              <span className="hint">進捗の補助ビジュアル（Ridge・Activity・装飾）</span>
               <button type="button" className="desk-linkish" onClick={()=>setShowDecor(false)}>閉じる</button>
+            </div>
+            <div className="desk-main-grid">
+              <section className="desk-card desk-ridge-card">
+                <div className="desk-card-head"><span className="desk-dot"/>ロードマップ進捗 · Ridge</div>
+                <div className="desk-ridge-body">
+                  <ul className="desk-ridge-stats">
+                    {stages.map(s=>(
+                      <li key={s.id}>
+                        <span>{s.kanji} {s.label}</span>
+                        <strong>{s.total?`${Math.round(s.ratio*100)}%`:'—'}</strong>
+                        <small>{s.done}/{s.total||'—'}</small>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="desk-ridge-plot">
+                    <StageRidge stages={stages}/>
+                    <div className="desk-ridge-callout" aria-hidden>
+                      <span>P[+DONE]</span>
+                      <strong>{progressPct}%</strong>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section className="desk-card desk-log-card">
+                <div className="desk-card-head"><span className="desk-dot"/>活動ログ · Activity</div>
+                <div className="desk-log" role="list">
+                  {activity.length?activity.map(a=>{
+                    const meta=statusTag[a.status]||{tag:'EVNT',tone:'gray'};
+                    return (
+                      <button type="button" className="desk-log-row" key={a.id} role="listitem" onClick={()=>onOpenTask(a.id)}>
+                        <span className="desk-log-time">{activityStamp(a.at,today)}</span>
+                        <span className={`desk-tag tone-${meta.tone}`}>{meta.tag}</span>
+                        <span className="desk-log-text">{a.title}<small>{statusNames[a.status]}</small></span>
+                      </button>
+                    );
+                  }):(
+                    <div className="desk-empty">まだ記録の変化がありません。ロードマップで一歩進めるとここに流れます。</div>
+                  )}
+                </div>
+              </section>
             </div>
             <div className="desk-lower-grid">
               <section className="desk-card">

@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· prune+add（装飾折りたたみ・初回オンボーディング・近い期限・端末内のみ・PWA更新・ナビ横スクロール）
+最終更新: 2026-09-09（JST）· lean5（式なし非表示・pair=backup/Gist・desk slim・Grok credits案内・友人handoff）
 
 ## 公開 URL
 
@@ -209,6 +209,15 @@ npx gh-pages -d dist
 39. **モバイル7タブ** — 横スクロール nav（≈390px で usable）、short ラベル維持。
 40. **PWA 更新バナー** — `registerType: prompt` + `useRegisterSW`「更新があります。再読み込み」。
 
+
+
+### 完了（lean5 remaining · 本更新）
+41. **Lean no-ceremony 非表示** — `isCeremonyTask`（eligibility===ceremony / need ceremony / id `W*`）。`profile.ceremony==='no'` のとき `inScope` / scoped / actionable / スタンプ板 / next-actions / find 既定から除外。`tasks.json` は削除しない（式ありに戻すと再表示）。
+42. **Pair モーダル** — クラウド招待を前面から削除。「端末内＋バックアップ／Gist」明示。主ボタン＝バックアップ書き出し／設定 Gist。レガシー join は details のみ。
+43. **Desk さらにスリム** — 主表示＝progress / 得した・損回避 / 次アクション（HomeInsight）/ 近い絶対期限 / 端末内のみ chip。Ridge・Activity も「くわしく見る」折りたたみへ。
+44. **Grok credits 案内** — アプリでは購入不可。`GROK_CREDITS_CONSOLE_URL`（https://console.x.ai/）へリンク／ボタン。JP 上限メッセージ維持。設定に深掘り＝クレジット必要の注記。
+45. **友人 handoff カード** — デスクに3行（①URL ②ホーム画面追加 ③区・式なしオンボード）＋ Pages URL コピー。
+
 ### 残リスク・未解決
 - Grok 実通信はバンドル鍵／設定鍵と xAI 可用性に依存
 - 6パッド時はイラスト中央がやや狭まる（意図的なハイブリッド）
@@ -216,7 +225,8 @@ npx gh-pages -d dist
 - （解消）`.view-switch` CSS 削除済み
 
 ## 直近コミット目安
-- （本更新）prune+add: decor fold / onboarding / near deadlines / local-only / PWA prompt / nav scroll
+- （本更新）lean5: ceremony hide / pair backup-Gist / desk slim / credits link / friend handoff
+- （直前）prune+add: decor fold / onboarding / near deadlines / local-only / PWA prompt / nav scroll
 - （直前）remaining gaps: headline/tomorrow/money seed + CONTENT_GUARD/verify:seed
 - （直前）app-seed restore: deadlines/exclude/home/phases + square subtitle/chips + UI
 - （直前）stamps-v2 content restore: why/miss/window/FAQ + MERGE_OVERLAPS absorption

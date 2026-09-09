@@ -20,5 +20,30 @@ export type Task={id:string,title:string,summary:string,steps:string[],questions
 export const eligibilityLabels:Record<string,string>={always:'いつも表示',child:'子あり・予定向け',company:'会社員・公務員向け',buy:'住まい購入検討時',ceremony:'式あり向け',self:'自営業向け'};
 export type Group={id:string,title:string,short:string,kanji:string,chapter:string,ids:string[],subtitle?:string|null,chips?:string[]};
 export const chapters=[{id:'prepare',label:'結婚準備',en:'THE BEGINNING',kanji:'結',description:'大切な日を迎える準備を。'},{id:'life',label:'新生活',en:'OUR EVERYDAY',kanji:'暮',description:'住まい、名前、ふたりの暮らし。'},{id:'annual',label:'毎年の見直し',en:'YEAR BY YEAR',kanji:'実',description:'制度と契約を、今の暮らしに合わせる。'},{id:'child',label:'子育て',en:'A NEW CHAPTER',kanji:'育',description:'必要になった時に、ひとつずつ。'},{id:'home',label:'住まい',en:'A PLACE FOR US',kanji:'住',description:'住まいの計画と、使える制度を確認。'},{id:'care',label:'もしもの備え',en:'PEACE OF MIND',kanji:'守',description:'安心のために、今できる準備。'}];
-export function inScope(t:Task,p:Profile){for(const n of t.need){if(n==='company'&&!['unknown','company','public'].includes(p.employment1)&&!['unknown','company','public'].includes(p.employment2))return false;if(n==='self'&&p.employment1!=='unknown'&&p.employment2!=='unknown'&&p.employment1!=='self'&&p.employment2!=='self')return false;if(n==='ceremony'&&p.ceremony==='no')return false;if(n==='move'&&p.move==='no')return false;if(n==='car'&&p.car==='no')return false;if(n==='foreign'&&p.foreign==='no')return false;if(n==='buy'&&p.home==='rent')return false;if(n==='rent'&&['buying','owned'].includes(p.home))return false;if(n==='child'&&['none','unknown'].includes(p.child))return false;}if(t.stage&&p.child!=='unknown'){const stage={none:0,someday:1,pregnant:2,born:3}[p.child];if(t.stage>stage)return false;}return true;}
+/** Ceremony / wedding-stamp tasks (W* + eligibility/need). Kept in tasks.json; lean-hidden when ceremony==='no'. */
+export function isCeremonyTask(t:Task){
+  if(t.eligibility==='ceremony')return true;
+  if(t.need.includes('ceremony'))return true;
+  if(/^W\d+$/i.test(t.id))return true;
+  return false;
+}
+export function inScope(t:Task,p:Profile){
+  if(p.ceremony==='no'&&isCeremonyTask(t))return false;
+  for(const n of t.need){
+    if(n==='company'&&!['unknown','company','public'].includes(p.employment1)&&!['unknown','company','public'].includes(p.employment2))return false;
+    if(n==='self'&&p.employment1!=='unknown'&&p.employment2!=='unknown'&&p.employment1!=='self'&&p.employment2!=='self')return false;
+    if(n==='ceremony'&&p.ceremony==='no')return false;
+    if(n==='move'&&p.move==='no')return false;
+    if(n==='car'&&p.car==='no')return false;
+    if(n==='foreign'&&p.foreign==='no')return false;
+    if(n==='buy'&&p.home==='rent')return false;
+    if(n==='rent'&&['buying','owned'].includes(p.home))return false;
+    if(n==='child'&&['none','unknown'].includes(p.child))return false;
+  }
+  if(t.stage&&p.child!=='unknown'){
+    const stage={none:0,someday:1,pregnant:2,born:3}[p.child];
+    if(t.stage>stage)return false;
+  }
+  return true;
+}
 export function eligibilityNote(t:Task,p:Profile){if(t.need.includes('company'))return '勤務先の規程と、各自の加入制度を確認してください。';if(['A必6','C他1','C他7','D3'].includes(t.id))return p.work==='dual'?'二人の働き方・各自の所得・加入条件を別々に確認します。':'扶養・税の控除・勤務先の手当は、それぞれの条件を確認します。';if(['benefit','tax'].includes(t.type))return '候補として表示しています。すべての対象条件を確認してから申請してください。';return 'お二人に必要か、公式案内と現在の状況を確認しましょう。';}
