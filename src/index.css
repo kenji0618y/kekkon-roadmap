@@ -460,6 +460,12 @@
 .book-footer{display:flex;justify-content:center;padding:18px 12px 28px;font-size:11px;color:#809089;border-top:0}
 .book-footer p{margin:0}
 
+@media(max-width:1200px){
+  .site-header .main-nav[data-slot]{gap:10px}
+  .nav-label-full{display:none}
+  .nav-label-short{display:inline}
+  .site-header .main-nav [data-slot=tabs-trigger]{font-size:12px;gap:6px}
+}
 @media(max-width:1050px){
   .site-header .nav-wrap{width:calc(100% - 50px)}
 }
@@ -495,14 +501,15 @@
     height:48px;
     display:flex;
     flex-direction:column;
-    gap:2px;
-    font-size:10px;
+    gap:1px;
+    font-size:9px;
     min-width:0;
     flex:1;
     color:#b7c6cb;
     border-bottom:0;
     border-top:0;
     border-radius:8px;
+    padding:0 1px;
   }
   .site-header .main-nav [data-slot=tabs-trigger][data-state=active]{
     border-bottom:0;

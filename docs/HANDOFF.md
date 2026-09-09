@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· 司令室 HUD 復元 · Amity chat-only ≠ remove desk HUD
+最終更新: 2026-09-09（JST）· タブIA分割（デスク / マップ / 期限 / 時期）· Amity chat-only ≠ remove desk HUD
 
 ## 公開 URL
 
@@ -43,15 +43,25 @@
 
 ## ナビ構成（現状）
 
-メインタブ（ロードマップ / 期限 / 記念 / 探す / 設定）は **ヘッダー（masthead）内・上部 sticky**。モバイルも下部固定ではなく上部。
+メインタブは **ヘッダー（masthead）内・上部 sticky**。モバイルも下部固定ではなく上部。  
+**原則: タブ名と無関係なコンテンツは載せない**（ラベル一致）。
 
-**Amityちゃんにきく**は全タブ右下の丸 FAB（`overflow:hidden` + `clip-path:circle`）→ 前景チャットのみ（t53u/t58u）。**Amityをchat-onlyにしたこと ≠ 司令室 HUD を消すこと。**
+**タブ順（左→右）・既定＝デスク:**
 
-- **結婚デスク｜司令室 HUD**（`MarriageDesk`）: ロードマップタブ最上段。メトリクス／Ridge・Activity・Chord・Lattice・Network。金額は `book.records` 入力のみ（未入力は —）。制度絶対期限カウントは `deadlines.json` の `next_absolute`。シード hero / money は SeedContentPanels 側。ダーク HUD は `.desk-hud`。
-- ロードマップ: 司令室の下に今日の一歩 → **スタンプ帳／ボード**（view-switch 一覧なし）。1マス＝1枚の大きいイラスト。縁パッド最大 **6**（四隅 + mid-left/mid-right）。**>6 はサブマス分割**。「探す」タブで一覧検索。白グリッドで絵を覆わない。横スクロールギャラリー禁止。
-- CHECK FIRST は **OUR JOURNEY の下**
-- SeedContentPanels（collapsible）・CONTENT_GUARD / `verify:seed` は維持
-- 設定: 「今の制度を調べる」+ Grok キー上書き欄
+| id | ラベル（short） | 中身 |
+|----|-----------------|------|
+| `desk` | デスク | `MarriageDesk` 司令室 HUD + 今日の一歩 + `HomeInsightPanels`（headline/hero/tomorrow/lies/exclude/talk） |
+| `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + CHECK FIRST + 準備/新生活マイルストーンのみ。HUD・シード長文なし |
+| `deadlines` | 期限と予定（期限） | `InstitutionalDeadlines` + 個人タイムライン／ICS。ホームエッセイなし |
+| `phases` | 時期と出来事（時期） | `PhasesPanel`（9時期・48出来事）専用 |
+| `memories` | 記念手帳（記念） | 記念メモ + ユーザー入力金額集計 + 月次ふたり会議導線 |
+| `find` | 制度を探す（探す） | 検索のみ |
+| `settings` | ふたりの設定（設定） | プロフィール／Gist／Grok／YEARLY_UPDATE／リセット |
+
+**Amityちゃんにきく**は全タブ右下の丸 FAB → 前景チャットのみ。**Amityをchat-onlyにしたこと ≠ 司令室 HUD を消すこと。** HUD は **デスク**タブ最上段。
+
+- スタンプ: 1マス＝1絵、縁パッド最大 **6**、**>6 はサブマス分割**。横スクロールギャラリー禁止。一覧は「探す」。
+- SeedContentPanels マウント: HomeInsight→デスク、Phases→時期、InstitutionalDeadlines→期限。`verify:seed` / CONTENT_GUARD 維持。
 
 ## 同期（Gist）
 
@@ -79,7 +89,7 @@
 
 ```
 src/Notebook.tsx          # シェル・タブ
-src/components/MarriageDesk.tsx   # 結婚デスク司令室 HUD（journey 最上段・Amity埋め込みなし）
+src/components/MarriageDesk.tsx   # 結婚デスク司令室 HUD（desk タブ最上段・Amity埋め込みなし）
 src/components/DeskChatPanel.tsx  # embedded / modal
 src/components/StampIllustBoard.tsx  # ボード配置（スクロールギャラリー禁止）
 src/lib/use-book.ts
@@ -119,7 +129,7 @@ npx gh-pages -d dist
 - `fb9de10` で Amity desk を chat-only にした際、**コマンドセンター HUD ごと削りすぎた**。
 - Kenji意図: **「Amity聞く = chat-only」** であり、**司令室ダイナミック HUD の削除ではない**。
 - 復元元: `01a2b46`（Add 結婚デスク command-home）および `fb9de10^` の MarriageDesk リッチ版。
-- 置き場所: journey ホーム最上段。Amity は引き続き FAB `DeskChatPanel` のみ。
+- 置き場所: 当初 journey → **現在は `desk` タブ最上段**。Amity は引き続き FAB `DeskChatPanel` のみ。
 
 ## 意図的にやらないこと
 
@@ -141,7 +151,7 @@ npx gh-pages -d dist
 ## ユーザー要望 — 進捗（2026-09-09 更新）
 
 ### 完了済み
-1. Amity は全タブ右下 **固定丸 FAB**（サメアイコン・円クリップ）。「聞く」タブ削除。既定タブ＝ロードマップ
+1. Amity は全タブ右下 **固定丸 FAB**（サメアイコン・円クリップ）。「聞く」タブ削除。既定タブ＝**デスク**（左端）
 2. タブナビは **ヘッダー sticky**（フッタ固定ナビではない）
 3. Grok: `amity-grok-bundle.ts` 難読化デコード（平文 `xai-` を git/Pages に置かない）。設定のキー欄は上書き用
 4. スタンプ帳を一度「イラスト主役」に作り直し（commit `fc54aac` 付近）: 1マス＝1絵、四隅小パッド
@@ -149,6 +159,13 @@ npx gh-pages -d dist
 ### 完了（前回）
 5. **サブマス分割（案 A）** — `StampIllustBoard` で実行時 chunk。超過グループは同じ phase 絵のカードに分割。全スタンプは絵の上。旧 `pickCornerTasks` / キャプション「· 一覧」削除。
 6. **回帰修正（FAB / TaskForm Sheet）** — Sheet/Dialog/Alert の z-index を FAB(70)・desk-chat(90) より上へ（sheet 110 / dialog 120 / alert 130）。タスク Sheet が FAB に隠れない。FAB は chat または task Sheet 開中は `hidden`
+
+### 完了（タブIA分割 · 本更新）
+22. **デスク**タブ新設（左端・既定）: MarriageDesk HUD + 今日の一歩 + HomeInsightPanels。ロードマップから HUD/シード長文を除去。
+23. **ロードマップ**はスタンプ／章／ボード／CHECK FIRST／マイルストーンのみ。
+24. **時期**タブ新設: PhasesPanel（9/48）をデスク・ジャーニーから分離。
+25. **期限**は InstitutionalDeadlines + 個人予定のみ。記念に月次ふたり会議導線を寄せた。
+26. Amity FAB chat-only は全タブ維持（≠ HUD削除）。
 
 ### 完了（本更新）
 7. **ハイブリッド縁パッド MAX=6** — `MAX_CORNER_PADS=6`。`cornerSlot` に 5–6（c4 mid-left / c5 mid-right）。CSS `.stamp-pad.corner.c4`/`.c5`（縦中央・min ~44px tap）。>6 は従来どおりサブマス分割。アート優先・一覧エスケープなし。
@@ -202,16 +219,16 @@ npx gh-pages -d dist
 | faq pairs | 681 | 656（MERGE_OVERLAPS 吸収済・drop 13 stamps の余剰は非タスク化） | TaskForm FAQ |
 | absolute deadlines | 10 next_absolute | 10 in `deadlines.json` | 期限タブ「制度・カレンダー締切」 |
 | relative deadlines | 6 | 6 | 同タブ・相対リスト |
-| exclude | 36 | 36 | ロードマップ「もらえない制度と理由」 |
-| lies_not_to_buy | 4 | 4 | ロードマップ「思い込みで損しやすいこと」 |
-| hero_numbers | 3 | 3 | ロードマップ「大きな数字」 |
-| talk_lines | 10 | 10 | ロードマップ「ふたりの会話のきっかけ」 |
-| phases | 9 | 9 | ロードマップ「時期の区切りと出来事」 |
-| events | 48 | 48 | 同上 details |
+| exclude | 36 | 36 | デスク HomeInsightPanels「もらえない制度と理由」 |
+| lies_not_to_buy | 4 | 4 | デスク HomeInsightPanels |
+| hero_numbers | 3 | 3 | デスク HomeInsightPanels |
+| talk_lines | 10 | 10 | デスク HomeInsightPanels |
+| phases | 9 | 9 | **時期**タブ PhasesPanel |
+| events | 48 | 48 | 時期タブ details |
 | square subtitles | 10 | 10 on `groups.json` | StampIllustBoard caption |
 | square chips sets | 31 | 31 | StampIllustBoard chips |
-| home.headline | 1 | 1 | HomeInsightPanels 先頭 |
-| tomorrow_3_actions | 3 | 3 | 「明日の3アクション」（stamp_id → TaskForm） |
+| home.headline | 1 | 1 | デスク HomeInsightPanels 先頭 |
+| tomorrow_3_actions | 3 | 3 | デスク「明日の3アクション」（stamp_id → TaskForm） |
 | money_in on tasks | 110 stamps / 0 tasks | **99**（マッチ＋吸収） | TaskForm「シード金額メモ」入 |
 | money_out on tasks | 56 stamps / 0 tasks | **54** | TaskForm「シード金額メモ」出 |
 | track / eligibility | 150 / 0 | **137** / **137** | track バッジ・eligibility≠always ラベル |
