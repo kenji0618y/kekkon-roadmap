@@ -1,11 +1,24 @@
-import type {CSSProperties} from 'react'
-import type {Group, Status, Task} from '../lib/model'
+import type {Status, Group, Task} from '../lib/model'
 import {statusNames} from '../lib/model'
 import {phaseImage} from '../data/catalog'
 
-function shortLabel(title: string) {
+/** Max pads drawn on the art — overflow opens via square caption → detail list */
+const MAX_CORNER_PADS = 4
+
+/** Prefer bottom corners when few stamps so the scene stays open */
+function cornerSlot(count: number, index: number) {
+  const map: Record<number, number[]> = {
+    1: [3],
+    2: [2, 3],
+    3: [0, 2, 3],
+    4: [0, 1, 2, 3],
+  }
+  return (map[count] || map[4])[index] ?? index
+}
+
+function tinyLabel(title: string) {
   const t = title.replace(/（.*?）/g, '').replace(/\(.*?\)/g, '').trim()
-  return t.length > 11 ? `${t.slice(0, 10)}…` : t
+  return t.length > 4 ? `${t.slice(0, 4)}` : t
 }
 
 function padClass(status: Status | undefined) {
@@ -30,6 +43,18 @@ function padMark(status: Status | undefined) {
 
 function statusAria(status: Status | undefined) {
   return statusNames[status || 'todo']
+}
+
+/** Prefer incomplete stamps in the four corners so progress stays visible */
+function pickCornerTasks(ts: Task[], recordStatus: (id: string) => Status | undefined) {
+  if (ts.length <= MAX_CORNER_PADS) return {visible: ts, overflow: 0}
+  const open = ts.filter((t) => {
+    const s = recordStatus(t.id)
+    return s !== 'done' && s !== 'learned' && s !== 'na'
+  })
+  const rest = ts.filter((t) => !open.includes(t))
+  const visible = [...open, ...rest].slice(0, MAX_CORNER_PADS)
+  return {visible, overflow: ts.length - visible.length}
 }
 
 type Props = {
@@ -61,8 +86,8 @@ export function StampIllustBoard({
         const complete = ts.length > 0 && done === ts.length
         const image = phaseImage(g.id)
         const selected = activeId === g.id
-        const cols = ts.length <= 1 ? 1 : 2
-        const gridStyle = {'--pad-cols': String(cols)} as CSSProperties
+        const {visible, overflow} = pickCornerTasks(ts, recordStatus)
+        const no = String(i + 1).padStart(2, '0')
 
         return (
           <article
@@ -70,22 +95,7 @@ export function StampIllustBoard({
             role="listitem"
             className={`illust-square ${selected ? 'selected' : ''} ${complete ? 'complete' : ''}`}
           >
-            <button
-              type="button"
-              className="illust-square-head"
-              onClick={() => onSelectGroup(g.id)}
-              aria-pressed={selected}
-            >
-              <span className="illust-no">{String(i + 1).padStart(2, '0')}</span>
-              <strong>{g.short}</strong>
-              <span className="illust-progress">
-                {ts.length ? `${checked} / ${ts.length}` : '対象なし'}
-                {complete ? ' · 済' : ''}
-              </span>
-            </button>
-
-            <div className="illust-frame stamp-chrome">
-              <div className="stamp-chrome-mat" aria-hidden />
+            <div className="illust-frame">
               <img
                 className="illust-art"
                 src={image}
@@ -93,44 +103,53 @@ export function StampIllustBoard({
                 loading="lazy"
                 decoding="async"
               />
-              <div className="stamp-chrome-oval" aria-hidden />
-              <div className="stamp-chrome-corners" aria-hidden>
-                <i /><i /><i /><i />
-              </div>
+
               <div
-                className="illust-pads-scroll"
+                className="illust-pads"
                 role="group"
                 aria-label={`${g.title}のスタンプ台`}
               >
                 {ts.length === 0 ? (
-                  <span className="stamp-pad-empty">この設定では対象項目なし</span>
+                  <span className="stamp-pad-empty corner-empty">この設定では対象項目なし</span>
                 ) : (
-                  <div className="illust-pads-grid" style={gridStyle}>
-                    {ts.map((t) => {
-                      const st = recordStatus(t.id)
-                      return (
-                        <button
-                          key={t.id}
-                          type="button"
-                          className={`stamp-pad in-frame ${padClass(st)}`}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            onSelectGroup(g.id)
-                            onPressStamp(t.id)
-                          }}
-                          aria-label={`${t.title}（${statusAria(st)}）`}
-                        >
-                          <span className="stamp-pad-mark">{padMark(st)}</span>
-                          <span className="stamp-pad-label">{shortLabel(t.title)}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
+                  visible.map((t, idx) => {
+                    const st = recordStatus(t.id)
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        className={`stamp-pad corner c${cornerSlot(visible.length, idx)} ${padClass(st)}`}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onSelectGroup(g.id)
+                          onPressStamp(t.id)
+                        }}
+                        aria-label={`${t.title}（${statusAria(st)}）`}
+                        title={t.title}
+                      >
+                        <span className="stamp-pad-mark">{padMark(st)}</span>
+                        <span className="stamp-pad-label">{tinyLabel(t.title)}</span>
+                      </button>
+                    )
+                  })
                 )}
               </div>
             </div>
 
-            <p className="illust-hint">大きな枠を押してスタンプ。指で押しやすいサイズです</p>
+            <button
+              type="button"
+              className="illust-caption"
+              onClick={() => onSelectGroup(g.id)}
+              aria-pressed={selected}
+            >
+              <span className="illust-no">{no}</span>
+              <strong>{g.short}</strong>
+              <span className="illust-progress">
+                {ts.length ? `${checked}/${ts.length}` : '—'}
+                {complete ? ' 済' : ''}
+                {overflow > 0 ? ' · 一覧' : ''}
+              </span>
+            </button>
           </article>
         )
       })}
