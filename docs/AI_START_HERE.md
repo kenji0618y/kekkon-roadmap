@@ -12,7 +12,7 @@ Do **not** rediscover product history by chatting with Kenji.
 | Repo | https://github.com/kenji0618y/kekkon-roadmap |
 | Owner | Kenji Kadomoto · GitHub `kenji0618y` · timezone **Asia/Tokyo** |
 | Docs tip (main) | 2026-09-09 recheck · SoT=`src/data` · Lean hide≠delete · YEARLY sync guard |
-| Live app | Pages `gh-pages`（lean5 `8a90775` + その後の bugfix。**docs-only では再デプロイしない**） |
+| Live app | Pages `gh-pages` = shipped app（lean5 以降の bugfix 込み）。確認は URL と `assets/index-*.js` の 200。**docs-only では再デプロイしない** |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
 
 ## Read order (mandatory)
@@ -65,6 +65,7 @@ Stamps: art-first squares, corner pads **MAX=6**, overflow = **sub-mass split** 
 - Default friend profile leans **式なし** (`ceremony==='no'`).
 - Then `isCeremonyTask` (eligibility/need ceremony / id `W*`) is **hidden from UI scopes** — **kept in `src/data/tasks.json`**. Switching ceremony back must re-show them. Never delete W* to “clean Lean”. Stamp board must **not** show an empty 挙式 card when all its stamps are hidden.
 - First-run: `OnboardingSheet`. PWA update: `PwaUpdateBanner`. Friend how-to card: desk `MarriageDesk`.
+- Amity **local** answers (`answerDeskQuery` / `desk-chat.ts`) must pass the same `profile` / `inScope` filter — do not recommend hidden ceremony tasks under Lean.
 
 ## Famous past mistakes (do not repeat)
 
@@ -78,7 +79,7 @@ App Pages publish is separate from continuity docs:
 ```bash
 cd /path/to/kekkon-roadmap   # this repo
 npm ci
-npm run build                # runs verify:seed via prebuild
+npm run build                # MUST use npm (runs verify:seed via prebuild). Do **not** call `vite build` alone.
 npx gh-pages -d dist         # ensure dist has .nojekyll
 ```
 
@@ -95,6 +96,7 @@ npx gh-pages -d dist         # ensure dist has .nojekyll
 | Grok credits / spend limits | **https://console.x.ai/** — app cannot buy credits; show JP message + link |
 | Grok key | settings **localStorage** override, else obfuscated `amity-grok-bundle.ts` decode at runtime — **never** Vite `VITE_*` env, never plaintext `xai-` in git/Pages |
 | Historical research archive | Kenji-local `marriage-research/app-seed` (Grok Bot machine only). **Not cloneable from this repo.** Shipped SoT is `src/data`. |
+| Cursor Cloud Agents | May be **plan-locked**. If launch fails, edit on a normal clone / local tooling — do not block on Cloud Agents. |
 
 ## Quick verify
 
