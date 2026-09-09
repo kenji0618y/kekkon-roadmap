@@ -10,6 +10,31 @@ export const GROK_BASE_LS = 'amity-grok-base';
 export const DEFAULT_GROK_BASE = 'https://api.x.ai/v1';
 export const DEFAULT_GROK_MODEL = 'grok-3';
 
+/** User-facing copy when xAI returns 403 credits / spending-limit. */
+export const GROK_CREDITS_LIMIT_JA =
+  'Grokの利用枠（クレジット）が上限です。xAIコンソールで枠を増やすか、設定で別キーを入れてね。いまは端末内の案内で答えるよ。';
+
+export const GROK_ERROR_CREDITS = 'credits-limit';
+
+/** True when HTTP 403 body looks like credits / spending-limit / permission-denied quota. */
+export function isGrokCreditsLimitError(status: number, body: string): boolean {
+  if (status !== 403) return false;
+  const b = body.toLowerCase();
+  return (
+    b.includes('credit') ||
+    b.includes('spending') ||
+    b.includes('spending_limit') ||
+    b.includes('permission_denied') ||
+    b.includes('permission-denied') ||
+    b.includes('quota') ||
+    /利用枠|クレジット|上限/.test(body)
+  );
+}
+
+export function isGrokCreditsLimitResult(error: string): boolean {
+  return error === GROK_ERROR_CREDITS || error.startsWith('credits-limit');
+}
+
 export const AMITY_GROK_SYSTEM = [
   'あなたはAmityちゃん。結婚ロードマップアプリのサメのナビアシスタントだよ。短く、やさしく、日本語で答えてね。',
   '対象ユーザーは広島市・共働きで世帯所得がおおむね800万円超の二人。所得制限のある市・国の支援は当てはまりにくいことが多いので、Lean（必要な手続きだけに絞る）で案内する。',
@@ -107,6 +132,9 @@ export async function askGrokResearch(
     });
     if (!res.ok) {
       const body = await res.text().catch(() => '');
+      if (isGrokCreditsLimitError(res.status, body)) {
+        return {ok: false, error: GROK_ERROR_CREDITS};
+      }
       const brief = body.slice(0, 180).replace(/\s+/g, ' ');
       return {ok: false, error: `HTTP ${res.status}${brief ? ` · ${brief}` : ''}`};
     }

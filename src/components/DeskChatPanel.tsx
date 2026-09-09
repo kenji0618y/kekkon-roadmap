@@ -8,7 +8,7 @@ import {
   saveChatHistory,
   type ChatMessage,
 } from '../lib/desk-chat';
-import {askGrokResearch, hasBundledGrokKey, loadGrokKey} from '../lib/amity-grok';
+import {askGrokResearch, GROK_CREDITS_LIMIT_JA, hasBundledGrokKey, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
 
 export type DeskChatPanelProps = {
   open: boolean;
@@ -119,12 +119,17 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
         };
         setMsgs((prev) => [...prev, grokMsg]);
       } else if (grok.error !== 'aborted' && grok.error !== 'no-key') {
-        const reason = grok.error;
-        toast.error(`Grokに聞けなかったよ（${reason}）`, {duration: 7000});
+        const credits = isGrokCreditsLimitResult(grok.error);
+        const chatText = credits
+          ? GROK_CREDITS_LIMIT_JA
+          : `Grokに聞けなかったよ（${grok.error}）。上の端末内の答えを見てね。キーや通信を設定で確認して。`;
+        toast.error(credits ? GROK_CREDITS_LIMIT_JA : `Grokに聞けなかったよ（${grok.error}）`, {
+          duration: 7000,
+        });
         const errMsg: ChatMessage = {
           id: uid(),
           role: 'assistant',
-          text: `Grokに聞けなかったよ（${reason}）。上の端末内の答えを見てね。キーや通信を設定で確認して。`,
+          text: chatText,
           at: Date.now(),
         };
         setMsgs((prev) => [...prev, errMsg]);
