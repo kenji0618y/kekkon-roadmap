@@ -1,5 +1,5 @@
 import {tasks, sources} from '../data/catalog';
-import {inScope, type Profile, type Task} from './model';
+import {inScope, type Profile, type Source, type Task} from './model';
 
 export type DeskChatMatch = {
   id: string;
