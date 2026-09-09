@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· remaining gaps + CONTENT_GUARD / verify:seed
+最終更新: 2026-09-09（JST）· 司令室 HUD 復元 · Amity chat-only ≠ remove desk HUD
 
 ## 公開 URL
 
@@ -45,10 +45,12 @@
 
 メインタブ（ロードマップ / 期限 / 記念 / 探す / 設定）は **ヘッダー（masthead）内・上部 sticky**。モバイルも下部固定ではなく上部。
 
-**Amityちゃんにきく**は全タブ右下の丸 FAB（`overflow:hidden` + `clip-path:circle`）→ 前景チャット。
+**Amityちゃんにきく**は全タブ右下の丸 FAB（`overflow:hidden` + `clip-path:circle`）→ 前景チャットのみ（t53u/t58u）。**Amityをchat-onlyにしたこと ≠ 司令室 HUD を消すこと。**
 
-- ロードマップ: **スタンプ帳／ボードのみ**（view-switch 一覧なし）。1マス＝1枚の大きいイラスト（フル表示）。縁パッド最大 **6**（四隅 + mid-left/mid-right）。**>6 はサブマス分割**（同じ絵のカードが 1/2・2/2）。「探す」タブで一覧検索。白グリッドで絵を覆わない。横スクロールギャラリー禁止。
+- **結婚デスク｜司令室 HUD**（`MarriageDesk`）: ロードマップタブ最上段。メトリクス／Ridge・Activity・Chord・Lattice・Network。金額は `book.records` 入力のみ（未入力は —）。制度絶対期限カウントは `deadlines.json` の `next_absolute`。シード hero / money は SeedContentPanels 側。ダーク HUD は `.desk-hud`。
+- ロードマップ: 司令室の下に今日の一歩 → **スタンプ帳／ボード**（view-switch 一覧なし）。1マス＝1枚の大きいイラスト。縁パッド最大 **6**（四隅 + mid-left/mid-right）。**>6 はサブマス分割**。「探す」タブで一覧検索。白グリッドで絵を覆わない。横スクロールギャラリー禁止。
 - CHECK FIRST は **OUR JOURNEY の下**
+- SeedContentPanels（collapsible）・CONTENT_GUARD / `verify:seed` は維持
 - 設定: 「今の制度を調べる」+ Grok キー上書き欄
 
 ## 同期（Gist）
@@ -77,7 +79,7 @@
 
 ```
 src/Notebook.tsx          # シェル・タブ
-src/components/MarriageDesk.tsx   # 旧聞くタブ（未使用・FAB化済み）
+src/components/MarriageDesk.tsx   # 結婚デスク司令室 HUD（journey 最上段・Amity埋め込みなし）
 src/components/DeskChatPanel.tsx  # embedded / modal
 src/components/StampIllustBoard.tsx  # ボード配置（スクロールギャラリー禁止）
 src/lib/use-book.ts
@@ -110,6 +112,14 @@ npx gh-pages -d dist
 
 `gh` は `kenji0618y` でログイン済みの環境あり。`workflow` scope なし。
 
+
+
+## 復元メモ（2026-09-09）
+
+- `fb9de10` で Amity desk を chat-only にした際、**コマンドセンター HUD ごと削りすぎた**。
+- Kenji意図: **「Amity聞く = chat-only」** であり、**司令室ダイナミック HUD の削除ではない**。
+- 復元元: `01a2b46`（Add 結婚デスク command-home）および `fb9de10^` の MarriageDesk リッチ版。
+- 置き場所: journey ホーム最上段。Amity は引き続き FAB `DeskChatPanel` のみ。
 
 ## 意図的にやらないこと
 

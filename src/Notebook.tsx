@@ -22,6 +22,7 @@ import {DEFAULT_GROK_BASE,askGrokResearch,GROK_CREDITS_LIMIT_JA,hasBundledGrokKe
 import {answerDeskQuery} from './lib/desk-chat';
 import {groups,reviewedOn,sources,taskById,tasks} from './data/catalog';
 import {DeskChatPanel} from './components/DeskChatPanel';
+import {MarriageDesk} from './components/MarriageDesk';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import yearlyUpdateMd from './data/YEARLY_UPDATE.md?raw';
@@ -86,11 +87,12 @@ export default function FutureNotebook(){
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p>{data.phase==='signin'?<a href="/signin-with-chatgpt?return_to=%2F" target="_top">ログインする</a>:<button onClick={()=>void data.refresh()}>再読み込み</button>}</div>}
  <TabsContent value="journey" className="tab-surface">
  <div className="welcome-line"><div><p className="eyebrow">A LITTLE STEP, A LOVELY FUTURE</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">イラストのマスにスタンプを押して、手続きを進めるロードマップ。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
+ <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoJourney={()=>{const el=document.getElementById('journey-stamp-board');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}} onOpenSettings={()=>setTab('settings')} onGoFind={(kw)=>{if(kw)setQuery(kw);setTab('find');}} onAskAmity={()=>setChatOpen(true)}/>
  <div className="home-top"><section className="today-panel"><div className="panel-label"><span><span className="gold-dot"/>今日のひとつ、ここから。</span><small>{today.replace(/-/g,'.')}</small></div>
  {!data.book&&data.phase==='ready'&&<div className="start-note"><div><strong>二人だけの手帳をはじめよう</strong><p>呼び名や予定を入れると、今の二人に合わせて表示できます。</p></div><Action onClick={openProfile}>手帳を整える<ArrowRight/></Action></div>}
  <div className="next-actions">{next.length?next.map((t,i)=><button className="next-action" key={t.id} onClick={()=>openTask(t.id)}><span className="next-num">0{i+1}</span><span><small>{nearestDeadline(t,p,book.records[t.id])?'期限・予定を確認':typeLabels[t.type]}</small><strong>{t.title}</strong></span><ArrowUpRight size={19}/></button>):<div className="small-empty"><Sparkles size={20}/><p>今の候補はひと通り確認できました。結果待ちや、次の楽しみを手帳で確かめましょう。</p></div>}</div>
  <div className="progress-strip"><div><span>これまでの一歩</span><strong>{done.length}<small> / {actionable.length} 項目</small></strong></div><Progress value={actionable.length?done.length/actionable.length*100:0} aria-label="対象項目の完了率"/><span className="stamp-mini">歩</span></div></section></div>
- <div className="section-heading"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2></div></div>
+ <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2></div></div>
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
  <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.en}</span><h3>{activeChapter.description}</h3></div><span className="hint">イラストの縁のスタンプを押して進める。1マスに最大6つ。多い章はカードが分かれる。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:<>

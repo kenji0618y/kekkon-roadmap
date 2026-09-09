@@ -75,6 +75,79 @@
 .desk-sync-pill.sync-syncing{border-color:#b7c4d8;color:#3f5f8a;background:#e8eef8}
 .desk-sync-pill.sync-error{border-color:#d4a090;color:#8a4332;background:#f8ebe6}
 @keyframes desk-pulse{0%{box-shadow:0 0 0 0 #10b98188}70%{box-shadow:0 0 0 9px #10b98100}100%{box-shadow:0 0 0 0 #10b98100}}
+
+/* Dense command-center HUD (fintech desk vibe; Hiroshima teal palette) */
+.desk-root.desk-hud{
+  --desk-border:#2a4a4a;
+  --desk-ink:#e8f5f0;
+  --desk-muted:#8fb3a8;
+  background:
+    radial-gradient(1200px 420px at 12% -10%,#0f766e33,transparent 55%),
+    radial-gradient(900px 360px at 90% 0%,#134e4a44,transparent 50%),
+    linear-gradient(180deg,#0f1f24,#132a30 40%,#163339);
+  border-color:#1f3f42;
+  box-shadow:0 18px 40px #0b161c55, inset 0 1px 0 #ffffff12;
+  color:var(--desk-ink);
+}
+.desk-hud .desk-title-left h1{color:#ecfdf5;letter-spacing:.08em}
+.desk-hud .desk-subtitle{background:#0c1c20;border-color:#2d5552;color:#9fd0c2}
+.desk-hud .desk-clock{color:#d1fae5}
+.desk-hud .desk-live{background:#064e3b;color:#a7f3d0;border-color:#059669}
+.desk-hud .desk-sync-pill{background:#0c1c20;border-color:#345954;color:#9fd0c2}
+.desk-hud .desk-sync-pill.sync-ok{background:#12352c;border-color:#2f7a5f;color:#86efac}
+.desk-hud .desk-sync-pill.sync-syncing{background:#13253a;border-color:#3a5f8a;color:#93c5fd}
+.desk-hud .desk-sync-pill.sync-error{background:#3a1c18;border-color:#8a4332;color:#fecaca}
+.desk-hud .desk-navi{background:linear-gradient(180deg,#163339ee,#0f2429cc);border-color:#2a4a4a}
+.desk-hud .desk-navi-bubble{background:#0c1c20;border-color:#2d5552;box-shadow:0 10px 22px #04101455;color:#d1fae5}
+.desk-hud .desk-navi-bubble::before{background:#0c1c20;border-left-color:#2d5552;border-bottom-color:#2d5552}
+.desk-hud .desk-navi-bubble p{color:#d8efe7}
+.desk-hud .desk-navi-actions button{background:#12352c;border-color:#2f7a5f;color:#a7f3d0}
+.desk-hud .desk-navi-actions button:hover{background:#0f766e;color:#fff}
+.desk-hud .desk-navi-actions button.desk-navi-ask{background:#10b981;color:#042f2e;border-color:#34d399}
+.desk-hud .desk-metric,.desk-hud .desk-card{background:#0c1c20ee;border-color:#2a4a4a;box-shadow:inset 0 1px 0 #ffffff08}
+.desk-hud .desk-metric-label{color:#7aa99c}
+.desk-hud .desk-metric-value{color:#ecfdf5}
+.desk-hud .desk-metric-value small,.desk-hud .desk-metric-sub{color:#8fb3a8}
+.desk-hud .desk-metric-bar{background:#1a3338}
+.desk-hud .desk-card-head{color:#b7d9ce}
+.desk-hud .desk-ridge-stats li{border-bottom-color:#243f44;color:#8fb3a8}
+.desk-hud .desk-ridge-stats li span{color:#cfe8df}
+.desk-hud .desk-ridge-stats strong{color:#ecfdf5}
+.desk-hud .desk-ridge-plot{background:linear-gradient(180deg,#10262c,#0c1c20);border-color:#2a4a4a}
+.desk-hud .desk-ridge-callout{background:#1a1212;border-color:#7f1d1d;color:#fecaca}
+.desk-hud .desk-log-row{border-bottom-color:#243f44;color:#d8efe7}
+.desk-hud .desk-log-row:hover{background:#12352c55}
+.desk-hud .desk-log-time{color:#7aa99c}
+.desk-hud .desk-log-text small{color:#8fb3a8}
+.desk-hud .desk-empty{color:#8fb3a8;background:#10262c;border-color:#2a4a4a}
+.desk-hud .desk-viz-legend li{color:#9fd0c2}
+.desk-hud .desk-lattice-stats>div{background:#10262c;border-color:#2a4a4a}
+.desk-hud .desk-lattice-stats span{color:#7aa99c}
+.desk-hud .desk-lattice-stats strong{color:#ecfdf5}
+.desk-hud .desk-pulse-chip{background:#10262c;border-color:#2a4a4a;color:#cfe8df}
+.desk-hud .desk-type-bar span,.desk-hud .desk-type-bar strong{color:#cfe8df}
+.desk-hud .desk-type-bar>div{background:#1a3338}
+.desk-hud .desk-start{background:#10262c;border-color:#345954;color:#d8efe7}
+.desk-hud .desk-start strong{color:#ecfdf5}
+.desk-hud .desk-start p{color:#8fb3a8}
+.desk-hud .desk-cta{background:#10b981;color:#042f2e}
+.desk-hud .desk-cta:hover{background:#34d399}
+.desk-hud .desk-cta.secondary{background:#0c1c20;color:#a7f3d0;border-color:#2f7a5f}
+.desk-hud .desk-cta.secondary:hover{background:#12352c}
+.desk-hud .desk-footnote{color:#7aa99c}
+.desk-hud .desk-chord-ring{stroke:#345954}
+.desk-hud .desk-net-hub{fill:#12352c;stroke:#2f7a5f}
+.desk-hud .desk-net-hub-label,.desk-hud .desk-net-label,.desk-hud .desk-net-count,.desk-hud .desk-empty-svg{fill:#9fd0c2}
+
+.desk-hud .desk-tag.tone-green{background:#064e3b;color:#6ee7b7;border-color:#059669}
+.desk-hud .desk-tag.tone-red{background:#450a0a;color:#fca5a5;border-color:#b91c1c}
+.desk-hud .desk-tag.tone-yellow{background:#422006;color:#fcd34d;border-color:#b45309}
+.desk-hud .desk-tag.tone-blue{background:#172554;color:#93c5fd;border-color:#1d4ed8}
+.desk-hud .desk-tag.tone-gray{background:#1e293b;color:#cbd5e1;border-color:#475569}
+.desk-hud .desk-metric.tone-warn .desk-metric-value{color:#fbbf24}
+.desk-hud .desk-metric.tone-ok .desk-metric-value{color:#34d399}
+.desk-hud .desk-metric.tone-live .desk-metric-value{color:#6ee7b7}
+.desk-hud .desk-log-text{color:#e2f5ee}
 .desk-clock{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;font-variant-numeric:tabular-nums;color:var(--desk-ink);letter-spacing:.04em}
 .desk-navi{display:flex;align-items:flex-end;gap:12px;margin:0 0 14px;padding:10px 12px;border:1px solid var(--desk-border);border-radius:12px;background:linear-gradient(180deg,#ffffffee,#f3f7f2cc)}
 .desk-navi-mascot{flex:0 0 auto;width:88px;height:88px;padding:0;border:0;border-radius:18px;background:transparent;cursor:pointer;transition:transform .18s ease}
