@@ -640,6 +640,7 @@
 .seed-tomorrow-btn p{margin:0;font-size:12px;line-height:1.7;color:#6e7a68}
 .seed-tomorrow-btn small{display:block;margin-top:4px;font-size:11px;color:#8a967f}
 .seed-tomorrow-btn>svg{margin-left:auto;margin-top:4px;color:#8a967f;flex-shrink:0}
+.seed-next-empty{margin:8px 0 0;padding:12px 4px;font-size:13px;line-height:1.8;color:#6e7a68}
 .seed-task-meta{display:flex;flex-direction:column;gap:10px;margin:0 0 16px}
 .seed-task-badges{display:flex;flex-wrap:wrap;gap:6px}
 .seed-track-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:#e7efe3;color:#3f614c;font-size:11px;font-weight:700;border:1px solid #c9d8c2}

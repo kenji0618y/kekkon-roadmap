@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· タブIA分割（デスク / マップ / 期限 / 時期）· Amity chat-only ≠ remove desk HUD
+最終更新: 2026-09-09（JST）· UI重複整理（次アクション統合・金額/期限の役割分担）· タブIA維持
 
 ## 公開 URL
 
@@ -50,11 +50,11 @@
 
 | id | ラベル（short） | 中身 |
 |----|-----------------|------|
-| `desk` | デスク | `MarriageDesk` 司令室 HUD + 今日の一歩 + `HomeInsightPanels`（headline/hero/tomorrow/lies/exclude/talk） |
+| `desk` | デスク | `MarriageDesk` 司令室 HUD（薄メトリクスのみ）+ `HomeInsightPanels`（headline/hero/**統合 next-actions**/lies/exclude/talk）。today-panel の next-actions は廃止 |
 | `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + CHECK FIRST + 準備/新生活マイルストーンのみ。HUD・シード長文なし |
 | `deadlines` | 期限と予定（期限） | `InstitutionalDeadlines` + 個人タイムライン／ICS。ホームエッセイなし |
 | `phases` | 時期と出来事（時期） | `PhasesPanel`（9時期・48出来事）専用 |
-| `memories` | 記念手帳（記念） | 記念メモ + ユーザー入力金額集計 + 月次ふたり会議導線 |
+| `memories` | 記念手帳（記念） | 記念メモ + **フル money-grid**（得した/見込み/節約/税）+ 月次ふたり会議。デスクは HUD 薄指標のみで重複しない |
 | `find` | 制度を探す（探す） | 検索のみ |
 | `settings` | ふたりの設定（設定） | プロフィール／Gist／Grok／YEARLY_UPDATE／リセット |
 
@@ -160,6 +160,12 @@ npx gh-pages -d dist
 5. **サブマス分割（案 A）** — `StampIllustBoard` で実行時 chunk。超過グループは同じ phase 絵のカードに分割。全スタンプは絵の上。旧 `pickCornerTasks` / キャプション「· 一覧」削除。
 6. **回帰修正（FAB / TaskForm Sheet）** — Sheet/Dialog/Alert の z-index を FAB(70)・desk-chat(90) より上へ（sheet 110 / dialog 120 / alert 130）。タスク Sheet が FAB に隠れない。FAB は chat または task Sheet 開中は `hidden`
 
+### 完了（UI重複整理 · 本更新）
+27. **次アクション統合**: デスクの `today-panel` next-actions を削除。`HomeInsightPanels` の1ブロックに `tomorrow_3_actions` 優先＋動的 `next` で空き枠を埋める（完了済みシードはスキップ）。
+28. **金額**: デスク HUD は得した/損回避の薄メトリクスのみ。フル money-grid は**記念**のみ。
+29. **期限**: デスク HUD は次の制度カウントダウン指標のみ。`InstitutionalDeadlines` 全文は**期限**タブのみ。
+30. **時期 / hero・talk・exclude**: ジャーニーへ再掲しない。HomeInsight はデスク1回のみ。
+
 ### 完了（タブIA分割 · 本更新）
 22. **デスク**タブ新設（左端・既定）: MarriageDesk HUD + 今日の一歩 + HomeInsightPanels。ロードマップから HUD/シード長文を除去。
 23. **ロードマップ**はスタンプ／章／ボード／CHECK FIRST／マイルストーンのみ。
@@ -228,7 +234,7 @@ npx gh-pages -d dist
 | square subtitles | 10 | 10 on `groups.json` | StampIllustBoard caption |
 | square chips sets | 31 | 31 | StampIllustBoard chips |
 | home.headline | 1 | 1 | デスク HomeInsightPanels 先頭 |
-| tomorrow_3_actions | 3 | 3 | デスク「明日の3アクション」（stamp_id → TaskForm） |
+| tomorrow_3_actions | 3 | 3 | デスク統合「次のアクション」（seed優先＋動的fill · stamp → TaskForm） |
 | money_in on tasks | 110 stamps / 0 tasks | **99**（マッチ＋吸収） | TaskForm「シード金額メモ」入 |
 | money_out on tasks | 56 stamps / 0 tasks | **54** | TaskForm「シード金額メモ」出 |
 | track / eligibility | 150 / 0 | **137** / **137** | track バッジ・eligibility≠always ラベル |

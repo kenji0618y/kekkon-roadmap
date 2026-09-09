@@ -130,11 +130,77 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
   )
 }
 
-export function HomeInsightPanels({onOpenTask}: {onOpenTask?: (id: string) => void} = {}) {
+export type DeskFillNext = {
+  id: string
+  title: string
+  sub?: string
+  /** When true, this task is already done/applied/waiting — skip when filling. */
+  closed?: boolean
+}
+
+export function HomeInsightPanels({
+  onOpenTask,
+  fillNext = [],
+  isStampOpen,
+}: {
+  onOpenTask?: (id: string) => void
+  /** Dynamic desk candidates — fill slots after seed tomorrow_3_actions (deduped). */
+  fillNext?: DeskFillNext[]
+  /** Return false when a stamp should not count as an open next step. */
+  isStampOpen?: (id: string) => boolean
+} = {}) {
   const {hero_numbers, lies_not_to_buy, talk_lines, anti_lie_banner, headline, tomorrow_3_actions} = homeContent
   const lieCount = lies_not_to_buy.length
   const talkCount = talk_lines.length
   const excludeCount = excludeItems.length
+
+  const TARGET = 3
+  type NextRow = {
+    key: string
+    title: string
+    detail?: string
+    ids: string[]
+    primary?: string
+    source: 'seed' | 'dynamic'
+    sub?: string
+  }
+  const nextRows: NextRow[] = []
+  const used = new Set<string>()
+  const stampOpen = (id: string) => (isStampOpen ? isStampOpen(id) : true)
+
+  for (const a of tomorrow_3_actions || []) {
+    const ids = a.stamp_ids?.length ? a.stamp_ids : (a.stamp_id ? [a.stamp_id] : [])
+    const primary = ids.find((id) => stampOpen(id)) || ids[0]
+    // Prefer open stamps; if every linked stamp is closed, skip and free a slot for dynamic fill.
+    if (ids.length > 0 && ids.every((id) => !stampOpen(id))) {
+      ids.forEach((id) => used.add(id))
+      continue
+    }
+    ids.forEach((id) => used.add(id))
+    nextRows.push({
+      key: a.id,
+      title: a.title,
+      detail: a.detail,
+      ids,
+      primary,
+      source: 'seed',
+    })
+    if (nextRows.length >= TARGET) break
+  }
+
+  for (const t of fillNext) {
+    if (nextRows.length >= TARGET) break
+    if (used.has(t.id) || t.closed) continue
+    used.add(t.id)
+    nextRows.push({
+      key: `dyn-${t.id}`,
+      title: t.title,
+      ids: [t.id],
+      primary: t.id,
+      source: 'dynamic',
+      sub: t.sub,
+    })
+  }
 
   return (
     <div className="seed-home-stack">
@@ -164,33 +230,36 @@ export function HomeInsightPanels({onOpenTask}: {onOpenTask?: (id: string) => vo
         </div>
       </section>
 
-      {tomorrow_3_actions && tomorrow_3_actions.length > 0 && (
-        <section className="seed-block tomorrow" aria-label="明日の3アクション">
-          <div className="seed-block-head">
-            <span className="eyebrow">TOMORROW · 3 ACTIONS</span>
-            <h3>明日の3アクション</h3>
-            <p className="hint">シード記載の次の一手。押すと該当スタンプを開きます。</p>
-          </div>
+      <section className="seed-block tomorrow" aria-label="次のアクション">
+        <div className="seed-block-head">
+          <span className="eyebrow">NEXT · DESK ACTIONS</span>
+          <h3>次のアクション</h3>
+          <p className="hint">シードの明日3手を優先。空き枠は期限の近い候補で埋める（デスクに1ブロックのみ）。</p>
+        </div>
+        {nextRows.length > 0 ? (
           <ol className="seed-tomorrow-list">
-            {tomorrow_3_actions.map((a, i) => {
-              const ids = a.stamp_ids?.length ? a.stamp_ids : (a.stamp_id ? [a.stamp_id] : [])
-              const primary = ids[0]
-              const openable = !!(primary && onOpenTask)
+            {nextRows.map((a, i) => {
+              const openable = !!(a.primary && onOpenTask)
               const body = (
                 <>
                   <span className="seed-tomorrow-num">{i + 1}</span>
                   <div>
                     <strong>{a.title}</strong>
                     {a.detail && <p>{a.detail}</p>}
-                    {ids.length > 0 && <small>{ids.join(' · ')}</small>}
+                    {(a.ids.length > 0 || a.source === 'dynamic') && (
+                      <small>
+                        {a.source === 'seed' ? a.ids.join(' · ') : `候補 · ${a.ids[0] || ''}`}
+                        {a.source === 'dynamic' && a.sub ? ` · ${a.sub}` : ''}
+                      </small>
+                    )}
                   </div>
                   {openable && <ChevronRight size={16} />}
                 </>
               )
               return (
-                <li key={a.id}>
+                <li key={a.key}>
                   {openable ? (
-                    <button type="button" className="seed-tomorrow-btn" onClick={() => onOpenTask!(primary!)}>
+                    <button type="button" className="seed-tomorrow-btn" onClick={() => onOpenTask!(a.primary!)}>
                       {body}
                     </button>
                   ) : (
@@ -200,8 +269,10 @@ export function HomeInsightPanels({onOpenTask}: {onOpenTask?: (id: string) => vo
               )
             })}
           </ol>
-        </section>
-      )}
+        ) : (
+          <p className="hint seed-next-empty">今の候補はひと通り確認できました。結果待ちや、次の楽しみを手帳で確かめましょう。</p>
+        )}
+      </section>
 
       <details className="seed-block warn seed-fold seed-fold-heavy" aria-label="思い込みで損しやすいこと">
         <summary className="seed-fold-summary">

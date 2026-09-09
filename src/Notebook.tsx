@@ -5,7 +5,6 @@ import {Tabs,TabsContent,TabsList,TabsTrigger} from './components/ui/tabs';
 import {Sheet,SheetContent,SheetDescription,SheetHeader,SheetTitle} from './components/ui/sheet';
 import {Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle} from './components/ui/dialog';
 import {AlertDialog,AlertDialogAction,AlertDialogCancel,AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader,AlertDialogTitle} from './components/ui/alert-dialog';
-import {Progress} from './components/ui/progress';
 import {Input} from './components/ui/input';
 import {Label} from './components/ui/label';
 import {Toaster} from './components/ui/sonner';
@@ -86,13 +85,13 @@ export default function FutureNotebook(){
  <main className="workspace" id="main-content">
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p>{data.phase==='signin'?<a href="/signin-with-chatgpt?return_to=%2F" target="_top">ログインする</a>:<button onClick={()=>void data.refresh()}>再読み込み</button>}</div>}
  <TabsContent value="desk" className="tab-surface">
- <div className="welcome-line"><div><p className="eyebrow">COMMAND DESK</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">司令室 HUD とホーム案内。スタンプはロードマップ、締切は期限、時期の区切りは時期タブへ。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
+ <div className="welcome-line"><div><p className="eyebrow">COMMAND DESK</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">司令室 HUD と次のアクション（1ブロック）。スタンプはマップ、締切は期限、時期は時期タブ。金額の詳細は記念へ。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoJourney={()=>setTab('journey')} onOpenSettings={()=>setTab('settings')} onGoFind={(kw)=>{if(kw)setQuery(kw);setTab('find');}} onAskAmity={()=>setChatOpen(true)}/>
- <div className="home-top"><section className="today-panel"><div className="panel-label"><span><span className="gold-dot"/>今日のひとつ、ここから。</span><small>{today.replace(/-/g,'.')}</small></div>
- {!data.book&&data.phase==='ready'&&<div className="start-note"><div><strong>二人だけの手帳をはじめよう</strong><p>呼び名や予定を入れると、今の二人に合わせて表示できます。</p></div><Action onClick={openProfile}>手帳を整える<ArrowRight/></Action></div>}
- <div className="next-actions">{next.length?next.map((t,i)=><button className="next-action" key={t.id} onClick={()=>openTask(t.id)}><span className="next-num">0{i+1}</span><span><small>{nearestDeadline(t,p,book.records[t.id])?'期限・予定を確認':typeLabels[t.type]}</small><strong>{t.title}</strong></span><ArrowUpRight size={19}/></button>):<div className="small-empty"><Sparkles size={20}/><p>今の候補はひと通り確認できました。結果待ちや、次の楽しみを手帳で確かめましょう。</p></div>}</div>
- <div className="progress-strip"><div><span>これまでの一歩</span><strong>{done.length}<small> / {actionable.length} 項目</small></strong></div><Progress value={actionable.length?done.length/actionable.length*100:0} aria-label="対象項目の完了率"/><span className="stamp-mini">歩</span></div></section></div>
- <HomeInsightPanels onOpenTask={openTask}/>
+ <HomeInsightPanels
+  onOpenTask={openTask}
+  fillNext={next.map(t=>({id:t.id,title:t.title,sub:nearestDeadline(t,p,book.records[t.id])?'期限・予定を確認':typeLabels[t.type]}))}
+  isStampOpen={(id)=>{const st=book.records[id]?.status||'todo';return !['done','applied','waiting','na'].includes(st);}}
+ />
  </TabsContent>
  <TabsContent value="journey" className="tab-surface">
  <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2><p className="hint" style={{marginTop:6}}>章を選び、イラストの縁のスタンプを押して進める。1マス最大6・多い章はカード分割。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
