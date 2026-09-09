@@ -9,6 +9,7 @@ import {
   type ChatMessage,
 } from '../lib/desk-chat';
 import {askGrokResearch, GROK_CREDITS_LIMIT_JA, hasBundledGrokKey, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
+import {markGrokLocalOnly, readGrokLocalOnlyFlag, GROK_MODE_EVENT} from '../lib/grok-mode';
 
 export type DeskChatPanelProps = {
   open: boolean;
@@ -43,6 +44,18 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
     const saved = loadChatHistory();
     return saved.length ? saved : [WELCOME];
   });
+  const [localOnly, setLocalOnly] = useState(() => !loadGrokKey() || !!readGrokLocalOnlyFlag());
+
+  useEffect(() => {
+    const sync = () => setLocalOnly(!loadGrokKey() || !!readGrokLocalOnlyFlag());
+    sync();
+    window.addEventListener(GROK_MODE_EVENT, sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener(GROK_MODE_EVENT, sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open && !embedded) return;
@@ -93,7 +106,11 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
     setMsgs((prev) => [...prev, userMsg, localMsg]);
     setInput('');
 
-    if (!hasKey) return;
+    if (!hasKey) {
+      markGrokLocalOnly('no-key');
+      setLocalOnly(true);
+      return;
+    }
 
     abortRef.current?.abort();
     const ac = new AbortController();
@@ -120,6 +137,10 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
         setMsgs((prev) => [...prev, grokMsg]);
       } else if (grok.error !== 'aborted' && grok.error !== 'no-key') {
         const credits = isGrokCreditsLimitResult(grok.error);
+        if (credits) {
+          markGrokLocalOnly('credits-limit');
+          setLocalOnly(true);
+        }
         const chatText = credits
           ? GROK_CREDITS_LIMIT_JA
           : `Grokに聞けなかったよ（${grok.error}）。上の端末内の答えを見てね。キーや通信を設定で確認して。`;
@@ -169,6 +190,11 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
           <div>
             <h2 id={titleId}>Amityちゃんに聞く</h2>
             <p>{keyHint}</p>
+            {localOnly && (
+              <span className="desk-local-only-chip chat-chip" title="Grok深掘りなし・端末内案内のみ">
+                端末内のみモード
+              </span>
+            )}
           </div>
         </div>
         <div className="desk-chat-head-actions">

@@ -20,7 +20,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       includeAssets: ["favicon.svg", "wedding-washi.png", "desk-mascot.png", "amity-shark.png", "icons/apple-touch-icon.png"],
       manifest: {
         name: "Amityちゃんにきく",

@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· UI重複整理（次アクション統合・金額/期限の役割分担）· タブIA維持
+最終更新: 2026-09-09（JST）· prune+add（装飾折りたたみ・初回オンボーディング・近い期限・端末内のみ・PWA更新・ナビ横スクロール）
 
 ## 公開 URL
 
@@ -196,14 +196,28 @@ npx gh-pages -d dist
 16. **Square 副題10・チップ31** を groups に復元し StampIllustBoard 表示。
 
 
+
+### 完了（prune + add · 本更新）
+31. **Desk 装飾折りたたみ** — Chord / Lattice / Network を「くわしく見る」の裏に（既定閉じ）。Ridge・Activity・進捗％・得した/損回避・次の期限は維持。シード削除なし。
+32. **Settings「同じ手帳を二人で」短縮** — 招待未対応を明記し、バックアップ／Gist へ誘導。
+33. **Settings「毎年更新メモ」** — `<details>` で「開発者向け」既定閉じ。
+34. **探すタブ** — 「149項目」→ `tasks.length` 動的（137）。
+35. **未使用 `.view-switch` CSS 削除**。
+36. **初回オンボーディング** — ward / 任意 wdate / ceremony=no lean / 共働き employment。`!book` または未設定プロフィールで表示。円は入力しない。
+37. **Desk 近い絶対期限** — deadlines.json 60日以内のワンタップ一覧 → 期限タブ／`#institutional-deadlines`。
+38. **端末内のみモード chip** — キーなし／credits-limit 時に Desk・Amity チャットへ表示。
+39. **モバイル7タブ** — 横スクロール nav（≈390px で usable）、short ラベル維持。
+40. **PWA 更新バナー** — `registerType: prompt` + `useRegisterSW`「更新があります。再読み込み」。
+
 ### 残リスク・未解決
 - Grok 実通信はバンドル鍵／設定鍵と xAI 可用性に依存
 - 6パッド時はイラスト中央がやや狭まる（意図的なハイブリッド）
 - Claude remote との drift: ローカル main を正として前進。スマホはハードリロード推奨
-- `.view-switch` CSS は未使用のまま残存（無害）。必要なら後で掃除
+- （解消）`.view-switch` CSS 削除済み
 
 ## 直近コミット目安
-- （本更新）remaining gaps: headline/tomorrow/money seed + CONTENT_GUARD/verify:seed
+- （本更新）prune+add: decor fold / onboarding / near deadlines / local-only / PWA prompt / nav scroll
+- （直前）remaining gaps: headline/tomorrow/money seed + CONTENT_GUARD/verify:seed
 - （直前）app-seed restore: deadlines/exclude/home/phases + square subtitle/chips + UI
 - （直前）stamps-v2 content restore: why/miss/window/FAQ + MERGE_OVERLAPS absorption
 - （直前）pads MAX=6 + journey list view-switch 削除

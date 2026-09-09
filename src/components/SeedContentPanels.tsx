@@ -81,7 +81,7 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
   const rest = abs.filter((d) => !isProminentDeadline(d.date, today))
 
   return (
-    <section className="seed-block institutional-deadlines" aria-label="制度・カレンダー締切">
+    <section id="institutional-deadlines" className="seed-block institutional-deadlines" aria-label="制度・カレンダー締切">
       <div className="seed-block-head">
         <span className="eyebrow">INSTITUTIONAL CALENDAR</span>
         <h3>制度・カレンダー締切</h3>

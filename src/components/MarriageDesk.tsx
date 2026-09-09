@@ -161,18 +161,23 @@ export type MarriageDeskProps={
   today:string;
   hasBook:boolean;
   syncStatus?:'off'|'ok'|'error'|'syncing';
+  /** Grok deep research unavailable → show 端末内のみモード chip. */
+  localOnlyMode?:boolean;
   onOpenTask:(id:string)=>void;
   onOpenProfile:()=>void;
   onGoJourney:()=>void;
   onOpenSettings?:()=>void;
   onGoFind?:(keyword?:string)=>void;
+  /** Jump to 期限 tab (InstitutionalDeadlines). */
+  onGoDeadlines?:()=>void;
   /** Opens Amity FAB chat (Amity is chat-only; not embedded here). */
   onAskAmity?:()=>void;
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoJourney,onOpenSettings,onAskAmity}:MarriageDeskProps){
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',localOnlyMode=false,onOpenTask,onOpenProfile,onGoJourney,onOpenSettings,onGoDeadlines,onAskAmity}:MarriageDeskProps){
   const [clock,setClock]=useState(()=>japanClock());
   const [tipIdx,setTipIdx]=useState(0);
+  const [showDecor,setShowDecor]=useState(false);
   useEffect(()=>{
     const id=window.setInterval(()=>setClock(japanClock()),1000);
     return ()=>window.clearInterval(id);
@@ -203,8 +208,9 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
       .map(d=>({...d,days:difference(d.date,today)}))
       .filter(d=>d.days>=-3)
       .sort((a,b)=>a.date.localeCompare(b.date));
-    const next=upcoming.find(d=>d.days>=0)||upcoming[0];
-    return {count:upcoming.filter(d=>d.days>=0&&d.days<=60).length,next};
+    const near=upcoming.filter(d=>d.days>=-3&&d.days<=60);
+    const next=near.find(d=>d.days>=0)||near[0]||upcoming.find(d=>d.days>=0)||upcoming[0];
+    return {count:near.filter(d=>d.days>=0).length,next,near};
   },[today]);
 
   const stages=useMemo(()=>chapters.map(c=>{
@@ -253,6 +259,9 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <span className="desk-subtitle">{names}</span>
         </div>
         <div className="desk-title-right">
+          {localOnlyMode&&(
+            <span className="desk-local-only-chip" title="Grok深掘りなし・端末内案内のみ">端末内のみモード</span>
+          )}
           {syncStatus!=='off'&&(
             <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
               {syncStatus==='syncing'?'SYNC…':syncStatus==='ok'?'SYNC':syncStatus==='error'?'SYNC!':'SYNC'}
@@ -323,6 +332,35 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         </div>
       )}
 
+      {absSoon.near.length>0&&(
+        <section className="desk-card desk-near-deadlines" aria-label="近い制度の絶対期限">
+          <div className="desk-card-head">
+            <span className="desk-dot"/>近い制度期限 · 60日以内
+            {onGoDeadlines&&(
+              <button type="button" className="desk-linkish" onClick={onGoDeadlines}>期限タブへ</button>
+            )}
+          </div>
+          <ul className="desk-near-list">
+            {absSoon.near.map(d=>(
+              <li key={`${d.date}-${d.title}`}>
+                <button
+                  type="button"
+                  className={`desk-near-row ${d.days<=14?'near':''}`}
+                  onClick={()=>onGoDeadlines?.()}
+                >
+                  <span className="desk-near-when">
+                    <strong>{d.date.slice(5).replace('-','/')}</strong>
+                    <small>{d.days<0?`経過${-d.days}日`:d.days===0?'今日':`あと${d.days}日`}</small>
+                  </span>
+                  <span className="desk-near-title">{d.title}</span>
+                  <ArrowRight size={14} aria-hidden/>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <div className="desk-main-grid">
         <section className="desk-card desk-ridge-card">
           <div className="desk-card-head"><span className="desk-dot"/>ロードマップ進捗 · Ridge</div>
@@ -365,53 +403,67 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         </section>
       </div>
 
-      <div className="desk-lower-grid">
-        <section className="desk-card">
-          <div className="desk-card-head"><span className="desk-dot"/>章のつながり · Chord</div>
-          <div className="desk-viz">
-            <ChapterChord stages={stages}/>
-            <ul className="desk-viz-legend">
-              {stages.map((s,i)=><li key={s.id}><i style={{background:chapterColors[i%chapterColors.length]}}/>{s.label}</li>)}
-            </ul>
-          </div>
-        </section>
-
-        <section className="desk-card desk-lattice-card">
-          <div className="desk-card-head"><span className="desk-dot"/>戦略格子 · Lattice</div>
-          <div className="desk-lattice-wrap">
-            <div className="desk-lattice-stats">
-              <div><span>Vertices</span><strong>{actionable.length}</strong></div>
-              <div><span>Edges</span><strong>{groups.filter(g=>scoped.some(t=>g.ids.includes(t.id))).length}</strong></div>
-              <div><span>Done</span><strong className="ok">{done.length}</strong></div>
-              <div><span>Rotation</span><strong className="mono">∞°</strong></div>
+      <div className="desk-decor-fold">
+        {!showDecor?(
+          <button type="button" className="desk-more-viz" onClick={()=>setShowDecor(true)}>
+            くわしく見る · Chord / Lattice / Network
+          </button>
+        ):(
+          <>
+            <div className="desk-decor-toolbar">
+              <span className="hint">装飾ビジュアル（進捗の補助）</span>
+              <button type="button" className="desk-linkish" onClick={()=>setShowDecor(false)}>閉じる</button>
             </div>
-            <LatticeWire/>
-          </div>
-          <div className="desk-group-pulse">
-            {groupPulse.map(g=>(
-              <div key={g.id} className="desk-pulse-chip" title={`${g.short} ${g.done}/${g.total}`}>
-                <span>{g.kanji}</span>
-                <i style={{width:`${Math.max(8,g.ratio*100)}%`}}/>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="desk-card">
-          <div className="desk-card-head"><span className="desk-dot"/>タイプ構成 · Network</div>
-          <div className="desk-viz">
-            <TypeNetwork mix={typeMix}/>
-            <div className="desk-type-bars">
-              {typeMix.slice(0,4).map(m=>(
-                <div key={m.type} className="desk-type-bar">
-                  <span>{m.label}</span>
-                  <div><i style={{width:`${m.count?Math.round(m.done/m.count*100):0}%`,background:typeColors[m.type]}}/></div>
-                  <strong>{m.done}/{m.count}</strong>
+            <div className="desk-lower-grid">
+              <section className="desk-card">
+                <div className="desk-card-head"><span className="desk-dot"/>章のつながり · Chord</div>
+                <div className="desk-viz">
+                  <ChapterChord stages={stages}/>
+                  <ul className="desk-viz-legend">
+                    {stages.map((s,i)=><li key={s.id}><i style={{background:chapterColors[i%chapterColors.length]}}/>{s.label}</li>)}
+                  </ul>
                 </div>
-              ))}
+              </section>
+
+              <section className="desk-card desk-lattice-card">
+                <div className="desk-card-head"><span className="desk-dot"/>戦略格子 · Lattice</div>
+                <div className="desk-lattice-wrap">
+                  <div className="desk-lattice-stats">
+                    <div><span>Vertices</span><strong>{actionable.length}</strong></div>
+                    <div><span>Edges</span><strong>{groups.filter(g=>scoped.some(t=>g.ids.includes(t.id))).length}</strong></div>
+                    <div><span>Done</span><strong className="ok">{done.length}</strong></div>
+                    <div><span>Rotation</span><strong className="mono">∞°</strong></div>
+                  </div>
+                  <LatticeWire/>
+                </div>
+                <div className="desk-group-pulse">
+                  {groupPulse.map(g=>(
+                    <div key={g.id} className="desk-pulse-chip" title={`${g.short} ${g.done}/${g.total}`}>
+                      <span>{g.kanji}</span>
+                      <i style={{width:`${Math.max(8,g.ratio*100)}%`}}/>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="desk-card">
+                <div className="desk-card-head"><span className="desk-dot"/>タイプ構成 · Network</div>
+                <div className="desk-viz">
+                  <TypeNetwork mix={typeMix}/>
+                  <div className="desk-type-bars">
+                    {typeMix.slice(0,4).map(m=>(
+                      <div key={m.type} className="desk-type-bar">
+                        <span>{m.label}</span>
+                        <div><i style={{width:`${m.count?Math.round(m.done/m.count*100):0}%`,background:typeColors[m.type]}}/></div>
+                        <strong>{m.done}/{m.count}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
             </div>
-          </div>
-        </section>
+          </>
+        )}
       </div>
 
       <div className="desk-footer-actions">
