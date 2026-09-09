@@ -11,6 +11,18 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const fail = [];
 const ok = [];
 
+// Reminder for agents that skip docs: handoff lives at repo root.
+if (!existsSync(join(root, 'AGENTS.md')) || !existsSync(join(root, 'docs/AI_START_HERE.md'))) {
+  fail.push('missing AGENTS.md or docs/AI_START_HERE.md — restore handoff entry files');
+} else {
+  ok.push('handoff entry files present (AGENTS.md + AI_START_HERE)');
+}
+if (!existsSync(join(root, 'CLAUDE.md')) || !existsSync(join(root, 'CHATGPT.md'))) {
+  fail.push('missing CLAUDE.md or CHATGPT.md — restore Claude/ChatGPT entry files');
+} else {
+  ok.push('Claude/ChatGPT entry files present');
+}
+
 function loadJson(rel) {
   const p = join(root, rel);
   if (!existsSync(p)) {

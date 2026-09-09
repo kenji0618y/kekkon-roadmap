@@ -58,6 +58,7 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 - `8a90775` (**lean5**) — Hide ceremony tasks when `ceremony==='no'` (data kept); pair modal = backup/Gist only; further slim desk; Grok **credits link** to `console.x.ai`; friend handoff card on desk.
 - `e257c2f` — Continuity docs audit: SoT=`src/data` for GitHub clones; drop Vite Grok-key recipe; clarify no HashRouter; scope Grok Bot agent id.
 - (recheck) — Path inventory + Lean hide≠delete note + `verify:seed` YEARLY docs↔src/data identity.
+- Root auto-entry for Claude/Grok/ChatGPT: `AGENTS.md` / `CLAUDE.md` / `CHATGPT.md` + Copilot instructions + Cursor rule; `predev` runs verify.
 
 ## Key Kenji quotes (message ids)
 

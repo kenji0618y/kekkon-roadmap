@@ -15,6 +15,20 @@ Do **not** rediscover product history by chatting with Kenji.
 | Live app | Pages `gh-pages` = shipped app（lean5 以降の bugfix 込み）。確認は URL と `assets/index-*.js` の 200。**docs-only では再デプロイしない** |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
 
+## Auto-entry (Claude / Grok / ChatGPT)
+
+Kenji does **not** need to tell you to start here. Root files force the path:
+
+| File | Who picks it up |
+|------|-----------------|
+| `AGENTS.md` | Grok, Codex, Cursor, general agents |
+| `CLAUDE.md` | Claude Code / Claude |
+| `CHATGPT.md` | ChatGPT / Codex-style agents |
+| `.github/copilot-instructions.md` | GitHub Copilot / ChatGPT-on-GitHub |
+| `.cursor/rules/kekkon-roadmap.mdc` | Cursor (`alwaysApply`) |
+
+If you are reading this, continue the read order below.
+
 ## Read order (mandatory)
 
 1. **`docs/AI_START_HERE.md`** ← you are here  

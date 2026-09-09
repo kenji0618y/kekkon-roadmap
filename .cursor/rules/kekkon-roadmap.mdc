@@ -1,0 +1,8 @@
+---
+description: Mandatory handoff for kekkon-roadmap / Amityちゃんにきく
+alwaysApply: true
+---
+
+Before any edit in this repo, read `AGENTS.md` and `docs/AI_START_HERE.md`.
+
+Hard rules: SoT=`src/data`; never thin seed; Lean hides W* but keeps JSON; Amity FAB ≠ delete desk HUD; `npm run verify:seed` before done; `npm run build` not bare `vite build`; after `gh-pages` confirm assets JS HTTP 200; no secrets / no invented yen / no 結婚新生活 prize.

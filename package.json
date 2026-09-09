@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "verify:seed": "node scripts/verify-seed.mjs",
-    "prebuild": "npm run verify:seed"
+    "prebuild": "npm run verify:seed",
+    "predev": "npm run verify:seed",
+    "prepreview": "npm run verify:seed"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -33,5 +35,6 @@
     "typescript": "~5.9.2",
     "vite": "^7.1.5",
     "vite-plugin-pwa": "^1.0.3"
-  }
+  },
+  "description": "Amityちゃんにきく — AI agents: read AGENTS.md then docs/AI_START_HERE.md before editing"
 }

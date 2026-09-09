@@ -1,5 +1,7 @@
 # Amityちゃんにきく（結婚ロードマップ）
 
+> **AI（Claude / Grok / ChatGPT）へ:** 作業前に必ず [`AGENTS.md`](AGENTS.md)（Claude は [`CLAUDE.md`](CLAUDE.md)、ChatGPT は [`CHATGPT.md`](CHATGPT.md)）→ [`docs/AI_START_HERE.md`](docs/AI_START_HERE.md) を読め。Kenji に歴史を聞き直すな。完了前に `npm run verify:seed`。
+
 広島市向け・共働き寄り・式なし Lean の結婚・新生活ハンドブック PWA です。
 
 - **公開 URL:** https://kenji0618y.github.io/kekkon-roadmap/

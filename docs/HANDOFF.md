@@ -1,10 +1,11 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
-> **First file for incoming AI:** [`docs/AI_START_HERE.md`](./AI_START_HERE.md)  
+> **Auto-entry (no Kenji prompt needed):** root [`AGENTS.md`](../AGENTS.md) / [`CLAUDE.md`](../CLAUDE.md) / [`CHATGPT.md`](../CHATGPT.md)  
+> **Then:** [`docs/AI_START_HERE.md`](./AI_START_HERE.md)  
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· tip `5398ec3` · handoff ready · deploy後は index の JS が 200 か確認（CDNずれ注意）
+最終更新: 2026-09-09（JST）· Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
 
 ## 公開 URL
 
