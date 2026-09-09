@@ -4,7 +4,7 @@
 
 - **公開 URL:** https://kenji0618y.github.io/kekkon-roadmap/
 - **Repo:** https://github.com/kenji0618y/kekkon-roadmap
-- **引き継ぎ（AI 必読）:** [`docs/AI_START_HERE.md`](docs/AI_START_HERE.md) → HANDOFF → CONTENT_GUARD → HISTORY → MERGE_OVERLAPS
+- **引き継ぎ（AI 必読）:** [`docs/AI_START_HERE.md`](docs/AI_START_HERE.md) → HANDOFF → CONTENT_GUARD → HISTORY → MERGE_OVERLAPS（2026-09-09 再点検済み）
 
 ## 使い方
 

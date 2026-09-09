@@ -20,6 +20,7 @@ npm run verify:seed
 
 - `scripts/verify-seed.mjs` — 件数下限 + UI マウント検査。失敗で exit 1。
 - npm: `verify:seed` / `prebuild`
+- `docs/YEARLY_UPDATE.md` と `src/data/YEARLY_UPDATE.md` は **同一内容必須**（設定 UI は `src/data` を import。verify が差分で fail）
 
 ## 下限インベントリ（詳細は HANDOFF HARD RULES）
 

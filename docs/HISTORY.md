@@ -56,6 +56,8 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 ### Prune / add / lean5
 - `1f93833` — Prune desk décor (fold Chord/Lattice/Network); friend-facing add-ons (onboarding, near deadlines, local-only chip, PWA prompt, nav scroll).
 - `8a90775` (**lean5**) — Hide ceremony tasks when `ceremony==='no'` (data kept); pair modal = backup/Gist only; further slim desk; Grok **credits link** to `console.x.ai`; friend handoff card on desk.
+- `e257c2f` — Continuity docs audit: SoT=`src/data` for GitHub clones; drop Vite Grok-key recipe; clarify no HashRouter; scope Grok Bot agent id.
+- (recheck) — Path inventory + Lean hide≠delete note + `verify:seed` YEARLY docs↔src/data identity.
 
 ## Key Kenji quotes (message ids)
 
@@ -66,12 +68,13 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 | `t66u` | No list escape from stamp art | Dropped journey list toggle; overflow = sub-mass |
 | `t87`–`t89` | Restore HUD; chat-only ≠ delete HUD | `07944e0` + tab split `8b4427a` |
 
-## Standing outcomes (as of lean5 / `8a90775`)
+## Standing outcomes (as of app lean5 `8a90775` · docs recheck 2026-09-09)
 
-- ~**137** tasks; celebration UX gone; 結婚新生活 not a prize.
+- **137** tasks exact; celebration UX gone; 結婚新生活 not a prize.
 - Amity = **FAB chat-only**; desk **HUD remains** on デスク.
-- Seed inventory gated by **`verify:seed`**; never thin `src/data` (app-seed content).
-- Gist sync + localStorage; Grok credits are **external** (console.x.ai).
+- Seed inventory gated by **`verify:seed`**; never thin **`src/data`** (GitHub SoT). Local `marriage-research/` is optional archive only.
+- Lean: `ceremony==='no'` **hides** ceremony tasks in UI; **do not delete** them from `tasks.json`.
+- Gist sync + localStorage; Grok credits are **external** (console.x.ai). No `VITE_*` Grok key.
 - Docs continuity: `AI_START_HERE` → `HANDOFF` → `CONTENT_GUARD` → this file → `MERGE_OVERLAPS`.
 
 ## Anti-patterns checklist

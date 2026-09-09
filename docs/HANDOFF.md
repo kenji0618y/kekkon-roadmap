@@ -4,7 +4,7 @@
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· continuity docs 監査修正（SoT=`src/data`・Vite env 廃止案内・HashRouter 誤解修正）+ lean5
+最終更新: 2026-09-09（JST）· 再点検: 主要パス補強 · Lean式なし=非表示のみ · YEARLY docs↔src/data 同一検査 · SoT=`src/data` · Pages≈lean5
 
 ## 公開 URL
 
@@ -91,26 +91,31 @@
 ## 主要パス
 
 ```
-src/Notebook.tsx          # シェル・タブ
-src/components/MarriageDesk.tsx   # 結婚デスク司令室 HUD（desk タブ最上段・Amity埋め込みなし）
-src/components/DeskChatPanel.tsx  # embedded / modal
-src/components/StampIllustBoard.tsx  # ボード配置（スクロールギャラリー禁止）
-src/lib/use-book.ts
-src/lib/gist-sync.ts
-src/lib/amity-grok.ts
-src/lib/amity-grok-bundle.ts  # ciphertext only
-src/lib/desk-chat.ts
+src/Notebook.tsx                    # シェル・タブ
+src/components/MarriageDesk.tsx     # 司令室 HUD + 友人handoff（desk最上段・Amity埋め込みなし）
+src/components/DeskChatPanel.tsx    # FAB チャット
+src/components/StampIllustBoard.tsx # アート優先・MAX=6・サブマス分割
+src/components/SeedContentPanels.tsx
+src/components/OnboardingSheet.tsx
+src/components/PwaUpdateBanner.tsx
+src/lib/model.ts                    # inScope / isCeremonyTask（Lean式なし非表示）
+src/lib/use-book.ts                 # localStorage futari-miraicho-v1
+src/lib/gist-sync.ts                # DEFAULT_GIST_ID
+src/lib/amity-grok.ts               # grok-3 · credits → console.x.ai
+src/lib/amity-grok-bundle.ts        # ciphertext only（連続 "xai-" 禁止）
+src/lib/desk-chat.ts                # 端末内フォールバック
+src/lib/grok-mode.ts
 src/data/tasks.json / groups.json / sources.json / phase-images.json
 src/data/deadlines.json / exclude.json / home.json / phases.json / sugoroku.json
-public/phases/            # マスイラスト（gen-*.png 追加済み）
+src/data/YEARLY_UPDATE.md         # 設定 UI 表示元（import）
+docs/YEARLY_UPDATE.md            # verify-seed が存在+同一内容を検査
+public/phases/                      # マスイラスト
 public/desk-mascot.png
-docs/AI_START_HERE.md   # incoming AI first file
-docs/HISTORY.md         # 2026-09 decision log + famous mistakes
-docs/MERGE_OVERLAPS.md  # drop→keep マッピング（本復元で吸収済み）
+docs/AI_START_HERE.md
+docs/HISTORY.md
+docs/MERGE_OVERLAPS.md
 docs/HANDOFF.md
 docs/CONTENT_GUARD.md
-docs/YEARLY_UPDATE.md          # verify-seed が存在確認；中身は src/data と同期必須
-src/data/YEARLY_UPDATE.md       # 設定 UI が import（真の表示元）
 scripts/verify-seed.mjs
 ```
 

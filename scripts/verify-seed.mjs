@@ -109,8 +109,18 @@ const uiChecks = [
   ['TaskForm seed money memo', forms.includes('シード金額メモ')],
   ['TaskForm why/miss/window', forms.includes('なぜやるのか') && forms.includes('やらないと失うもの')],
   ['YEARLY_UPDATE in docs', existsSync(join(root, 'docs/YEARLY_UPDATE.md'))],
+  ['YEARLY_UPDATE in src/data', existsSync(join(root, 'src/data/YEARLY_UPDATE.md'))],
   ['YEARLY_UPDATE surfaced in Notebook', notebook.includes('毎年更新メモ') || notebook.includes('yearlyUpdateMd')],
 ];
+
+const yearlyDocs = readText('docs/YEARLY_UPDATE.md');
+const yearlyData = readText('src/data/YEARLY_UPDATE.md');
+if (yearlyDocs && yearlyData && yearlyDocs !== yearlyData) {
+  fail.push('YEARLY_UPDATE.md drift: docs/ and src/data/ must be identical (settings imports src/data)');
+} else if (yearlyDocs && yearlyData) {
+  ok.push('YEARLY_UPDATE docs↔src/data identical');
+}
+
 
 for (const [name, pass] of uiChecks) {
   if (pass) ok.push(`ui:${name}`);

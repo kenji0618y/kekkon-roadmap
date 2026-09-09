@@ -11,6 +11,8 @@ Do **not** rediscover product history by chatting with Kenji.
 | Pages URL | https://kenji0618y.github.io/kekkon-roadmap/ |
 | Repo | https://github.com/kenji0618y/kekkon-roadmap |
 | Owner | Kenji Kadomoto · GitHub `kenji0618y` · timezone **Asia/Tokyo** |
+| Docs tip (main) | 2026-09-09 continuity SoT + recheck (SoT=`src/data`, Lean hide≠delete, YEARLY sync). **App** on Pages ≈ lean5 `8a90775` |
+| App Pages | https://kenji0618y.github.io/kekkon-roadmap/ · branch `gh-pages` (manual `npx gh-pages -d dist`) |
 
 ## Read order (mandatory)
 
@@ -57,6 +59,11 @@ Default tab = **デスク**. Tabs live in the **sticky header** (not a bottom ba
 - Interpreting「チャットだけ」as “delete the HUD” was a famous mistake — see HISTORY.
 
 Stamps: art-first squares, corner pads **MAX=6**, overflow = **sub-mass split** on the same illustration. No horizontal gallery. No journey “list escape”.
+
+### Lean / ceremony (do not delete tasks)
+- Default friend profile leans **式なし** (`ceremony==='no'`).
+- Then `isCeremonyTask` (eligibility/need ceremony / id `W*`) is **hidden from UI scopes** — **kept in `src/data/tasks.json`**. Switching ceremony back must re-show them. Never delete W* to “clean Lean”.
+- First-run: `OnboardingSheet`. PWA update: `PwaUpdateBanner`. Friend how-to card: desk `MarriageDesk`.
 
 ## Famous past mistakes (do not repeat)
 
