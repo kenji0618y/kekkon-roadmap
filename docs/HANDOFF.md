@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· app-seed 全面復元（deadlines/exclude/home/phases/square）
+最終更新: 2026-09-09（JST）· remaining gaps + CONTENT_GUARD / verify:seed
 
 ## 公開 URL
 
@@ -30,6 +30,16 @@
 2. **結婚新生活支援 30万/60万を賞品・獲得目標にしない**（広島市は案内上未実施、高所得で対象外になりやすい）
 3. **お祝い / 寿 / 手紙ギフト演出は復活させない**（明示的に削除済み）
 4. Secrets（xAI / GitHub PAT）を **リポジトリにコミットしない**
+5. **NEVER drop or thin app-seed content when changing UI/framework.** Source of truth = `marriage-research/app-seed` OR copies in `src/data`. ChatGPT notebook merge must **ABSORB** rich fields, never replace/thin.
+6. **Required inventory (data in `src/data` AND mounted in UI)** — minima enforced by `npm run verify:seed` (`prebuild`):
+   - tasks `why` / `miss` / `window` ≥ **137** each; FAQ pairs (q+a) ≥ **650**
+   - `deadlines.next_absolute` = **10**; `relative_always` = **6**
+   - `exclude.items` = **36**
+   - home: hero=**3**, lies=**4**, talk=**10**, `tomorrow_3_actions`=**3**, `headline` + `anti_lie_banner` present
+   - phases = **9**, events ≥ **48**
+   - groups subtitle ≥ **10**, chips sets ≥ **31**
+   - seed money on tasks: `money_in` ≥90 / `money_out` ≥50 (seed values only)
+7. Before claiming done: run **`npm run verify:seed`** and paste the counts. See also `docs/CONTENT_GUARD.md`.
 
 ## ナビ構成（現状）
 
@@ -81,6 +91,9 @@ public/phases/            # マスイラスト（gen-*.png 追加済み）
 public/desk-mascot.png
 docs/MERGE_OVERLAPS.md  # drop→keep マッピング（本復元で吸収済み）
 docs/HANDOFF.md
+docs/CONTENT_GUARD.md
+docs/YEARLY_UPDATE.md
+scripts/verify-seed.mjs
 ```
 
 ## ビルド・公開手順
@@ -136,6 +149,13 @@ npx gh-pages -d dist
 10. **MERGE_OVERLAPS 吸収** — drop→keep の 12 件（A無2→G1, D2→C即6, C他6→A得11, C他5→F1, E2/E3→E1, A必4→C即13, C90-2→C90-1, C他4→A得6, D6→C他7, D15→G25, W3→B7）について、drop 側の FAQ（q 正規化で重複除去）と miss/why の差分を keep 側へ追記。F13 および未収録 stamp はタスク新規追加せずスキップ（件数を 137 のまま）。
 11. **UI** — TaskForm に「なぜやるのか」「やらないと失うもの」「いつやるか」カードと、回答つき FAQ（既定で展開）。質問のみアコーディオンは FAQ が無い場合のフォールバック。
 12. **型** — `Task` に optional `why` / `miss` / `window` / `faq`。
+### 完了（remaining gaps + guardrails）
+17. **headline / tomorrow_3_actions** を HomeInsightPanels に表示。Notebook から `onOpenTask` 配線。
+18. **money_in / money_out / track / eligibility / hidden_if** を stamps-v2 → tasks.json（137）へマージ。MERGE_OVERLAPS drop のメモを keeper へ吸収。TaskForm「シード金額メモ」（入/出・シードのみ）。
+19. **F13**（子育てエコホーム旧）を F2（みらいエコ後継）へ why/miss/faq 吸収。タスク新規追加なし。
+20. **YEARLY_UPDATE.md** を docs/ と settings「毎年更新メモ」に原文表示。
+21. **CONTENT_GUARD** — `scripts/verify-seed.mjs` + `npm run verify:seed` + `prebuild`。HANDOFF HARD RULES に下限インベントリ。
+
 ### 完了（app-seed 全面復元）
 13. **deadlines/exclude/home/phases** を `src/data/` にコピーし UI 接続。
 14. **期限タブ**に「制度・カレンダー締切」（next_absolute 日付順 + URL + seed money）。
@@ -150,7 +170,8 @@ npx gh-pages -d dist
 - `.view-switch` CSS は未使用のまま残存（無害）。必要なら後で掃除
 
 ## 直近コミット目安
-- （本更新）app-seed restore: deadlines/exclude/home/phases + square subtitle/chips + UI
+- （本更新）remaining gaps: headline/tomorrow/money seed + CONTENT_GUARD/verify:seed
+- （直前）app-seed restore: deadlines/exclude/home/phases + square subtitle/chips + UI
 - （直前）stamps-v2 content restore: why/miss/window/FAQ + MERGE_OVERLAPS absorption
 - （直前）pads MAX=6 + journey list view-switch 削除
 - `6a172af` — サブマス分割 + FAB/Sheet z-index
@@ -179,6 +200,23 @@ npx gh-pages -d dist
 | events | 48 | 48 | 同上 details |
 | square subtitles | 10 | 10 on `groups.json` | StampIllustBoard caption |
 | square chips sets | 31 | 31 | StampIllustBoard chips |
+| home.headline | 1 | 1 | HomeInsightPanels 先頭 |
+| tomorrow_3_actions | 3 | 3 | 「明日の3アクション」（stamp_id → TaskForm） |
+| money_in on tasks | 110 stamps / 0 tasks | **99**（マッチ＋吸収） | TaskForm「シード金額メモ」入 |
+| money_out on tasks | 56 stamps / 0 tasks | **54** | TaskForm「シード金額メモ」出 |
+| track / eligibility | 150 / 0 | **137** / **137** | track バッジ・eligibility≠always ラベル |
+| YEARLY_UPDATE.md | seed only | `docs/` + settings「毎年更新メモ」 | 原文のみ |
+| F13（stamp-only） | 未吸収 | **F2 に why/miss/faq 吸収** | 旧エコホーム警告 |
+
+### Remaining-gap checklist（e9d5bae 後 → 本更新で FIXED）
+| gap | before | after |
+|-----|--------|-------|
+| tomorrow_3_actions UI | data=3 / UI=false | data=3 / UI=**true** |
+| headline UI | data=1 / UI=false | data=1 / UI=**true** |
+| money_in/out on tasks | stamps only / tasks=0 | tasks mi=99 mo=54 / UI=**true** |
+| track/eligibility/hidden_if | stamps only | on tasks + UI badges |
+| YEARLY_UPDATE | seed only | docs + settings |
+| 13 stamp-only ids | FAQ absorbed; F13 not | F13 → F2; 12 MERGE keepers already |
 
 ### 絶対日付 10（Pages 掲載）
 1. こども医療R9.1拡充・集中申請終了

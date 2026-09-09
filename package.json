@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify:seed": "node scripts/verify-seed.mjs",
+    "prebuild": "npm run verify:seed"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

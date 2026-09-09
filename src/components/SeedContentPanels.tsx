@@ -1,4 +1,4 @@
-import {CalendarDays,ExternalLink,MessageCircle,AlertTriangle,Hash,Ban,Layers} from 'lucide-react'
+import {CalendarDays,ExternalLink,MessageCircle,AlertTriangle,Hash,Ban,Layers,ChevronRight} from 'lucide-react'
 import {formatMoney,monthDay,shortDate,todayJapan,difference,deadlineText} from '../lib/dates'
 import {absoluteDeadlines,relativeDeadlines,excludeItems,excludeMeta,homeContent,phasesContent} from '../data/catalog'
 
@@ -96,10 +96,58 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
   )
 }
 
-export function HomeInsightPanels() {
-  const {hero_numbers, lies_not_to_buy, talk_lines, anti_lie_banner} = homeContent
+export function HomeInsightPanels({onOpenTask}: {onOpenTask?: (id: string) => void} = {}) {
+  const {hero_numbers, lies_not_to_buy, talk_lines, anti_lie_banner, headline, tomorrow_3_actions} = homeContent
   return (
     <div className="seed-home-stack">
+      {headline && (
+        <section className="seed-block seed-headline" aria-label="見出し">
+          <div className="seed-block-head">
+            <span className="eyebrow">HEADLINE</span>
+            <h3 className="seed-headline-text">{headline}</h3>
+          </div>
+        </section>
+      )}
+
+      {tomorrow_3_actions && tomorrow_3_actions.length > 0 && (
+        <section className="seed-block tomorrow" aria-label="明日の3アクション">
+          <div className="seed-block-head">
+            <span className="eyebrow">TOMORROW · 3 ACTIONS</span>
+            <h3>明日の3アクション</h3>
+            <p className="hint">シード記載の次の一手。押すと該当スタンプを開きます。</p>
+          </div>
+          <ol className="seed-tomorrow-list">
+            {tomorrow_3_actions.map((a, i) => {
+              const ids = a.stamp_ids?.length ? a.stamp_ids : (a.stamp_id ? [a.stamp_id] : [])
+              const primary = ids[0]
+              const openable = !!(primary && onOpenTask)
+              const body = (
+                <>
+                  <span className="seed-tomorrow-num">{i + 1}</span>
+                  <div>
+                    <strong>{a.title}</strong>
+                    {a.detail && <p>{a.detail}</p>}
+                    {ids.length > 0 && <small>{ids.join(' · ')}</small>}
+                  </div>
+                  {openable && <ChevronRight size={16} />}
+                </>
+              )
+              return (
+                <li key={a.id}>
+                  {openable ? (
+                    <button type="button" className="seed-tomorrow-btn" onClick={() => onOpenTask!(primary!)}>
+                      {body}
+                    </button>
+                  ) : (
+                    <div className="seed-tomorrow-btn static">{body}</div>
+                  )}
+                </li>
+              )
+            })}
+          </ol>
+        </section>
+      )}
+
       <section className="seed-block" aria-label="大きな数字">
         <div className="seed-block-head">
           <span className="eyebrow">BIG NUMBERS</span>

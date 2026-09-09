@@ -41,10 +41,19 @@ export const deadlinesMeta = deadlinesData as {as_of: string; timezone: string};
 export const excludeItems = (excludeData as {items: {id:string;title:string;why:string;source?:string;hidden_if?:string[]}[]}).items;
 export const excludeMeta = excludeData as {description: string};
 
+export type TomorrowAction = {
+  id: string;
+  title: string;
+  detail?: string;
+  stamp_id?: string;
+  stamp_ids?: string[];
+};
+
 export const homeContent = homeData as {
   hero_numbers: {id:string;label:string;value:string;note?:string}[];
   lies_not_to_buy: {id:string;title:string;truth:string}[];
   talk_lines: {id:string;line:string;from?:string}[];
+  tomorrow_3_actions: TomorrowAction[];
   anti_lie_banner?: string;
   headline?: string;
 };
