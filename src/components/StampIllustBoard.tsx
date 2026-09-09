@@ -153,12 +153,24 @@ export function StampIllustBoard({
                 aria-pressed={selected}
               >
                 <span className="illust-no">{no}</span>
-                <strong>{captionTitle}</strong>
+                <span className="illust-caption-text">
+                  <strong>{captionTitle}</strong>
+                  {partIdx === 0 && g.subtitle ? (
+                    <span className="illust-sub">{g.subtitle}</span>
+                  ) : null}
+                </span>
                 <span className="illust-progress">
                   {chunk.length ? `${checked}/${chunk.length}` : '—'}
                   {complete ? ' 済' : ''}
                 </span>
               </button>
+              {partIdx === 0 && g.chips && g.chips.length > 0 ? (
+                <div className="illust-chips" aria-label={`${g.short}のチップ`}>
+                  {g.chips.slice(0, 4).map((c) => (
+                    <span key={c} className="illust-chip">{c}</span>
+                  ))}
+                </div>
+              ) : null}
             </article>
           )
         })

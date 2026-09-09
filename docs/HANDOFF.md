@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· stamps-v2 コンテンツ復元（why/miss/window/FAQ）
+最終更新: 2026-09-09（JST）· app-seed 全面復元（deadlines/exclude/home/phases/square）
 
 ## 公開 URL
 
@@ -76,6 +76,7 @@ src/lib/amity-grok.ts
 src/lib/amity-grok-bundle.ts  # ciphertext only
 src/lib/desk-chat.ts
 src/data/tasks.json / groups.json / sources.json / phase-images.json
+src/data/deadlines.json / exclude.json / home.json / phases.json / sugoroku.json
 public/phases/            # マスイラスト（gen-*.png 追加済み）
 public/desk-mascot.png
 docs/MERGE_OVERLAPS.md  # drop→keep マッピング（本復元で吸収済み）
@@ -135,6 +136,12 @@ npx gh-pages -d dist
 10. **MERGE_OVERLAPS 吸収** — drop→keep の 12 件（A無2→G1, D2→C即6, C他6→A得11, C他5→F1, E2/E3→E1, A必4→C即13, C90-2→C90-1, C他4→A得6, D6→C他7, D15→G25, W3→B7）について、drop 側の FAQ（q 正規化で重複除去）と miss/why の差分を keep 側へ追記。F13 および未収録 stamp はタスク新規追加せずスキップ（件数を 137 のまま）。
 11. **UI** — TaskForm に「なぜやるのか」「やらないと失うもの」「いつやるか」カードと、回答つき FAQ（既定で展開）。質問のみアコーディオンは FAQ が無い場合のフォールバック。
 12. **型** — `Task` に optional `why` / `miss` / `window` / `faq`。
+### 完了（app-seed 全面復元）
+13. **deadlines/exclude/home/phases** を `src/data/` にコピーし UI 接続。
+14. **期限タブ**に「制度・カレンダー締切」（next_absolute 日付順 + URL + seed money）。
+15. **ロードマップ**に大きな数字 / 思い込み / 対象外36 / 会話10 / 時期9×出来事48。
+16. **Square 副題10・チップ31** を groups に復元し StampIllustBoard 表示。
+
 
 ### 残リスク・未解決
 - Grok 実通信はバンドル鍵／設定鍵と xAI 可用性に依存
@@ -143,13 +150,52 @@ npx gh-pages -d dist
 - `.view-switch` CSS は未使用のまま残存（無害）。必要なら後で掃除
 
 ## 直近コミット目安
-- （本更新）stamps-v2 content restore: why/miss/window/FAQ + MERGE_OVERLAPS absorption
+- （本更新）app-seed restore: deadlines/exclude/home/phases + square subtitle/chips + UI
+- （直前）stamps-v2 content restore: why/miss/window/FAQ + MERGE_OVERLAPS absorption
 - （直前）pads MAX=6 + journey list view-switch 削除
 - `6a172af` — サブマス分割 + FAB/Sheet z-index
 - `f9c9843` — HANDOFF: stamp overflow must stay on-image
 - `fc54aac` — art-first stamp board
 - `67e1f81` — header tabs, FAB clip, Grok bundle
 
+
+
+
+## シード復元チェックリスト（verified）
+
+| item | old (app-seed / sugoroku) | now_data | now_ui |
+|------|---------------------------|----------|--------|
+| why | 150 (stamps-v2) | 137 tasks | TaskForm カード |
+| miss | 150 | 137 | TaskForm カード |
+| window | 150 | 137 | TaskForm カード |
+| faq pairs | 681 | 656（MERGE_OVERLAPS 吸収済・drop 13 stamps の余剰は非タスク化） | TaskForm FAQ |
+| absolute deadlines | 10 next_absolute | 10 in `deadlines.json` | 期限タブ「制度・カレンダー締切」 |
+| relative deadlines | 6 | 6 | 同タブ・相対リスト |
+| exclude | 36 | 36 | ロードマップ「もらえない制度と理由」 |
+| lies_not_to_buy | 4 | 4 | ロードマップ「思い込みで損しやすいこと」 |
+| hero_numbers | 3 | 3 | ロードマップ「大きな数字」 |
+| talk_lines | 10 | 10 | ロードマップ「ふたりの会話のきっかけ」 |
+| phases | 9 | 9 | ロードマップ「時期の区切りと出来事」 |
+| events | 48 | 48 | 同上 details |
+| square subtitles | 10 | 10 on `groups.json` | StampIllustBoard caption |
+| square chips sets | 31 | 31 | StampIllustBoard chips |
+
+### 絶対日付 10（Pages 掲載）
+1. こども医療R9.1拡充・集中申請終了
+2. みらいエコZEH注文・交付申請
+3. みらいエコ／窓リノベ／給湯の交付申請予約終了
+4. iDeCo・企業型DC拠出限度引上げ
+5. 団地空き家・家賃補助R8申込
+6. 住宅取得等資金贈与・みらいエコ等申請・セルフメディケーション終期
+7. こども医療・所得制限撤廃
+8. ふるさとワンストップ特例・変更届
+9. 所得税確定申告・贈与税申告（住宅資金）
+10. 結婚・子育て資金一括贈与サンセット／産後ケアR8半額終期
+
+### 実装メモ
+- 円はシード記載のみ表示（捏造禁止）。結婚新生活は exclude + lies で 0 / 賞品扱いしない。
+- Square 副題・チップは旧 `sugoroku.json`（initial stamp app）から `groups.json` へ復元。
+- UI: `src/components/SeedContentPanels.tsx`
 
 ## Grok API キーについて（重要・2026-09-09）
 

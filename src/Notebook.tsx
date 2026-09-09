@@ -22,6 +22,7 @@ import {DEFAULT_GROK_BASE,askGrokResearch,hasBundledGrokKey,loadGrokBase,loadGro
 import {groups,reviewedOn,sources,taskById,tasks} from './data/catalog';
 import {DeskChatPanel} from './components/DeskChatPanel';
 import {StampIllustBoard} from './components/StampIllustBoard';
+import {HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
 const nav=[{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:House},{id:'deadlines',label:'期限と予定',short:'期限',icon:CalendarDays},{id:'memories',label:'記念手帳',short:'記念',icon:BookHeart},{id:'find',label:'制度を探す',short:'探す',icon:Search},{id:'settings',label:'ふたりの設定',short:'設定',icon:Settings2}];
 type Modal='profile'|'pair'|'memory'|null;
@@ -98,8 +99,12 @@ export default function FutureNotebook(){
  <aside className="paper-card tip-card check-first-below"><span className="eyebrow">CHECK FIRST</span><h3>公式案内で確かめる</h3><p>表示は候補です。金額や対象条件は、各項目の公式参照先と窓口で確認してください。</p><p className="hint">{p.wdate?`婚姻日：${shortDate(p.wdate)}`:'婚姻日は設定から入れられます。'}</p><button className="text-button" onClick={openProfile}>ふたりの設定を開く<ArrowRight size={14}/></button></aside>
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'必要ならメモや次の予定を、記念手帳に残せます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div>{newLifeReady&&<Action secondary onClick={()=>newMemory()}>メモを残す</Action>}</div>
  <div className="home-bottom"><button className="monthly-invite" onClick={()=>newMemory('monthly')}><MessageCircle/><span><small>月に一度、10分だけ。</small><strong>お茶を飲みながら、ふたり会議。</strong><span>ありがとうと、来月の楽しみを。</span></span><ArrowRight/></button><div className="local-note"><MapPin size={19}/><div><strong>広島市の制度から、確かめる。</strong><p>結婚新生活支援事業は市では未実施と案内されています。勤務先や他の支援はそれぞれ確認できます。</p><a href={sources.nogrant.url} target="_blank" rel="noreferrer">市の案内 · {reviewedOn}確認<ExternalLink size={12}/></a></div></div></div>
+ <HomeInsightPanels/>
+ <PhasesPanel/>
+
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface"><SectionTitle eyebrow="TIME FOR THE TWO OF US" title="期限と、ふたりの予定。" sub="済んだ手続きは外して、これからの予定を日付順に。"><Action secondary onClick={exportCalendar} disabled={!dated.length}><Download/>カレンダーに書き出す</Action></SectionTitle>
+ <InstitutionalDeadlines child={p.child} home={p.home}/>
  <div className="schedule-layout"><section><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>基準の日付を整える</button></div>
  {dated.length?<div className="timeline">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={<Action secondary onClick={openProfile}>基準の日付を設定する</Action>}>日付が分かれば期限を確認できます。各項目に、二人で決めた予定日を入れることもできます。</EmptyState>}
  {missingDates.length>0&&<section className="missing-dates"><h3>日付が分かったら確認すること <span>{missingDates.length}</span></h3>{missingDates.map(({task:t,deadline:d})=><button key={t.id} onClick={()=>openTask(t.id)}><span><strong>{t.title}</strong><small>{d.missing}が未設定</small></span><ChevronRight size={16}/></button>)}</section>}
