@@ -1,13 +1,14 @@
 # CONTENT GUARD — シード流失防止
 
-他の AI / 開発者が UI・フレームワークを触っても、**app-seed の中身を落とさない**ための短い指針。
+他の AI / 開発者が UI・フレームワークを触っても、**app-seed 由来の中身を落とさない**ための短い指針。
 
 ## 必須
 
-1. **Source of truth:** `/workspace/marriage-research/app-seed/` またはそのコピー `src/data/`。
-2. ChatGPT ノートブック等とのマージは **rich フィールドを ABSORB**（上書きで薄くしない）。
-3. 円の金額はシード／ユーザー入力のみ。結婚新生活を賞品化しない。
-4. 完了報告の前に必ず:
+1. **Source of truth（このリポジトリ）:** `src/data/`（`tasks.json` / `deadlines.json` / `exclude.json` / `home.json` / `phases.json` / `groups.json` / `YEARLY_UPDATE.md` など）。
+2. **無いもの:** `/workspace/marriage-research/app-seed/` は Kenji のローカル Grok Bot 用アーカイブであり、**この GitHub リポには含まれない**。クローンした AI はそこを探さない・必須扱いしない。復元済みの中身はすでに `src/data` にある。
+3. ChatGPT ノートブック等とのマージは **rich フィールドを ABSORB**（上書きで薄くしない）。
+4. 円の金額はシード／ユーザー入力のみ。結婚新生活を賞品化しない。
+5. 完了報告の前に必ず:
 
 ```bash
 npm run verify:seed

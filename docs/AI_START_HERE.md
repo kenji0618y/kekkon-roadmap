@@ -20,7 +20,7 @@ Do **not** rediscover product history by chatting with Kenji.
 4. **`docs/HISTORY.md`** — chronological decisions + famous mistakes (2026-09)  
 5. **`docs/MERGE_OVERLAPS.md`** — drop→keep task merge map (already absorbed)
 
-Also useful: `docs/YEARLY_UPDATE.md` (settings shows the same text).
+Also useful: `src/data/YEARLY_UPDATE.md` (settings UI imports this). Keep `docs/YEARLY_UPDATE.md` in sync (verify-seed checks both).
 
 ## Hard rules (summary)
 
@@ -28,10 +28,12 @@ Also useful: `docs/YEARLY_UPDATE.md` (settings shows the same text).
 2. **No 結婚新生活「prize」** — Hiroshima city guide treats it as not available; do not gamify 30万/60万.  
 3. **No celebration UX** — お祝い／寿／手紙ギフト演出は復活させない.  
 4. **No secret commits** — xAI key, GitHub PAT, `.env*.local` stay out of git / Pages plaintext.  
-5. **NEVER thin app-seed** — source of truth = `/workspace/marriage-research/app-seed` **or** copies in `src/data`. Merges **ABSORB** rich fields (`why` / `miss` / `window` / FAQ / deadlines / exclude / home / phases / money_*). UI refactors must not drop data.  
+5. **NEVER thin app-seed** — **In this GitHub repo, source of truth = `src/data/*`**. Merges **ABSORB** rich fields (`why` / `miss` / `window` / FAQ / deadlines / exclude / home / phases / money_*). UI refactors must not drop data.  
 6. Before claiming done: run **`npm run verify:seed`** and paste the count table. (`prebuild` also runs it.)
 
 Full minima → `CONTENT_GUARD.md` / HANDOFF HARD RULES (~137 tasks, FAQ ≥650, etc.).
+
+> **Do not look for `/workspace/marriage-research/`.** That path is Kenji’s local Grok Bot archive only and is **not** in this repo. If you only have this GitHub clone, edit `src/data` and keep `verify:seed` green.
 
 ## Current tab IA
 
@@ -58,7 +60,7 @@ Stamps: art-first squares, corner pads **MAX=6**, overflow = **sub-mass split** 
 
 ## Famous past mistakes (do not repeat)
 
-1. **ChatGPT notebook migration thinned seed** (`fa0633d` era): dropped `why` / `miss` / `window` / FAQ (and later gaps on deadlines/exclude/home/phases/money). Restored from `marriage-research/app-seed` (`stamps-v2` → tasks, plus data JSON) via `3aeba3d` / `e9d5bae` / `dbec0ac`. **Always ABSORB; never replace-thin.**  
+1. **ChatGPT notebook migration thinned seed** (`fa0633d` era): dropped `why` / `miss` / `window` / FAQ (and later gaps on deadlines/exclude/home/phases/money). Restored into **`src/data`** from an external archive (`stamps-v2` → tasks, plus data JSON) via `3aeba3d` / `e9d5bae` / `dbec0ac`. **Always ABSORB; never replace-thin.** Do not hunt for that archive on GitHub — the restored files already live under `src/data`.  
 2. **Over-reading「チャットだけ」** (`fb9de10`): made Amity chat-only **and** removed the command-center HUD. Kenji meant Amity=chat-only, **not** abolish the desk HUD. Restored `07944e0`, then moved HUD to dedicated **デスク** tab (`8b4427a`).
 
 ## Deploy (docs live on `main`)
@@ -82,7 +84,8 @@ npx gh-pages -d dist         # ensure dist has .nojekyll
 |------|--------|
 | Sync Gist ID | `4962ce100b42c446015825282f28b774` (`futari-miraicho.json`) — PAT stays in device localStorage |
 | Grok credits / spend limits | **https://console.x.ai/** — app cannot buy credits; show JP message + link |
-| Grok key | settings localStorage override, or obfuscated `amity-grok-bundle.ts` decode at runtime — never plaintext `xai-` in git/Pages |
+| Grok key | settings **localStorage** override, else obfuscated `amity-grok-bundle.ts` decode at runtime — **never** Vite `VITE_*` env, never plaintext `xai-` in git/Pages |
+| Historical research archive | Kenji-local `marriage-research/app-seed` (Grok Bot machine only). **Not cloneable from this repo.** Shipped SoT is `src/data`. |
 
 ## Quick verify
 

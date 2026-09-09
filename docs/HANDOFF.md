@@ -4,7 +4,7 @@
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· continuity docs（AI_START_HERE / HISTORY）+ lean5（式なし非表示・pair=backup/Gist・desk slim・Grok credits案内・友人handoff）
+最終更新: 2026-09-09（JST）· continuity docs 監査修正（SoT=`src/data`・Vite env 廃止案内・HashRouter 誤解修正）+ lean5
 
 ## 公開 URL
 
@@ -21,9 +21,9 @@
 |------|------|
 | ブランド名（ユーザー向け） | **Amityちゃんにきく** |
 | ナビキャラ | **Amityちゃん**（サメ、ヘッドセット） |
-| サイドバー Grok Bot | agent id `74755f3e-2268-49fe-81d1-2ce344a05bef`（名前 Amity） |
-| 技術 | Vite + React + TS、単一 SPA、`base: './'`、Hash 向き |
-| データ | `src/data/tasks.json` 等（約 **137** タスク。149→マージ済み） |
+| サイドバー Grok Bot | agent id `74755f3e-2268-49fe-81d1-2ce344a05bef`（名前 Amity）— **Grok Bot サイドバー専用。GitHub クローンの AI は無視してよい（アプリ実行に不要）** |
+| 技術 | Vite + React + TS、単一 SPA、`base: './'`（GitHub Pages 向け相対パス）。**HashRouter は使っていない**（`App.tsx` → `Notebook` 一枚） |
+| データ | `src/data/tasks.json` 等（**137** タスク exact。過去 149→マージ済み） |
 | 保存 | **localStorage**（`futari-miraicho-v1`） |
 | 端末同期 | 秘密 **GitHub Gist**（下記） |
 
@@ -33,7 +33,7 @@
 2. **結婚新生活支援 30万/60万を賞品・獲得目標にしない**（広島市は案内上未実施、高所得で対象外になりやすい）
 3. **お祝い / 寿 / 手紙ギフト演出は復活させない**（明示的に削除済み）
 4. Secrets（xAI / GitHub PAT）を **リポジトリにコミットしない**
-5. **NEVER drop or thin app-seed content when changing UI/framework.** Source of truth = `marriage-research/app-seed` OR copies in `src/data`. ChatGPT notebook merge must **ABSORB** rich fields, never replace/thin.
+5. **NEVER drop or thin app-seed content when changing UI/framework.** **Source of truth in this repo = `src/data/`.** (`marriage-research/app-seed` is Kenji-local only, not on GitHub.) ChatGPT notebook merge must **ABSORB** rich fields, never replace/thin.
 6. **Required inventory (data in `src/data` AND mounted in UI)** — minima enforced by `npm run verify:seed` (`prebuild`):
    - tasks `why` / `miss` / `window` ≥ **137** each; FAQ pairs (q+a) ≥ **650**
    - `deadlines.next_absolute` = **10**; `relative_always` = **6**
@@ -81,7 +81,7 @@
 - キー優先順位: **localStorage `amity-grok-key`（設定オーバーライド）** → なければ **`amity-grok-bundle.ts` の難読化シファーを実行時デコード**
 - シファーは commit 可。ソース/dist に連続部分文字列 `xai-` を置かない（文字コード比較で prefix 検証）
 - チャット: FAB → `DeskChatPanel`。キーありなら必ず `askGrokResearch`。loading「AmityがGrokで調べてる…」、失敗時は toast + 理由
-- 生キーを `docs/` / git / Pages に平文で書かない。GitHub secret scanning 回避のため Vite env 埋め込みは使わない
+- 生キーを `docs/` / git / Pages に平文で書かない。**`VITE_AMITY_GROK_KEY` 等の Vite env はコードが読まない**（入れても無効）。GitHub secret scanning 回避のため Vite env 埋め込みも使わない
 
 ## リセット
 
@@ -109,7 +109,8 @@ docs/HISTORY.md         # 2026-09 decision log + famous mistakes
 docs/MERGE_OVERLAPS.md  # drop→keep マッピング（本復元で吸収済み）
 docs/HANDOFF.md
 docs/CONTENT_GUARD.md
-docs/YEARLY_UPDATE.md
+docs/YEARLY_UPDATE.md          # verify-seed が存在確認；中身は src/data と同期必須
+src/data/YEARLY_UPDATE.md       # 設定 UI が import（真の表示元）
 scripts/verify-seed.mjs
 ```
 
@@ -118,11 +119,11 @@ scripts/verify-seed.mjs
 ```bash
 cd /path/to/kekkon-roadmap
 npm ci
-# optional: write gitignored .env.production.local with VITE_AMITY_GROK_KEY=...
-npm run build
+npm run build                # prebuild → verify:seed
 # dist を gh-pages へ（例）
 npx gh-pages -d dist
 # dist 直下に .nojekyll を置くこと
+# Grok キーは Vite env では読まない。設定 UI の localStorage、または amity-grok-bundle.ts
 ```
 
 `gh` は `kenji0618y` でログイン済みの環境あり。`workflow` scope なし。
@@ -183,7 +184,7 @@ npx gh-pages -d dist
 8. **一覧 view-switch 削除** — Notebook から `mapView` / LayoutGrid·List トグル / `chapter-list` ボード分岐を削除。ロードマップは常に `StampIllustBoard`。「探す」タブと TaskForm Sheet は維持。ヒントを「縁のスタンプ・1マス最大6・多い章はカード分割」に更新。
 
 ### 完了（コンテンツ復元）
-9. **stamps-v2 → tasks.json フィールド復元** — `/workspace/marriage-research/app-seed/stamps-v2.json`（150）から、現行 137 タスクへ `why` / `miss` / `window` / `faq[{q,a}]` をマージ。ノートブック由来の `sources` / `need` / `chapter` / `group` / `type` / `notice` / `amountNote` / `verified` / `summary` / `steps` は維持（steps が空のときのみ stamp steps）。
+9. **stamps-v2 → tasks.json フィールド復元** — 外部アーカイブ `stamps-v2.json`（150・Kenji ローカルのみ）から、現行 **`src/data/tasks.json` 137** へ `why` / `miss` / `window` / `faq[{q,a}]` をマージ済み。ノートブック由来の `sources` / `need` / `chapter` / `group` / `type` / `notice` / `amountNote` / `verified` / `summary` / `steps` は維持（steps が空のときのみ stamp steps）。**クローン AI は stamps-v2 を探さず `src/data` を編集する。**
 10. **MERGE_OVERLAPS 吸収** — drop→keep の 12 件（A無2→G1, D2→C即6, C他6→A得11, C他5→F1, E2/E3→E1, A必4→C即13, C90-2→C90-1, C他4→A得6, D6→C他7, D15→G25, W3→B7）について、drop 側の FAQ（q 正規化で重複除去）と miss/why の差分を keep 側へ追記。F13 および未収録 stamp はタスク新規追加せずスキップ（件数を 137 のまま）。
 11. **UI** — TaskForm に「なぜやるのか」「やらないと失うもの」「いつやるか」カードと、回答つき FAQ（既定で展開）。質問のみアコーディオンは FAQ が無い場合のフォールバック。
 12. **型** — `Task` に optional `why` / `miss` / `window` / `faq`。

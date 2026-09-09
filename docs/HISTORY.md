@@ -6,14 +6,14 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 ## Timeline (bullet)
 
 ### Research → first PWA
-- **Research stamps / app-seed** live under `/workspace/marriage-research/` (`app-seed/stamps-v2.json`, deadlines, exclude, home, phases, YEARLY_UPDATE, etc.). This is the **content source of truth**.
+- **Content source of truth in this repo = `src/data/`.** An earlier research archive (`marriage-research/app-seed`: stamps-v2, deadlines, exclude, home, phases, YEARLY_UPDATE, …) lived on Kenji’s Grok Bot machine only and is **not** part of this GitHub clone. Treat that path as historical; do not require it.
 - `0b6c66e` (2026-09-08) — Initial commit: 結婚ロードマップ PWA + GitHub Pages intent.
 - `b17b9ce` / `47774bd` / `59ad095` / `9f41786` — Pages path / deploy fixes; Actions workflow avoided (OAuth `workflow` scope).
 
 ### ChatGPT notebook port
 - `3648677` (gh-pages/candidate era) — ChatGPT notebook「ふたりの未来帖」as candidate base.
 - `fa0633d` (2026-09-08) — Replace stamp Vite app with notebook SPA.
-- **Mistake:** notebook merge **thinned** rich stamp fields (`why` / `miss` / `window` / FAQ) and left other seed JSON unwired. Later restored from `marriage-research/app-seed` — **do not repeat** (see CONTENT_GUARD).
+- **Mistake:** notebook merge **thinned** rich stamp fields (`why` / `miss` / `window` / FAQ) and left other seed JSON unwired. Later restored **into `src/data`** from the external research archive — **do not repeat** (see CONTENT_GUARD). If you only have this repo, the restored files are already under `src/data`.
 - `34cb337` — Merge overlapping notebook tasks (→ ~137) + strip celebration UX.
 - `01a2b46` — Add **結婚デスク** command-home dashboard as primary tab (original rich HUD).
 
@@ -70,12 +70,14 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 
 - ~**137** tasks; celebration UX gone; 結婚新生活 not a prize.
 - Amity = **FAB chat-only**; desk **HUD remains** on デスク.
-- Seed inventory gated by **`verify:seed`**; never thin `app-seed`.
+- Seed inventory gated by **`verify:seed`**; never thin `src/data` (app-seed content).
 - Gist sync + localStorage; Grok credits are **external** (console.x.ai).
 - Docs continuity: `AI_START_HERE` → `HANDOFF` → `CONTENT_GUARD` → this file → `MERGE_OVERLAPS`.
 
 ## Anti-patterns checklist
 
+- [ ] Treating `/workspace/marriage-research/` as required (not in this repo)  
+- [ ] Wiring Grok via `VITE_*` env (app does not read it; use localStorage / bundle)  
 - [ ] Replacing `tasks.json` from a thinner notebook export  
 - [ ] Deleting MarriageDesk because Amity is chat-only  
 - [ ] Adding a journey “一覧” escape hatch for overflow stamps  

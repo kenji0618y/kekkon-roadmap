@@ -41,9 +41,9 @@
 
 ## 技術メモ
 
-- Vite + React + TypeScript の静的 SPA（GitHub Pages）
+- Vite + React + TypeScript の静的 SPA（GitHub Pages、`base: './'`。**HashRouter 未使用**）
 - ChatGPT Sites / D1 / vinext は使いません（端末内保存 + 任意 Gist）
-- データは `src/data`（app-seed 由来）。UI 変更でシードを薄くしない → `docs/CONTENT_GUARD.md`
+- データ正本は **`src/data`**（過去の app-seed から復元済み）。`/workspace/marriage-research` はリポに無い。UI 変更でシードを薄くしない → `docs/CONTENT_GUARD.md`
 - 結婚新生活支援事業は広島市では未実施の案内のまま（賞品扱いしません）
 - 円の金額はシードまたはユーザー入力のみ（捏造禁止）
 
