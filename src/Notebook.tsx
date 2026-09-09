@@ -42,7 +42,6 @@ export default function FutureNotebook(){
  const activeChapter=chapters.find(c=>c.id===chapter)!;
  const chapterGroups=groups.filter(g=>g.chapter===chapter);
  const activeGroup=chapterGroups.find(g=>g.id===groupId)||chapterGroups[0];
- const currentTasks=activeGroup?scoped.filter(t=>activeGroup.ids.includes(t.id)):[];
  const task=taskId?taskById[taskId]:null;
  const dates=useMemo(()=>scoped.filter(t=>!['done','na'].includes(book.records[t.id]?.status||'todo')).flatMap(task=>taskDeadlines(task,p,book.records[task.id]).map(deadline=>({task,deadline}))).sort((a,b)=>(a.deadline.date||'9999').localeCompare(b.deadline.date||'9999')),[scoped,p,book.records]);
  const dated=dates.filter(x=>x.deadline.date),missingDates=dates.filter(x=>!x.deadline.date),soon=dated.filter(x=>difference(x.deadline.date,today)<=14);
@@ -90,10 +89,10 @@ export default function FutureNotebook(){
  <div className="progress-strip"><div><span>これまでの一歩</span><strong>{done.length}<small> / {actionable.length} 項目</small></strong></div><Progress value={actionable.length?done.length/actionable.length*100:0} aria-label="対象項目の完了率"/><span className="stamp-mini">歩</span></div></section></div>
  <div className="section-heading"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2></div><div className="view-switch" role="group" aria-label="表示方法"><button className={mapView==='board'?'active':''} onClick={()=>setMapView('board')} aria-label="ロードマップで見る"><LayoutGrid size={16}/></button><button className={mapView==='list'?'active':''} onClick={()=>setMapView('list')} aria-label="一覧で見る"><List size={17}/></button></div></div>
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
- <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.en}</span><h3>{activeChapter.description}</h3></div><span className="hint">角のスタンプを押す。多いマスは見出しから一覧。</span></div>
+ <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.en}</span><h3>{activeChapter.description}</h3></div><span className="hint">イラストの角のスタンプを押して進める。多い章はカードが分かれる。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:<>
  {mapView==='board'?<StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} onSelectGroup={setGroupId} onPressStamp={openTask}/>:<div className="chapter-list">{scoped.filter(t=>t.chapter===chapter).map(t=>renderTask(t,true))}</div>}
- {mapView==='board'&&activeGroup&&<div className="square-detail"><div className="square-detail-head"><h3><span>{activeGroup.kanji}</span>{activeGroup.title}</h3><small>{currentTasks.length}項目</small></div>{currentTasks.length?currentTasks.map(t=>renderTask(t)):<div className="small-empty">現在の設定に当てはまる項目はありません。設定や「制度を探す」から確認できます。</div>}</div>}
+
  </>}
  </section>
  <aside className="paper-card tip-card check-first-below"><span className="eyebrow">CHECK FIRST</span><h3>公式案内で確かめる</h3><p>表示は候補です。金額や対象条件は、各項目の公式参照先と窓口で確認してください。</p><p className="hint">{p.wdate?`婚姻日：${shortDate(p.wdate)}`:'婚姻日は設定から入れられます。'}</p><button className="text-button" onClick={openProfile}>ふたりの設定を開く<ArrowRight size={14}/></button></aside>
@@ -144,7 +143,7 @@ export default function FutureNotebook(){
  <AlertDialog open={!!importDraft} onOpenChange={open=>{if(!open&&!data.busy)setImportDraft(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>このバックアップを読み込みますか？</AlertDialogTitle><AlertDialogDescription>{importDraft?.legacy?'旧版の状況を移行します。手順が変わっているため、旧版の小さなチェックと調査メモ・除外理由は自動移行しません。働き方は各自で設定し直してください。':'名前・日付・進捗・記念手帳を復元します。'} 現在の二人の手帳の内容は、このバックアップで置き換わります。</AlertDialogDescription></AlertDialogHeader><div className="import-details"><p>{importDraft?.book.profile.name1||'名前未設定'} & {importDraft?.book.profile.name2||'名前未設定'}</p><p>{Object.keys(importDraft?.book.records||{}).length}項目の記録 · {importDraft?.book.memories.length}件の記念</p><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>現在の内容を先に書き出す</Action></div><AlertDialogFooter><AlertDialogCancel disabled={data.busy}>キャンセル</AlertDialogCancel><AlertDialogAction disabled={data.busy} onClick={e=>{e.preventDefault();void(async()=>{if(importDraft&&await data.mutate({action:'import',book:importDraft.book},'手帳を読み込みました'))setImportDraft(null);})();}}>この内容に置き換える</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
 
 
- <button type="button" className="amity-fab" onClick={()=>setChatOpen(true)} aria-label="Amityちゃんにきく" hidden={chatOpen}>
+ <button type="button" className="amity-fab" onClick={()=>setChatOpen(true)} aria-label="Amityちゃんにきく" hidden={chatOpen || !!taskId} aria-hidden={chatOpen || !!taskId}>
   <img src="./desk-mascot.png" alt="" decoding="async"/>
  </button>
  <DeskChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} onOpenTask={(id)=>{setChatOpen(false);openTask(id);}} onGoFind={(kw)=>{setChatOpen(false);if(kw)setQuery(kw);setTab('find');}}/>

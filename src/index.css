@@ -441,3 +441,13 @@
   .workspace{padding:16px 15px 24px}
   .book-footer{padding:16px 8px 20px;font-size:10px}
 }
+
+
+/* —— Overlay stacking: content < FAB(70) < desk-chat(90) < sheet(110) < dialog(120) —— */
+.desk-chat{z-index:90}
+.amity-fab{z-index:70}
+[data-slot="sheet-overlay"],[data-slot="sheet-content"]{z-index:110}
+[data-slot="dialog-overlay"],[data-slot="dialog-content"]{z-index:120}
+[data-slot="alert-dialog-overlay"],[data-slot="alert-dialog-content"]{z-index:130}
+/* Board view: overflow list demoted — stamps stay on-image via sub-mass cards */
+.journey-panel .square-detail{display:none}

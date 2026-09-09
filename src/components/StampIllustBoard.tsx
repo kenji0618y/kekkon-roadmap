@@ -2,7 +2,7 @@ import type {Status, Group, Task} from '../lib/model'
 import {statusNames} from '../lib/model'
 import {phaseImage} from '../data/catalog'
 
-/** Max pads drawn on the art — overflow opens via square caption → detail list */
+/** Max stamps per card — overflow splits into another on-image card (sub-mass) */
 const MAX_CORNER_PADS = 4
 
 /** Prefer bottom corners when few stamps so the scene stays open */
@@ -45,16 +45,15 @@ function statusAria(status: Status | undefined) {
   return statusNames[status || 'todo']
 }
 
-/** Prefer incomplete stamps in the four corners so progress stays visible */
-function pickCornerTasks(ts: Task[], recordStatus: (id: string) => Status | undefined) {
-  if (ts.length <= MAX_CORNER_PADS) return {visible: ts, overflow: 0}
-  const open = ts.filter((t) => {
-    const s = recordStatus(t.id)
-    return s !== 'done' && s !== 'learned' && s !== 'na'
-  })
-  const rest = ts.filter((t) => !open.includes(t))
-  const visible = [...open, ...rest].slice(0, MAX_CORNER_PADS)
-  return {visible, overflow: ts.length - visible.length}
+/** Split a group's tasks into cards of ≤MAX pads (sub-mass split). */
+export function chunkTasksForCards(ts: Task[], maxPads = MAX_CORNER_PADS): Task[][] {
+  if (ts.length === 0) return [[]]
+  if (ts.length <= maxPads) return [ts]
+  const chunks: Task[][] = []
+  for (let i = 0; i < ts.length; i += maxPads) {
+    chunks.push(ts.slice(i, i + maxPads))
+  }
+  return chunks
 }
 
 type Props = {
@@ -74,84 +73,93 @@ export function StampIllustBoard({
   onSelectGroup,
   onPressStamp,
 }: Props) {
+  let cardNo = 0
+
   return (
     <div className="stamp-rally" role="list">
-      {groups.map((g, i) => {
+      {groups.flatMap((g) => {
         const ts = tasksFor(g)
-        const done = ts.filter((t) => recordStatus(t.id) === 'done').length
-        const checked = ts.filter((t) => {
-          const s = recordStatus(t.id)
-          return s === 'done' || s === 'learned'
-        }).length
-        const complete = ts.length > 0 && done === ts.length
+        const chunks = chunkTasksForCards(ts)
         const image = phaseImage(g.id)
-        const selected = activeId === g.id
-        const {visible, overflow} = pickCornerTasks(ts, recordStatus)
-        const no = String(i + 1).padStart(2, '0')
+        const partTotal = chunks.length
 
-        return (
-          <article
-            key={g.id}
-            role="listitem"
-            className={`illust-square ${selected ? 'selected' : ''} ${complete ? 'complete' : ''}`}
-          >
-            <div className="illust-frame">
-              <img
-                className="illust-art"
-                src={image}
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
+        return chunks.map((chunk, partIdx) => {
+          cardNo += 1
+          const no = String(cardNo).padStart(2, '0')
+          const done = chunk.filter((t) => recordStatus(t.id) === 'done').length
+          const checked = chunk.filter((t) => {
+            const s = recordStatus(t.id)
+            return s === 'done' || s === 'learned'
+          }).length
+          const complete = chunk.length > 0 && done === chunk.length
+          const selected = activeId === g.id
+          const captionTitle =
+            partTotal > 1 ? `${g.short} ${partIdx + 1}/${partTotal}` : g.short
+          const cardKey = partTotal > 1 ? `${g.id}__p${partIdx}` : g.id
 
-              <div
-                className="illust-pads"
-                role="group"
-                aria-label={`${g.title}のスタンプ台`}
-              >
-                {ts.length === 0 ? (
-                  <span className="stamp-pad-empty corner-empty">この設定では対象項目なし</span>
-                ) : (
-                  visible.map((t, idx) => {
-                    const st = recordStatus(t.id)
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        className={`stamp-pad corner c${cornerSlot(visible.length, idx)} ${padClass(st)}`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onSelectGroup(g.id)
-                          onPressStamp(t.id)
-                        }}
-                        aria-label={`${t.title}（${statusAria(st)}）`}
-                        title={t.title}
-                      >
-                        <span className="stamp-pad-mark">{padMark(st)}</span>
-                        <span className="stamp-pad-label">{tinyLabel(t.title)}</span>
-                      </button>
-                    )
-                  })
-                )}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="illust-caption"
-              onClick={() => onSelectGroup(g.id)}
-              aria-pressed={selected}
+          return (
+            <article
+              key={cardKey}
+              role="listitem"
+              className={`illust-square ${selected ? 'selected' : ''} ${complete ? 'complete' : ''}`}
             >
-              <span className="illust-no">{no}</span>
-              <strong>{g.short}</strong>
-              <span className="illust-progress">
-                {ts.length ? `${checked}/${ts.length}` : '—'}
-                {complete ? ' 済' : ''}
-                {overflow > 0 ? ' · 一覧' : ''}
-              </span>
-            </button>
-          </article>
-        )
+              <div className="illust-frame">
+                <img
+                  className="illust-art"
+                  src={image}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+
+                <div
+                  className="illust-pads"
+                  role="group"
+                  aria-label={`${captionTitle}のスタンプ台`}
+                >
+                  {chunk.length === 0 ? (
+                    <span className="stamp-pad-empty corner-empty">この設定では対象項目なし</span>
+                  ) : (
+                    chunk.map((t, idx) => {
+                      const st = recordStatus(t.id)
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${padClass(st)}`}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onSelectGroup(g.id)
+                            onPressStamp(t.id)
+                          }}
+                          aria-label={`${t.title}（${statusAria(st)}）`}
+                          title={t.title}
+                        >
+                          <span className="stamp-pad-mark">{padMark(st)}</span>
+                          <span className="stamp-pad-label">{tinyLabel(t.title)}</span>
+                        </button>
+                      )
+                    })
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="illust-caption"
+                onClick={() => onSelectGroup(g.id)}
+                aria-pressed={selected}
+              >
+                <span className="illust-no">{no}</span>
+                <strong>{captionTitle}</strong>
+                <span className="illust-progress">
+                  {chunk.length ? `${checked}/${chunk.length}` : '—'}
+                  {complete ? ' 済' : ''}
+                </span>
+              </button>
+            </article>
+          )
+        })
       })}
     </div>
   )
