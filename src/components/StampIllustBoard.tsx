@@ -5,7 +5,7 @@ import {phaseImage} from '../data/catalog'
 
 function shortLabel(title: string) {
   const t = title.replace(/（.*?）/g, '').replace(/\(.*?\)/g, '').trim()
-  return t.length > 8 ? `${t.slice(0, 7)}…` : t
+  return t.length > 11 ? `${t.slice(0, 10)}…` : t
 }
 
 function padClass(status: Status | undefined) {
@@ -130,7 +130,7 @@ export function StampIllustBoard({
               </div>
             </div>
 
-            <p className="illust-hint">マスの白い枠を押して、スタンプを押す</p>
+            <p className="illust-hint">大きな枠を押してスタンプ。指で押しやすいサイズです</p>
           </article>
         )
       })}

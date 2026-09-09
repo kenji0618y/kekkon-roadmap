@@ -1,5 +1,6 @@
 import {useEffect, useId, useMemo, useRef, useState} from 'react';
 import {LoaderCircle, MessageCircle, Send, X} from 'lucide-react';
+import {toast} from 'sonner';
 import {
   answerDeskQuery,
   clearChatHistory,
@@ -29,7 +30,7 @@ const WELCOME: ChatMessage = {
   at: 0,
 };
 
-const NO_KEY_TIP = '設定に xAI (Grok) APIキーを入れると深掘りできる（ビルドにキーがある場合は不要）';
+const NO_KEY_TIP = '設定に xAI (Grok) APIキーを入れると深掘りできる（バンドル済みなら不要）';
 
 export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = false}: DeskChatPanelProps) {
   const titleId = useId();
@@ -118,10 +119,12 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
         };
         setMsgs((prev) => [...prev, grokMsg]);
       } else if (grok.error !== 'aborted' && grok.error !== 'no-key') {
+        const reason = grok.error;
+        toast.error(`Grokに聞けなかったよ（${reason}）`, {duration: 7000});
         const errMsg: ChatMessage = {
           id: uid(),
           role: 'assistant',
-          text: `Grokに聞けなかったよ（${grok.error}）。上の端末内の答えを見てね。キーや通信を設定で確認して。`,
+          text: `Grokに聞けなかったよ（${reason}）。上の端末内の答えを見てね。キーや通信を設定で確認して。`,
           at: Date.now(),
         };
         setMsgs((prev) => [...prev, errMsg]);
@@ -149,7 +152,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
 
   const keyHint = loadGrokKey()
     ? hasBundledGrokKey()
-      ? '端末内検索 · Grok 深掘り（ビルドキーまたは設定）'
+      ? '端末内検索 · Grok 深掘り（バンドルまたは設定）'
       : '端末内検索 · Grok 深掘り'
     : '端末内検索 · 設定で Grok キー可';
 

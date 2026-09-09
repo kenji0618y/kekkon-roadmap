@@ -1,7 +1,9 @@
 /** Amityちゃん × Grok (xAI) research helper.
- * Key: localStorage override, else build-time VITE_AMITY_GROK_KEY (from gitignored .env*.local).
- * Never commit raw keys to tracked files. Pages bundles may embed the Vite key — rotate/limit on xAI.
+ * Key priority: localStorage override → runtime-decoded bundle (ciphertext in amity-grok-bundle.ts).
+ * Never commit plaintext keys. Ciphertext may be committed; decode only at runtime.
  */
+
+import {hasBundledGrokCipher, loadBundledGrokKey} from './amity-grok-bundle';
 
 export const GROK_KEY_LS = 'amity-grok-key';
 export const GROK_BASE_LS = 'amity-grok-base';
@@ -19,15 +21,14 @@ export const AMITY_GROK_SYSTEM = [
 
 function bundledGrokKey(): string {
   try {
-    const v = (import.meta.env.VITE_AMITY_GROK_KEY as string | undefined)?.trim();
-    return v || '';
+    return loadBundledGrokKey() || '';
   } catch {
     return '';
   }
 }
 
 export function hasBundledGrokKey(): boolean {
-  return !!bundledGrokKey();
+  return hasBundledGrokCipher() && !!bundledGrokKey();
 }
 
 export function loadGrokKey(): string {

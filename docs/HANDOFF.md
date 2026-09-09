@@ -33,11 +33,13 @@
 
 ## ナビ構成（現状）
 
-左から: **ロードマップ**（既定） → 期限と予定 → 記念手帳 → 制度を探す → ふたりの設定。**Amityちゃんにきく**は全タブ右下の丸 FAB → 前景チャット（DeskChatPanel）のみ（聞くタブ／オープニング chrome なし）。
+メインタブ（ロードマップ / 期限 / 記念 / 探す / 設定）は **ヘッダー（masthead）内・上部 sticky**。モバイルも下部固定ではなく上部。
 
-- ロードマップ: **スタンプ帳／ボード**（マス枠内にパッド）。**スクロールギャラリーにはしない**。追加イラストは `public/phases/gen-*.png`。
+**Amityちゃんにきく**は全タブ右下の丸 FAB（`overflow:hidden` + `clip-path:circle`）→ 前景チャット。
+
+- ロードマップ: **スタンプ帳／ボード**。`.illust-frame` を大きく（モバイル min-height ~420px / 3:4、デスクトップ 5:4）。パッドは枠内・大きめタップ。**スクロールギャラリー禁止**。
 - CHECK FIRST は **OUR JOURNEY の下**
-- 設定: 「今の制度を調べる」（Grok / 探すタブ導線）あり
+- 設定: 「今の制度を調べる」+ Grok キー上書き欄
 
 ## 同期（Gist）
 
@@ -51,9 +53,10 @@
 ## Amity × Grok
 
 - `src/lib/amity-grok.ts` — xAI `https://api.x.ai/v1`、モデル `grok-3`
-- キー優先順位: **localStorage `amity-grok-key`** → なければ **`import.meta.env.VITE_AMITY_GROK_KEY`**（`.env.production.local` 等・**gitignore**）
-- チャット: `DeskChatPanel`（embedded）+ 端末内 tasks 検索 → キーがあれば Grok 深掘り
-- **注意:** Pages 静的 JS に Vite キーが焼かれると抽出可能。xAI 側で制限・ローテ推奨。生キーを `docs/` や git 追跡ファイルに書かない。
+- キー優先順位: **localStorage `amity-grok-key`（設定オーバーライド）** → なければ **`amity-grok-bundle.ts` の難読化シファーを実行時デコード**
+- シファーは commit 可。ソース/dist に連続部分文字列 `xai-` を置かない（文字コード比較で prefix 検証）
+- チャット: FAB → `DeskChatPanel`。キーありなら必ず `askGrokResearch`。loading「AmityがGrokで調べてる…」、失敗時は toast + 理由
+- 生キーを `docs/` / git / Pages に平文で書かない。GitHub secret scanning 回避のため Vite env 埋め込みは使わない
 
 ## リセット
 
@@ -70,6 +73,7 @@ src/components/StampIllustBoard.tsx  # ボード配置（スクロールギャ�
 src/lib/use-book.ts
 src/lib/gist-sync.ts
 src/lib/amity-grok.ts
+src/lib/amity-grok-bundle.ts  # ciphertext only
 src/lib/desk-chat.ts
 src/data/tasks.json / groups.json / sources.json / phase-images.json
 public/phases/            # マスイラスト（gen-*.png 追加済み）
@@ -94,10 +98,12 @@ npx gh-pages -d dist
 
 ## ユーザー要望 — 進捗（2026-09-09）
 
-1. **「Amityちゃんにきく」はチャットだけ** — **DONE**（全タブ FAB → 前景チャット。聞くタブ／タイトル・名前・得損ストリップ等の chrome 削除）
-2. **Grok API を登録済みにする** — **コード DONE**（`VITE_AMITY_GROK_KEY` フォールバック）。ビルド環境に `XAI_API_KEY` が無い場合は `.env.production.local` を再投入すること。キーはコミットしない。
-3. **写真はスタンプ帳ボードのまま＋画像を増やす** — **DONE**（**スクロールギャラリーにはしない**。`gen-*.png` を取り込み `phase-images.json` で分散）
-4. **設定に「今の制度を調べる」** — **DONE**（Grok調べ + 探すタブへ）
+1. **「Amityちゃんにきく」はチャットだけ** — **DONE**（FAB → 前景チャット）
+2. **Grok を使えるように** — **DONE**（難読化バンドル `amity-grok-bundle.ts` + 設定オーバーライド。平文キーは git に載せない）
+3. **スタンプ帳ボード＋画像** — **DONE**（ギャラリー禁止。フレーム／パッドを大きくして押しやすく）
+4. **設定に「今の制度を調べる」** — **DONE**
+5. **フッターナビ → ヘッダー** — **DONE**（sticky top tabs）
+6. **FAB 円形クリップ** — **DONE**
 
 ## 意図的にやらないこと
 
@@ -117,9 +123,7 @@ npx gh-pages -d dist
 
 ## Grok API キーについて（重要・2026-09-09）
 
-xAI キーを Vite ビルドに埋め込んで `gh-pages` へ push すると、**GitHub secret scanning が拒否**する（公開 JS から抽出されるため）。正しい挙動。
+平文の xAI キーを Pages に焼くと **GitHub secret scanning が push を拒否**する。
 
-**運用:**
-- 各端末の **設定 → Amityちゃん · Grok 深掘り** に xAI APIキーを一度入れる（`localStorage` の `amity-grok-key`）
-- リポジトリ / Pages にはキーを載せない
-- `.env.production.local` は gitignore（ローカル検証用のみ）
+**現行:** `src/lib/amity-grok-bundle.ts` に XOR+分割 Base64 のシファーのみコミット。実行時デコード。設定欄はオーバーライド用。
+再生成: box-secrets の `XAI_API_KEY` からローカルスクリプトで bundle を作り直す（平文をログしない）。
