@@ -8,6 +8,7 @@ import {
   saveChatHistory,
   type ChatMessage,
 } from '../lib/desk-chat';
+import type {Profile} from '../lib/model';
 import {askGrokResearch, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, hasBundledGrokKey, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
 import {markGrokLocalOnly, readGrokLocalOnlyFlag, GROK_MODE_EVENT} from '../lib/grok-mode';
 
@@ -16,6 +17,8 @@ export type DeskChatPanelProps = {
   onClose: () => void;
   onOpenTask: (id: string) => void;
   onGoFind?: (keyword?: string) => void;
+  /** When set, local matches respect Lean / inScope (hide ceremony when ceremony==='no'). */
+  profile?: Profile | null;
   /** When true, render as full in-page panel (no modal/backdrop). */
   embedded?: boolean;
 };
@@ -33,7 +36,7 @@ const WELCOME: ChatMessage = {
 
 const NO_KEY_TIP = '設定に xAI (Grok) APIキーを入れると深掘りできる（バンドル済みなら不要）';
 
-export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = false}: DeskChatPanelProps) {
+export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = null, embedded = false}: DeskChatPanelProps) {
   const titleId = useId();
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -89,7 +92,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, embedded = f
     const q = raw.trim().slice(0, 200);
     if (!q || busy) return;
     const userMsg: ChatMessage = {id: uid(), role: 'user', text: q, at: Date.now()};
-    const ans = answerDeskQuery(q);
+    const ans = answerDeskQuery(q, 3, profile);
     const localText = ans.text;
     const hasKey = !!loadGrokKey();
 

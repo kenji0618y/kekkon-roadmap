@@ -1,5 +1,5 @@
 import {tasks, sources} from '../data/catalog';
-import type {Source, Task} from './model';
+import {inScope, type Profile, type Task} from './model';
 
 export type DeskChatMatch = {
   id: string;
@@ -176,7 +176,7 @@ function suggestFromTokens(tokens: string[]): string[] {
   return out;
 }
 
-export function answerDeskQuery(query: string, limit = 3): DeskChatAnswer {
+export function answerDeskQuery(query: string, limit = 3, profile?: Profile | null): DeskChatAnswer {
   const q = query.trim();
   if (!q) {
     return {
@@ -191,7 +191,8 @@ export function answerDeskQuery(query: string, limit = 3): DeskChatAnswer {
 
   const raw = normalize(q);
   const tokens = tokenize(q);
-  const scored = tasks
+  const pool = profile ? tasks.filter((t) => inScope(t, profile)) : tasks;
+  const scored = pool
     .map((t) => ({t, score: scoreTask(t, tokens, raw)}))
     .filter((x) => x.score >= 18)
     .sort((a, b) => b.score - a.score || a.t.id.localeCompare(b.t.id));

@@ -4,7 +4,7 @@
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· bugfix: Lean空の挙式マス非表示・ChatGPT signinリンク削除 · SoT=`src/data`
+最終更新: 2026-09-09（JST）· bugfix: Lean空マス・Amity端末内もinScope・空章EmptyState · SoT=`src/data`
 
 ## 公開 URL
 
@@ -237,7 +237,8 @@ npx gh-pages -d dist
 - （解消）continuity docs の SoT／Vite／HashRouter 誤解（`e257c2f` / `c63a1bb`）
 
 ## 直近コミット目安
-- （本更新）bugfix: Leanで空の挙式カードを出さない・死んだ ChatGPT ログインリンク削除・selectChapter が可視グループ優先
+- （本更新）Amity端末内検索も profile inScope（式なしでW*出さない）・空章EmptyState・pairラベル整理
+- （直前）Lean空の挙式カード非表示・ChatGPT signin削除
 - （直前）docs recheck: FAQ 658・YEARLY 表記・clone-AI 向け罠の除去
 - （直前）`c63a1bb` Lean hide≠delete + YEARLY identity in verify:seed；`e257c2f` SoT=`src/data`
 - （直前）lean5 `8a90775`: ceremony hide / pair backup-Gist / desk slim / credits link / friend handoff
