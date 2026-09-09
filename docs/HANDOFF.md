@@ -1,7 +1,7 @@
 # HANDOFF — Amityちゃんにきく / 結婚ロードマップ
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· ハイブリッド縁パッド MAX=6 + 一覧トグル削除
+最終更新: 2026-09-09（JST）· stamps-v2 コンテンツ復元（why/miss/window/FAQ）
 
 ## 公開 URL
 
@@ -78,7 +78,7 @@ src/lib/desk-chat.ts
 src/data/tasks.json / groups.json / sources.json / phase-images.json
 public/phases/            # マスイラスト（gen-*.png 追加済み）
 public/desk-mascot.png
-docs/MERGE_OVERLAPS.md
+docs/MERGE_OVERLAPS.md  # drop→keep マッピング（本復元で吸収済み）
 docs/HANDOFF.md
 ```
 
@@ -130,6 +130,12 @@ npx gh-pages -d dist
 7. **ハイブリッド縁パッド MAX=6** — `MAX_CORNER_PADS=6`。`cornerSlot` に 5–6（c4 mid-left / c5 mid-right）。CSS `.stamp-pad.corner.c4`/`.c5`（縦中央・min ~44px tap）。>6 は従来どおりサブマス分割。アート優先・一覧エスケープなし。
 8. **一覧 view-switch 削除** — Notebook から `mapView` / LayoutGrid·List トグル / `chapter-list` ボード分岐を削除。ロードマップは常に `StampIllustBoard`。「探す」タブと TaskForm Sheet は維持。ヒントを「縁のスタンプ・1マス最大6・多い章はカード分割」に更新。
 
+### 完了（コンテンツ復元）
+9. **stamps-v2 → tasks.json フィールド復元** — `/workspace/marriage-research/app-seed/stamps-v2.json`（150）から、現行 137 タスクへ `why` / `miss` / `window` / `faq[{q,a}]` をマージ。ノートブック由来の `sources` / `need` / `chapter` / `group` / `type` / `notice` / `amountNote` / `verified` / `summary` / `steps` は維持（steps が空のときのみ stamp steps）。
+10. **MERGE_OVERLAPS 吸収** — drop→keep の 12 件（A無2→G1, D2→C即6, C他6→A得11, C他5→F1, E2/E3→E1, A必4→C即13, C90-2→C90-1, C他4→A得6, D6→C他7, D15→G25, W3→B7）について、drop 側の FAQ（q 正規化で重複除去）と miss/why の差分を keep 側へ追記。F13 および未収録 stamp はタスク新規追加せずスキップ（件数を 137 のまま）。
+11. **UI** — TaskForm に「なぜやるのか」「やらないと失うもの」「いつやるか」カードと、回答つき FAQ（既定で展開）。質問のみアコーディオンは FAQ が無い場合のフォールバック。
+12. **型** — `Task` に optional `why` / `miss` / `window` / `faq`。
+
 ### 残リスク・未解決
 - Grok 実通信はバンドル鍵／設定鍵と xAI 可用性に依存
 - 6パッド時はイラスト中央がやや狭まる（意図的なハイブリッド）
@@ -137,7 +143,8 @@ npx gh-pages -d dist
 - `.view-switch` CSS は未使用のまま残存（無害）。必要なら後で掃除
 
 ## 直近コミット目安
-- （本更新）pads MAX=6 + journey list view-switch 削除
+- （本更新）stamps-v2 content restore: why/miss/window/FAQ + MERGE_OVERLAPS absorption
+- （直前）pads MAX=6 + journey list view-switch 削除
 - `6a172af` — サブマス分割 + FAB/Sheet z-index
 - `f9c9843` — HANDOFF: stamp overflow must stay on-image
 - `fc54aac` — art-first stamp board
