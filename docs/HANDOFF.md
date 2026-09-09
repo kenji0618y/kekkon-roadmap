@@ -114,3 +114,13 @@ npx gh-pages -d dist
 - タイムゾーン: Asia/Tokyo
 
 引き継いだら、要望を確認 → `npm run build` → `gh-pages` 更新 → スマホでハードリロード確認。
+
+
+## Grok API キーについて（重要・2026-09-09）
+
+xAI キーを Vite ビルドに埋め込んで `gh-pages` へ push すると、**GitHub secret scanning が拒否**する（公開 JS から抽出されるため）。正しい挙動。
+
+**運用:**
+- 各端末の **設定 → Amityちゃん · Grok 深掘り** に xAI APIキーを一度入れる（`localStorage` の `amity-grok-key`）
+- リポジトリ / Pages にはキーを載せない
+- `.env.production.local` は gitignore（ローカル検証用のみ）
