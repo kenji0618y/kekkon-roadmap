@@ -33,9 +33,8 @@
 
 ## ナビ構成（現状）
 
-左から: **聞く** → ロードマップ → 期限と予定 → 記念手帳 → 制度を探す → ふたりの設定
+左から: **ロードマップ**（既定） → 期限と予定 → 記念手帳 → 制度を探す → ふたりの設定。**Amityちゃんにきく**は全タブ右下の丸 FAB → 前景チャット（DeskChatPanel）のみ（聞くタブ／オープニング chrome なし）。
 
-- **聞く（旧デスク）:** Amity チャット全画面（マスコット＋チャット）。司令室ダッシュボードは廃止。得した記録／損回避はチャット上の細いストリップのみ。
 - ロードマップ: **スタンプ帳／ボード**（マス枠内にパッド）。**スクロールギャラリーにはしない**。追加イラストは `public/phases/gen-*.png`。
 - CHECK FIRST は **OUR JOURNEY の下**
 - 設定: 「今の制度を調べる」（Grok / 探すタブ導線）あり
@@ -65,7 +64,7 @@
 
 ```
 src/Notebook.tsx          # シェル・タブ
-src/components/MarriageDesk.tsx   # 聞く＝チャット専用
+src/components/MarriageDesk.tsx   # 旧聞くタブ（未使用・FAB化済み）
 src/components/DeskChatPanel.tsx  # embedded / modal
 src/components/StampIllustBoard.tsx  # ボード配置（スクロールギャラリー禁止）
 src/lib/use-book.ts
@@ -95,7 +94,7 @@ npx gh-pages -d dist
 
 ## ユーザー要望 — 進捗（2026-09-09）
 
-1. **「Amityちゃんにきく」はチャットだけ** — **DONE**（ナビ「聞く」、司令室UI削除、薄い得/損ストリップ）
+1. **「Amityちゃんにきく」はチャットだけ** — **DONE**（全タブ FAB → 前景チャット。聞くタブ／タイトル・名前・得損ストリップ等の chrome 削除）
 2. **Grok API を登録済みにする** — **コード DONE**（`VITE_AMITY_GROK_KEY` フォールバック）。ビルド環境に `XAI_API_KEY` が無い場合は `.env.production.local` を再投入すること。キーはコミットしない。
 3. **写真はスタンプ帳ボードのまま＋画像を増やす** — **DONE**（**スクロールギャラリーにはしない**。`gen-*.png` を取り込み `phase-images.json` で分散）
 4. **設定に「今の制度を調べる」** — **DONE**（Grok調べ + 探すタブへ）
