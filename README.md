@@ -80,4 +80,18 @@ npx gh-pages -d dist  # dist 直下に .nojekyll
 `AGENTS.md`（Grok / Codex / Cursor）、`CLAUDE.md`（Claude）、`CHATGPT.md`（ChatGPT）を開けば、
 そのまま `docs/AI_START_HERE.md` に進めるようになっています。Kenji に経緯を聞き直す必要はありません。
 
-現状（2026-09-11）: 176項目 / 33まとまり / FAQ 829組 / 出典117件 / 7タブ / 検査47項目。
+<!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
+<!-- STATE:TABLE -->
+| いまの状態 | 数 |
+|---|---|
+| 項目（tasks） | **176** |
+| まとまり（groups） | 33 |
+| FAQ | 829組 |
+| 出典（sources） | 117件 |
+| ふたりの練習帳 | 行動52 / 会話16 / 合意18 / 根拠18 |
+| 時期・出来事 | 9区切り / 48件 |
+| 毎年見直す項目 | 12件 |
+| タブ | 7（デスク / マップ / 期限 / 記念 / ふたり / 探す / 設定） |
+| verify-seed | 49項目 |
+| データ確認日 | 2026-09-10 |
+<!-- /STATE -->

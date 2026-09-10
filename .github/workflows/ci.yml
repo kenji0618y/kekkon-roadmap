@@ -1,0 +1,62 @@
+# どのAI（Grok / Codex / Claude / Cursor …）が push しても、
+# ここで内容の検査 → ビルド → 公開まで自動で走ります。
+# main への push で公開ページ（gh-pages）も更新されるので、手作業のデプロイは不要です。
+name: verify and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write        # gh-pages へ書き込むため
+
+concurrency:
+  group: kekkon-roadmap-ci
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # 内容が減っていないか／画面に作り手の言葉が出ていないか／
+      # ドキュメントの数字が古くなっていないか（全部まとめて verify-seed）
+      - name: 検査
+        run: npm run verify:seed
+
+      # 念のため、sync:docs をかけて差分が出ないことを確かめる
+      # （出るなら「コミットに sync:docs が入っていない」ということ）
+      - name: ドキュメントが最新か
+        run: |
+          npm run sync:docs
+          if ! git diff --quiet; then
+            echo "::error::ドキュメントが古いままです。手元で npm run sync:docs を実行し、その差分もコミットしてください。"
+            git --no-pager diff --stat
+            exit 1
+          fi
+
+      - name: ビルド
+        run: npm run build
+
+      - name: .nojekyll を置く
+        run: touch dist/.nojekyll
+
+      - name: 公開（main への push のときだけ）
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          commit_message: ${{ github.event.head_commit.message }}

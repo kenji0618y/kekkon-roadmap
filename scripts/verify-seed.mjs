@@ -6,6 +6,9 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { scanScreenLanguage } from './screen-language.mjs';
+import { collectState, stateLine } from './state.mjs';
+import { DOCS, renderBlocks, applyToFile } from './sync-docs.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const fail = [];
@@ -208,7 +211,33 @@ for (const [name, pass] of uiChecks) {
   else fail.push(`ui missing: ${name}`);
 }
 
-console.log('=== verify-seed inventory ===');
+// 画面に作り手の言葉が出ていないか（日本語を含む文字列だけを見る）
+const screen = scanScreenLanguage();
+for (const w of screen.warnings) console.error('WARN 画面用語（AIへの指示文なので表示はされません）:', w);
+if (screen.errors.length) {
+  for (const e of screen.errors) fail.push(`画面用語: ${e}`);
+} else {
+  ok.push('screen language clean (src/data + *.tsx)');
+}
+
+// ここまでが「検査項目」。+1 は、このあと必ず1件行う「docs が古くないか」の検査ぶん。
+// こうしておくと、ドキュメントに書かれる数と実行時の "all N checks passed" が一致する。
+const checkTotal = ok.length + fail.length + 1;
+if (process.argv.includes('--emit-checks')) {
+  process.stdout.write(String(checkTotal));
+  process.exit(0);
+}
+
+// ドキュメントの STATE ブロックが古くなっていないか
+const blocks = renderBlocks(collectState(), checkTotal);
+const stale = DOCS.filter((f) => existsSync(join(root, f)) && applyToFile(f, blocks, { check: true }));
+if (stale.length) {
+  fail.push(`docs が古いままです（${stale.join(' / ')}）→ npm run sync:docs を実行してコミットしてください`);
+} else {
+  ok.push(`docs state block in sync — ${stateLine(collectState(), checkTotal)}`);
+}
+
+console.log('=== verify-seed inventory ==='); 
 for (const line of ok) console.log('OK  ', line);
 if (fail.length) {
   console.error('\n=== FAILURES ===');

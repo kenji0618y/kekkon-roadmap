@@ -11,7 +11,11 @@ Do **not** rediscover product history by chatting with Kenji.
 | Pages URL | https://kenji0618y.github.io/kekkon-roadmap/ |
 | Repo | https://github.com/kenji0618y/kekkon-roadmap |
 | Owner | Kenji Kadomoto · GitHub `kenji0618y` · timezone **Asia/Tokyo** |
-| Docs tip (main) | **2026-09-11 full pass** · 176 tasks / 33 groups / FAQ 829 / sources 117 / 7 tabs / verify-seed 47 checks |
+| Docs tip (main) | 下の「いまの状態」を見てください |
+<!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
+<!-- STATE:LINE -->
+176項目 · 33まとまり · FAQ 829組 · 出典 117件 · 7タブ · 検査 49項目
+<!-- /STATE -->
 | Live app | Pages `gh-pages` = shipped app。確認は URL と `assets/index-*.js` の 200。**docs-only では再デプロイしない** |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
 
@@ -35,7 +39,9 @@ If you are reading this, continue the read order below.
 2. **`docs/HANDOFF.md`** — current IA, hard rules inventory, paths, deploy, lean5 status  
 3. **`docs/CONTENT_GUARD.md`** — never thin app-seed; run verify  
 4. **`docs/HISTORY.md`** — chronological decisions + famous mistakes (2026-09)  
-5. **`docs/MERGE_OVERLAPS.md`** — drop→keep task merge map (already absorbed)
+5. **`docs/DECISIONS.md`** — 決めたこと・やめたこと（**消したものを戻さないため**）
+6. **`docs/HOW_TO_FINISH.md`** — 終わる前にやること（コマンド1つ）
+7. **`docs/MERGE_OVERLAPS.md`** — drop→keep task merge map (already absorbed)
 
 Also useful: `src/data/YEARLY_UPDATE.md` (settings UI imports this). Keep `docs/YEARLY_UPDATE.md` in sync (verify-seed checks both).
 
@@ -52,7 +58,8 @@ Also useful: `src/data/YEARLY_UPDATE.md` (settings UI imports this). Keep `docs/
    deadlines/exclude/home/phases/money_*/practices/talks/agreements/refs）。UI の作り替えでデータを落とさない。
 7. **増やしたら下限も上げる** — `scripts/verify-seed.mjs` の数字を一緒に更新する。
    上げ忘れると、次に誰かが減らしても気づけない。
-8. 完了前に **`npm run verify:seed`**（47項目）を走らせ、カウント表を貼る。
+8. 完了前に **`npm run handoff`**（= `sync:docs` + `verify:seed`）。緑にならなければ終わりではない。
+   数字はドキュメントに自動で書き込まれる（手で書かない）。
 
 Full minima → `CONTENT_GUARD.md` / HANDOFF HARD RULES（176 tasks, FAQ ≥820 ほか）。
 

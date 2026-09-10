@@ -5,7 +5,23 @@
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: **2026-09-11（JST）**· 176 tasks / 33 groups / FAQ 829 / sources 117 / **7タブ** / verify-seed **47項目**
+最終更新: **2026-09-11（JST）**
+
+<!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
+<!-- STATE:TABLE -->
+| いまの状態 | 数 |
+|---|---|
+| 項目（tasks） | **176** |
+| まとまり（groups） | 33 |
+| FAQ | 829組 |
+| 出典（sources） | 117件 |
+| ふたりの練習帳 | 行動52 / 会話16 / 合意18 / 根拠18 |
+| 時期・出来事 | 9区切り / 48件 |
+| 毎年見直す項目 | 12件 |
+| タブ | 7（デスク / マップ / 期限 / 記念 / ふたり / 探す / 設定） |
+| verify-seed | 49項目 |
+| データ確認日 | 2026-09-10 |
+<!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
 
 ## 公開 URL

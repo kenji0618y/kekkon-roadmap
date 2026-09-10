@@ -4,8 +4,23 @@ Auto-entry for **Grok**, **ChatGPT/Codex**, **Claude**, Cursor, Copilot and any 
 
 You are in **kenji0618y/kekkon-roadmap**（Amityちゃんにきく / 結婚ロードマップ PWA）.
 
-**Last full pass: 2026-09-11.** State: 176 tasks · 33 groups · FAQ 829 · sources 117 ·
-7 tabs · `verify-seed` 47 checks. If what you see differs, trust the repo and update these docs.
+**いまの状態（自動生成）**
+
+<!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
+<!-- STATE:TABLE -->
+| いまの状態 | 数 |
+|---|---|
+| 項目（tasks） | **176** |
+| まとまり（groups） | 33 |
+| FAQ | 829組 |
+| 出典（sources） | 117件 |
+| ふたりの練習帳 | 行動52 / 会話16 / 合意18 / 根拠18 |
+| 時期・出来事 | 9区切り / 48件 |
+| 毎年見直す項目 | 12件 |
+| タブ | 7（デスク / マップ / 期限 / 記念 / ふたり / 探す / 設定） |
+| verify-seed | 49項目 |
+| データ確認日 | 2026-09-10 |
+<!-- /STATE -->
 
 ## Mandatory before any code change
 
@@ -21,10 +36,24 @@ You are in **kenji0618y/kekkon-roadmap**（Amityちゃんにきく / 結婚ロ�
    （英語の "Lean" は社内語。**画面には出さない**。）
 7. Amity は**右下の丸ボタン（チャット）だけ**。デスクタブに Amity の吹き出しは**置かない**（2026-09-10 に削除）。
 8. 円は捏造しない。結婚新生活支援を「もらえる額」にしない。お祝い演出は復活させない。秘密情報はコミットしない。
-9. 完了前に **`npm run verify:seed`** を走らせ、カウント表を貼る。ビルドは **`npm run build`**（`vite build` 単体は不可）。
-10. 公開: `npx gh-pages -d dist`（`dist/.nojekyll` を残す）。公開後、`assets/index-*.js` が **HTTP 200** か確認。
-    docs だけの変更なら `main` に push するだけ、**再デプロイしない**。
+9. 完了前に **`npm run handoff`**（= sync:docs + verify:seed）。緑にならなければ終わりではない。
+   ビルドは **`npm run build`**（`vite build` 単体は不可）。
+10. 公開は **自動**。`main` に push すれば GitHub Actions（`.github/workflows/ci.yml`）が
+    検査→ビルド→`gh-pages` まで行う。手でデプロイしない。結果は Actions タブで確認。
 11. Grok キーは localStorage か `amity-grok-bundle.ts` のみ。**`VITE_*` は使わない**。残高: https://console.x.ai/
+
+## 終わる前に（全AI共通・コマンドは1つ）
+
+```bash
+npm run handoff        # = sync:docs（数字を書き直す） + verify:seed（検査）
+```
+
+- 検査が緑にならないうちは終わりではありません。
+- **`sync:docs` が書き換えたドキュメントも一緒にコミットしてください。**
+- 画面から何かを消した／増やした／方針を変えたら、`docs/DECISIONS.md` に**1行足す**。
+- `main` に push すれば、GitHub Actions が検査→ビルド→公開まで自動で行います（手動デプロイ不要）。
+
+くわしくは **`docs/HOW_TO_FINISH.md`**。「なぜそう決めたか」は **`docs/DECISIONS.md`**。
 
 ## Screen language（いちばん破られてきた規則）
 

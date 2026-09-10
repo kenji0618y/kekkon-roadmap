@@ -10,7 +10,10 @@
     "verify:seed": "node scripts/verify-seed.mjs",
     "prebuild": "npm run verify:seed",
     "predev": "npm run verify:seed",
-    "prepreview": "npm run verify:seed"
+    "prepreview": "npm run verify:seed",
+    "sync:docs": "node scripts/sync-docs.mjs",
+    "screen": "node scripts/screen-language.mjs",
+    "handoff": "npm run sync:docs && npm run verify:seed"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
