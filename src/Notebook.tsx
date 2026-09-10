@@ -13,7 +13,7 @@ import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {MemoryForm,ProfileForm,TaskForm} from './components/notebook-forms';
 import {chapters,emptyBook,inScope,isCeremonyTask,type AgreementRecord,type Book,type Memory,type PracticeRecord,type Profile,type Task,type TaskRecord} from './lib/model';
-import {calendarFile,deadlineText,difference,formatMoney,moneyTotals,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,type Deadline} from './lib/dates';
+import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,type Deadline} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
 import {DEFAULT_GIST_ID} from './lib/gist-sync';
@@ -59,7 +59,7 @@ export default function FutureNotebook(){
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
  }).slice(0,3);
  const filtered=tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&(!scopeOnly||inScope(t,p))&&(category==='all'||t.chapter===category)&&(statusFilter==='all'||(book.records[t.id]?.status||'todo')===statusFilter)&&(!query||`${t.title} ${t.summary} ${t.sources.map(s=>sources[s].title).join(' ')}`.normalize('NFKC').toLowerCase().includes(query.normalize('NFKC').toLowerCase().trim())));
- const totals=moneyTotals(book),memoryRows=book.memories.filter(m=>memoryFilter==='all'||m.kind===memoryFilter).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+ const memoryRows=book.memories.filter(m=>memoryFilter==='all'||m.kind===memoryFilter).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
  const firstSteps=tasks.filter(t=>['prepare','life'].includes(t.chapter)&&inScope(t,p)&&book.records[t.id]?.status!=='na');
  const newLifeReady=firstSteps.length>0&&firstSteps.every(t=>book.records[t.id]?.status==='done');
  const callClose=(action:()=>void)=>{if(data.busy)return;if(dirty)setPendingClose(()=>action);else{setDirty(false);action();}};
@@ -108,7 +108,6 @@ export default function FutureNotebook(){
  <TabsContent value="desk" className="tab-surface">
  <div className="welcome-line"><div><p className="eyebrow">OUR DESK</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">いまの進みぐあいと、次にやることをまとめた画面です。項目はマップ、締切と時期の流れは期限のタブにあります。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} localOnlyMode={localOnlyMode} onOpenTask={openTask} onOpenProfile={openProfile} onGoJourney={()=>setTab('journey')} onOpenSettings={()=>setTab('settings')} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('institutional-deadlines')?.scrollIntoView({behavior:'smooth',block:'start'}));}} onGoFind={(kw)=>{if(kw)setQuery(kw);setTab('find');}}/>
- <div className="money-section"><div className="section-heading"><h2>暮らしに増えた、ゆとり。</h2><span className="hint">各項目で二人が入力した金額を集計</span></div><div className="money-grid">{([{key:'received',label:'受け取った給付・祝金',unit:'円',sub:'受取を記録した金額'},{key:'estimate',label:'これからの受取見込み',unit:'円',sub:'未受取・給付の確約ではありません'},{key:'monthlySaving',label:'固定費の削減',unit:'円／月',sub:'二人が確認した月額の差'},{key:'taxEstimate',label:'税負担の軽減見込み',unit:'円',sub:'控除対象額とは異なります'}] as const).map(m=><div className={`money-card ${m.key==='received'?'primary':''}`} key={m.key}><span>{m.label}</span><strong>{Object.values(book.records).some(r=>r.moneyKind===m.key&&r.amount!==null&&r.status!=='na')?formatMoney(totals[m.key]):'—'}<small>{m.unit}</small></strong><p>{m.sub}</p></div>)}</div><p className="hint">投資枠・運用益は集計しません。異なる期間や区分の金額を足した「総お得額」は表示していません。同じ給付を重複して入力していないか、記録を確認してください。</p></div>
  <HomeInsightPanels
   onOpenTask={openTask}
   profile={p}

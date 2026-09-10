@@ -1,7 +1,7 @@
 import {useEffect,useMemo,useState} from 'react';
 import {ArrowRight,Gauge} from 'lucide-react';
 import {chapters,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
-import {difference,validDate} from '../lib/dates';
+import {difference,formatMoney,moneyTotals,validDate} from '../lib/dates';
 import {groups} from '../data/catalog';
 import {GROK_CREDITS_CONSOLE_URL} from '../lib/amity-grok';
 import {readGrokLocalOnlyFlag} from '../lib/grok-mode';
@@ -219,6 +219,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
   }),[scoped,book.records]);
 
   const names=p.name1&&p.name2?`${p.name1} × ${p.name2}`:p.name1||p.name2||'これからの二人';
+  const totals=moneyTotals(book);
 
   return (
     <div className="desk-root desk-washi">
@@ -274,6 +275,28 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <button type="button" className="desk-cta" onClick={onOpenProfile}>手帳を整える <ArrowRight size={15}/></button>
         </div>
       )}
+
+
+      <section className="money-section" aria-label="金額の集計">
+        <div className="money-grid">
+          {([
+            {key:'received',label:'受け取った給付・祝金',unit:'円',sub:'受取を記録した金額'},
+            {key:'estimate',label:'これからの受取見込み',unit:'円',sub:'未受取・給付の確約ではありません'},
+            {key:'monthlySaving',label:'固定費の削減',unit:'円／月',sub:'二人が確認した月額の差'},
+            {key:'taxEstimate',label:'税負担の軽減見込み',unit:'円',sub:'控除対象額とは異なります'},
+          ] as const).map(m=>(
+            <div className={`money-card ${m.key==='received'?'primary':''}`} key={m.key}>
+              <span>{m.label}</span>
+              <strong>
+                {Object.values(book.records).some(r=>r.moneyKind===m.key&&r.amount!==null&&r.status!=='na')?formatMoney(totals[m.key]):'—'}
+                <small>{m.unit}</small>
+              </strong>
+              <p>{m.sub}</p>
+            </div>
+          ))}
+        </div>
+        <p className="hint">投資枠・運用益は集計しません。異なる期間や区分の金額を足した「総お得額」は表示していません。同じ給付を重複して入力していないか、記録を確認してください。</p>
+      </section>
 
       <div className="desk-decor-fold">
         {!showDecor?(
