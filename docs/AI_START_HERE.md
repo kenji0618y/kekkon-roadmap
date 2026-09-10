@@ -16,7 +16,7 @@ Do **not** rediscover product history by chatting with Kenji.
 <!-- STATE:LINE -->
 176項目 · 33まとまり · FAQ 829組 · 出典 117件 · 7タブ · 検査 49項目
 <!-- /STATE -->
-| Live app | Pages `gh-pages` = shipped app。確認は URL と `assets/index-*.js` の 200。**docs-only では再デプロイしない** |
+| Live app | Pages `gh-pages` = shipped app。`main` push で Actions が検査→公開。結果は Actions タブ／URL で確認 |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
 
 ## Auto-entry (Claude / Grok / ChatGPT)
@@ -127,21 +127,22 @@ Stamps: 絵が主役。縁のパッド **MAX=6**、溢れたら同じ絵でカ�
 4. **内容を増やしたのに下限を上げ忘れる**: `verify-seed` は「減っていないか」を見る仕組み。
    137→176 に増やしたら下限も 176 にする。上げ忘れると次に減っても気づけない。
 
-## Deploy (docs live on `main`)
+## Deploy（`main` push で自動）
 
-App Pages publish is separate from continuity docs:
+公開は **手動 `gh-pages` しない**。`.github/workflows/ci.yml` が `main` への push で
+検査 → ビルド → `gh-pages` まで行う（AGENTS / HOW_TO_FINISH と同じ）。
 
 ```bash
-cd /path/to/kekkon-roadmap   # this repo
+cd /path/to/kekkon-roadmap
 npm ci
-npm run build                # MUST use npm (runs verify:seed via prebuild). Do **not** call `vite build` alone.
-npx gh-pages -d dist         # ensure dist has .nojekyll
+npm run handoff              # sync:docs + verify:seed（緑必須）
+npm run build                # MUST use npm（prebuild で verify）。`vite build` 単体は不可
+git push origin main         # Actions が公開まで実行。結果は Actions タブ
 ```
 
-- Continuity markdown (`docs/*`, README) → commit + **push `origin main` only**.  
-- Rebuild + `gh-pages` **only when the shipped app / asset paths change** — not for docs-only edits.  
-- GitHub Actions workflow push often fails (OAuth missing `workflow` scope) → manual `gh-pages` is fine.
-- **After app deploy:** open Pages, confirm `index.html`’s `assets/index-*.js` returns **HTTP 200** (CDN can briefly serve old HTML while the new hashed JS is missing → blank/old app). Phone: hard reload or tap PWA「更新があります」.
+- 公開ページ: https://kenji0618y.github.io/kekkon-roadmap/
+- CDN が古い HTML を掴むことがある → スマホはハードリロード or PWA「更新があります」
+- Actions が赤ならログを直してから再 push。手で `npx gh-pages` しない（二重公開の元）
 
 ## External (not in-repo)
 
@@ -156,8 +157,8 @@ npx gh-pages -d dist         # ensure dist has .nojekyll
 ## Quick verify
 
 ```bash
-npm run verify:seed
+npm run handoff
 npm run build
 ```
 
-Then open Pages on phone with hard reload if you deployed the app.
+Push `main` → Actions が公開。スマホは必要ならハードリロード。
