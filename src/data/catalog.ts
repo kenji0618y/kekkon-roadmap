@@ -71,7 +71,6 @@ export const homeContent = homeData as {
   talk_lines: {id:string;line:string;from?:string}[];
   tomorrow_3_actions: TomorrowAction[];
   anti_lie_banner?: string;
-  headline?: string;
 };
 
 export const phasesContent = phasesData as {

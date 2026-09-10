@@ -326,7 +326,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         ):(
           <>
             <div className="desk-decor-toolbar">
-              <span className="hint">進捗の補助ビジュアル（Ridge・Activity・装飾）</span>
+              <span className="hint">章ごとの進み・最近の動き・つながりの図</span>
               <button type="button" className="desk-linkish" onClick={()=>setShowDecor(false)}>閉じる</button>
             </div>
             <div className="desk-main-grid">
@@ -345,7 +345,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
                   <div className="desk-ridge-plot">
                     <StageRidge stages={stages}/>
                     <div className="desk-ridge-callout" aria-hidden>
-                      <span>P[+DONE]</span>
+                      <span>完了</span>
                       <strong>{progressPct}%</strong>
                     </div>
                   </div>
@@ -423,7 +423,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
 
       <div className="desk-footer-actions">
         <button type="button" className="desk-cta secondary" onClick={onGoJourney}>ロードマップを開く <ArrowRight size={15}/></button>
-        <p className="desk-footnote">金額は、二人が各項目に入れた記録だけを合計しています（得した記録＝受け取った額／損を防いだ記録＝毎月の節約＋税の軽減）。まだ入れていないものは — と出ます。日付の決まった締切は「期限」タブに、Amityちゃんは右下のボタンにいます。</p>
+        <p className="desk-footnote">上の金額は、二人が各項目に入れた記録だけを合計しています（受け取った額、これからの見込み、毎月の節約、税の軽減）。まだ入れていないものは — と出ます。日付の決まった締切は「期限」タブに、Amityちゃんは右下のボタンにいます。</p>
       </div>
     </div>
   );

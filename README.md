@@ -53,7 +53,7 @@
 
 ```bash
 npm ci
-npm run verify:seed   # 必須：完了報告前にカウントを貼る（prebuild でも実行・46項目）
+npm run verify:seed   # 必須：完了報告前にカウントを貼る（prebuild でも実行・47項目）
 npm run build
 npx gh-pages -d dist  # dist 直下に .nojekyll
 ```
@@ -80,4 +80,4 @@ npx gh-pages -d dist  # dist 直下に .nojekyll
 `AGENTS.md`（Grok / Codex / Cursor）、`CLAUDE.md`（Claude）、`CHATGPT.md`（ChatGPT）を開けば、
 そのまま `docs/AI_START_HERE.md` に進めるようになっています。Kenji に経緯を聞き直す必要はありません。
 
-現状（2026-09-11）: 176項目 / 33まとまり / FAQ 829組 / 出典117件 / 7タブ / 検査46項目。
+現状（2026-09-11）: 176項目 / 33まとまり / FAQ 829組 / 出典117件 / 7タブ / 検査47項目。

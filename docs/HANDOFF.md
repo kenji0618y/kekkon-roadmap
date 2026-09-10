@@ -5,7 +5,7 @@
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: **2026-09-11（JST）**· 176 tasks / 33 groups / FAQ 829 / sources 117 / **7タブ** / verify-seed **46項目**
+最終更新: **2026-09-11（JST）**· 176 tasks / 33 groups / FAQ 829 / sources 117 / **7タブ** / verify-seed **47項目**
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
 
 ## 公開 URL
@@ -40,7 +40,7 @@
 5. **NEVER drop or thin app-seed content when changing UI/framework.** **Source of truth in this repo = `src/data/`.** (`marriage-research/app-seed` is Kenji-local only, not on GitHub.) ChatGPT notebook merge must **ABSORB** rich fields, never replace/thin.
 6. **Required inventory (data in `src/data` AND mounted in UI)** — minima enforced by `npm run verify:seed` (`prebuild`):
    - tasks 件数 = **176**（exact）; `why`/`miss`/`window`/`track` ≥ **176** each; FAQ pairs ≥ **820**
-   - tasks `pad`（絵の上の短縮名・3〜8字）は全件必須
+   - tasks `pad`（絵の上の短縮名・2〜8字）= **176**（exact・検査あり）
    - `deadlines.next_absolute` = **10**; `relative_always` = **6**
    - `exclude.items` = **36**
    - home: hero=**3**, lies=**4**, talk=**10**, `tomorrow_3_actions`=**3**, `anti_lie_banner` present
@@ -125,7 +125,8 @@ src/lib/amity-grok-bundle.ts        # ciphertext only（連続 "xai-" 禁止）
 src/lib/desk-chat.ts                # 端末内フォールバック
 src/lib/grok-mode.ts
 src/data/tasks.json / groups.json / sources.json / phase-images.json
-src/data/deadlines.json / exclude.json / home.json / phases.json / sugoroku.json
+src/data/deadlines.json / exclude.json / home.json / phases.json
+src/data/sugoroku.json              # 未使用（過去のスタンプ版の参考データ。import されていない）
 src/data/practices.json / talks.json / agreements.json / refs.json   # ふたりタブ
 src/data/YEARLY_UPDATE.md         # 設定 UI 表示元（import）
 docs/YEARLY_UPDATE.md            # verify-seed が存在+同一内容を検査
@@ -161,7 +162,7 @@ npx gh-pages -d dist
 
 > **ここから下は履歴です。** 2026-09-09 までの経緯と、そのときの数字（137 タスクなど）が
 > そのまま残してあります。**現状の数字は上の「ハードルール」「ナビ構成」を見てください**
-> （2026-09-11 時点で 176 タスク・7タブ・verify-seed 46項目）。
+> （2026-09-11 時点で 176 タスク・7タブ・verify-seed 47項目）。
 > 履歴の数字を現状と取り違えないこと。
 
 ## 復元メモ（2026-09-09）
@@ -284,7 +285,11 @@ npx gh-pages -d dist
 
 
 
-## シード復元チェックリスト（verified）
+## シード復元チェックリスト（**2026-09-09 時点のスナップショット**）
+
+> この表は当時の記録です。**現状の数字ではありません**（2026-09-11 現在 176項目・FAQ 829・
+> subtitle 12・chips 33・money_in 107・money_out 59）。「時期」タブと track バッジは廃止済み。
+> 現状は上の「ハードルール」「ナビ構成」を見てください。
 
 | item | old (app-seed / sugoroku) | now_data | now_ui |
 |------|---------------------------|----------|--------|
@@ -302,7 +307,7 @@ npx gh-pages -d dist
 | events | 48 | 48 | 時期タブ details |
 | square subtitles | 10 | 10 on `groups.json` | StampIllustBoard caption |
 | square chips sets | 31 | 31 | StampIllustBoard chips |
-| home.headline | 1 | 1 | デスク HomeInsightPanels 先頭 |
+| home.headline | 1 | **廃止（2026-09-10）** | — |
 | tomorrow_3_actions | 3 | 3 | デスク統合「次のアクション」（seed優先＋動的fill · stamp → TaskForm） |
 | money_in on tasks | 110 stamps / 0 tasks | **99**（マッチ＋吸収） | TaskForm「シード金額メモ」入 |
 | money_out on tasks | 56 stamps / 0 tasks | **54** | TaskForm「シード金額メモ」出 |

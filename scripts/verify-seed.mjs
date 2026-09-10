@@ -91,6 +91,12 @@ check('tasks.faq_pairs', faqPairs, 820);
 check('tasks.money_in', moneyIn, 90);
 check('tasks.money_out', moneyOut, 50);
 check('tasks.track', track, 176);
+// pad = 絵の上に出る短縮名。長いと枠からはみ出し、無いと機械的に切れて読めなくなる。
+const pads = tasks.filter((t) => {
+  const n = [...String(t.pad || '').trim()].length;
+  return n >= 2 && n <= 8;
+}).length;
+check('tasks.pad(2-8字)', pads, 176, true);
 check('deadlines.next_absolute', abs, 10, true);
 check('deadlines.relative_always', rel, 6, true);
 check('exclude.items', excl, 36, true);
@@ -127,6 +133,16 @@ for (const t of talks) {
 }
 if (!refs.some((r) => /DV相談/.test(r.title))) fail.push('pair.refs: DV相談の窓口が外れています');
 if (!refs.some((r) => /性犯罪・性暴力/.test(r.title))) fail.push('pair.refs: 性犯罪・性暴力の案内が外れています');
+for (const r of refs) {
+  for (const key of ['kind', 'by', 'title', 'summary', 'limits', 'url']) {
+    if (!String(r[key] || '').trim()) fail.push(`pair.refs: ${r.id} の ${key} が空です`);
+  }
+}
+for (const a of agreements) {
+  for (const key of ['topic', 'question']) {
+    if (!String(a[key] || '').trim()) fail.push(`pair.agreements: ${a.id} の ${key} が空です`);
+  }
+}
 check('groups.chips_sets', chipSets, 33);
 
 // Yearly-review items: commercial perks that go stale. Count is a floor;

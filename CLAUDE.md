@@ -5,7 +5,7 @@ Auto-loaded project instructions for Claude.
 Follow **`AGENTS.md`**, then read **`docs/AI_START_HERE.md`** completely before changing code or data.
 
 **Last full pass: 2026-09-11** — 176 tasks · 33 groups · FAQ 829 · sources 117 · 7 tabs ·
-`verify-seed` 46 checks.
+`verify-seed` 47 checks.
 
 Critical (do not skip):
 

@@ -1,7 +1,7 @@
 # Copilot / ChatGPT instructions — kekkon-roadmap
 
 Treat **`AGENTS.md`** and **`docs/AI_START_HERE.md`** as mandatory context before suggesting
-or applying changes. Last full pass: **2026-09-11**（176 tasks · 7 tabs · verify-seed 46 checks）.
+or applying changes. Last full pass: **2026-09-11**（176 tasks · 7 tabs · verify-seed 47 checks）.
 
 - Product: Amityちゃんにきく (Hiroshima marriage roadmap PWA)
 - Source of truth: `src/data/*` only (no external `/workspace/marriage-research`)

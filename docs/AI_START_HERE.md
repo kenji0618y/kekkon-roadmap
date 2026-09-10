@@ -11,7 +11,7 @@ Do **not** rediscover product history by chatting with Kenji.
 | Pages URL | https://kenji0618y.github.io/kekkon-roadmap/ |
 | Repo | https://github.com/kenji0618y/kekkon-roadmap |
 | Owner | Kenji Kadomoto · GitHub `kenji0618y` · timezone **Asia/Tokyo** |
-| Docs tip (main) | **2026-09-11 full pass** · 176 tasks / 33 groups / FAQ 829 / sources 117 / 7 tabs / verify-seed 46 checks |
+| Docs tip (main) | **2026-09-11 full pass** · 176 tasks / 33 groups / FAQ 829 / sources 117 / 7 tabs / verify-seed 47 checks |
 | Live app | Pages `gh-pages` = shipped app。確認は URL と `assets/index-*.js` の 200。**docs-only では再デプロイしない** |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
 
@@ -52,7 +52,7 @@ Also useful: `src/data/YEARLY_UPDATE.md` (settings UI imports this). Keep `docs/
    deadlines/exclude/home/phases/money_*/practices/talks/agreements/refs）。UI の作り替えでデータを落とさない。
 7. **増やしたら下限も上げる** — `scripts/verify-seed.mjs` の数字を一緒に更新する。
    上げ忘れると、次に誰かが減らしても気づけない。
-8. 完了前に **`npm run verify:seed`**（46項目）を走らせ、カウント表を貼る。
+8. 完了前に **`npm run verify:seed`**（47項目）を走らせ、カウント表を貼る。
 
 Full minima → `CONTENT_GUARD.md` / HANDOFF HARD RULES（176 tasks, FAQ ≥820 ほか）。
 
@@ -104,9 +104,9 @@ Stamps: 絵が主役。縁のパッド **MAX=6**、溢れたら同じ絵でカ�
 | `tasks[].pad` | `src/data/tasks.json` 全176件 | 絵の上の短縮名。無いと機械的に切れて読めなくなる |
 | `tasks[].review` | 12件 | 毎年見直す民間サービスの最終確認日。ビルドが15か月超を警告（止めない）|
 | `practices/talks/agreements/refs.json` | `src/data/` | 「ふたり」タブ。`refs[].kind`（研究/提案/公的/書籍）と `limits` を消さない |
-| DV相談・性犯罪/性暴力の窓口 | `refs.json` R15・R16 | **外すと verify が落ちる。** 話し合いを無理に進めない但し書きも残す |
+| 性犯罪・性暴力（R15）・DV相談（R16）の窓口 | `refs.json` | **外すと verify が落ちる。** 話し合いを無理に進めない但し書きも残す |
 | `bookSchema.practices` / `.agreements` | `src/lib/model.ts` | **既定値つきのまま。必須にすると既存の手帳が読めなくなる** |
-| `sources[].note` | `src/data/sources.json` | ロボット避けで403のサイト（Amazon・トイザらス・三井住友・SAGE・PubMed・外務省）の目印 |
+| ロボット避けで403の目印 | `sources[].note`（Amazon・ベビーザらス・三井住友）と `refs[].note`（SAGE・PubMed）| **別ファイル**。リンク切れと誤判定しない |
 
 ## Famous past mistakes (do not repeat)
 

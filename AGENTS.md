@@ -5,7 +5,7 @@ Auto-entry for **Grok**, **ChatGPT/Codex**, **Claude**, Cursor, Copilot and any 
 You are in **kenji0618y/kekkon-roadmap**（Amityちゃんにきく / 結婚ロードマップ PWA）.
 
 **Last full pass: 2026-09-11.** State: 176 tasks · 33 groups · FAQ 829 · sources 117 ·
-7 tabs · `verify-seed` 46 checks. If what you see differs, trust the repo and update these docs.
+7 tabs · `verify-seed` 47 checks. If what you see differs, trust the repo and update these docs.
 
 ## Mandatory before any code change
 
@@ -48,11 +48,12 @@ You are in **kenji0618y/kekkon-roadmap**（Amityちゃんにきく / 結婚ロ�
   `npm run build` が15か月を過ぎた項目を警告する（ビルドは止めない）。手順は `docs/YEARLY_UPDATE.md`。
 - `src/data/practices.json`(52) / `talks.json`(16) / `agreements.json`(18) / `refs.json`(18)
   — 「ふたり」タブ。**研究／専門家の提案／公的機関／書籍の区別（`refs[].kind`）と
-  `limits`（限界）を消さない。** DV相談・性犯罪/性暴力の窓口（R15・R16）を外すと verify が落ちる。
+  `limits`（限界）を消さない。** 性犯罪・性暴力（R15）と DV相談（R16）の窓口を外すと verify が落ちる。
 - `bookSchema.practices` / `.agreements` — **既定値つき（`.catch({}).default({})`）。必須にしない。**
   必須にすると、すでに使っている手帳が読めなくなる。
-- `sources[].note` — 「自動チェックでは403になりますが、ブラウザでは開けます」。
-  Amazon・トイザらス・三井住友カード・SAGE・PubMed・外務省は**ロボット避けで403**。リンク切れと誤判定しない。
+- **ロボット避けで403になるサイト**（リンク切れと誤判定しない）。note に明記してある:
+  `sources.json` → Amazon（2件）・ベビーザらス（2件）・三井住友カード（2件）／
+  `refs.json` → SAGE（R01・R08・R09・R10・R14）・PubMed（R11）。**別ファイル・別フィールド**なので混ぜない。
 
 ## Entry map
 

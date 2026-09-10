@@ -31,7 +31,7 @@ npm run verify:seed
 |------|------|
 | tasks 件数 | **=176**（完全一致）|
 | tasks why / miss / window / track | ≥176 each |
-| tasks pad（絵の上の短縮名） | 全件必須（3〜8字）|
+| tasks pad（絵の上の短縮名） | =176・2〜8字（検査あり）|
 | faq pairs (q+a) | ≥820 |
 | deadlines next_absolute / relative | =10 / =6 |
 | exclude.items | =36 |
@@ -45,6 +45,6 @@ npm run verify:seed
 | refs の DV相談・性犯罪/性暴力の窓口 | 必須（外すと fail）|
 
 UI: `SeedContentPanels`（tomorrow_3_actions・deadlines・exclude・phases）、TaskForm（why/miss/window/FAQ/お金のめやす）、
-`PairWorkbook`（「ふたり」タブ本体と安全に関する一節）がマウントされていること。検査は全部で **46項目**。
+`PairWorkbook`（「ふたり」タブ本体と安全に関する一節）がマウントされていること。検査は全部で **47項目**。
 
 失敗したら「UI を直したのでシードは後で」ではなく、**シードを戻してから**マージする。

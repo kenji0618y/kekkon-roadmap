@@ -2,7 +2,7 @@
 
 Follow **`AGENTS.md`**, then open **`docs/AI_START_HERE.md`** before changing this repo.
 
-**Last full pass: 2026-09-11** — 176 tasks · 7 tabs · `verify-seed` 46 checks.
+**Last full pass: 2026-09-11** — 176 tasks · 7 tabs · `verify-seed` 47 checks.
 
 Same hard rules as `AGENTS.md` / `CLAUDE.md`:
 

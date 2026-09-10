@@ -74,8 +74,8 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
   ロボット避けで403のサイトは `sources[].note` に明記してリンク切れと誤判定しないようにした。
 - **エクセル2冊を反映**: `hiroshima_marriage_checklist.xlsx`（109項目・出典108）から
   サイトに無かった39項目を追加し 137→**176**。育休・復職まわりがまるごと抜けていたので
-  `sq-childleave` を新設。民間の特典は入れ替わりが激しいので `tasks[].review` と
-  15か月超の警告を作り、`sq-yearly-perks` にまとめた。
+  `sq-childleave` を新設。民間の特典は入れ替わりが激しいので `tasks[].review`（12件）と 15か月超の警告を作った。
+  うち Y1–Y4 は `sq-yearly-perks` を新設してまとめ、**残り8件は内容に合ったまとまりに置いたまま**（動かさない）。
 - **`happy_marriage_workbook.xlsx`** は期限もお金もない別種の内容だったので、
   手続きのタスクに混ぜず **「ふたり」タブ**として独立（行動52 / 会話16 / 合意18 / 根拠18）。
   研究と専門家の提案を分けたまま、`limits`（限界）も残した。DV相談・性犯罪/性暴力の窓口は
@@ -93,17 +93,18 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 
 | id | Intent (paraphrase) | What we did / should remember |
 |----|---------------------|-------------------------------|
-| `t37u` | Want a dynamic 結婚デスク / command HUD | `01a2b46` introduced; must remain (now desk tab) |
+| `t37u` | Want a dynamic 結婚デスク | `01a2b46` で導入。パネルは**デスクタブに存続**。ただし 2026-09-10 に**ダークな HUD をやめて和紙**にした（戻さない）|
 | `t53u` | Amity / 聞く = **chat-only** | FAB + `DeskChatPanel`; not a second dashboard |
 | `t66u` | No list escape from stamp art | Dropped journey list toggle; overflow = sub-mass |
 | `t87`–`t89` | Restore HUD; chat-only ≠ delete HUD | `07944e0` + tab split `8b4427a` |
 
 ## Standing outcomes (as of `119404f` · docs full pass 2026-09-11)
 
-- **137** tasks exact; celebration UX gone; 結婚新生活 not a prize.
-- Amity = **FAB chat-only**; desk **HUD remains** on デスク.
+- **176** tasks exact; celebration UX gone; 結婚新生活 not a prize.
+- Amity = **FAB chat-only**。デスクのパネルは存続するが、2026-09-10 に**ダークな HUD をやめて和紙**にし、
+  デスクの Amity 吹き出しは削除した。**どちらも戻さない。**
 - Seed inventory gated by **`verify:seed`**; never thin **`src/data`** (GitHub SoT). Local `marriage-research/` is optional archive only.
-- Lean: `ceremony==='no'` **hides** ceremony tasks in UI; **do not delete** them from `tasks.json`.
+- 式なし: `ceremony==='no'` は ceremony タスクを UI で**隠すだけ**。`tasks.json` から**消さない**。"Lean" は社内語で画面には出さない。
 - Gist sync + localStorage; Grok credits are **external** (console.x.ai). No `VITE_*` Grok key.
 - Docs continuity: `AI_START_HERE` → `HANDOFF` → `CONTENT_GUARD` → this file → `MERGE_OVERLAPS`.
 
