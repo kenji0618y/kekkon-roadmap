@@ -58,6 +58,10 @@ const exclude = loadJson('src/data/exclude.json') || {};
 const home = loadJson('src/data/home.json') || {};
 const phases = loadJson('src/data/phases.json') || {};
 const groups = loadJson('src/data/groups.json') || [];
+const practices = loadJson('src/data/practices.json') || [];
+const talks = loadJson('src/data/talks.json') || [];
+const agreements = loadJson('src/data/agreements.json') || [];
+const refs = loadJson('src/data/refs.json') || [];
 
 const why = tasks.filter((t) => t.why && String(t.why).trim()).length;
 const miss = tasks.filter((t) => t.miss && String(t.miss).trim()).length;
@@ -73,21 +77,20 @@ const hero = (home.hero_numbers || []).length;
 const lies = (home.lies_not_to_buy || []).length;
 const talk = (home.talk_lines || []).length;
 const tomorrow = (home.tomorrow_3_actions || []).length;
-const headline = home.headline && String(home.headline).trim() ? 1 : 0;
 const banner = home.anti_lie_banner && String(home.anti_lie_banner).trim() ? 1 : 0;
 const phaseN = (phases.phases || []).length;
 const events = (phases.phases || []).reduce((n, p) => n + ((p.events || []).length), 0);
 const subtitles = groups.filter((g) => g.subtitle && String(g.subtitle).trim()).length;
 const chipSets = groups.filter((g) => Array.isArray(g.chips) && g.chips.length > 0).length;
 
-check('tasks.count', tasks.length, 137, true);
-check('tasks.why', why, 137);
-check('tasks.miss', miss, 137);
-check('tasks.window', window, 137);
-check('tasks.faq_pairs', faqPairs, 650);
+check('tasks.count', tasks.length, 176, true);
+check('tasks.why', why, 176);
+check('tasks.miss', miss, 176);
+check('tasks.window', window, 176);
+check('tasks.faq_pairs', faqPairs, 820);
 check('tasks.money_in', moneyIn, 90);
 check('tasks.money_out', moneyOut, 50);
-check('tasks.track', track, 137);
+check('tasks.track', track, 176);
 check('deadlines.next_absolute', abs, 10, true);
 check('deadlines.relative_always', rel, 6, true);
 check('exclude.items', excl, 36, true);
@@ -95,12 +98,60 @@ check('home.hero_numbers', hero, 3, true);
 check('home.lies_not_to_buy', lies, 4, true);
 check('home.talk_lines', talk, 10, true);
 check('home.tomorrow_3_actions', tomorrow, 3, true);
-check('home.headline', headline, 1, true);
 check('home.anti_lie_banner', banner, 1, true);
 check('phases.count', phaseN, 9, true);
 check('phases.events', events, 48);
-check('groups.subtitle', subtitles, 10);
-check('groups.chips_sets', chipSets, 31);
+check('groups.subtitle', subtitles, 12);
+
+// 「ふたりの練習帳」の中身。ここも減らさない。
+check('pair.practices', practices.length, 52, true);
+check('pair.practice_themes', new Set(practices.map((p) => p.theme)).size, 14);
+check('pair.talks', talks.length, 16, true);
+check('pair.agreements', agreements.length, 18, true);
+check('pair.refs', refs.length, 18, true);
+const refIds = new Set(refs.map((r) => r.id));
+for (const row of [...practices, ...talks, ...agreements]) {
+  for (const id of row.refs || []) {
+    if (!refIds.has(id)) fail.push(`pair: ${row.id} が知らない根拠 ${id} を指しています`);
+  }
+}
+for (const p of practices) {
+  for (const key of ['idea', 'action', 'when', 'caution']) {
+    if (!String(p[key] || '').trim()) fail.push(`pair.practices: ${p.id} の ${key} が空です`);
+  }
+}
+for (const t of talks) {
+  for (const key of ['scene', 'say', 'listen', 'next', 'caution']) {
+    if (!String(t[key] || '').trim()) fail.push(`pair.talks: ${t.id} の ${key} が空です`);
+  }
+}
+if (!refs.some((r) => /DV相談/.test(r.title))) fail.push('pair.refs: DV相談の窓口が外れています');
+if (!refs.some((r) => /性犯罪・性暴力/.test(r.title))) fail.push('pair.refs: 性犯罪・性暴力の案内が外れています');
+check('groups.chips_sets', chipSets, 33);
+
+// Yearly-review items: commercial perks that go stale. Count is a floor;
+// staleness is a WARNING (loud, but never blocks a build a year from now).
+const reviewed = tasks.filter((t) => t.review);
+check('tasks.yearly_review', reviewed.length, 12);
+const warn = [];
+const DAY = 24 * 60 * 60 * 1000;
+for (const t of reviewed) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(t.review)) {
+    fail.push(`tasks.review: ${t.id} の日付が YYYY-MM-DD ではありません (${t.review})`);
+    continue;
+  }
+  const months = (Date.now() - Date.parse(`${t.review}T00:00:00Z`)) / (30.44 * DAY);
+  if (months > 15) warn.push(`${t.id} ${t.title}（最終確認 ${t.review} · ${Math.floor(months)}か月前）`);
+}
+if (warn.length) {
+  console.log('');
+  console.log('=== 毎年見直す項目の期限です ===');
+  console.log('民間のサービスは条件が変わります。公式ページで確かめて、');
+  console.log('tasks.json の "review" を今日の日付に更新してください。');
+  for (const w of warn) console.log(`  ・${w}`);
+  console.log('手順は docs/YEARLY_UPDATE.md の「毎年見直す項目」を見てください。');
+  console.log('');
+}
 
 // UI mounts
 const panels = readText('src/components/SeedContentPanels.tsx');
@@ -109,7 +160,6 @@ const forms = readText('src/components/notebook-forms.tsx');
 
 const uiChecks = [
   ['SeedContentPanels HomeInsightPanels', panels.includes('export function HomeInsightPanels')],
-  ['SeedContentPanels headline', panels.includes('headline')],
   ['SeedContentPanels tomorrow_3_actions', panels.includes('tomorrow_3_actions')],
   ['SeedContentPanels InstitutionalDeadlines', panels.includes('export function InstitutionalDeadlines')],
   ['SeedContentPanels PhasesPanel', panels.includes('export function PhasesPanel')],
@@ -118,8 +168,11 @@ const uiChecks = [
   ['Notebook mounts InstitutionalDeadlines', notebook.includes('InstitutionalDeadlines')],
   ['Notebook mounts PhasesPanel', notebook.includes('PhasesPanel')],
   ['Notebook wires onOpenTask to HomeInsightPanels', /HomeInsightPanels[^>]*onOpenTask/.test(notebook)],
-  ['TaskForm seed money memo', forms.includes('シード金額メモ')],
+  ['TaskForm seed money memo', forms.includes('お金のめやす')],
   ['TaskForm why/miss/window', forms.includes('なぜやるのか') && forms.includes('やらないと失うもの')],
+  ['PairWorkbook mounted', notebook.includes('PairWorkbook')],
+  ['PairWorkbook safety note', readText('src/components/PairWorkbook.tsx').includes('pair-safety')],
+  ['Pair tab in nav', /id:'pair'/.test(notebook)],
   ['YEARLY_UPDATE in docs', existsSync(join(root, 'docs/YEARLY_UPDATE.md'))],
   ['YEARLY_UPDATE in src/data', existsSync(join(root, 'src/data/YEARLY_UPDATE.md'))],
   ['YEARLY_UPDATE surfaced in Notebook', notebook.includes('毎年更新メモ') || notebook.includes('yearlyUpdateMd')],

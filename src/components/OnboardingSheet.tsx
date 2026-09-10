@@ -70,7 +70,7 @@ export function OnboardingSheet({
           <p className="eyebrow">FIRST STEPS</p>
           <DialogTitle>まずは、ふたりの前提を。</DialogTitle>
           <DialogDescription>
-            広島市・共働き Lean（式なし寄り）向け。分かるところだけで大丈夫。金額は入力しません。
+            広島市で、式は挙げない前提の共働き向けです。分かるところだけで大丈夫。金額は入れません。
           </DialogDescription>
         </DialogHeader>
         <form
@@ -105,7 +105,7 @@ export function OnboardingSheet({
                 label="式・披露宴"
                 value={p.ceremony}
                 onChange={(v) => change('ceremony', v)}
-                options={{no: '予定なし（Lean）', yes: '予定あり', unknown: '未定'}}
+                options={{no: '予定なし', yes: '予定あり', unknown: '未定'}}
               />
               <Choice
                 label="働き方・扶養"
@@ -126,7 +126,7 @@ export function OnboardingSheet({
                 options={{company: '会社員', public: '公務員', self: '自営業・フリーランス', other: 'その他', unknown: '未設定'}}
               />
             </div>
-            <p className="hint">円の金額はここでは入力しません（捏造禁止）。結婚新生活支援は賞品扱いしません。</p>
+            <p className="hint">金額はここでは入れません。あとから各項目に、実際に分かった額だけを記録できます。</p>
             {err && (
               <p role="alert" className="inline-error">
                 {err}

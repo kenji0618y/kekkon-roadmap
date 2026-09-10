@@ -29,5 +29,7 @@
   "sq-divorce": "phases/phase8-divorce-hedge.png",
   "sq-wedding": "phases/rm-company.png",
   "sq-selfemployed": "phases/gen-stamp-grid.png",
-  "sq-partners": "phases/gen-stamp-board.png"
+  "sq-partners": "phases/gen-stamp-board.png",
+  "sq-childleave": "phases/rm-birth-money.png",
+  "sq-yearly-perks": "phases/gen-money-family.png"
 }

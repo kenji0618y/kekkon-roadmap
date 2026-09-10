@@ -1,0 +1,200 @@
+[
+  {
+    "id": "R01",
+    "kind": "研究・観察",
+    "by": "Algoe, Kurtz & Hilaire（2016）",
+    "title": "Putting the “You” in “Thank You”",
+    "summary": "感謝を伝える会話で、相手の行動をほめる表現は、受け手の「理解され大切にされた」という感覚等と関連した。",
+    "limits": "米国のカップルの会話を分析。特定の言い回しで長期の幸福が必ず増えるという試験ではない。本文確認。",
+    "url": "https://journals.sagepub.com/doi/10.1177/1948550616651681",
+    "checked": "2026-09-10",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  {
+    "id": "R02",
+    "kind": "専門家の提案",
+    "by": "The Gottman Institute",
+    "title": "Turn Towards Instead of Away",
+    "summary": "日常の小さな働きかけに気づき、応答するという提案。",
+    "limits": "専門機関の解説。掲載されている割合を、お二人の達成ノルマや離婚予測には使わない。本文確認。",
+    "url": "https://www.gottman.com/blog/turn-toward-instead-of-away/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R03",
+    "kind": "専門家の提案",
+    "by": "The Gottman Institute",
+    "title": "The Sound Relationship House: Build Love Maps",
+    "summary": "相手の関心・心配・夢などを知り、変化に合わせて理解を更新する。",
+    "limits": "相手についての正解数を競う用途にはしない。一般向け解説の本文確認。",
+    "url": "https://www.gottman.com/blog/the-sound-relationship-house-build-love-maps/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R04",
+    "kind": "専門家の提案",
+    "by": "The Gottman Institute",
+    "title": "How to Fight Smarter: Soften Your Start-Up",
+    "summary": "不満は人格批判にせず、状況・自分の気持ち・具体的な希望として伝える。",
+    "limits": "丁寧に話せば相手が必ず応じるとは限らない。会話例は本表で作成した応用例。本文確認。",
+    "url": "https://www.gottman.com/blog/softening-startup/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R05",
+    "kind": "専門家の提案",
+    "by": "The Gottman Institute",
+    "title": "The Four Horsemen: The Antidotes",
+    "summary": "批判・軽蔑・防御・応答の遮断に対し、穏やかな要望、尊重、責任の引受け、休止を提案。",
+    "limits": "休止は関係を断つ罰にしない。全員が同じ時間で落ち着くという保証はない。本文確認。",
+    "url": "https://www.gottman.com/blog/the-four-horsemen-the-antidotes/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R06",
+    "kind": "専門家の提案",
+    "by": "The Gottman Institute",
+    "title": "Manage Conflict: The Art of Compromise",
+    "summary": "大切にしたい核心と、方法を変えられる部分を分け、互いの意見を受け入れる。",
+    "limits": "安全・同意・尊厳を交換条件にする妥協には用いない。本文確認。",
+    "url": "https://www.gottman.com/blog/manage-conflict-the-art-of-compromise/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R07",
+    "kind": "専門家の提案",
+    "by": "The Gottman Institute",
+    "title": "Manage Conflict: The Aftermath of a Fight",
+    "summary": "落ち着いた後、各自の感じ方・自分の責任・次回の改善を振り返る。",
+    "limits": "感じ方の違いを認めることは、暴力や客観的な事実を曖昧にすることではない。本文確認。",
+    "url": "https://www.gottman.com/blog/manage-conflict-the-aftermath-of-a-fight/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R08",
+    "kind": "研究・介入試験",
+    "by": "Finkelほか（2013）",
+    "title": "A Brief Intervention to Promote Conflict Reappraisal Preserves Marital Quality Over Time",
+    "summary": "120組を2年間追跡。2年目の再評価課題へ無作為に割り当てた群では、対照群で続いた関係の質の低下が見られなかった。",
+    "limits": "出版社の抄録を確認。下記の短い会話例は試験手順そのものではなく、同じ効果を検証していない。",
+    "url": "https://journals.sagepub.com/doi/10.1177/0956797612474938",
+    "checked": "2026-09-10",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  {
+    "id": "R09",
+    "kind": "研究・質的調査",
+    "by": "Daminger（2019）",
+    "title": "The Cognitive Dimension of Household Labor",
+    "summary": "35組・70件の面接から、必要への気づき、選択肢探し、意思決定、進捗確認という見えにくい家事を整理。",
+    "limits": "この研究の男女差を、お二人の現状や性別役割の決めつけに使わない。出版社の抄録確認。",
+    "url": "https://journals.sagepub.com/doi/10.1177/0003122419859007",
+    "checked": "2026-09-10",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  {
+    "id": "R10",
+    "kind": "研究・観察",
+    "by": "Gordon & Chen（2014、オンライン2013）",
+    "title": "The Role of Sleep in Interpersonal Conflict",
+    "summary": "日誌調査と実験室での会話観察で、睡眠の悪さと葛藤・共感の低さ等の関連が報告された。",
+    "limits": "睡眠を無作為に操作した試験として扱わない。睡眠だけを原因に断定しない。出版社の抄録確認。",
+    "url": "https://journals.sagepub.com/doi/abs/10.1177/1948550613488952",
+    "checked": "2026-09-10",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  {
+    "id": "R11",
+    "kind": "研究・調査・実験",
+    "by": "Aronほか（2000）",
+    "title": "Couples’ shared participation in novel and arousing activities and experienced relationship quality",
+    "summary": "調査と3つの実験で、二人で新しく刺激のある活動をすることと、関係の質の関連・短期的変化を検討した。",
+    "limits": "短い実験課題の結果。旅行・料理など各例の効果や長期的な幸福を直接検証したものではない。PubMed抄録確認。",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/10707334/",
+    "checked": "2026-09-10",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  {
+    "id": "R12",
+    "kind": "専門家の提案",
+    "by": "John & Julie Gottman／The Gottman Institute",
+    "title": "The Eight Conversations That Matter Most in Relationships",
+    "summary": "信頼、対立、親密さ、仕事とお金、家族、楽しみ、成長、夢を対話のテーマとして紹介。",
+    "limits": "著者による書籍紹介記事。8回話せば一生幸せになるという保証として扱わない。本文確認。",
+    "url": "https://www.gottman.com/blog/the-eight-conversations-that-matter-most-in-relationships/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R13",
+    "kind": "公的機関の助言",
+    "by": "NHS（英国国民保健サービス）",
+    "title": "Relationships after having a baby",
+    "summary": "産後の疲労や時間不足、家事育児の共有、必要な支援の伝達、家族や友人とのつながりについて助言。",
+    "limits": "英国の一般向け情報。記載の英国相談先を日本の窓口として案内しない。個別の診断はしない。本文確認。",
+    "url": "https://www.nhs.uk/baby/support-and-services/relationships-after-having-a-baby/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R14",
+    "kind": "研究・レビュー",
+    "by": "Impett, Park & Muise（2024）",
+    "title": "Popular Psychology Through a Scientific Lens: Evaluating Love Languages",
+    "summary": "愛情表現を固定した5種類に分類し、互いの型を合わせると満足が高まるという主要仮説には、強い実証的支持がないと評価。",
+    "limits": "好みを尋ねることの否定ではない。分類を診断や相性の断定に使わない。本文確認。",
+    "url": "https://journals.sagepub.com/doi/full/10.1177/09637214231217663",
+    "checked": "2026-09-10",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  {
+    "id": "R15",
+    "kind": "公的機関の説明",
+    "by": "内閣府男女共同参画局",
+    "title": "性犯罪・性暴力とは",
+    "summary": "夫婦間でも性的同意が必要。一つの行為への同意は別の行為への同意を意味しない。",
+    "limits": "断れない状況は本当の同意とはいえない。希望する子どもの有無と、個々の性的行為への同意は別。本文確認。",
+    "url": "https://www.gender.go.jp/policy/no_violence/seibouryoku/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R16",
+    "kind": "公的窓口",
+    "by": "内閣府男女共同参画局",
+    "title": "DV相談について",
+    "summary": "DV相談ナビ #8008 は最寄りの配偶者暴力相談支援センターへつなぐ。",
+    "limits": "通話料あり・接続先の受付時間内。緊急の危険は110。これは該当時の案内で、お二人に問題があるという判断ではない。本文確認。",
+    "url": "https://www.gender.go.jp/policy/no_violence/dv_navi/index.html",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R17",
+    "kind": "書籍の公式紹介",
+    "by": "John Gottman／Julie Schwartz Gottman／Douglas Abrams／Rachel Carlton Abrams",
+    "title": "Eight Dates: Essential Conversations for a Lifetime of Love",
+    "summary": "結婚前後の大切なテーマを二人で話すための本。",
+    "limits": "公式紹介のみ確認。本を通読した要約ではない。日本語版の版・在庫は未確認。",
+    "url": "https://www.gottman.com/eight-dates/",
+    "checked": "2026-09-10",
+    "note": ""
+  },
+  {
+    "id": "R18",
+    "kind": "書籍の公式紹介",
+    "by": "Sue Johnson",
+    "title": "Hold Me Tight: Seven Conversations for a Lifetime of Love",
+    "summary": "感情のつながり、関係で繰り返す悪循環、安心感を扱う本。",
+    "limits": "著者公式サイトの紹介のみ確認。書籍を読むことの治療効果を保証しない。日本語版の版・在庫は未確認。",
+    "url": "https://drsuejohnson.com/books/",
+    "checked": "2026-09-10",
+    "note": ""
+  }
+]

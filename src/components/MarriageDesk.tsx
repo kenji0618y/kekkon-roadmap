@@ -1,32 +1,30 @@
 import {useEffect,useMemo,useState} from 'react';
-import {ArrowRight,ClipboardCopy,Gauge,MessageCircle} from 'lucide-react';
-import {toast} from 'sonner';
+import {ArrowRight,Gauge} from 'lucide-react';
 import {chapters,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
-import {difference,formatMoney,moneyTotals,validDate} from '../lib/dates';
+import {difference,validDate} from '../lib/dates';
 import {absoluteDeadlines,groups} from '../data/catalog';
 import {GROK_CREDITS_CONSOLE_URL} from '../lib/amity-grok';
 import {readGrokLocalOnlyFlag} from '../lib/grok-mode';
 
 /** Public Pages URL for friend handoff (copy button). */
-export const FRIEND_HANDOFF_URL = 'https://kenji0618y.github.io/kekkon-roadmap/';
 
 const typeLabels={procedure:'手続き',benefit:'給付',tax:'税',investment:'資産',contract:'契約',conversation:'対話'} as const;
 const typeColors:Record<string,string>={procedure:'#3b82f6',benefit:'#10b981',tax:'#f59e0b',investment:'#8b5cf6',contract:'#ef4444',conversation:'#ec4899'};
 const chapterColors=['#10b981','#3b82f6','#f59e0b','#ec4899','#8b5cf6','#14b8a6'];
 const statusTag:Partial<Record<Status,{tag:string,tone:string}>>={
-  done:{tag:'DONE',tone:'green'},
-  applied:{tag:'APLY',tone:'blue'},
-  waiting:{tag:'WAIT',tone:'yellow'},
-  preparing:{tag:'PREP',tone:'yellow'},
-  learned:{tag:'SYNC',tone:'blue'},
-  todo:{tag:'TODO',tone:'gray'},
-  na:{tag:'SKIP',tone:'gray'},
+  done:{tag:'済',tone:'green'},
+  applied:{tag:'申請',tone:'blue'},
+  waiting:{tag:'待ち',tone:'yellow'},
+  preparing:{tag:'準備',tone:'yellow'},
+  learned:{tag:'確認',tone:'blue'},
+  todo:{tag:'これから',tone:'gray'},
+  na:{tag:'対象外',tone:'gray'},
 };
 
 type Activity={id:string,title:string,status:Status,at:string,sort:string};
 
-function japanClock(d=new Date()){
-  return new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d);
+function japanToday(d=new Date()){
+  return new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',month:'long',day:'numeric',weekday:'short'}).format(d);
 }
 
 function activityStamp(iso:string,today:string){
@@ -125,7 +123,7 @@ function TypeNetwork({mix}:{mix:{type:string,label:string,count:number,done:numb
   return (
     <svg className="desk-net-svg" viewBox={`0 0 ${size} ${size}`} role="img" aria-label="項目タイプのネットワーク">
       <circle cx={cx} cy={cy} r={28} className="desk-net-hub"/>
-      <text x={cx} y={cy+4} textAnchor="middle" className="desk-net-hub-label">TYPE</text>
+      <text x={cx} y={cy+4} textAnchor="middle" className="desk-net-hub-label">種類</text>
       {nodes.map((n,i)=>(
         <g key={n.type}>
           <line x1={cx} y1={cy} x2={n.x} y2={n.y} stroke={typeColors[n.type]||'#94a3b8'} strokeWidth={1+n.ratio*2} opacity={0.35+n.ratio*0.4} className="desk-net-link"/>
@@ -149,13 +147,6 @@ function LatticeWire(){
   );
 }
 
-const DESK_TIPS=[
-  'わからないことは右下の Amityちゃん FAB から聞いてね（チャット専用）。',
-  '次のアクションはデスク下の1ブロック（シード優先）。詳細はロードマップへ。',
-  '期限が近い項目は「期限と予定」でまとめて確認できるよ。',
-  '端末どうしの同期は設定で PAT を入れるだけ。Gist は用意済み。',
-  'ここは司令室 HUD。金額は入力記録とシード案内のみ（捏造なし）。',
-] as const;
 
 export type MarriageDeskProps={
   book:Book;
@@ -177,27 +168,11 @@ export type MarriageDeskProps={
   /** Jump to 期限 tab (InstitutionalDeadlines). */
   onGoDeadlines?:()=>void;
   /** Opens Amity FAB chat (Amity is chat-only; not embedded here). */
-  onAskAmity?:()=>void;
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',localOnlyMode=false,onOpenTask,onOpenProfile,onGoJourney,onOpenSettings,onGoDeadlines,onAskAmity}:MarriageDeskProps){
-  const [clock,setClock]=useState(()=>japanClock());
-  const [tipIdx,setTipIdx]=useState(0);
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',localOnlyMode=false,onOpenTask,onOpenProfile,onGoJourney,onOpenSettings,onGoDeadlines}:MarriageDeskProps){
   const [showDecor,setShowDecor]=useState(false);
-  useEffect(()=>{
-    const id=window.setInterval(()=>setClock(japanClock()),1000);
-    return ()=>window.clearInterval(id);
-  },[]);
-  useEffect(()=>{
-    const id=window.setInterval(()=>setTipIdx(i=>(i+1)%DESK_TIPS.length),5200);
-    return ()=>window.clearInterval(id);
-  },[]);
 
-  const totals=useMemo(()=>moneyTotals(book),[book]);
-  const hasReceived=useMemo(()=>Object.values(book.records).some(r=>r.moneyKind==='received'&&r.amount!==null&&r.status!=='na'),[book.records]);
-  const hasEstimate=useMemo(()=>Object.values(book.records).some(r=>r.moneyKind==='estimate'&&r.amount!==null&&r.status!=='na'),[book.records]);
-  const hasAvoided=useMemo(()=>Object.values(book.records).some(r=>(r.moneyKind==='monthlySaving'||r.moneyKind==='taxEstimate')&&r.amount!==null&&r.status!=='na'),[book.records]);
-  const avoidedTotal=totals.monthlySaving+totals.taxEstimate;
   const progressPct=actionable.length?Math.round(done.length/actionable.length*100):0;
 
   const weddingMetric=useMemo(()=>{
@@ -254,14 +229,14 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
     return {id:g.id,short:g.short,kanji:g.kanji,done:d,total:ts.length,ratio:ts.length?d/ts.length:0};
   }),[scoped,book.records]);
 
-  const names=p.name1&&p.name2?`${p.name1} × ${p.name2}`:p.name1||p.name2||'ふたりの司令室';
+  const names=p.name1&&p.name2?`${p.name1} × ${p.name2}`:p.name1||p.name2||'これからの二人';
 
   return (
-    <div className="desk-root desk-hud">
+    <div className="desk-root desk-washi">
       <header className="desk-titlebar">
         <div className="desk-title-left">
           <Gauge size={18} aria-hidden/>
-          <h1>結婚デスク｜司令室</h1>
+          <h1>ふたりの手帳</h1>
           <span className="desk-subtitle">{names}</span>
         </div>
         <div className="desk-title-right">
@@ -275,49 +250,19 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           )}
           {syncStatus!=='off'&&(
             <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
-              {syncStatus==='syncing'?'SYNC…':syncStatus==='ok'?'SYNC':syncStatus==='error'?'SYNC!':'SYNC'}
+              {syncStatus==='syncing'?'同期中…':syncStatus==='ok'?'同期済み':syncStatus==='error'?'同期できず':'同期'}
             </span>
           )}
-          <span className="desk-live" aria-label="ライブ"><i/><span>LIVE</span></span>
-          <time className="desk-clock" dateTime={clock}>{clock}</time>
+          <time className="desk-clock" dateTime={today}>{japanToday()}</time>
         </div>
       </header>
 
-      <div className="desk-navi">
-        <button
-          type="button"
-          className="desk-navi-mascot"
-          onClick={()=>onAskAmity?.()}
-          aria-label="Amityちゃん。右下FABと同じくチャットを開く"
-        >
-          <img src="./desk-mascot.png" alt="" width={96} height={96} decoding="async"/>
-        </button>
-        <div className="desk-navi-bubble" role="status">
-          <p key={tipIdx}>{DESK_TIPS[tipIdx]}</p>
-          <div className="desk-navi-actions">
-            {onAskAmity&&<button type="button" className="desk-navi-ask" onClick={onAskAmity}><MessageCircle size={12} aria-hidden/>Amityに聞く</button>}
-            <button type="button" onClick={onGoJourney}>ロードマップへ</button>
-            {onOpenSettings&&<button type="button" onClick={onOpenSettings}>同期の設定</button>}
-          </div>
-        </div>
-      </div>
-
       <section className="desk-metrics" aria-label="主要指標">
         <article className="desk-metric">
-          <span className="desk-metric-label">Progress</span>
+          <span className="desk-metric-label">これまで</span>
           <strong className="desk-metric-value">{actionable.length?`${progressPct}%`:'—'}</strong>
           <span className="desk-metric-sub">{done.length}/{actionable.length} 完了 · 対象内</span>
           <div className="desk-metric-bar" aria-hidden><i style={{width:`${progressPct}%`}}/></div>
-        </article>
-        <article className="desk-metric">
-          <span className="desk-metric-label">得した記録</span>
-          <strong className="desk-metric-value">{hasReceived?formatMoney(totals.received):'—'}{hasReceived&&<small>円</small>}</strong>
-          <span className="desk-metric-sub">{hasEstimate?`見込み ${formatMoney(totals.estimate)}円（入力のみ）`:'入力した受取のみ · 未入力は —'}</span>
-        </article>
-        <article className="desk-metric">
-          <span className="desk-metric-label">損回避・節約</span>
-          <strong className="desk-metric-value">{hasAvoided?formatMoney(avoidedTotal):'—'}{hasAvoided&&<small>円</small>}</strong>
-          <span className="desk-metric-sub">月額節約＋税軽減の入力合計 · 未入力は —</span>
         </article>
         <article className={`desk-metric ${weddingMetric.tone?`tone-${weddingMetric.tone}`:''}`}>
           <span className="desk-metric-label">{weddingMetric.label}</span>
@@ -336,7 +281,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
       {!hasBook&&(
         <div className="desk-start">
           <div>
-            <strong>司令室 HUD を満たすには、まず手帳を整えよう</strong>
+            <strong>この画面を使いはじめるには、まず手帳を整えよう</strong>
             <p>呼び名や婚姻日を入れると、進捗・期限・活動がここに集まります。</p>
           </div>
           <button type="button" className="desk-cta" onClick={onOpenProfile}>手帳を整える <ArrowRight size={15}/></button>
@@ -372,32 +317,11 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         </section>
       )}
 
-      <section className="desk-card desk-friend-handoff" aria-label="友人への渡し方">
-        <div className="desk-card-head"><span className="desk-dot"/>友人への渡し方（3行）</div>
-        <ol className="desk-friend-steps">
-          <li>①このURLを開く</li>
-          <li>②ホーム画面に追加</li>
-          <li>③初回オンボードで区・式なしを設定</li>
-        </ol>
-        <div className="desk-friend-actions">
-          <code className="desk-friend-url">{FRIEND_HANDOFF_URL}</code>
-          <button
-            type="button"
-            className="desk-cta secondary desk-friend-copy"
-            onClick={()=>void(async()=>{
-              try{await navigator.clipboard.writeText(FRIEND_HANDOFF_URL);toast.success('URLをコピーしました');}
-              catch{toast.error('コピーできませんでした。URLを長押しでコピーしてください。');}
-            })}
-          >
-            <ClipboardCopy size={14} aria-hidden/>URLをコピー
-          </button>
-        </div>
-      </section>
 
       <div className="desk-decor-fold">
         {!showDecor?(
           <button type="button" className="desk-more-viz" onClick={()=>setShowDecor(true)}>
-            くわしく見る · Ridge / Activity / Chord / Lattice / Network
+            くわしく見る · 章ごとの進み／最近の動き／つながり／重さ／種類のバランス
           </button>
         ):(
           <>
@@ -407,7 +331,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
             </div>
             <div className="desk-main-grid">
               <section className="desk-card desk-ridge-card">
-                <div className="desk-card-head"><span className="desk-dot"/>ロードマップ進捗 · Ridge</div>
+                <div className="desk-card-head"><span className="desk-dot"/>章ごとの進みぐあい</div>
                 <div className="desk-ridge-body">
                   <ul className="desk-ridge-stats">
                     {stages.map(s=>(
@@ -429,10 +353,10 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
               </section>
 
               <section className="desk-card desk-log-card">
-                <div className="desk-card-head"><span className="desk-dot"/>活動ログ · Activity</div>
+                <div className="desk-card-head"><span className="desk-dot"/>最近うごいたこと</div>
                 <div className="desk-log" role="list">
                   {activity.length?activity.map(a=>{
-                    const meta=statusTag[a.status]||{tag:'EVNT',tone:'gray'};
+                    const meta=statusTag[a.status]||{tag:'記録',tone:'gray'};
                     return (
                       <button type="button" className="desk-log-row" key={a.id} role="listitem" onClick={()=>onOpenTask(a.id)}>
                         <span className="desk-log-time">{activityStamp(a.at,today)}</span>
@@ -448,7 +372,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
             </div>
             <div className="desk-lower-grid">
               <section className="desk-card">
-                <div className="desk-card-head"><span className="desk-dot"/>章のつながり · Chord</div>
+                <div className="desk-card-head"><span className="desk-dot"/>章どうしのつながり</div>
                 <div className="desk-viz">
                   <ChapterChord stages={stages}/>
                   <ul className="desk-viz-legend">
@@ -458,13 +382,12 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
               </section>
 
               <section className="desk-card desk-lattice-card">
-                <div className="desk-card-head"><span className="desk-dot"/>戦略格子 · Lattice</div>
+                <div className="desk-card-head"><span className="desk-dot"/>章ごとの重さと進み</div>
                 <div className="desk-lattice-wrap">
                   <div className="desk-lattice-stats">
-                    <div><span>Vertices</span><strong>{actionable.length}</strong></div>
-                    <div><span>Edges</span><strong>{groups.filter(g=>scoped.some(t=>g.ids.includes(t.id))).length}</strong></div>
-                    <div><span>Done</span><strong className="ok">{done.length}</strong></div>
-                    <div><span>Rotation</span><strong className="mono">∞°</strong></div>
+                    <div><span>対象の項目</span><strong>{actionable.length}</strong></div>
+                    <div><span>まとまり</span><strong>{groups.filter(g=>scoped.some(t=>g.ids.includes(t.id))).length}</strong></div>
+                    <div><span>済んだ数</span><strong className="ok">{done.length}</strong></div>
                   </div>
                   <LatticeWire/>
                 </div>
@@ -479,7 +402,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
               </section>
 
               <section className="desk-card">
-                <div className="desk-card-head"><span className="desk-dot"/>タイプ構成 · Network</div>
+                <div className="desk-card-head"><span className="desk-dot"/>項目の種類のバランス</div>
                 <div className="desk-viz">
                   <TypeNetwork mix={typeMix}/>
                   <div className="desk-type-bars">
@@ -500,7 +423,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
 
       <div className="desk-footer-actions">
         <button type="button" className="desk-cta secondary" onClick={onGoJourney}>ロードマップを開く <ArrowRight size={15}/></button>
-        <p className="desk-footnote">金額は二人が各項目に入力した記録のみ（得した記録＝受取／損回避・節約＝月額節約＋税軽減）。未入力は —。制度の絶対期限は deadlines.json。Amityは右下FABのチャット専用（このHUDとは別）。結婚新生活支援は市未実施のため賞品扱いしません。</p>
+        <p className="desk-footnote">金額は、二人が各項目に入れた記録だけを合計しています（得した記録＝受け取った額／損を防いだ記録＝毎月の節約＋税の軽減）。まだ入れていないものは — と出ます。日付の決まった締切は「期限」タブに、Amityちゃんは右下のボタンにいます。</p>
       </div>
     </div>
   );

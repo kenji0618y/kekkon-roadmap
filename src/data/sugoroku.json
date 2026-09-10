@@ -6,7 +6,7 @@
       "n": 1,
       "phaseId": "phase0",
       "title": "届出（1/2）",
-      "subtitle": "婚姻届が受理された日が M0",
+      "subtitle": "婚姻届が受理された日が 婚姻日",
       "image": "/phases/rm-filing.png",
       "chips": [
         "婚姻届",
@@ -57,7 +57,7 @@
       "n": 3,
       "phaseId": "phase0",
       "title": "改氏（1/2）",
-      "subtitle": "称する氏と名義変更のカスケード",
+      "subtitle": "称する氏と名義変更の名義変更の連鎖",
       "image": "/phases/rm-namechange.png",
       "chips": [
         "称する氏",
@@ -571,7 +571,7 @@
       "id": "sq-hedge-med",
       "n": 24,
       "phaseId": "phase7",
-      "title": "医療・控除ヘッジ",
+      "title": "医療費と控除の備え",
       "subtitle": null,
       "image": "/phases/phase7-hedge.png",
       "chips": [
@@ -597,7 +597,7 @@
       "id": "sq-hedge-legal",
       "n": 25,
       "phaseId": "phase7",
-      "title": "遺言・後見ヘッジ",
+      "title": "遺言と後見の備え",
       "subtitle": null,
       "image": "/phases/phase7-hedge.png",
       "chips": [
@@ -690,8 +690,8 @@
       "id": "sq-wedding",
       "n": null,
       "phaseId": "phase0",
-      "title": "挙式（任意・Lean外）",
-      "subtitle": "既定は式なし。やる分岐だけの手順",
+      "title": "挙式（任意・式なし外）",
+      "subtitle": "この前提は式なし。やる分岐だけの手順",
       "image": "/phases/rm-company.png",
       "chips": [
         "見積り",
@@ -718,7 +718,7 @@
       "n": null,
       "phaseId": "phase7",
       "title": "自営・国保側",
-      "subtitle": "会社員同士の既定では閉じる",
+      "subtitle": "会社員同士のこの前提では閉じる",
       "image": "/phases/phase7-hedge.png",
       "chips": [
         "国保",

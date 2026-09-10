@@ -85,7 +85,7 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
       <div className="seed-block-head">
         <span className="eyebrow">INSTITUTIONAL CALENDAR</span>
         <h3>制度・カレンダー締切</h3>
-        <p className="hint">絶対日付の締切（シード基準）。円はシード記載のみ。公式URLで最新を確認。</p>
+        <p className="hint">日付が決まっている締切です。金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。</p>
       </div>
       <div className="seed-deadline-list">
         {featured.map((d) => (
@@ -149,7 +149,7 @@ export function HomeInsightPanels({
   /** Return false when a stamp should not count as an open next step. */
   isStampOpen?: (id: string) => boolean
 } = {}) {
-  const {hero_numbers, lies_not_to_buy, talk_lines, anti_lie_banner, headline, tomorrow_3_actions} = homeContent
+  const {hero_numbers, lies_not_to_buy, talk_lines, anti_lie_banner, tomorrow_3_actions} = homeContent
   const lieCount = lies_not_to_buy.length
   const talkCount = talk_lines.length
   const excludeCount = excludeItems.length
@@ -204,15 +204,6 @@ export function HomeInsightPanels({
 
   return (
     <div className="seed-home-stack">
-      {headline && (
-        <section className="seed-block seed-headline" aria-label="見出し">
-          <div className="seed-block-head">
-            <span className="eyebrow">HEADLINE</span>
-            <h3 className="seed-headline-text">{headline}</h3>
-          </div>
-        </section>
-      )}
-
       <section className="seed-block" aria-label="大きな数字">
         <div className="seed-block-head">
           <span className="eyebrow">BIG NUMBERS</span>
@@ -234,7 +225,7 @@ export function HomeInsightPanels({
         <div className="seed-block-head">
           <span className="eyebrow">NEXT · DESK ACTIONS</span>
           <h3>次のアクション</h3>
-          <p className="hint">シードの明日3手を優先。空き枠は期限の近い候補で埋める（デスクに1ブロックのみ）。</p>
+          <p className="hint">まず取りかかる3つ。埋まらないぶんは、期限の近い項目で補っています。</p>
         </div>
         {nextRows.length > 0 ? (
           <ol className="seed-tomorrow-list">
@@ -246,12 +237,7 @@ export function HomeInsightPanels({
                   <div>
                     <strong>{a.title}</strong>
                     {a.detail && <p>{a.detail}</p>}
-                    {(a.ids.length > 0 || a.source === 'dynamic') && (
-                      <small>
-                        {a.source === 'seed' ? a.ids.join(' · ') : `候補 · ${a.ids[0] || ''}`}
-                        {a.source === 'dynamic' && a.sub ? ` · ${a.sub}` : ''}
-                      </small>
-                    )}
+                    {a.source === 'dynamic' && a.sub && <small>{a.sub}</small>}
                   </div>
                   {openable && <ChevronRight size={16} />}
                 </>
@@ -284,7 +270,7 @@ export function HomeInsightPanels({
         </summary>
         <div className="seed-fold-body">
           <div className="seed-banner warn-zero" role="note">
-            <strong>結婚新生活 = 0円（賞品にしない）</strong>
+            <strong>結婚新生活支援は広島市では受けられません</strong>
             <span>{anti_lie_banner}</span>
           </div>
           <ul className="seed-lie-list">
@@ -306,7 +292,7 @@ export function HomeInsightPanels({
           <Ban size={16} />
           <span>
             <strong>もらえない制度と理由（{excludeCount}）</strong>
-            <small>NOT PRIZES · EXCLUDE · {excludeMeta.description}</small>
+            <small>{excludeMeta.description}</small>
           </span>
         </summary>
         <div className="seed-fold-body">
@@ -355,7 +341,7 @@ export function PhasesPanel() {
         <span className="eyebrow">PHASES & EVENTS</span>
         <h3>時期の区切りと出来事</h3>
         <p className="hint">
-          M0 = {m0_definition} · 基準 {as_of} · {phases.length}区切り / {eventTotal}出来事
+          婚姻日 = {m0_definition} · 基準日 {as_of} · {phases.length}の区切り / {eventTotal}の出来事
         </p>
       </div>
       <div className="seed-phase-list">

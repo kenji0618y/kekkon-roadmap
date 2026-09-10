@@ -278,7 +278,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
         </button>
       </form>
       <p className="desk-chat-foot">
-        <MessageCircle size={12} aria-hidden /> 金額の円は捏造しない · 結婚新生活は賞品扱いしない
+        <MessageCircle size={12} aria-hidden /> 金額は勝手に作りません · 結婚新生活支援は広島市では受けられません
       </p>
     </div>
   );

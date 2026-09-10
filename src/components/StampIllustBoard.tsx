@@ -18,9 +18,12 @@ function cornerSlot(count: number, index: number) {
   return (map[count] || map[6])[index] ?? index
 }
 
-function tinyLabel(title: string) {
-  const t = title.replace(/（.*?）/g, '').replace(/\(.*?\)/g, '').trim()
-  return t.length > 4 ? `${t.slice(0, 4)}` : t
+/** Short name for the stamp face. tasks.json carries a hand-written `pad`
+ *  for all 137 items; the title fallback is only for data without one. */
+function tinyLabel(task: Task) {
+  if (task.pad && task.pad.trim()) return task.pad.trim()
+  const t = task.title.replace(/（.*?）/g, '').replace(/\(.*?\)/g, '').trim()
+  return t.length > 6 ? `${t.slice(0, 6)}…` : t
 }
 
 function padClass(status: Status | undefined) {
@@ -140,7 +143,7 @@ export function StampIllustBoard({
                           title={t.title}
                         >
                           <span className="stamp-pad-mark">{padMark(st)}</span>
-                          <span className="stamp-pad-label">{tinyLabel(t.title)}</span>
+                          <span className="stamp-pad-label">{tinyLabel(t)}</span>
                         </button>
                       )
                     })

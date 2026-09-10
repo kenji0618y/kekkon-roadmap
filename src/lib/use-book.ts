@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {toast} from 'sonner';
-import {bookSchema,emptyBook,type Book,type Memory,type Profile,type TaskRecord} from './model';
+import {bookSchema,emptyBook,type AgreementRecord,type Book,type Memory,type PracticeRecord,type Profile,type TaskRecord} from './model';
 import {validateCatalogBook} from './backup';
 import {
   buildPayload,
@@ -235,6 +235,12 @@ export function useBook(_paused:boolean){
         ensureBook();
         const id=String(payload.id);
         book!.memories=book!.memories.filter(m=>m.id!==id);
+      }else if(action==='practice'){
+        ensureBook();
+        book!.practices[String(payload.id)]=payload.record as PracticeRecord;
+      }else if(action==='agreement'){
+        ensureBook();
+        book!.agreements[String(payload.id)]=payload.record as AgreementRecord;
       }else if(action==='import'){
         book=structuredClone(payload.book as Book);
         revision=0;

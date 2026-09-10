@@ -451,23 +451,23 @@
     "id": "furigana",
     "title": "法務省：戸籍にフリガナが記載されます",
     "url": "https://www.moj.go.jp/MINJI/furigana/index.html",
-    "checked": "",
+    "checked": "2026-09-09",
     "kind": "official",
     "note": "最新の受付・対象条件はリンク先で確認してください。"
   },
   "passport": {
     "id": "passport",
-    "title": "外務省：パスポート",
-    "url": "https://www.mofa.go.jp/mofaj/toko/passport/",
-    "checked": "",
+    "title": "外務省：こんな時、パスポートQ&A（氏名が変わったとき）",
+    "url": "https://www.mofa.go.jp/mofaj/toko/passport/pass_4.html",
+    "checked": "2026-09-09",
     "kind": "official",
     "note": "最新の受付・対象条件はリンク先で確認してください。"
   },
   "license": {
     "id": "license",
-    "title": "広島県警察：運転免許",
-    "url": "https://www.pref.hiroshima.lg.jp/site/police/menkyo-index.html",
-    "checked": "",
+    "title": "広島県警：運転免許証の記載事項変更",
+    "url": "https://www.pref.hiroshima.lg.jp/site/police1/060-kisaihe.html",
+    "checked": "2026-09-09",
     "kind": "official",
     "note": "最新の受付・対象条件はリンク先で確認してください。"
   },
@@ -475,7 +475,7 @@
     "id": "training",
     "title": "厚生労働省：教育訓練給付制度",
     "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/jinzaikaihatsu/kyouiku.html",
-    "checked": "",
+    "checked": "2026-09-09",
     "kind": "official",
     "note": "最新の受付・対象条件はリンク先で確認してください。"
   },
@@ -489,9 +489,9 @@
   },
   "gifthouse": {
     "id": "gifthouse",
-    "title": "国税庁：住宅取得等資金の贈与",
-    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/zoyo/4508.htm",
-    "checked": "",
+    "title": "国税庁 No.4508：直系尊属から住宅取得等資金の贈与を受けた場合の非課税",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/sozoku/4508.htm",
+    "checked": "2026-09-09",
     "kind": "official",
     "note": "最新の受付・対象条件はリンク先で確認してください。"
   },
@@ -515,7 +515,7 @@
     "id": "will",
     "title": "法務省：自筆証書遺言書保管制度",
     "url": "https://www.moj.go.jp/MINJI/minji03_00051.html",
-    "checked": "",
+    "checked": "2026-09-09",
     "kind": "official",
     "note": "最新の受付・対象条件はリンク先で確認してください。"
   },
@@ -523,7 +523,7 @@
     "id": "notary",
     "title": "日本公証人連合会：公証役場の手続き",
     "url": "https://www.koshonin.gr.jp/",
-    "checked": "",
+    "checked": "2026-09-09",
     "kind": "official",
     "note": "最新の受付・対象条件はリンク先で確認してください。"
   },
@@ -541,6 +541,398 @@
     "url": "https://kyutou-shoene2026.meti.go.jp/",
     "checked": "2026-09-07",
     "kind": "official",
+    "note": ""
+  },
+  "giftfree": {
+    "id": "giftfree",
+    "title": "国税庁 No.4405：贈与税がかからない場合",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/zoyo/4405.htm",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "payoff": {
+    "id": "payoff",
+    "title": "金融庁：預金保険制度（保護される預金）",
+    "url": "https://www.fsa.go.jp/policy/payoff/",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "furusatofile": {
+    "id": "furusatofile",
+    "title": "国税庁：ふるさと納税をされた方の確定申告",
+    "url": "https://www.nta.go.jp/taxes/shiraberu/shinkoku/tokushu/keisubetsu/furusato.htm",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "dental30": {
+    "id": "dental30",
+    "title": "広島市：節目年齢歯科健診",
+    "url": "https://www.city.hiroshima.lg.jp/living/kenkou/1021215/1003183.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "liability": {
+    "id": "liability",
+    "title": "日本損害保険協会：個人賠償責任保険と家族の範囲",
+    "url": "https://www.sonpo.or.jp/wakaru/seminar/kaisetsu/009.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "overlap": {
+    "id": "overlap",
+    "title": "ソニー損保：補償の重複に注意",
+    "url": "https://faq.sonysonpo.co.jp/faq_detail.html?id=503",
+    "checked": "2026-09-09",
+    "kind": "provider",
+    "note": ""
+  },
+  "nhk": {
+    "id": "nhk",
+    "title": "NHK：引越し・世帯同居のお手続き",
+    "url": "https://www.nhk-cs.jp/contract-change/address-change/",
+    "checked": "2026-09-09",
+    "kind": "provider",
+    "note": ""
+  },
+  "moneytalk": {
+    "id": "moneytalk",
+    "title": "J-FLEC：はじめてのマネープラン（無料相談）",
+    "url": "https://www.j-flec.go.jp/feature/consult/",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "childleavepay": {
+    "id": "childleavepay",
+    "title": "厚生労働省：育児休業等給付について（出生後休業支援・育児時短就業を含む）",
+    "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000135090_00001.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "childleaveqa": {
+    "id": "childleaveqa",
+    "title": "厚生労働省：育児休業等給付Q&A",
+    "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000158500.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "premiumfree": {
+    "id": "premiumfree",
+    "title": "日本年金機構：育児休業等の保険料免除",
+    "url": "https://www.nenkin.go.jp/shinsei/kounen/tekiyo/menjo/20140403-01.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "premiumfree2": {
+    "id": "premiumfree2",
+    "title": "日本年金機構：産前産後休業の保険料免除",
+    "url": "https://www.nenkin.go.jp/shinsei/kounen/tekiyo/menjo/20140326-01.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "revisepay": {
+    "id": "revisepay",
+    "title": "日本年金機構：育児休業等終了時の標準報酬月額改定",
+    "url": "https://www.nenkin.go.jp/service/kounen/hokenryo/menjo/ikuji-menjo/20150407.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "deemedpay": {
+    "id": "deemedpay",
+    "title": "日本年金機構：養育期間の従前標準報酬月額のみなし措置",
+    "url": "https://www.nenkin.go.jp/service/kounen/hokenryo/menjo/20150120.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "dualdep": {
+    "id": "dualdep",
+    "title": "厚生労働省：夫婦共同扶養の場合の被扶養者の認定",
+    "url": "https://www.mhlw.go.jp/web/t_doc?dataId=00tc5892&dataType=1&pageNo=1",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "sickcare": {
+    "id": "sickcare",
+    "title": "広島市：病児・病後児保育事業",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1021253/1025916/1003485.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "famisapo": {
+    "id": "famisapo",
+    "title": "広島市：ファミリー・サポート・センター",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1021253/1025966/1003510.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "douple": {
+    "id": "douple",
+    "title": "広島市：中小企業勤労者共済（ドゥプレ）",
+    "url": "https://www.city.hiroshima.lg.jp/faq/sangyo/1001702/1003012.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "kinrou": {
+    "id": "kinrou",
+    "title": "広島県勤労者福祉推進協会：総合共済",
+    "url": "https://kinnrou.jp/business/mutual_aid/general.html",
+    "checked": "2026-09-09",
+    "kind": "provider",
+    "note": ""
+  },
+  "ikuchan": {
+    "id": "ikuchan",
+    "title": "ひろしまこども夢財団：イクちゃんサービス（登録）",
+    "url": "https://www.ikuchan.or.jp/kids/",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "ikuchanshop": {
+    "id": "ikuchanshop",
+    "title": "ひろしまこども夢財団：イクちゃんサービス店舗検索",
+    "url": "https://www.ikuchan.or.jp/service/",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "coop": {
+    "id": "coop",
+    "title": "生協ひろしま：ちゅきちゅきCLUB",
+    "url": "https://www.hiroshima.coop/chukichuki/index.html",
+    "checked": "2026-09-09",
+    "kind": "provider",
+    "note": ""
+  },
+  "coopfee": {
+    "id": "coopfee",
+    "title": "生協ひろしま：配送手数料",
+    "url": "https://www.hiroshima.coop/first/howto/commission.html",
+    "checked": "2026-09-09",
+    "kind": "provider",
+    "note": ""
+  },
+  "eightdates": {
+    "id": "eightdates",
+    "title": "The Gottman Institute：Eight Dates",
+    "url": "https://www.gottman.com/eight-dates/",
+    "checked": "2026-09-09",
+    "kind": "document",
+    "note": ""
+  },
+  "birthnavi": {
+    "id": "birthnavi",
+    "title": "厚生労働省：出産なび（産院の費用とサービス）",
+    "url": "https://birth-navi.mhlw.go.jp/",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "nursingleave": {
+    "id": "nursingleave",
+    "title": "厚生労働省：子の看護等休暇",
+    "url": "https://www.mhlw.go.jp/seisakunitsuite/bunya/koyou_roudou/koyoukintou/ryouritsu/ikuji/nursing/",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "survivor": {
+    "id": "survivor",
+    "title": "日本年金機構：遺族年金の受給要件",
+    "url": "https://www.nenkin.go.jp/service/jukyu/seido/izokunenkin/jukyu-yoken/20150401-03.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "survivor2": {
+    "id": "survivor2",
+    "title": "厚生労働省：遺族厚生年金の見直し",
+    "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000147284_00020.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "sickpay": {
+    "id": "sickpay",
+    "title": "全国健康保険協会：傷病手当金",
+    "url": "https://www.kyoukaikenpo.or.jp/benefit/injury_and_sickness_allowance/index.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "rsv": {
+    "id": "rsv",
+    "title": "広島市：RSウイルス母子免疫ワクチンの定期接種",
+    "url": "https://www.city.hiroshima.lg.jp/living/medical/1021221/1047235.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "anytime": {
+    "id": "anytime",
+    "title": "広島市：こども誰でも通園制度",
+    "url": "https://www.city.hiroshima.lg.jp/living/kosodate/1021251/1025852/1023624.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "babycheckup": {
+    "id": "babycheckup",
+    "title": "広島市：乳児一般健康診査の助成（県外受診を含む）",
+    "url": "https://www.city.hiroshima.lg.jp/living/medical/1021221/1021255/1003508.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "birthpay": {
+    "id": "birthpay",
+    "title": "全国健康保険協会：出産育児一時金",
+    "url": "https://www.kyoukaikenpo.or.jp/benefit/childbirth/002/index.html",
+    "checked": "2026-09-09",
+    "kind": "official",
+    "note": ""
+  },
+  "amazonbaby": {
+    "id": "amazonbaby",
+    "title": "Amazon：らくベビ割引",
+    "url": "https://www.amazon.co.jp/b?ie=UTF8&node=6068668051",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  "amazonbox": {
+    "id": "amazonbox",
+    "title": "Amazon：出産準備お試しBox",
+    "url": "https://www.amazon.co.jp/b?ie=UTF8&node=5968865051",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  "akachan": {
+    "id": "akachan",
+    "title": "アカチャンホンポ：出産予定日の登録特典",
+    "url": "https://chirashi.akachan.jp/chirashi/early/index_ydn.html",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "akachanshop": {
+    "id": "akachanshop",
+    "title": "アカチャンホンポ：お子さま登録・メルマガ登録",
+    "url": "https://shop.akachan.jp/shop/pages/touroku.aspx",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "babiesrus": {
+    "id": "babiesrus",
+    "title": "ベビーザらス：ポイントカードの会員特典",
+    "url": "https://www.toysrus.co.jp/ja-jp/service-starcard-baby01.html",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  "hellobaby": {
+    "id": "hellobaby",
+    "title": "ベビーザらス：ハローベビーポイントデー",
+    "url": "https://www.toysrus.co.jp/ja-jp/service-starcard-hbpd.html",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  "rakutenmama": {
+    "id": "rakutenmama",
+    "title": "楽天ママ割",
+    "url": "https://event.rakuten.co.jp/family/",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "rakutenbox": {
+    "id": "rakutenbox",
+    "title": "楽天ママ割：サンプルボックス",
+    "url": "https://event.rakuten.co.jp/family/samplebox/",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "comotto": {
+    "id": "comotto",
+    "title": "NTTドコモ：comotto 子育て応援プログラム",
+    "url": "https://www.docomo.ne.jp/service/parenting_support/",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "sbkosodate": {
+    "id": "sbkosodate",
+    "title": "ソフトバンク：子育て応援クラブ",
+    "url": "https://www.softbank.jp/mobile/service/softbankpremium/kosodate-ouen-club/",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "rakutenfam": {
+    "id": "rakutenfam",
+    "title": "楽天モバイル：最強家族プログラム",
+    "url": "https://network.mobile.rakuten.co.jp/fee/family/",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "docomofam": {
+    "id": "docomofam",
+    "title": "NTTドコモ：ファミリー割引",
+    "url": "https://www.docomo.ne.jp/charge/family/",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "aufam": {
+    "id": "aufam",
+    "title": "au：家族割プラス",
+    "url": "https://www.au.com/mobile/charge/charge-discount/kazoku-wari-plus/",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": ""
+  },
+  "smbcfampt": {
+    "id": "smbcfampt",
+    "title": "三井住友カード：家族ポイント",
+    "url": "https://www.smbc-card.com/nyukai/merit/family-point.jsp",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  "smbcfamcard": {
+    "id": "smbcfamcard",
+    "title": "三井住友カード：家族カード",
+    "url": "https://www.smbc-card.com/nyukai/add/family/index.jsp",
+    "checked": "2026-09-10",
+    "kind": "provider",
+    "note": "自動チェックでは403になりますが、ブラウザでは開けます"
+  },
+  "energiapt": {
+    "id": "energiapt",
+    "title": "中国電力：ぐっとずっと。クラブ ポイントサービス",
+    "url": "https://www.energia-support.com/point/gaiyou.html",
+    "checked": "2026-09-10",
+    "kind": "provider",
     "note": ""
   }
 }

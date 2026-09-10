@@ -1,6 +1,6 @@
 import {useEffect,useState} from 'react';
 import {toast} from 'sonner';
-import {AlertTriangle,ArrowUpRight,BookOpen,CalendarDays,Check,ClipboardCopy,Clock3,Heart,HelpCircle,Info,ShieldCheck,Sparkles,Wallet} from 'lucide-react';
+import {AlertTriangle,ArrowUpRight,BookOpen,CalendarDays,Check,ClipboardCopy,Clock3,Heart,HelpCircle,Info,RefreshCw,ShieldCheck,Sparkles,Wallet} from 'lucide-react';
 import {Accordion,AccordionContent,AccordionItem,AccordionTrigger} from './ui/accordion';
 import {Textarea} from './ui/textarea';
 import {Checkbox} from './ui/checkbox';
@@ -10,6 +10,19 @@ import {Action,Choice,SaveAction,SourceLink,StatusMark,TextField} from './book-c
 import {eligibilityLabels,eligibilityNote,emptyRecord,memorySchema,profileSchema,recordSchema,statusNames,type Memory,type Profile,type Task,type TaskRecord} from '../lib/model';
 import {sources} from '../data/catalog';
 import {formatMoney,shortDate,statutoryDeadline,todayJapan} from '../lib/dates';
+
+/** 「2026-09-09」→「2026年9月9日」 */
+function formatReviewed(d:string){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d)
+  return m?`${m[1]}年${Number(m[2])}月${Number(m[3])}日`:d
+}
+
+/** 金額・単位・メモを、抜けている要素があっても記号が浮かない形で並べる。 */
+function moneyLine(m:{amount_yen?:number|null,unit?:string|null,note?:string|null}){
+  const head=[m.amount_yen!=null?`${formatMoney(m.amount_yen)}円`:'', m.unit?`（${m.unit}）`:''].join('')
+  const parts=[head, m.note||''].filter(Boolean)
+  return parts.length?parts.join(' · '):'記載なし'
+}
 export function ProfileForm({profile,onSave,busy,onDirty,hasBook}:{profile:Profile,onSave:(p:Profile)=>Promise<void>,busy:boolean,onDirty:(v:boolean)=>void,hasBook:boolean}){
  const [p,setP]=useState({...profile}),[validation,setValidation]=useState('');
  const change=(k:keyof Profile,v:string)=>{setP(s=>({...s,[k]:v}));onDirty(true);};
@@ -53,18 +66,18 @@ export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook,on
  const copyQuestions=async()=>{const body=hasFaq?t.faq!.map((f,i)=>`${i+1}. ${f.q}\n   → ${f.a}`).join('\n\n'):t.questions.map((q,i)=>`${i+1}. ${q}`).join('\n');try{await navigator.clipboard.writeText(`${t.title}\n\n${body}`);toast.success(hasFaq?'FAQをコピーしました':'質問メモをコピーしました');}catch{toast.error('コピーできませんでした。表示された内容を選択してコピーしてください。');}};
  return <div className="task-form form-stack"><fieldset disabled={busy}>
  <div className="condition-note"><Info size={17}/><p>{eligibilityNote(t,p)}</p></div>
- {(t.track||(t.eligibility&&t.eligibility!=='always')||t.money_in||t.money_out)&&<div className="seed-task-meta">
+ {((t.eligibility&&t.eligibility!=='always')||t.money_in||t.money_out)&&<div className="seed-task-meta">
   <div className="seed-task-badges">
-   {t.track&&<span className="seed-track-badge" title="シード track">{t.track}</span>}
    {t.eligibility&&t.eligibility!=='always'&&<span className="seed-elig-badge">{eligibilityLabels[t.eligibility]||t.eligibility}</span>}
   </div>
   {(t.money_in||t.money_out)&&<div className="seed-money-memo">
-   <strong><Wallet size={15}/>シード金額メモ</strong>
-   <p className="hint">シード記載のみ（円は捏造しません）</p>
-   {t.money_in&&<p className="seed-money-line">入：{t.money_in.amount_yen!=null?`${formatMoney(t.money_in.amount_yen)}円`:''}{t.money_in.unit?`（${t.money_in.unit}）`:''}{t.money_in.note?` · ${t.money_in.note}`:''}{(t.money_in.amount_yen==null&&!t.money_in.note&&!t.money_in.unit)?'（記載なし）':''}</p>}
-   {t.money_out&&<p className="seed-money-line">出：{t.money_out.amount_yen!=null?`${formatMoney(t.money_out.amount_yen)}円`:''}{t.money_out.unit?`（${t.money_out.unit}）`:''}{t.money_out.note?` · ${t.money_out.note}`:''}{(t.money_out.amount_yen==null&&!t.money_out.note&&!t.money_out.unit)?'（記載なし）':''}</p>}
+   <strong><Wallet size={15}/>お金のめやす</strong>
+   <p className="hint">収録した案内に書かれていた分だけです。実際の額は公式ページか、二人の記録で確かめてください。</p>
+   {t.money_in&&<p className="seed-money-line">入：{moneyLine(t.money_in)}</p>}
+   {t.money_out&&<p className="seed-money-line">出：{moneyLine(t.money_out)}</p>}
   </div>}
  </div>}
+ {t.review&&<p className="yearly-note"><RefreshCw size={14} aria-hidden/>毎年見直す項目です（最終確認 {formatReviewed(t.review)}）。民間のサービスなので、使う前に公式ページで今の条件を確かめてください。</p>}
  {t.notice&&<div className="notice-box"><strong>確認しておきたいこと</strong><p>{t.notice}</p></div>}
  {(t.why||t.miss||t.window)&&<div className="context-stack">
   {t.why&&<div className="context-card why"><strong><BookOpen size={16}/>なぜやるのか</strong><p>{t.why}</p></div>}

@@ -1,6 +1,9 @@
 import {bookSchema,emptyBook,emptyRecord,type Book,type Status} from './model';
 import {taskById} from '../data/catalog';
-export function validateCatalogBook(book:Book){for(const [id,r] of Object.entries(book.records)){if(!Object.hasOwn(taskById,id))throw new Error('この手帳にない項目が含まれています。');if(r.steps.some(i=>i>=taskById[id].steps.length))throw new Error('チェック項目の番号を確認してください。');if(taskById[id].type==='investment'&&(r.moneyKind!=='none'||r.amount!==null))throw new Error('投資の金額は給付・節約の集計に含められません。');}if(new Set(book.memories.map(m=>m.id)).size!==book.memories.length)throw new Error('記念のIDが重複しています。');return book;}
+import {practices as practiceList,agreements as agreementList} from '../data/catalog';
+const practiceIds=new Set(practiceList.map(p=>p.id));
+const agreementIds=new Set(agreementList.map(a=>a.id));
+export function validateCatalogBook(book:Book){for(const [id,r] of Object.entries(book.records)){if(!Object.hasOwn(taskById,id))throw new Error('この手帳にない項目が含まれています。');if(r.steps.some(i=>i>=taskById[id].steps.length))throw new Error('チェック項目の番号を確認してください。');if(taskById[id].type==='investment'&&(r.moneyKind!=='none'||r.amount!==null))throw new Error('投資の金額は給付・節約の集計に含められません。');}if(new Set(book.memories.map(m=>m.id)).size!==book.memories.length)throw new Error('記念のIDが重複しています。');for(const id of Object.keys(book.practices))if(!practiceIds.has(id))throw new Error('この手帳にない行動が含まれています。');for(const id of Object.keys(book.agreements))if(!agreementIds.has(id))throw new Error('この手帳にない話題が含まれています。');return book;}
 export function readBackup(value:unknown):{book:Book,legacy:boolean}{
  if(!value||typeof value!=='object')throw new Error('手帳のJSONファイルを選んでください。');
  const data=value as Record<string,unknown>;

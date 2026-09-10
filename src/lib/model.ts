@@ -11,12 +11,18 @@ export type TaskRecord=z.infer<typeof recordSchema>;
 export const emptyRecord:TaskRecord={status:'todo',steps:[],assignee:'together',note:'',due:'',amount:null,moneyKind:'none',confirmedAt:'',updatedAt:''};
 export const memorySchema=z.object({id:short,date:date,title:z.string().min(1).max(100),text:z.string().max(3000),kind:z.enum(['memory','monthly','dream']),complete:z.boolean()});
 export type Memory=z.infer<typeof memorySchema>;
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000)});
+/** 「ふたり」タブ：試している行動。既存の手帳を壊さないよう既定値つき。 */
+export const practiceSchema=z.object({status:z.enum(['none','try','doing','kept']).catch('none'),note:z.string().max(1000).catch('')});
+export type PracticeRecord=z.infer<typeof practiceSchema>;
+/** 「ふたり」タブ：二人の合意。書き込みは任意なので、すべて空でよい。 */
+export const agreementSchema=z.object({mine:z.string().max(2000).catch(''),theirs:z.string().max(2000).catch(''),agreed:z.string().max(2000).catch(''),review:date.catch('')});
+export type AgreementRecord=z.infer<typeof agreementSchema>;
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({})});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[]};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{}};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
-export type Task={id:string,title:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};
+export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};
 export const eligibilityLabels:Record<string,string>={always:'いつも表示',child:'子あり・予定向け',company:'会社員・公務員向け',buy:'住まい購入検討時',ceremony:'式あり向け',self:'自営業向け'};
 export type Group={id:string,title:string,short:string,kanji:string,chapter:string,ids:string[],subtitle?:string|null,chips?:string[]};
 export const chapters=[{id:'prepare',label:'結婚準備',en:'THE BEGINNING',kanji:'結',description:'大切な日を迎える準備を。'},{id:'life',label:'新生活',en:'OUR EVERYDAY',kanji:'暮',description:'住まい、名前、ふたりの暮らし。'},{id:'annual',label:'毎年の見直し',en:'YEAR BY YEAR',kanji:'実',description:'制度と契約を、今の暮らしに合わせる。'},{id:'child',label:'子育て',en:'A NEW CHAPTER',kanji:'育',description:'必要になった時に、ひとつずつ。'},{id:'home',label:'住まい',en:'A PLACE FOR US',kanji:'住',description:'住まいの計画と、使える制度を確認。'},{id:'care',label:'もしもの備え',en:'PEACE OF MIND',kanji:'守',description:'安心のために、今できる準備。'}];
