@@ -176,8 +176,12 @@ if (warn.length) {
 const panels = readText('src/components/SeedContentPanels.tsx');
 const notebook = readText('src/Notebook.tsx');
 const forms = readText('src/components/notebook-forms.tsx');
+const marriageDesk = readText('src/components/MarriageDesk.tsx');
 
 const uiChecks = [
+  ['MarriageDesk mounts desk-money before くわしく見る', /desk-money[\s\S]*desk-decor-fold|desk-more-viz/.test(marriageDesk) && marriageDesk.includes('desk-money') && marriageDesk.includes('くわしく見る')],
+  ['Money block has no old headings', !marriageDesk.includes('暮らしに増えた') && !marriageDesk.includes('各項目で二人が入力した金額を集計') && !notebook.includes('暮らしに増えた') && !notebook.includes('各項目で二人が入力した金額を集計')],
+  ['Notebook desk tab has no standalone money-section', !notebook.includes('money-section')],
   ['SeedContentPanels HomeInsightPanels', panels.includes('export function HomeInsightPanels')],
   ['SeedContentPanels tomorrow_3_actions', panels.includes('tomorrow_3_actions')],
   ['SeedContentPanels InstitutionalDeadlines', panels.includes('export function InstitutionalDeadlines')],
