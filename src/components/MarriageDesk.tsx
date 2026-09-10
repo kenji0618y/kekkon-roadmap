@@ -2,7 +2,7 @@ import {useEffect,useMemo,useState} from 'react';
 import {ArrowRight,Gauge} from 'lucide-react';
 import {chapters,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
 import {difference,validDate} from '../lib/dates';
-import {absoluteDeadlines,groups} from '../data/catalog';
+import {groups} from '../data/catalog';
 import {GROK_CREDITS_CONSOLE_URL} from '../lib/amity-grok';
 import {readGrokLocalOnlyFlag} from '../lib/grok-mode';
 
@@ -183,17 +183,6 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
     return {label:'婚姻から',value:`${-days+1}`,sub:'日目',tone:'ok'};
   },[p.wdate,today]);
 
-  /** Absolute calendar deadlines from seed deadlines.json — countdown only, no invented yen. */
-  const absSoon=useMemo(()=>{
-    const upcoming=absoluteDeadlines
-      .map(d=>({...d,days:difference(d.date,today)}))
-      .filter(d=>d.days>=-3)
-      .sort((a,b)=>a.date.localeCompare(b.date));
-    const near=upcoming.filter(d=>d.days>=-3&&d.days<=60);
-    const next=near.find(d=>d.days>=0)||near[0]||upcoming.find(d=>d.days>=0)||upcoming[0];
-    return {count:near.filter(d=>d.days>=0).length,next,near};
-  },[today]);
-
   const stages=useMemo(()=>chapters.map(c=>{
     const list=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');
     const d=list.filter(t=>book.records[t.id]?.status==='done').length;
@@ -269,12 +258,10 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <strong className="desk-metric-value">{weddingMetric.value}{weddingMetric.sub&&weddingMetric.value!=='—'&&weddingMetric.value!=='今日'&&<small>{weddingMetric.sub}</small>}</strong>
           <span className="desk-metric-sub">{validDate(p.wdate)?`基準 ${p.wdate}`:'プロフィールで設定'}</span>
         </article>
-        <article className={`desk-metric ${soonCount>0||(absSoon.next&&absSoon.next.days<=14)?'tone-warn':''}`}>
+        <article className={`desk-metric ${soonCount>0?'tone-warn':''}`}>
           <span className="desk-metric-label">次の期限</span>
           <strong className="desk-metric-value">{soonCount}<small>件</small></strong>
-          <span className="desk-metric-sub">
-            手帳14日以内{absSoon.next?` · 制度あと${absSoon.next.days<0?`経過`:`${absSoon.next.days}日`}（${absSoon.next.title.slice(0,18)}）`:''}
-          </span>
+          <span className="desk-metric-sub">手帳の予定・14日以内</span>
         </article>
       </section>
 
@@ -287,36 +274,6 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <button type="button" className="desk-cta" onClick={onOpenProfile}>手帳を整える <ArrowRight size={15}/></button>
         </div>
       )}
-
-      {absSoon.near.length>0&&(
-        <section className="desk-card desk-near-deadlines" aria-label="近い制度の絶対期限">
-          <div className="desk-card-head">
-            <span className="desk-dot"/>近い制度期限 · 60日以内
-            {onGoDeadlines&&(
-              <button type="button" className="desk-linkish" onClick={onGoDeadlines}>期限タブへ</button>
-            )}
-          </div>
-          <ul className="desk-near-list">
-            {absSoon.near.map(d=>(
-              <li key={`${d.date}-${d.title}`}>
-                <button
-                  type="button"
-                  className={`desk-near-row ${d.days<=14?'near':''}`}
-                  onClick={()=>onGoDeadlines?.()}
-                >
-                  <span className="desk-near-when">
-                    <strong>{d.date.slice(5).replace('-','/')}</strong>
-                    <small>{d.days<0?`経過${-d.days}日`:d.days===0?'今日':`あと${d.days}日`}</small>
-                  </span>
-                  <span className="desk-near-title">{d.title}</span>
-                  <ArrowRight size={14} aria-hidden/>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
 
       <div className="desk-decor-fold">
         {!showDecor?(
@@ -421,10 +378,6 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         )}
       </div>
 
-      <div className="desk-footer-actions">
-        <button type="button" className="desk-cta secondary" onClick={onGoJourney}>ロードマップを開く <ArrowRight size={15}/></button>
-        <p className="desk-footnote">上の金額は、二人が各項目に入れた記録だけを合計しています（受け取った額、これからの見込み、毎月の節約、税の軽減）。まだ入れていないものは — と出ます。日付の決まった締切は「期限」タブに、Amityちゃんは右下のボタンにいます。</p>
-      </div>
     </div>
   );
 }

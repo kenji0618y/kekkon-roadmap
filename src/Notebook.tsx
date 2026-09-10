@@ -111,6 +111,7 @@ export default function FutureNotebook(){
  <div className="money-section"><div className="section-heading"><h2>暮らしに増えた、ゆとり。</h2><span className="hint">各項目で二人が入力した金額を集計</span></div><div className="money-grid">{([{key:'received',label:'受け取った給付・祝金',unit:'円',sub:'受取を記録した金額'},{key:'estimate',label:'これからの受取見込み',unit:'円',sub:'未受取・給付の確約ではありません'},{key:'monthlySaving',label:'固定費の削減',unit:'円／月',sub:'二人が確認した月額の差'},{key:'taxEstimate',label:'税負担の軽減見込み',unit:'円',sub:'控除対象額とは異なります'}] as const).map(m=><div className={`money-card ${m.key==='received'?'primary':''}`} key={m.key}><span>{m.label}</span><strong>{Object.values(book.records).some(r=>r.moneyKind===m.key&&r.amount!==null&&r.status!=='na')?formatMoney(totals[m.key]):'—'}<small>{m.unit}</small></strong><p>{m.sub}</p></div>)}</div><p className="hint">投資枠・運用益は集計しません。異なる期間や区分の金額を足した「総お得額」は表示していません。同じ給付を重複して入力していないか、記録を確認してください。</p></div>
  <HomeInsightPanels
   onOpenTask={openTask}
+  profile={p}
   fillNext={next.map(t=>({id:t.id,title:t.title,sub:nearestDeadline(t,p,book.records[t.id])?'期限・予定を確認':typeLabels[t.type]}))}
   isStampOpen={(id)=>{const t=tasks.find(x=>x.id===id);if(t&&!inScope(t,p))return false;const st=book.records[id]?.status||'todo';return !['done','applied','waiting','na'].includes(st);}}
  />

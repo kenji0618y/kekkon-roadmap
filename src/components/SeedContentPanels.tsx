@@ -1,6 +1,7 @@
 import {CalendarDays,ExternalLink,MessageCircle,AlertTriangle,Hash,Ban,Layers,ChevronRight} from 'lucide-react'
 import {formatMoney,monthDay,shortDate,todayJapan,difference,deadlineText} from '../lib/dates'
 import {absoluteDeadlines,relativeDeadlines,excludeItems,excludeMeta,homeContent,phasesContent} from '../data/catalog'
+import type {Profile} from '../lib/model'
 
 function branchVisible(branch: string | null | undefined, child: string, home: string) {
   if (!branch || branch === 'always') return true
@@ -142,14 +143,31 @@ export function HomeInsightPanels({
   onOpenTask,
   fillNext = [],
   isStampOpen,
+  profile,
 }: {
   onOpenTask?: (id: string) => void
   /** Dynamic desk candidates — fill slots after seed tomorrow_3_actions (deduped). */
   fillNext?: DeskFillNext[]
   /** Return false when a stamp should not count as an open next step. */
   isStampOpen?: (id: string) => boolean
+  /** Used to order 「覚えておきたい数字」 for the current couple. */
+  profile?: Profile | null
 } = {}) {
   const {hero_numbers, lies_not_to_buy, talk_lines, anti_lie_banner, tomorrow_3_actions} = homeContent
+  /** Prefer numbers that matter now: dual-income → NISA first; no wdate → 婚姻届 first; else tax relief first. */
+  const heroOrdered = [...hero_numbers].sort((a, b) => {
+    const rank = (id: string) => {
+      const dual = !profile || profile.work === 'dual' || profile.work === 'unknown'
+      const hasW = !!(profile && profile.wdate)
+      if (dual && id === 'nisa_dual') return 0
+      if (!hasW && id === 'filing_0') return 1
+      if (hasW && id === 'inheritance_spouse') return 1
+      if (id === 'inheritance_spouse') return 2
+      if (id === 'filing_0') return 3
+      return 4
+    }
+    return rank(a.id) - rank(b.id)
+  })
   const lieCount = lies_not_to_buy.length
   const talkCount = talk_lines.length
   const excludeCount = excludeItems.length
@@ -204,23 +222,6 @@ export function HomeInsightPanels({
 
   return (
     <div className="seed-home-stack">
-      <section className="seed-block" aria-label="大きな数字">
-        <div className="seed-block-head">
-          <span className="eyebrow">BIG NUMBERS</span>
-          <h3>大きな数字</h3>
-        </div>
-        <div className="seed-hero-grid">
-          {hero_numbers.map((h) => (
-            <div key={h.id} className="seed-hero-card">
-              <Hash size={16} />
-              <strong>{h.value}</strong>
-              <span>{h.label}</span>
-              {h.note && <p>{h.note}</p>}
-            </div>
-          ))}
-        </div>
-      </section>
-
       <section className="seed-block tomorrow" aria-label="次のアクション">
         <div className="seed-block-head">
           <span className="eyebrow">NEXT · DESK ACTIONS</span>
@@ -314,7 +315,7 @@ export function HomeInsightPanels({
           <MessageCircle size={16} />
           <span>
             <strong>ふたりの会話のきっかけ（{talkCount}）</strong>
-            <small>TALK LINES</small>
+            <small>いま話してみるとよいこと</small>
           </span>
         </summary>
         <div className="seed-fold-body">
@@ -328,6 +329,23 @@ export function HomeInsightPanels({
           </ul>
         </div>
       </details>
+
+      <section className="seed-block" aria-label="覚えておきたい数字">
+        <div className="seed-block-head">
+          <h3>覚えておきたい数字</h3>
+          <p className="hint">いまの二人の前提に合わせて並べています。公式の案内は各項目でも確認できます。</p>
+        </div>
+        <div className="seed-hero-grid">
+          {heroOrdered.map((h) => (
+            <div key={h.id} className="seed-hero-card">
+              <Hash size={16} />
+              <strong>{h.value}</strong>
+              <span>{h.label}</span>
+              {h.note && <p>{h.note}</p>}
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
