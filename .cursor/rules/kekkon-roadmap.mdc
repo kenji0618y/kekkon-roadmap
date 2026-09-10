@@ -4,5 +4,11 @@ alwaysApply: true
 ---
 
 Before any edit in this repo, read `AGENTS.md` and `docs/AI_START_HERE.md`.
+Last full pass: 2026-09-11 — 176 tasks, 7 tabs, verify-seed 46 checks.
 
-Hard rules: SoT=`src/data`; never thin seed; Lean hides W* but keeps JSON; Amity FAB ≠ delete desk HUD; `npm run verify:seed` before done; `npm run build` not bare `vite build`; after `gh-pages` confirm assets JS HTTP 200; no secrets / no invented yen / no 結婚新生活 prize.
+Hard rules: SoT=`src/data`; never thin content (raise verify-seed floors when you add);
+**no builder-facing wording on screen** (AGENTS.md §Screen language); ceremony tasks hidden not
+deleted and "Lean" never shown; Amity = bottom-right FAB only (desk bubble removed);
+keep `pad` / `review` / practices・talks・agreements・refs; keep `bookSchema` new fields optional;
+`npm run verify:seed` before done; `npm run build` not bare `vite build`;
+after `gh-pages` confirm assets JS HTTP 200; no secrets / no invented yen / no 結婚新生活 prize.

@@ -1,31 +1,67 @@
 # AGENTS.md — stop. Read this before editing.
 
-This file is the auto-entry for **Grok**, **ChatGPT/Codex**, Cursor, and other coding agents.
+Auto-entry for **Grok**, **ChatGPT/Codex**, **Claude**, Cursor, Copilot and any other agent.
 
-You are working in **kenji0618y/kekkon-roadmap** (Amityちゃんにきく / 結婚ロードマップ PWA).
+You are in **kenji0618y/kekkon-roadmap**（Amityちゃんにきく / 結婚ロードマップ PWA）.
+
+**Last full pass: 2026-09-11.** State: 176 tasks · 33 groups · FAQ 829 · sources 117 ·
+7 tabs · `verify-seed` 46 checks. If what you see differs, trust the repo and update these docs.
 
 ## Mandatory before any code change
 
 1. Read **`docs/AI_START_HERE.md`** fully (then HANDOFF → CONTENT_GUARD → HISTORY).
 2. Do **not** ask Kenji to re-explain product history.
 3. Source of truth = **`src/data/*`** in this repo. `/workspace/marriage-research` is **not** in GitHub — never require it.
-4. Never thin seed (`why`/`miss`/`window`/FAQ/deadlines/exclude/home/phases/money_*). ABSORB only.
-5. Lean: `ceremony==='no'` **hides** W* tasks in UI — **do not delete** them from `tasks.json`. No empty 挙式 stamp cards.
-6. Amity local search (`desk-chat` / `answerDeskQuery`) must pass **`profile` / `inScope`**.
-7. Amity FAB = chat-only. Desk **command HUD stays** on デスク. Do not delete the HUD.
-8. No invented yen. No 結婚新生活 as a prize. No celebration/寿 UX. No secrets in git.
-9. Before claiming done: run **`npm run verify:seed`** and paste the count table. Use **`npm run build`** (not bare `vite build`) so `prebuild` runs verify. `predev` also runs verify.
-10. App deploy: `npx gh-pages -d dist` (+ `.nojekyll`). Confirm Pages `assets/index-*.js` returns **HTTP 200** (CDN can lag). Docs-only → push `main` only.
-11. Grok key: localStorage or `amity-grok-bundle.ts` only — **no** `VITE_*`. Credits: https://console.x.ai/
-12. Cursor Cloud Agents may be plan-locked — continue with a normal clone if launch fails.
+4. **Never thin content.** `why`/`miss`/`window`/`pad`/FAQ/deadlines/exclude/home/phases/money_*/
+   practices/talks/agreements/refs. ABSORB only. If you add content, **raise the floors in
+   `scripts/verify-seed.mjs` too** — otherwise the next person can delete it unnoticed.
+5. **Nothing written for the builder may reach the screen.** This is the rule that has been
+   broken the most (see §Screen language). A friend reads this app, not a developer.
+6. 式なし前提（`ceremony==='no'`）は W* タスクを **UI から隠すだけ**。`tasks.json` から**消さない**。
+   （英語の "Lean" は社内語。**画面には出さない**。）
+7. Amity は**右下の丸ボタン（チャット）だけ**。デスクタブに Amity の吹き出しは**置かない**（2026-09-10 に削除）。
+8. 円は捏造しない。結婚新生活支援を「もらえる額」にしない。お祝い演出は復活させない。秘密情報はコミットしない。
+9. 完了前に **`npm run verify:seed`** を走らせ、カウント表を貼る。ビルドは **`npm run build`**（`vite build` 単体は不可）。
+10. 公開: `npx gh-pages -d dist`（`dist/.nojekyll` を残す）。公開後、`assets/index-*.js` が **HTTP 200** か確認。
+    docs だけの変更なら `main` に push するだけ、**再デプロイしない**。
+11. Grok キーは localStorage か `amity-grok-bundle.ts` のみ。**`VITE_*` は使わない**。残高: https://console.x.ai/
+
+## Screen language（いちばん破られてきた規則）
+
+生成時のメモ・作り手あての指示・内部の記号が、そのまま友人の画面に出ていた。2026-09-10 に
+データ 290 箇所 + 画面文言を掃除した。**戻さないこと。**
+
+| 出してはいけない | 画面での言い方 |
+|---|---|
+| 既定 / 一次 / 賞品 / M0 / Lean / カスケード / invent / 捏造 / シード / 標報 / ジョブロック | この前提 / 公式情報 / もらえる額 / 婚姻日 / （出さない）/ 名義変更の連鎖 / 推測で書かない / — / 収録データ / 標準報酬 / — |
+| 「〜は書かない」「〜するな」「見ろ」「落とすな」 | 読み手への文にする（「〜は出せません」「〜しないほうが得です」） |
+| 「取りこぼし：」「窓：」「手順はスタンプの steps」 | 「見落としやすいところ：」「いつ：」「この項目の『やること』」 |
+| R8.4.1 / R9.1 などの元号略号、OSS、OTC、HUD、Ridge/Lattice/Chord | 2026年4月1日 / オンライン申請 / 市販薬 / （日本語にする） |
+| 内部の項目番号（A必1 など）を本文や一覧に出す | 出さない（リンクで飛ばす） |
+
+判定基準はひとつ。**その文を友人が読んで意味が通るか。** 通らなければ書き直す。
+
+## Data shapes added on 2026-09-10/11（消さない）
+
+- `tasks[].pad` — 絵の上に出る短縮名（3〜8字・全176件必須）。無いとラベルが機械的に切れる。
+- `tasks[].review` — `YYYY-MM-DD`。**毎年見直す民間サービス**の最終確認日（12件）。
+  `npm run build` が15か月を過ぎた項目を警告する（ビルドは止めない）。手順は `docs/YEARLY_UPDATE.md`。
+- `src/data/practices.json`(52) / `talks.json`(16) / `agreements.json`(18) / `refs.json`(18)
+  — 「ふたり」タブ。**研究／専門家の提案／公的機関／書籍の区別（`refs[].kind`）と
+  `limits`（限界）を消さない。** DV相談・性犯罪/性暴力の窓口（R15・R16）を外すと verify が落ちる。
+- `bookSchema.practices` / `.agreements` — **既定値つき（`.catch({}).default({})`）。必須にしない。**
+  必須にすると、すでに使っている手帳が読めなくなる。
+- `sources[].note` — 「自動チェックでは403になりますが、ブラウザでは開けます」。
+  Amazon・トイザらス・三井住友カード・SAGE・PubMed・外務省は**ロボット避けで403**。リンク切れと誤判定しない。
 
 ## Entry map
 
 | Audience | Open first |
 |----------|------------|
-| Any agent | `AGENTS.md` (this file) → `docs/AI_START_HERE.md` |
+| Any agent | `AGENTS.md`（this file） → `docs/AI_START_HERE.md` |
 | Claude | `CLAUDE.md` → same |
-| ChatGPT / Copilot | `CHATGPT.md` + `.github/copilot-instructions.md` → same |
+| ChatGPT / Codex / Copilot | `CHATGPT.md` + `.github/copilot-instructions.md` → same |
+| Cursor | `.cursor/rules/kekkon-roadmap.mdc` → same |
 | Humans | `README.md` |
 
 Kenji does **not** need to remind you. If you opened this repo, these rules already apply.

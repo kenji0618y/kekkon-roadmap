@@ -5,7 +5,8 @@
 > **Decision log:** [`docs/HISTORY.md`](./HISTORY.md) · seed rules: [`CONTENT_GUARD.md`](./CONTENT_GUARD.md)
 
 他の AI / 開発者がこのリポジトリを引き継ぐための現状メモ。  
-最終更新: 2026-09-09（JST）· Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
+最終更新: **2026-09-11（JST）**· 176 tasks / 33 groups / FAQ 829 / sources 117 / **7タブ** / verify-seed **46項目**
+· Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
 
 ## 公開 URL
 
@@ -16,7 +17,8 @@
 
 ## プロダクト概要
 
-広島市・共働き・世帯所得おおむね **800万円超**・**式なし Lean** の友人向けスマホ PWA。
+広島市・共働き・世帯所得おおむね **800万円超**・**式なし**前提の友人向けスマホ PWA。
+（"Lean" は社内語。**画面には出さない** — 2026-09-10 に一掃済み）
 
 | 要素 | 内容 |
 |------|------|
@@ -24,48 +26,63 @@
 | ナビキャラ | **Amityちゃん**（サメ、ヘッドセット） |
 | サイドバー Grok Bot | agent id `74755f3e-2268-49fe-81d1-2ce344a05bef`（名前 Amity）— **Grok Bot サイドバー専用。GitHub クローンの AI は無視してよい（アプリ実行に不要）** |
 | 技術 | Vite + React + TS、単一 SPA、`base: './'`（GitHub Pages 向け相対パス）。**HashRouter は使っていない**（`App.tsx` → `Notebook` 一枚） |
-| データ | `src/data/tasks.json` 等（**137** タスク exact。過去 149→マージ済み） |
-| 保存 | **localStorage**（`futari-miraicho-v1`） |
+| データ | `src/data/tasks.json` 等（**176** タスク exact。137→2026-09-10 に39件追加）+ `practices/talks/agreements/refs.json`（ふたりタブ）|
+| 保存 | **localStorage**（`futari-miraicho-v1`）。`bookSchema` の `practices`/`agreements` は**既定値つき**（必須にすると既存の手帳が壊れる）|
 | 端末同期 | 秘密 **GitHub Gist**（下記） |
 
 ## ハードルール（必ず守る）
 
-1. **金額の円は捏造しない**（シード / ユーザー入力のみ）
-2. **結婚新生活支援 30万/60万を賞品・獲得目標にしない**（広島市は案内上未実施、高所得で対象外になりやすい）
+0. **作り手あての言葉を画面に出さない** — 2026-09-10 に発覚した最大の問題。詳細は `AGENTS.md` §Screen language。
+1. **金額の円は捏造しない**（収録データ / ユーザー入力のみ）
+2. **結婚新生活支援 30万/60万を「もらえる額」にしない**（広島市は案内上未実施、高所得で対象外になりやすい）
 3. **お祝い / 寿 / 手紙ギフト演出は復活させない**（明示的に削除済み）
 4. Secrets（xAI / GitHub PAT）を **リポジトリにコミットしない**
 5. **NEVER drop or thin app-seed content when changing UI/framework.** **Source of truth in this repo = `src/data/`.** (`marriage-research/app-seed` is Kenji-local only, not on GitHub.) ChatGPT notebook merge must **ABSORB** rich fields, never replace/thin.
 6. **Required inventory (data in `src/data` AND mounted in UI)** — minima enforced by `npm run verify:seed` (`prebuild`):
-   - tasks `why` / `miss` / `window` ≥ **137** each; FAQ pairs (q+a) ≥ **650**
+   - tasks 件数 = **176**（exact）; `why`/`miss`/`window`/`track` ≥ **176** each; FAQ pairs ≥ **820**
+   - tasks `pad`（絵の上の短縮名・3〜8字）は全件必須
    - `deadlines.next_absolute` = **10**; `relative_always` = **6**
    - `exclude.items` = **36**
-   - home: hero=**3**, lies=**4**, talk=**10**, `tomorrow_3_actions`=**3**, `headline` + `anti_lie_banner` present
+   - home: hero=**3**, lies=**4**, talk=**10**, `tomorrow_3_actions`=**3**, `anti_lie_banner` present
+     （`headline` は 2026-09-10 に廃止）
    - phases = **9**, events ≥ **48**
-   - groups subtitle ≥ **10**, chips sets ≥ **31**
-   - seed money on tasks: `money_in` ≥90 / `money_out` ≥50 (seed values only)
+   - groups subtitle ≥ **12**, chips sets ≥ **33**
+   - money on tasks: `money_in` ≥90 / `money_out` ≥50
+   - `review`（毎年見直す民間サービス）≥ **12**・最終確認から15か月超はビルドが警告（止めない）
+   - ふたりタブ: practices=**52** / talks=**16** / agreements=**18** / refs=**18**、
+     `refs` の DV相談・性犯罪/性暴力の窓口は**外すと fail**
+   - **内容を増やしたら、この下限も一緒に上げること。**
 7. Before claiming done: run **`npm run verify:seed`** and paste the counts. See also `docs/CONTENT_GUARD.md`.
 
-## ナビ構成（現状）
+## ナビ構成（2026-09-11 現在・7タブ）
 
-メインタブは **ヘッダー（masthead）内・上部 sticky**。モバイルも下部固定ではなく上部。  
+メインタブは **ヘッダー（masthead）内・上部 sticky**（実機幅ではフッター固定）。
 **原則: タブ名と無関係なコンテンツは載せない**（ラベル一致）。
 
 **タブ順（左→右）・既定＝デスク:**
 
 | id | ラベル（short） | 中身 |
 |----|-----------------|------|
-| `desk` | デスク | `MarriageDesk` 司令室 HUD（薄メトリクスのみ）+ `HomeInsightPanels`（headline/hero/**統合 next-actions**/lies/exclude/talk）。today-panel の next-actions は廃止 |
-| `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + CHECK FIRST + 準備/新生活マイルストーンのみ。HUD・シード長文なし |
-| `deadlines` | 期限と予定（期限） | `InstitutionalDeadlines` + 個人タイムライン／ICS。ホームエッセイなし |
-| `phases` | 時期と出来事（時期） | `PhasesPanel`（9時期・48出来事）専用 |
-| `memories` | 記念手帳（記念） | 記念メモ + **フル money-grid**（得した/見込み/節約/税）+ 月次ふたり会議。デスクは HUD 薄指標のみで重複しない |
+| `desk` | デスク | `MarriageDesk`（**和紙・明朝**。数字は これまで/婚姻日/次の期限 の3つ）+ **金額グリッド4枚**（記念から移動）+ `HomeInsightPanels`（大きな数字/次のアクション/思い込み/対象外/会話のきっかけ）|
+| `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + CHECK FIRST + マイルストーンのみ |
+| `deadlines` | **期限と時期**（期限） | `InstitutionalDeadlines` + 個人タイムライン/ICS + **`PhasesPanel`（9時期・48出来事）** ← 旧「時期」タブを統合 |
+| `memories` | 記念手帳（記念） | 記念メモ + 月次ふたり会議（金額グリッドはデスクへ移動）|
+| `pair` | **ふたりの練習帳**（ふたり） | `PairWorkbook` — 行動52 / 会話16 / 合意18 / 根拠18。行動の状態と合意は端末に保存 |
 | `find` | 制度を探す（探す） | 検索のみ |
 | `settings` | ふたりの設定（設定） | プロフィール／Gist／Grok／YEARLY_UPDATE／リセット |
 
-**Amityちゃんにきく**は全タブ右下の丸 FAB → 前景チャットのみ。**Amityをchat-onlyにしたこと ≠ 司令室 HUD を消すこと。** HUD は **デスク**タブ最上段。
+**2026-09-10 に削除したもの（戻さない）**: 旧「時期」タブ（期限へ統合）／デスクの Amity 吹き出し／
+デスクの「友人への渡し方」カード／`home.json` の `headline`／項目詳細の一文字バッジ（`track` の表示）／
+デスクの「得した記録」「損回避・節約」（下の金額グリッドと重複）。
 
-- スタンプ: 1マス＝1絵、縁パッド最大 **6**、**>6 はサブマス分割**。横スクロールギャラリー禁止。一覧は「探す」。
-- SeedContentPanels マウント: HomeInsight→デスク、Phases→時期、InstitutionalDeadlines→期限。`verify:seed` / CONTENT_GUARD 維持。
+**Amityちゃんにきく**は全タブ右下の丸 FAB → 前景チャットのみ。
+デスクの Amity 吹き出しは削除済み。`MarriageDesk` のパネル自体は残っているが、
+**ダークな "command HUD" ではなく和紙**（`.desk-washi`）。秒針時計・LIVE・英字コード名も削除済み。
+過去「チャットだけ」をパネル削除と読み違えた事故があるが、**いま逆にダークHUDへ戻すのも誤り**。
+
+- スタンプ: 1マス＝1絵、縁パッド最大 **6**、**>6 はカード分割**。横スクロールギャラリー禁止。
+  ラベルは `tasks[].pad` を使用（CSSは2行折り返し）。一覧は「探す」。
+- SeedContentPanels マウント: HomeInsight→デスク、Phases→**期限**、InstitutionalDeadlines→期限。
 
 ## 同期（Gist）
 
@@ -93,13 +110,14 @@
 
 ```
 src/Notebook.tsx                    # シェル・タブ
-src/components/MarriageDesk.tsx     # 司令室 HUD + 友人handoff（desk最上段・Amity埋め込みなし）
+src/components/MarriageDesk.tsx     # デスク上部のパネル（和紙 .desk-washi。Amity吹き出し・友人handoffは削除済み）
 src/components/DeskChatPanel.tsx    # FAB チャット
 src/components/StampIllustBoard.tsx # アート優先・MAX=6・サブマス分割
-src/components/SeedContentPanels.tsx
+src/components/SeedContentPanels.tsx # 大きな数字/次のアクション/思い込み/対象外/会話 + Phases（期限タブ）
+src/components/PairWorkbook.tsx     # 「ふたり」タブ（行動52/会話16/合意18/根拠18）
 src/components/OnboardingSheet.tsx
 src/components/PwaUpdateBanner.tsx
-src/lib/model.ts                    # inScope / isCeremonyTask（Lean式なし非表示）
+src/lib/model.ts                    # inScope / isCeremonyTask（式なしのとき非表示）+ practice/agreement スキーマ（既定値つき）
 src/lib/use-book.ts                 # localStorage futari-miraicho-v1
 src/lib/gist-sync.ts                # DEFAULT_GIST_ID
 src/lib/amity-grok.ts               # grok-3 · credits → console.x.ai
@@ -108,10 +126,11 @@ src/lib/desk-chat.ts                # 端末内フォールバック
 src/lib/grok-mode.ts
 src/data/tasks.json / groups.json / sources.json / phase-images.json
 src/data/deadlines.json / exclude.json / home.json / phases.json / sugoroku.json
+src/data/practices.json / talks.json / agreements.json / refs.json   # ふたりタブ
 src/data/YEARLY_UPDATE.md         # 設定 UI 表示元（import）
 docs/YEARLY_UPDATE.md            # verify-seed が存在+同一内容を検査
 public/phases/                      # マスイラスト
-public/desk-mascot.png
+public/desk-mascot.png / amity-shark.png   # 2026-09-10 に背景を透過
 docs/AI_START_HERE.md
 docs/HISTORY.md
 docs/MERGE_OVERLAPS.md
@@ -137,6 +156,13 @@ npx gh-pages -d dist
 `gh` は `kenji0618y` でログイン済みの環境あり。`workflow` scope なし。
 
 
+
+---
+
+> **ここから下は履歴です。** 2026-09-09 までの経緯と、そのときの数字（137 タスクなど）が
+> そのまま残してあります。**現状の数字は上の「ハードルール」「ナビ構成」を見てください**
+> （2026-09-11 時点で 176 タスク・7タブ・verify-seed 46項目）。
+> 履歴の数字を現状と取り違えないこと。
 
 ## 復元メモ（2026-09-09）
 

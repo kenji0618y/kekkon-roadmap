@@ -60,6 +60,35 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 - (recheck) — Path inventory + Lean hide≠delete note + `verify:seed` YEARLY docs↔src/data identity.
 - Root auto-entry for Claude/Grok/ChatGPT: `AGENTS.md` / `CLAUDE.md` / `CHATGPT.md` + Copilot instructions + Cursor rule; `predev` runs verify.
 
+
+### Language cleanup, two spreadsheets, and the pair workbook (2026-09-10/11)
+
+- **作り手のメモが画面に出ていた。** 「現金は書かない」「invent」「賞品」「既定」「一次」「M0」など
+  データ290箇所と、`.tsx` の画面文言。友人に見せる状態ではなかったので全部書き直した。
+  命令口調（「扶養に落とすな」「見ろ」「するな」）、編集用ラベル（「取りこぼし：」「窓：」）、
+  元号略号（R8.4.1）、OSS/OTC/HUD/Ridge/Lattice も同時に掃除。
+- **スタンプのラベルが機械的に切れていた**（「婚姻届の」「提出前に」）。全176件に `pad`（3〜8字）を
+  手で付け、`tinyLabel` が `pad` を優先、CSS を2行折り返しに。
+- **リンク**: 広島県警の免許ページが404、国税庁 No.4508 が soft-404（HTTP 200 で中身が「表示できません」）。
+  ステータスコードだけの検査では足りないと分かり、全出典を**本文まで**確認する方式に変更。
+  ロボット避けで403のサイトは `sources[].note` に明記してリンク切れと誤判定しないようにした。
+- **エクセル2冊を反映**: `hiroshima_marriage_checklist.xlsx`（109項目・出典108）から
+  サイトに無かった39項目を追加し 137→**176**。育休・復職まわりがまるごと抜けていたので
+  `sq-childleave` を新設。民間の特典は入れ替わりが激しいので `tasks[].review` と
+  15か月超の警告を作り、`sq-yearly-perks` にまとめた。
+- **`happy_marriage_workbook.xlsx`** は期限もお金もない別種の内容だったので、
+  手続きのタスクに混ぜず **「ふたり」タブ**として独立（行動52 / 会話16 / 合意18 / 根拠18）。
+  研究と専門家の提案を分けたまま、`limits`（限界）も残した。DV相談・性犯罪/性暴力の窓口は
+  verify で外せないようにした。書き込みを保存するため `bookSchema` に
+  `practices` / `agreements` を**既定値つき**で追加（必須にすると既存の手帳が壊れる。旧形式で実際に検証済み）。
+- **デスクの作り直し**: ダークな "command HUD" をやめ、ほかのタブと同じ和紙・明朝に。
+  秒針時計・LIVE・英字の状態コードを日本語へ。マスコット画像の白背景を透過。
+- **画面の整理（Kenji 指示）**: デスクの Amity 吹き出し、友人への渡し方カード、`headline` を削除。
+  「時期」タブを「期限」へ統合（8→7タブ）。記念の金額グリッドをデスクへ移動。
+  重複していたデスクの「得した記録」「損回避・節約」と、軸の混ざった一文字バッジ（`track` 表示）も削除。
+- **検査**: `verify-seed` を 39 → **46項目**に。下限は 176 / FAQ 820 / practices 52 …。
+  **内容を増やしたら下限も上げる**という運用を明文化。
+
 ## Key Kenji quotes (message ids)
 
 | id | Intent (paraphrase) | What we did / should remember |
@@ -69,7 +98,7 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 | `t66u` | No list escape from stamp art | Dropped journey list toggle; overflow = sub-mass |
 | `t87`–`t89` | Restore HUD; chat-only ≠ delete HUD | `07944e0` + tab split `8b4427a` |
 
-## Standing outcomes (as of app lean5 `8a90775` · docs recheck 2026-09-09)
+## Standing outcomes (as of `119404f` · docs full pass 2026-09-11)
 
 - **137** tasks exact; celebration UX gone; 結婚新生活 not a prize.
 - Amity = **FAB chat-only**; desk **HUD remains** on デスク.
@@ -87,4 +116,9 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 - [ ] Adding a journey “一覧” escape hatch for overflow stamps  
 - [ ] Committing plaintext `xai-` / PAT / `.env*.local`  
 - [ ] Claiming done without `npm run verify:seed` output  
-- [ ] Shipping `gh-pages` without confirming the new `assets/index-*.js` returns 200  
+- [ ] Shipping `gh-pages` without confirming the new `assets/index-*.js` returns 200
+- [ ] 生成時のメモ（「〜は書かない」「賞品」「M0」など）を画面文言に残す
+- [ ] 内容を増やしたのに `verify-seed` の下限を据え置く
+- [ ] `bookSchema` の新しい欄を必須にする（既存の手帳が読めなくなる）
+- [ ] `refs.json` から DV相談・性犯罪/性暴力の窓口を外す
+- [ ] デスクをダークな HUD に戻す／Amity の吹き出しを復活させる
