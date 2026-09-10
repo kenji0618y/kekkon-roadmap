@@ -691,6 +691,10 @@
   background:#f4f7f2;color:#4a6356;font-size:13px;font-weight:600;cursor:pointer;
 }
 .desk-more-viz:hover{background:#eaf1ea;border-color:#9fb5a6}
+.desk-money{margin:10px 0 12px;padding:0}
+.desk-money .money-grid{margin-bottom:8px}
+.desk-money>.hint{font-size:11px;line-height:1.7;color:var(--desk-muted,#6d7c75);max-width:none;margin:0}
+.desk-money .money-card{background:#fffefaee}
 .desk-decor-fold{margin-bottom:10px}
 .desk-decor-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 8px}
 .desk-linkish{background:transparent;border:0;color:#3d6a78;font-size:12px;text-decoration:underline;cursor:pointer;padding:0}

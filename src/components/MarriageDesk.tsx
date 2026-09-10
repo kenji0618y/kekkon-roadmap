@@ -277,7 +277,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
       )}
 
 
-      <section className="money-section" aria-label="金額の集計">
+      <section className="desk-money" aria-label="金額の集計">
         <div className="money-grid">
           {([
             {key:'received',label:'受け取った給付・祝金',unit:'円',sub:'受取を記録した金額'},
