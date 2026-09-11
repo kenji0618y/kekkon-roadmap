@@ -2,20 +2,16 @@ import type {Status, Group, Task} from '../lib/model'
 import {statusNames} from '../lib/model'
 import {phaseImage} from '../data/catalog'
 
-/** Max stamps per card (4 corners + mid-left/mid-right). Overflow → sub-mass split */
-const MAX_CORNER_PADS = 6
+/** Max stamps per illustration card. Overflow → sub-mass split */
+const MAX_CORNER_PADS = 12
 
-/** Prefer bottom corners when few stamps so the scene stays open; 5–6 use edge mids */
+/** Slot order: keep the scene open when few stamps (prefer bottom), then fill the rim up to 12. */
+const FILL_ORDER = [3, 2, 0, 1, 4, 5, 6, 7, 8, 9, 10, 11]
+
 function cornerSlot(count: number, index: number) {
-  const map: Record<number, number[]> = {
-    1: [3],
-    2: [2, 3],
-    3: [0, 2, 3],
-    4: [0, 1, 2, 3],
-    5: [0, 1, 2, 3, 4],
-    6: [0, 1, 2, 3, 4, 5],
-  }
-  return (map[count] || map[6])[index] ?? index
+  const n = Math.min(Math.max(count, 1), MAX_CORNER_PADS)
+  const slots = FILL_ORDER.slice(0, n)
+  return slots[index] ?? index
 }
 
 /** Short name for the stamp face. tasks.json carries a hand-written `pad`
@@ -120,7 +116,7 @@ export function StampIllustBoard({
                 />
 
                 <div
-                  className="illust-pads"
+                  className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`}
                   role="group"
                   aria-label={`${captionTitle}のスタンプ台`}
                 >

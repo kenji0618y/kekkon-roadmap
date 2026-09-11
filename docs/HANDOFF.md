@@ -127,7 +127,7 @@
 src/Notebook.tsx                    # シェル・タブ
 src/components/MarriageDesk.tsx     # デスク上部のパネル（和紙 .desk-washi。Amity吹き出し・友人handoffは削除済み）
 src/components/DeskChatPanel.tsx    # FAB チャット
-src/components/StampIllustBoard.tsx # アート優先・MAX=6・サブマス分割
+src/components/StampIllustBoard.tsx # アート優先・MAX=12・サブマス分割
 src/components/SeedContentPanels.tsx # 大きな数字/次のアクション/思い込み/対象外/会話 + Phases（期限タブ）
 src/components/PairWorkbook.tsx     # 「ふたり」タブ（行動52/会話16/合意18/根拠18）
 src/components/OnboardingSheet.tsx
@@ -230,8 +230,8 @@ npx gh-pages -d dist
 26. Amity FAB chat-only は全タブ維持（≠ HUD削除）。
 
 ### 完了（本更新）
-7. **ハイブリッド縁パッド MAX=6** — `MAX_CORNER_PADS=6`。`cornerSlot` に 5–6（c4 mid-left / c5 mid-right）。CSS `.stamp-pad.corner.c4`/`.c5`（縦中央・min ~44px tap）。>6 は従来どおりサブマス分割。アート優先・一覧エスケープなし。
-8. **一覧 view-switch 削除** — Notebook から `mapView` / LayoutGrid·List トグル / `chapter-list` ボード分岐を削除。ロードマップは常に `StampIllustBoard`。「探す」タブと TaskForm Sheet は維持。ヒントを「縁のスタンプ・1マス最大6・多い章はカード分割」に更新。
+7. **縁パッド MAX=12** — `MAX_CORNER_PADS=12`。`cornerSlot` は底辺優先で最大12スロット（四隅・左右中央・上下中央・左右の上下）。7個以上は `.pads-dense` で少し小さくする。>12 のみサブマス分割。アート優先・一覧エスケープなし。
+8. **一覧 view-switch 削除** — Notebook から `mapView` / LayoutGrid·List トグル / `chapter-list` ボード分岐を削除。ロードマップは常に `StampIllustBoard`。「探す」タブと TaskForm Sheet は維持。ヒントを「縁のスタンプ・1マス最大12・多い章はカード分割」に更新。
 
 ### 完了（コンテンツ復元）
 9. **stamps-v2 → tasks.json フィールド復元** — 外部アーカイブ `stamps-v2.json`（150・Kenji ローカルのみ）から、現行 **`src/data/tasks.json` 137** へ `why` / `miss` / `window` / `faq[{q,a}]` をマージ済み。ノートブック由来の `sources` / `need` / `chapter` / `group` / `type` / `notice` / `amountNote` / `verified` / `summary` / `steps` は維持（steps が空のときのみ stamp steps）。**クローン AI は stamps-v2 を探さず `src/data` を編集する。**
