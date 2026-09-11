@@ -193,7 +193,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
           <div>
             <h2 id={titleId}>Amityちゃんに聞く</h2>
             <p>{keyHint}</p>
-            {localOnly && (
+            {readGrokLocalOnlyFlag() === 'credits-limit' && (
               <span className="desk-local-only-chip chat-chip" title="Grok深掘りなし・端末内案内のみ">
                 端末内のみモード
                 {' '}

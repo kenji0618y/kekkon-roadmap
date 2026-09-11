@@ -14,7 +14,7 @@ Do **not** rediscover product history by chatting with Kenji.
 | Docs tip (main) | 下の「いまの状態」を見てください |
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-176項目 · 33まとまり · FAQ 829組 · 出典 117件 · 7タブ · 検査 52項目
+176項目 · 33まとまり · FAQ 829組 · 出典 117件 · 6タブ · 検査 52項目
 <!-- /STATE -->
 | Live app | Pages `gh-pages` = shipped app。`main` push で Actions が検査→公開。結果は Actions タブ／URL で確認 |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
@@ -65,16 +65,15 @@ Full minima → `CONTENT_GUARD.md` / HANDOFF HARD RULES（176 tasks, FAQ ≥820 
 
 > **Do not look for `/workspace/marriage-research/`.** That path is Kenji’s local Grok Bot archive only and is **not** in this repo. If you only have this GitHub clone, edit `src/data` and keep `verify:seed` green.
 
-## Current tab IA（2026-09-11 現在・7タブ）
+## Current tab IA（2026-09-11 現在・6タブ）
 
 Default tab = **デスク**。**ルール: タブの名前と中身を一致させる。**
 
 | id | Label (short) | Contents |
 |----|---------------|----------|
 | `desk` | デスク | `MarriageDesk`（和紙の面・数字は これまで/婚姻日/次の期限 の3つ）+ **金額グリッド4枚**（記念から移動）+ `HomeInsightPanels`（大きな数字 / 次のアクション / 思い込み / 対象外 / 会話のきっかけ）|
-| `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + CHECK FIRST + マイルストーンのみ |
+| `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
 | `deadlines` | 期限と時期（期限） | `InstitutionalDeadlines` + 個人予定/ICS + **`PhasesPanel`（9時期・48出来事）** ← 旧「時期」タブを統合 |
-| `memories` | 記念手帳（記念） | 記念メモ + 月次ふたり会議（**金額グリッドはデスクへ移動済み**）|
 | `pair` | ふたりの練習帳（ふたり） | `PairWorkbook` — 行動52 / 会話16 / 合意18 / 根拠18。合意と行動は端末に保存 |
 | `find` | 制度を探す（探す） | 検索のみ |
 | `settings` | ふたりの設定（設定） | プロフィール / Gist / Grok / 毎年更新メモ / リセット |

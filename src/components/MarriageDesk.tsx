@@ -158,7 +158,7 @@ export type MarriageDeskProps={
   today:string;
   hasBook:boolean;
   syncStatus?:'off'|'ok'|'error'|'syncing';
-  /** Grok deep research unavailable → show 端末内のみモード chip. */
+  /** Kept for callers; chip UI gates on credits-limit only. */
   localOnlyMode?:boolean;
   onOpenTask:(id:string)=>void;
   onOpenProfile:()=>void;
@@ -230,12 +230,10 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <span className="desk-subtitle">{names}</span>
         </div>
         <div className="desk-title-right">
-          {localOnlyMode&&(
+          {readGrokLocalOnlyFlag()==='credits-limit'&&(
             <span className="desk-local-only-chip" title="Grok深掘りなし・端末内案内のみ">
               端末内のみモード
-              {readGrokLocalOnlyFlag()==='credits-limit'&&(
-                <a className="desk-credits-link" href={GROK_CREDITS_CONSOLE_URL} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}>クレジットを増やす（xAI）</a>
-              )}
+              <a className="desk-credits-link" href={GROK_CREDITS_CONSOLE_URL} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}>クレジットを増やす（xAI）</a>
             </span>
           )}
           {syncStatus!=='off'&&(

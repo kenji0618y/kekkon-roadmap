@@ -1,7 +1,8 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {ArrowDownToLine,ArrowRight,ArrowUpRight,BookHeart,CalendarDays,Check,ChevronRight,Cloud,CloudCheck,Download,ExternalLink,Heart,HeartHandshake,House,Info,Layers,LoaderCircle,Map,MapPin,MessageCircle,Plus,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,X} from 'lucide-react';
+import {ArrowDownToLine,ArrowRight,ArrowUpRight,CalendarDays,Check,ChevronRight,Cloud,CloudCheck,Download,ExternalLink,Heart,HeartHandshake,House,Info,LoaderCircle,Map,MapPin,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,X} from 'lucide-react';
 import {toast} from 'sonner';
 import {Tabs,TabsContent,TabsList,TabsTrigger} from './components/ui/tabs';
+import {Accordion,AccordionContent,AccordionItem,AccordionTrigger} from './components/ui/accordion';
 import {Sheet,SheetContent,SheetDescription,SheetHeader,SheetTitle} from './components/ui/sheet';
 import {Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle} from './components/ui/dialog';
 import {AlertDialog,AlertDialogAction,AlertDialogCancel,AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader,AlertDialogTitle} from './components/ui/alert-dialog';
@@ -11,9 +12,9 @@ import {Toaster} from './components/ui/sonner';
 import {Switch} from './components/ui/switch';
 import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
-import {MemoryForm,ProfileForm,TaskForm} from './components/notebook-forms';
-import {chapters,emptyBook,inScope,isCeremonyTask,type AgreementRecord,type Book,type Memory,type PracticeRecord,type Profile,type Task,type TaskRecord} from './lib/model';
-import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,type Deadline} from './lib/dates';
+import {ProfileForm,TaskForm} from './components/notebook-forms';
+import {chapters,emptyBook,inScope,isCeremonyTask,type AgreementRecord,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord} from './lib/model';
+import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
 import {DEFAULT_GIST_ID} from './lib/gist-sync';
@@ -30,14 +31,14 @@ import {OnboardingSheet,isOnboardingDone,markOnboardingDone} from './components/
 import {PwaUpdateBanner} from './components/PwaUpdateBanner';
 import yearlyUpdateMd from './data/YEARLY_UPDATE.md?raw';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
-const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'マップ',icon:Map},{id:'deadlines',label:'期限と時期',short:'期限',icon:CalendarDays},{id:'memories',label:'記念手帳',short:'記念',icon:BookHeart},{id:'pair',label:'ふたりの練習帳',short:'ふたり',icon:HeartHandshake},{id:'find',label:'制度を探す',short:'探す',icon:Search},{id:'settings',label:'ふたりの設定',short:'設定',icon:Settings2}];
-type Modal='profile'|'pair'|'memory'|null;
+const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'マップ',icon:Map},{id:'deadlines',label:'期限と時期',short:'期限',icon:CalendarDays},{id:'pair',label:'ふたりの練習帳',short:'ふたり',icon:HeartHandshake},{id:'find',label:'制度を探す',short:'探す',icon:Search},{id:'settings',label:'ふたりの設定',short:'設定',icon:Settings2}];
+type Modal='profile'|'pair'|null;
 export default function FutureNotebook(){
  const [tab,setTab]=useState('desk'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[chatOpen,setChatOpen]=useState(false);
  const [taskId,setTaskId]=useState<string|null>(null),[modal,setModal]=useState<Modal>(null),[dirty,setDirty]=useState(false),[pendingClose,setPendingClose]=useState<(()=>void)|null>(null);
- const [query,setQuery]=useState(''),[category,setCategory]=useState('all'),[scopeOnly,setScopeOnly]=useState(false),[statusFilter,setStatusFilter]=useState('all');
+ const [query,setQuery]=useState(''),[category,setCategory]=useState('all'),[scopeOnly,setScopeOnly]=useState(true),[statusFilter,setStatusFilter]=useState('all');
  const [resetOpen,setResetOpen]=useState(false),[resetTyped,setResetTyped]=useState(''),[resetAck,setResetAck]=useState(false);
- const [memoryDraft,setMemoryDraft]=useState<Memory|null>(null),[memoryFilter,setMemoryFilter]=useState('all'),[deleteMemory,setDeleteMemory]=useState<Memory|null>(null);
+ const [findOpenChapter,setFindOpenChapter]=useState('');
  const [joinCode,setJoinCode]=useState(''),[importDraft,setImportDraft]=useState<{book:Book,legacy:boolean}|null>(null);
  const uploadRef=useRef<HTMLInputElement>(null);
  const [syncToken,setSyncToken]=useState(''),[syncGistId,setSyncGistId]=useState(DEFAULT_GIST_ID),[syncEnabled,setSyncEnabled]=useState(false),[syncBusy,setSyncBusy]=useState(false);
@@ -59,7 +60,20 @@ export default function FutureNotebook(){
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
  }).slice(0,3);
  const filtered=tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&(!scopeOnly||inScope(t,p))&&(category==='all'||t.chapter===category)&&(statusFilter==='all'||(book.records[t.id]?.status||'todo')===statusFilter)&&(!query||`${t.title} ${t.summary} ${t.sources.map(s=>sources[s].title).join(' ')}`.normalize('NFKC').toLowerCase().includes(query.normalize('NFKC').toLowerCase().trim())));
- const memoryRows=book.memories.filter(m=>memoryFilter==='all'||m.kind===memoryFilter).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+ useEffect(()=>{
+  if(!filtered.length){setFindOpenChapter('');return;}
+  if(category!=='all'){setFindOpenChapter(category);return;}
+  if(query.trim()){
+   const first=chapters.find(c=>filtered.some(t=>t.chapter===c.id));
+   setFindOpenChapter(first?.id||'');
+   return;
+  }
+  if(!findOpenChapter||!filtered.some(t=>t.chapter===findOpenChapter)){
+   const first=chapters.find(c=>filtered.some(t=>t.chapter===c.id));
+   setFindOpenChapter(first?.id||'');
+  }
+ },[query,category,statusFilter,scopeOnly,filtered.length,p]);
+
  const firstSteps=tasks.filter(t=>['prepare','life'].includes(t.chapter)&&inScope(t,p)&&book.records[t.id]?.status!=='na');
  const newLifeReady=firstSteps.length>0&&firstSteps.every(t=>book.records[t.id]?.status==='done');
  const callClose=(action:()=>void)=>{if(data.busy)return;if(dirty)setPendingClose(()=>action);else{setDirty(false);action();}};
@@ -67,13 +81,10 @@ export default function FutureNotebook(){
  const openTask=(id:string)=>{setDirty(false);setTaskId(id);};
  const openProfile=()=>{callClose(()=>{setTaskId(null);setDirty(false);setModal('profile');});};
  const selectChapter=(id:string)=>{setChapter(id);setGroupId(groups.find(g=>g.chapter===id&&scoped.some(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na'))?.id||groups.find(g=>g.chapter===id)?.id||'');};
- const newMemory=(kind:Memory['kind']='memory')=>{setMemoryDraft({id:crypto.randomUUID(),date:today,title:kind==='monthly'?`${Number(today.slice(5,7))}月のふたり会議`:'',text:kind==='monthly'?'今月うれしかったこと：\n\nありがとうを伝えたいこと：\n\n来月の楽しみ：\n\n見直したい予定・お金のこと：\n':'',kind,complete:false});setModal('memory');setDirty(false);};
  const saveRecord=async(r:TaskRecord)=>{if(!task)return;const result=await data.mutate({action:'record',id:task.id,record:r},r.status==='done'?'記録を保存しました':'ふたりの記録を保存しました');if(result)forceClose();};
  const saveProfile=async(profile:Profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'))forceClose();};
  const savePractice=(id:string,record:PracticeRecord)=>{void data.mutate({action:'practice',id,record},'');};
  const saveAgreement=(id:string,record:AgreementRecord)=>{void data.mutate({action:'agreement',id,record},'この話題を保存しました');};
- const saveMemory=async(memory:Memory)=>{if(await data.mutate({action:'memory',memory},'ふたりの言葉を残しました'))forceClose();};
- const copy=async(text:string)=>{try{await navigator.clipboard.writeText(text);toast.success('コピーしました');}catch{toast.error('コピーできませんでした。コードを選択してコピーしてください。');}};
  const exportBackup=()=>{if(!data.book){toast.info('手帳を始めてから保存できます');return;}downloadText(`futari-miraicho-${today}.json`,backupText(data.book));toast.success('バックアップを書き出しました');};
  const exportCalendar=()=>{if(!dated.length){toast.info('基準の日付か予定日を設定してください');return;}downloadText('amity-chan-ni-kiku.ics',calendarFile(dated),'text/calendar;charset=utf-8');toast.success('予定を書き出しました。お使いのカレンダーに読み込んでください。');};
  const loadBackup=async(file:File)=>{try{if(file.size>2000000)throw new Error('2MB以内のJSONファイルを選んでください。');setImportDraft(readBackup(JSON.parse(await file.text())));}catch(e){toast.error(e instanceof Error?e.message:'読み込めませんでした');}};
@@ -106,7 +117,7 @@ export default function FutureNotebook(){
  <main className="workspace" id="main-content">
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p><button onClick={()=>void data.refresh()}>再読み込み</button></div>}
  <TabsContent value="desk" className="tab-surface">
- <div className="welcome-line"><div><p className="eyebrow">OUR DESK</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">いまの進みぐあいと、次にやることをまとめた画面です。項目はマップ、締切と時期の流れは期限のタブにあります。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
+ <div className="welcome-line"><div><p className="eyebrow">OUR DESK</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">いまの進みぐあいと、次にやることをまとめた画面です。項目はマップ、締切と時期の流れは期限のタブにあります。</p></div></div>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} localOnlyMode={localOnlyMode} onOpenTask={openTask} onOpenProfile={openProfile} onGoJourney={()=>setTab('journey')} onOpenSettings={()=>setTab('settings')} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('institutional-deadlines')?.scrollIntoView({behavior:'smooth',block:'start'}));}} onGoFind={(kw)=>{if(kw)setQuery(kw);setTab('find');}}/>
  <HomeInsightPanels
   onOpenTask={openTask}
@@ -116,7 +127,7 @@ export default function FutureNotebook(){
  />
  </TabsContent>
  <TabsContent value="journey" className="tab-surface">
- <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2><p className="hint" style={{marginTop:6}}>章を選んで、絵の縁にあるスタンプを押していきます。項目の多い章は、絵が何枚かに分かれます。</p></div><button className="quiet-button" onClick={openProfile}><Settings2 size={16}/>ふたりに合わせる</button></div>
+ <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2><p className="hint" style={{marginTop:6}}>章を選んで、絵の縁にあるスタンプを押していきます。項目の多い章は、絵が何枚かに分かれます。</p></div></div>
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
  <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.en}</span><h3>{activeChapter.description}</h3></div><span className="hint">絵の縁のスタンプを押すと、その項目が開きます。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:!chapterGroups.length?<EmptyState symbol={<Map/>} title="この章に、今の二人向けのスタンプはありません。" action={<Action secondary onClick={openProfile}>ふたりの設定を開く</Action>}>式の有無や働き方を変えると、表示されるマスが変わります。</EmptyState>:<>
@@ -124,8 +135,7 @@ export default function FutureNotebook(){
 
  </>}
  </section>
- <aside className="paper-card tip-card check-first-below"><span className="eyebrow">CHECK FIRST</span><h3>公式案内で確かめる</h3><p>表示は候補です。金額や対象条件は、各項目の公式参照先と窓口で確認してください。</p><p className="hint">{p.wdate?`婚姻日：${shortDate(p.wdate)}`:'婚姻日は設定から入れられます。'}</p><button className="text-button" onClick={openProfile}>ふたりの設定を開く<ArrowRight size={14}/></button></aside>
- <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'必要ならメモや次の予定を、記念手帳に残せます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div>{newLifeReady&&<Action secondary onClick={()=>newMemory()}>メモを残す</Action>}</div>
+ <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や期限タブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface"><SectionTitle eyebrow="TIME FOR THE TWO OF US" title="期限と、ふたりの予定。" sub="済んだ手続きは外して、これからの予定を日付順に。"><Action secondary onClick={exportCalendar} disabled={!dated.length}><Download/>カレンダーに書き出す</Action></SectionTitle>
  <InstitutionalDeadlines child={p.child} home={p.home}/>
@@ -139,19 +149,22 @@ export default function FutureNotebook(){
  <PhasesPanel/>
  </div>
 </TabsContent>
- <TabsContent value="memories" className="tab-surface"><SectionTitle eyebrow="THE DAYS WE WANT TO REMEMBER" title="ふたりの記念手帳。" sub="手続きの先にある、日々のうれしいことを。"><Action onClick={()=>newMemory()}><Plus/>記念を残す</Action></SectionTitle>
-  <button className="monthly-invite" style={{marginBottom:22,width:'100%'}} onClick={()=>newMemory('monthly')}><MessageCircle/><span><small>月に一度、10分だけ。</small><strong>お茶を飲みながら、ふたり会議。</strong><span>ありがとうと、来月の楽しみを。</span></span><ArrowRight/></button>
- <section className="memory-hero"><div><span className="eyebrow">ONE DAY, AND EVERY DAY</span><h2>{p.wdate?difference(today,p.wdate)>=0?`婚姻日から、${difference(today,p.wdate)+1}日目。`:`婚姻日まで、あと${difference(p.wdate,today)}日。`:'日付を入れると、日数が表示されます。'}</h2><p>{book.memories.length?`${book.memories.length}件の言葉と、${done.length}個の「できた」が重なりました。`:'最初のページには、今の気持ちを書いてみませんか。'}</p></div><span className="memory-hero-mark">記</span></section>
- <div className="memory-toolbar"><div className="filter-pills" role="group" aria-label="記録の種類">{Object.entries({all:'すべて',memory:'思い出',monthly:'ふたり会議',dream:'叶えたいこと'}).map(([v,label])=><button key={v} className={memoryFilter===v?'active':''} onClick={()=>setMemoryFilter(v)} aria-pressed={memoryFilter===v}>{label}</button>)}</div><button className="text-button" onClick={()=>newMemory('dream')}><Plus size={16}/>やりたいことを追加</button></div>
- {memoryRows.length?<div className="memory-grid">{memoryRows.map(m=><article key={m.id} className={`memory-card kind-${m.kind}`}><div className="memory-card-top"><span>{m.kind==='monthly'?'ふたり会議':m.kind==='dream'?'これから叶えたいこと':'ふたりの思い出'}</span>{m.kind==='dream'?<Sparkles size={19}/>:<Heart size={18}/>}</div><small>{m.date?shortDate(m.date):'日付はこれから'}</small><h3>{m.title}</h3>{m.complete&&m.kind==='dream'&&<span className="dream-complete"><Check size={14}/>二人で叶えました</span>}<p>{m.text||'言葉は、またあとで。'}</p><div className="memory-card-actions"><button className="text-button" onClick={()=>{setMemoryDraft(m);setDirty(false);setModal('memory');}}>続きを書く<ArrowRight size={14}/></button><button className="icon-button" aria-label={`${m.title}を削除する`} onClick={()=>setDeleteMemory(m)}><Trash2 size={15}/></button></div></article>)}</div>:<EmptyState symbol={<BookHeart/>} title="今日を、最初のページに。" action={<Action secondary onClick={()=>newMemory('monthly')}><MessageCircle/>ふたり会議を書いてみる</Action>}>「ありがとう」「来月楽しみなこと」。短い言葉だけでも、二人の記念になります。</EmptyState>}
- </TabsContent>
  <TabsContent value="pair" className="tab-surface"><SectionTitle eyebrow="THE TWO OF US" title="ふたりの練習帳。" sub="手続きの外側にある、日々の過ごし方。試したいものを選んで、合わなければやめる表です。"/>
   <PairWorkbook book={book} busy={data.busy} onSavePractice={savePractice} onSaveAgreement={saveAgreement}/>
  </TabsContent>
  <TabsContent value="find" className="tab-surface"><SectionTitle eyebrow="A GUIDE TO EVERYDAY LIFE" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。${tasks.length}項目を収録しています。`}/>
- <div className="search-panel"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'今回は対象外'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>現在の二人の候補だけ</span></label></div></div>
- <div className="results-label"><strong>{filtered.length}件</strong><span>表示は対象の確定ではありません。個別の条件を確認してください。</span></div>
- {filtered.length?<section className="results-list">{filtered.map(t=>renderTask(t))}</section>:<EmptyState symbol={<Search/>} title="当てはまる項目がありません。" action={<Action secondary onClick={()=>{setQuery('');setCategory('all');setStatusFilter('all');setScopeOnly(false);}}>条件をリセットする</Action>}>短い言葉で探すか、章や状況の条件を変えてみてください。</EmptyState>}
+ <div className="search-panel find-search-sticky"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'今回は対象外'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>現在の二人の候補だけ</span></label></div></div>
+ <div className="results-label"><strong>{filtered.length}件</strong><span>章ごとにまとめています。表示は対象の確定ではありません。</span></div>
+ {filtered.length?<Accordion type="single" collapsible value={findOpenChapter} onValueChange={v=>setFindOpenChapter(v||'')} className="find-by-chapter">
+  {(category==='all'?chapters:chapters.filter(c=>c.id===category)).map(c=>{
+   const rows=filtered.filter(t=>t.chapter===c.id);
+   if(!rows.length)return null;
+   return <AccordionItem key={c.id} value={c.id}>
+    <AccordionTrigger><span className="find-chapter-trigger"><span className="chapter-kanji">{c.kanji}</span><span>{c.label}</span><strong>{rows.length}件</strong></span></AccordionTrigger>
+    <AccordionContent><section className="results-list find-chapter-list">{rows.map(t=>renderTask(t))}</section></AccordionContent>
+   </AccordionItem>;
+  })}
+ </Accordion>:<EmptyState symbol={<Search/>} title="当てはまる項目がありません。" action={<Action secondary onClick={()=>{setQuery('');setCategory('all');setStatusFilter('all');setScopeOnly(true);setFindOpenChapter('');}}>条件をリセットする</Action>}>短い言葉で探すか、章や状況の条件を変えてみてください。</EmptyState>}
  </TabsContent>
  <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="MAKE THIS NOTEBOOK YOURS" title="ふたりらしい手帳に。" sub="呼び名、共有、バックアップ。いつでも整え直せます。"/>
  <div className="settings-grid"><section className="paper-card settings-card"><div className="settings-icon"><Users/></div><h2>ふたりのプロフィール</h2><p className="profile-names">{p.name1||'一人目'} <span>&</span> {p.name2||'二人目'}</p><dl><div><dt>住まい</dt><dd>広島市 {p.ward==='未設定'?'（区は未設定）':p.ward}</dd></div><div><dt>婚姻日・予定日</dt><dd>{p.wdate?shortDate(p.wdate):'未設定'}</dd></div><div><dt>子育ての章</dt><dd>{['unknown','none'].includes(p.child)?'表示していません':'選んだ段階を表示'}</dd></div></dl><Action secondary onClick={openProfile}>プロフィールを整える<ArrowRight/></Action></section>
@@ -173,9 +186,8 @@ export default function FutureNotebook(){
  <footer className="book-footer"><span>Amityちゃんにきく · 広島市 · 確認日 {reviewedOn}</span></footer>
  </main></Tabs>
  <Sheet open={!!task} onOpenChange={open=>{if(!open)callClose(forceClose);}}><SheetContent side="right" className="task-sheet"><SheetHeader><span className="eyebrow">{task?typeLabels[task.type]:''} <i> / </i> ふたりの一歩</span><SheetTitle>{task?.title}</SheetTitle><SheetDescription>{task?.summary}</SheetDescription></SheetHeader>{task&&<TaskForm key={task.id} task={task} profile={p} record={book.records[task.id]} onSave={saveRecord} busy={data.busy} onDirty={setDirty} hasBook={!!data.book} onProfile={openProfile}/>}</SheetContent></Sheet>
- <Dialog open={!!modal} onOpenChange={open=>{if(!open)callClose(forceClose);}}><DialogContent className={`notebook-dialog dialog-${modal}`}><DialogHeader><p className="eyebrow">OUR NOTEBOOK</p><DialogTitle>{modal==='profile'?'ふたりに合わせて、整える。':modal==='pair'?'同じ手帳を、バックアップで。':'今日の気持ちを、ひとこと。'}</DialogTitle><DialogDescription>{modal==='profile'?'すべての項目はあとから変えられます。':modal==='pair'?'この公開版は端末内＋バックアップ／Gist。クラウド招待は未対応です。':'短い言葉からでも、大丈夫です。'}</DialogDescription></DialogHeader>
+ <Dialog open={!!modal} onOpenChange={open=>{if(!open)callClose(forceClose);}}><DialogContent className={`notebook-dialog dialog-${modal}`}><DialogHeader><p className="eyebrow">OUR NOTEBOOK</p><DialogTitle>{modal==='profile'?'ふたりに合わせて、整える。':'同じ手帳を、バックアップで。'}</DialogTitle><DialogDescription>{modal==='profile'?'すべての項目はあとから変えられます。':'この公開版は端末内＋バックアップ／Gist。クラウド招待は未対応です。'}</DialogDescription></DialogHeader>
  {modal==='profile'&&<ProfileForm profile={p} onSave={saveProfile} busy={data.busy} onDirty={setDirty} hasBook={!!data.book}/>}
- {modal==='memory'&&memoryDraft&&<MemoryForm key={memoryDraft.id} initial={memoryDraft} onSave={saveMemory} busy={data.busy} onDirty={setDirty}/>}
  {modal==='pair'&&<div className="form-stack pair-content">
  <div className="condition-note"><Users size={19}/><p><strong>この公開版は端末内＋バックアップ／Gist</strong>です。クラウド招待コードは未対応です。</p></div>
  <p>二人の端末で同じ手帳を使うときは、次のどちらかで受け渡してください。</p>
@@ -195,7 +207,6 @@ export default function FutureNotebook(){
  </DialogContent></Dialog>
  <AlertDialog open={resetOpen} onOpenChange={open=>{if(!open&&!data.busy){setResetOpen(false);setResetTyped('');setResetAck(false);}}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>スタンプ進捗をリセットしますか？</AlertDialogTitle><AlertDialogDescription>ロードマップのスタンプ状態・入力した金額・項目メモ（records）をすべて消します。プロフィール（呼び名・婚姻日など）と記念手帳の文章は残ります。この操作は取り消せません。先にバックアップの書き出しを推奨します。</AlertDialogDescription></AlertDialogHeader><div className="reset-lock"><div className="field"><Label htmlFor="reset-type">確認のため「リセット」と入力</Label><Input id="reset-type" value={resetTyped} onChange={e=>setResetTyped(e.target.value)} placeholder="リセット" autoComplete="off" maxLength={20} disabled={data.busy}/></div><label className="reset-confirm-row"><Checkbox checked={resetAck} onCheckedChange={v=>setResetAck(!!v)} disabled={data.busy}/><span>上記の内容を理解し、スタンプ進捗だけを消すことに同意します（二重確認）</span></label></div><AlertDialogFooter><AlertDialogCancel disabled={data.busy}>やめる</AlertDialogCancel><AlertDialogAction disabled={data.busy||resetTyped!=='リセット'||!resetAck} onClick={e=>{e.preventDefault();void resetStampProgress();}}>本当にリセットする</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
  <AlertDialog open={!!pendingClose} onOpenChange={open=>{if(!open)setPendingClose(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>入力中の内容を閉じますか？</AlertDialogTitle><AlertDialogDescription>まだ保存していない変更があります。編集を続けるか、変更を破棄して閉じられます。</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>編集を続ける</AlertDialogCancel><AlertDialogAction onClick={()=>{setDirty(false);pendingClose?.();setPendingClose(null);}}>変更を破棄して閉じる</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
- <AlertDialog open={!!deleteMemory} onOpenChange={open=>{if(!open&&!data.busy)setDeleteMemory(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>この記録を削除しますか？</AlertDialogTitle><AlertDialogDescription>「{deleteMemory?.title}」を二人の手帳から削除します。必要なら先にバックアップを保存してください。</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={data.busy}>残しておく</AlertDialogCancel><AlertDialogAction disabled={data.busy} onClick={e=>{e.preventDefault();void(async()=>{if(deleteMemory&&await data.mutate({action:'deleteMemory',id:deleteMemory.id},'記録を削除しました'))setDeleteMemory(null);})();}}>削除する</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
  <AlertDialog open={!!importDraft} onOpenChange={open=>{if(!open&&!data.busy)setImportDraft(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>このバックアップを読み込みますか？</AlertDialogTitle><AlertDialogDescription>{importDraft?.legacy?'旧版の状況を移行します。手順が変わっているため、旧版の小さなチェックと調査メモ・除外理由は自動移行しません。働き方は各自で設定し直してください。':'名前・日付・進捗・記念手帳を復元します。'} 現在の二人の手帳の内容は、このバックアップで置き換わります。</AlertDialogDescription></AlertDialogHeader><div className="import-details"><p>{importDraft?.book.profile.name1||'名前未設定'} & {importDraft?.book.profile.name2||'名前未設定'}</p><p>{Object.keys(importDraft?.book.records||{}).length}項目の記録 · {importDraft?.book.memories.length}件の記念</p><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>現在の内容を先に書き出す</Action></div><AlertDialogFooter><AlertDialogCancel disabled={data.busy}>キャンセル</AlertDialogCancel><AlertDialogAction disabled={data.busy} onClick={e=>{e.preventDefault();void(async()=>{if(importDraft&&await data.mutate({action:'import',book:importDraft.book},'手帳を読み込みました'))setImportDraft(null);})();}}>この内容に置き換える</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
 
 

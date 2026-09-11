@@ -830,3 +830,38 @@
   .pair-say,.pair-listen{flex-direction:column;gap:3px;padding:10px 12px}
   .pair-say>span,.pair-listen>span{padding-top:0}
 }
+
+/* ===== 探す：章アコーディオン + sticky検索 ===== */
+.find-search-sticky{position:sticky;top:0;z-index:20;background:#fffefa;box-shadow:0 6px 14px #203d2d0a}
+.find-by-chapter{border:1px solid #dce1d3;border-radius:8px;background:#fffefa;overflow:hidden;margin-bottom:12px}
+.find-by-chapter [data-slot=accordion-item]{border-bottom:1px solid #e4e8dc}
+.find-by-chapter [data-slot=accordion-item]:last-child{border-bottom:0}
+.find-by-chapter [data-slot=accordion-trigger]{padding:14px 16px}
+.find-chapter-trigger{display:flex;align-items:center;gap:10px;width:100%;text-align:left}
+.find-chapter-trigger .chapter-kanji{width:28px;height:32px;display:grid;place-content:center;font-family:"Shippori Mincho",serif;font-size:18px;border:1px solid #d5ddc6;background:#f4f6ea;border-radius:4px;color:#5a6f52}
+.find-chapter-trigger strong{margin-left:auto;font-size:12px;font-weight:700;color:#6a7c6c;background:#eef2e6;border:1px solid #dce3d0;border-radius:999px;padding:3px 10px}
+.find-chapter-list{border:0;border-radius:0;padding:0 16px 8px;background:transparent}
+@media(max-width:700px){
+  .find-search-sticky{top:0;margin-left:-15px;margin-right:-15px;border-radius:0;border-left:0;border-right:0;padding:12px 15px}
+  .find-chapter-trigger{gap:8px}
+  .find-chapter-trigger .chapter-kanji{width:24px;height:28px;font-size:16px}
+}
+
+/* ===== ふたり：折りたたみ＋要約 ===== */
+.pair-summary{padding:16px 18px}
+.pair-chosen-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.pair-chosen-list li{font-size:13px;line-height:1.6;color:#3a4a44;display:flex;gap:8px;align-items:baseline}
+.pair-chosen-list li>span{flex:0 0 auto;font-size:10.5px;color:#6a7c6c;background:#eef2e6;border:1px solid #dce3d0;border-radius:999px;padding:1px 8px}
+.pair-intro-fold>summary{cursor:pointer;list-style:none;display:flex;flex-direction:column;gap:4px}
+.pair-intro-fold>summary::-webkit-details-marker{display:none}
+.pair-intro-fold[open]>summary{margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed #e6ddc8}
+.pair-intro-fold>summary strong{font-size:14px;color:#22352f}
+.pair-practices{border:1px solid #e6ddc8;border-radius:11px;background:#fffdf8;overflow:hidden}
+.pair-practices [data-slot=accordion-item]{border-bottom:1px solid #efe8d8}
+.pair-practices [data-slot=accordion-trigger]{padding:12px 14px;font-size:13.5px}
+.pair-practice-trigger{display:flex;align-items:center;gap:8px;flex-wrap:wrap;text-align:left;width:100%}
+.pair-practice-trigger strong{font-size:13.5px;font-weight:600;color:#22352f;flex:1;min-width:140px}
+.pair-practice-trigger em{font-style:normal;font-size:10.5px;color:#3f6b48;background:#eef3ea;border:1px solid #c3d3c0;border-radius:999px;padding:2px 8px}
+.pair-card.inline{border:0;box-shadow:none;padding:4px 14px 14px;background:transparent}
+.pair-refs-card>summary{cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.pair-refs-card[open]>summary{margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed #e6ddc8}

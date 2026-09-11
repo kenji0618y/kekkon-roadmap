@@ -41,8 +41,12 @@ export type PairWorkbookProps = {
 };
 
 export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: PairWorkbookProps) {
-  const [theme, setTheme] = useState('all');
+  const firstTheme = practiceThemes[0] || '';
+  const [theme, setTheme] = useState(firstTheme);
   const [draft, setDraft] = useState<Record<string, AgreementRecord>>({});
+  const [practiceOpen, setPracticeOpen] = useState('');
+  const [talkOpen, setTalkOpen] = useState('');
+  const [agreeOpen, setAgreeOpen] = useState('');
 
   const chosen = useMemo(
     () => practices.filter((p) => {
@@ -51,7 +55,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
     }),
     [book.practices],
   );
-  const shown = theme === 'all' ? practices : practices.filter((p) => p.theme === theme);
+  const shown = theme ? practices.filter((p) => p.theme === theme) : [];
   const agreedCount = agreements.filter((a) => (book.agreements[a.id]?.agreed || '').trim()).length;
 
   const recordOf = (id: string) => book.agreements[id] || EMPTY_AGREEMENT;
@@ -65,8 +69,27 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
 
   return (
     <div className="pair-book">
-      <section className="paper-card pair-intro">
-        <span className="eyebrow">HOW TO USE</span>
+      <section className="paper-card pair-summary" aria-label="選んだもののまとめ">
+        <p className="hint" style={{margin: 0}}>
+          いま選んでいる行動は <strong>{chosen.length}</strong> 個、合意を書いた話題は <strong>{agreedCount}</strong> 件です。点数ではありません。
+        </p>
+        {chosen.length > 0 && (
+          <ul className="pair-chosen-list">
+            {chosen.slice(0, 8).map((p) => {
+              const st = book.practices[p.id]?.status || 'none';
+              const label = STATUS.find((s) => s.id === st)?.label || '';
+              return <li key={p.id}><span>{label}</span>{p.idea}</li>;
+            })}
+            {chosen.length > 8 && <li className="hint">ほか {chosen.length - 8} 個</li>}
+          </ul>
+        )}
+      </section>
+
+      <details className="paper-card pair-intro pair-intro-fold">
+        <summary>
+          <strong>使い方（閉じておいて大丈夫）</strong>
+          <span className="hint">相手の採点表ではありません</span>
+        </summary>
         <h2>相手の採点表ではありません。</h2>
         <p>
           気になる行動を各自が選んで、無理のない範囲で試してみて、合わなければやめる。
@@ -78,11 +101,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
           <li><strong>具体的にする</strong>いつ・誰が・どの場面でやるかを決めます。</li>
           <li><strong>確かめて変える</strong>合わなければ、やめる・小さくする・別の方法を試す。</li>
         </ol>
-        <p className="hint">
-          いま選んでいるのは {chosen.length} 個、合意を書いた話題は {agreedCount} 件です。
-          これは操作の目安で、うまくいっているかどうかの点数ではありません。
-        </p>
-      </section>
+      </details>
 
       <section className="paper-card pair-safety" role="note">
         <ShieldCheck size={19} aria-hidden />
@@ -102,62 +121,72 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
 
       <div className="section-heading pair-heading">
         <div>
-          <p className="eyebrow">THINGS TO TRY</p>
-          <h2>考え方と、試してみる行動</h2>
-          <p className="hint">{practices.length}項目。気になるものだけ選んでください。</p>
+          <p className="eyebrow">考え方と行動</p>
+          <h2>試してみる行動</h2>
+          <p className="hint">テーマを1つ選んで、気になるものだけ開いてください（全{practices.length}項目）。</p>
         </div>
       </div>
       <div className="filter-pills pair-themes" role="group" aria-label="テーマで絞る">
-        <button className={theme === 'all' ? 'active' : ''} aria-pressed={theme === 'all'} onClick={() => setTheme('all')}>
-          すべて
-        </button>
         {practiceThemes.map((t) => (
-          <button key={t} className={theme === t ? 'active' : ''} aria-pressed={theme === t} onClick={() => setTheme(t)}>
+          <button key={t} className={theme === t ? 'active' : ''} aria-pressed={theme === t} onClick={() => {setTheme(t); setPracticeOpen('');}}>
             {t}
           </button>
         ))}
       </div>
 
-      <div className="pair-grid">
-        {shown.map((p) => {
-          const rec = book.practices[p.id] || EMPTY_PRACTICE;
-          return (
-            <article key={p.id} className={`pair-card st-${rec.status}`}>
-              <div className="pair-card-top">
-                <span className="pair-theme">{p.theme}</span>
-                <RefChips ids={p.refs} />
-              </div>
-              <strong>{p.idea}</strong>
-              <p className="pair-action">{p.action}</p>
-              <p className="pair-when"><Sparkles size={13} aria-hidden />{p.when}</p>
-              <p className="pair-caution">{p.caution}</p>
-              <div className="pair-status" role="group" aria-label={`${p.idea} の状態`}>
-                {STATUS.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    disabled={busy}
-                    className={rec.status === s.id ? 'active' : ''}
-                    aria-pressed={rec.status === s.id}
-                    onClick={() => onSavePractice(p.id, {...rec, status: s.id})}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </article>
-          );
-        })}
-      </div>
+      {theme ? (
+        <Accordion type="single" collapsible value={practiceOpen} onValueChange={setPracticeOpen} className="pair-practices">
+          {shown.map((p) => {
+            const rec = book.practices[p.id] || EMPTY_PRACTICE;
+            return (
+              <AccordionItem key={p.id} value={p.id} className={`st-${rec.status}`}>
+                <AccordionTrigger>
+                  <span className="pair-practice-trigger">
+                    <span className="pair-theme">{p.theme}</span>
+                    <strong>{p.idea}</strong>
+                    {rec.status !== 'none' && <em>{STATUS.find((s) => s.id === rec.status)?.label}</em>}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <article className={`pair-card inline st-${rec.status}`}>
+                    <div className="pair-card-top">
+                      <RefChips ids={p.refs} />
+                    </div>
+                    <p className="pair-action">{p.action}</p>
+                    <p className="pair-when"><Sparkles size={13} aria-hidden />{p.when}</p>
+                    <p className="pair-caution">{p.caution}</p>
+                    <div className="pair-status" role="group" aria-label={`${p.idea} の状態`}>
+                      {STATUS.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          disabled={busy}
+                          className={rec.status === s.id ? 'active' : ''}
+                          aria-pressed={rec.status === s.id}
+                          onClick={() => onSavePractice(p.id, {...rec, status: s.id})}
+                        >
+                          {s.label}
+                        </button>
+                      ))}
+                    </div>
+                  </article>
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      ) : (
+        <p className="hint">上のテーマから1つ選んでください。</p>
+      )}
 
       <div className="section-heading pair-heading">
         <div>
-          <p className="eyebrow">WHAT TO SAY</p>
-          <h2>言葉にしにくい場面の、言い方</h2>
+          <p className="eyebrow">言い方の下書き</p>
+          <h2>言葉にしにくい場面</h2>
           <p className="hint">{talks.length}場面。そのまま使う文ではなく、二人の言葉に変えるための下書きです。</p>
         </div>
       </div>
-      <Accordion type="multiple" className="pair-talks">
+      <Accordion type="single" collapsible value={talkOpen} onValueChange={setTalkOpen} className="pair-talks">
         {talks.map((t) => (
           <AccordionItem key={t.id} value={t.id}>
             <AccordionTrigger>
@@ -178,12 +207,12 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
 
       <div className="section-heading pair-heading">
         <div>
-          <p className="eyebrow">WHAT WE AGREED</p>
-          <h2>二人の合意</h2>
+          <p className="eyebrow">二人の合意</p>
+          <h2>話題ごとに書く</h2>
           <p className="hint">{agreements.length}の話題。先にそれぞれの希望を書いて、合意できたところだけ残します。</p>
         </div>
       </div>
-      <Accordion type="multiple" className="pair-agreements">
+      <Accordion type="single" collapsible value={agreeOpen} onValueChange={setAgreeOpen} className="pair-agreements">
         {agreements.map((a) => {
           const d = draftOf(a.id);
           const saved = recordOf(a.id);
@@ -248,9 +277,11 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
         })}
       </Accordion>
 
-      <section className="paper-card pair-refs-card">
-        <span className="eyebrow">WHERE THIS COMES FROM</span>
-        <h2><BookOpen size={19} aria-hidden />根拠の読み方</h2>
+      <details className="paper-card pair-refs-card">
+        <summary>
+          <strong><BookOpen size={16} aria-hidden /> 根拠の読み方</strong>
+          <span className="hint">閉じたまま使えます</span>
+        </summary>
         <p>
           研究で分かったことと、専門家がすすめていることは別のものです。ここでは分けて書いてあります。
           研究の多くは海外のもので、日本の共働き夫婦でこの表全体の効果が確かめられたわけではありません。
@@ -273,7 +304,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
           確認日 2026年9月10日。学術誌のページは自動チェックでは開けないことがありますが、ブラウザからは読めます。
           日本語版の有無、図書館の所蔵、価格は確認していません。
         </p>
-      </section>
+      </details>
     </div>
   );
 }

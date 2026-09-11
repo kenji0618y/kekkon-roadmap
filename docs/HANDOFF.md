@@ -18,7 +18,7 @@
 | ふたりの練習帳 | 行動52 / 会話16 / 合意18 / 根拠18 |
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 12件 |
-| タブ | 7（デスク / マップ / 期限 / 記念 / ふたり / 探す / 設定） |
+| タブ | 6（デスク / マップ / 期限 / ふたり / 探す / 設定） |
 | verify-seed | 52項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
@@ -70,7 +70,7 @@
    - **内容を増やしたら、この下限も一緒に上げること。**
 7. Before claiming done: run **`npm run verify:seed`** and paste the counts. See also `docs/CONTENT_GUARD.md`.
 
-## ナビ構成（2026-09-11 現在・7タブ）
+## ナビ構成（2026-09-11 現在・6タブ）
 
 メインタブは **ヘッダー（masthead）内・上部 sticky**（実機幅ではフッター固定）。
 **原則: タブ名と無関係なコンテンツは載せない**（ラベル一致）。
@@ -80,9 +80,8 @@
 | id | ラベル（short） | 中身 |
 |----|-----------------|------|
 | `desk` | デスク | `MarriageDesk`（**和紙・明朝**。数字は これまで/婚姻日/次の期限 の3つ）+ **金額グリッド4枚**（記念から移動）+ `HomeInsightPanels`（大きな数字/次のアクション/思い込み/対象外/会話のきっかけ）|
-| `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + CHECK FIRST + マイルストーンのみ |
+| `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
 | `deadlines` | **期限と時期**（期限） | `InstitutionalDeadlines` + 個人タイムライン/ICS + **`PhasesPanel`（9時期・48出来事）** ← 旧「時期」タブを統合 |
-| `memories` | 記念手帳（記念） | 記念メモ + 月次ふたり会議（金額グリッドはデスクへ移動）|
 | `pair` | **ふたりの練習帳**（ふたり） | `PairWorkbook` — 行動52 / 会話16 / 合意18 / 根拠18。行動の状態と合意は端末に保存 |
 | `find` | 制度を探す（探す） | 検索のみ |
 | `settings` | ふたりの設定（設定） | プロフィール／Gist／Grok／YEARLY_UPDATE／リセット |
@@ -178,7 +177,7 @@ npx gh-pages -d dist
 
 > **ここから下は履歴です。** 2026-09-09 までの経緯と、そのときの数字（137 タスクなど）が
 > そのまま残してあります。**現状の数字は上の「ハードルール」「ナビ構成」を見てください**
-> （2026-09-11 時点で 176 タスク・7タブ・verify-seed 47項目）。
+> （2026-09-11 時点で 176 タスク・6タブ）。
 > 履歴の数字を現状と取り違えないこと。
 
 ## 復元メモ（2026-09-09）
@@ -225,7 +224,7 @@ npx gh-pages -d dist
 
 ### 完了（タブIA分割 · 本更新）
 22. **デスク**タブ新設（左端・既定）: MarriageDesk HUD + 今日の一歩 + HomeInsightPanels。ロードマップから HUD/シード長文を除去。
-23. **ロードマップ**はスタンプ／章／ボード／CHECK FIRST／マイルストーンのみ。
+23. **ロードマップ**はスタンプ／章／ボード／マイルストーンのみ。
 24. **時期**タブ新設: PhasesPanel（9/48）をデスク・ジャーニーから分離。
 25. **期限**は InstitutionalDeadlines + 個人予定のみ。記念に月次ふたり会議導線を寄せた。
 26. Amity FAB chat-only は全タブ維持（≠ HUD削除）。
@@ -262,8 +261,8 @@ npx gh-pages -d dist
 35. **未使用 `.view-switch` CSS 削除**。
 36. **初回オンボーディング** — ward / 任意 wdate / ceremony=no lean / 共働き employment。`!book` または未設定プロフィールで表示。円は入力しない。
 37. **Desk 近い絶対期限** — deadlines.json 60日以内のワンタップ一覧 → 期限タブ／`#institutional-deadlines`。
-38. **端末内のみモード chip** — キーなし／credits-limit 時に Desk・Amity チャットへ表示。
-39. **モバイル7タブ** — 横スクロール nav（≈390px で usable）、short ラベル維持。
+38. **端末内のみモード chip** — credits-limit 時のみ Desk・Amity チャットへ表示（no-keyでは出さない）。
+39. **モバイル6タブ** — 横スクロール nav（≈390px で usable）、short ラベル維持。
 40. **PWA 更新バナー** — `registerType: prompt` + `useRegisterSW`「更新があります。再読み込み」。
 
 

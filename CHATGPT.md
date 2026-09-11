@@ -4,7 +4,7 @@ Follow **`AGENTS.md`**, then open **`docs/AI_START_HERE.md`** before changing th
 
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-176項目 · 33まとまり · FAQ 829組 · 出典 117件 · 7タブ · 検査 52項目
+176項目 · 33まとまり · FAQ 829組 · 出典 117件 · 6タブ · 検査 52項目
 <!-- /STATE -->
 
 Same hard rules as `AGENTS.md` / `CLAUDE.md`:
