@@ -86,20 +86,20 @@ const events = (phases.phases || []).reduce((n, p) => n + ((p.events || []).leng
 const subtitles = groups.filter((g) => g.subtitle && String(g.subtitle).trim()).length;
 const chipSets = groups.filter((g) => Array.isArray(g.chips) && g.chips.length > 0).length;
 
-check('tasks.count', tasks.length, 181, true);
-check('tasks.why', why, 181);
-check('tasks.miss', miss, 181);
-check('tasks.window', window, 181);
-check('tasks.faq_pairs', faqPairs, 860);
+check('tasks.count', tasks.length, 186, true);
+check('tasks.why', why, 186);
+check('tasks.miss', miss, 186);
+check('tasks.window', window, 186);
+check('tasks.faq_pairs', faqPairs, 890);
 check('tasks.money_in', moneyIn, 90);
 check('tasks.money_out', moneyOut, 50);
-check('tasks.track', track, 181);
+check('tasks.track', track, 186);
 // pad = 絵の上に出る短縮名。長いと枠からはみ出し、無いと機械的に切れて読めなくなる。
 const pads = tasks.filter((t) => {
   const n = [...String(t.pad || '').trim()].length;
   return n >= 2 && n <= 8;
 }).length;
-check('tasks.pad(2-8字)', pads, 181, true);
+check('tasks.pad(2-8字)', pads, 186, true);
 check('deadlines.next_absolute', abs, 11, true);
 check('deadlines.relative_always', rel, 6, true);
 check('exclude.items', excl, 36, true);

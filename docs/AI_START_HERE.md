@@ -14,7 +14,7 @@ Do **not** rediscover product history by chatting with Kenji.
 | Docs tip (main) | 下の「いまの状態」を見てください |
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-181項目 · 33まとまり · FAQ 864組 · 出典 125件 · 6タブ · 検査 52項目
+186項目 · 33まとまり · FAQ 895組 · 出典 129件 · 6タブ · 検査 52項目
 <!-- /STATE -->
 | Live app | Pages `gh-pages` = shipped app。`main` push で Actions が検査→公開。結果は Actions タブ／URL で確認 |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |

@@ -998,5 +998,37 @@
     "checked": "2026-09-11",
     "kind": "provider",
     "note": "割引率・保有要件・譲渡条件は公式で確認。推奨ではない"
+  },
+  "mhlwbirthins": {
+    "id": "mhlwbirthins",
+    "title": "厚生労働省：医療保険制度改正法の成立（妊娠・出産支援を含む）",
+    "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryouhoken/newpage_00014.html",
+    "checked": "2026-09-12",
+    "kind": "official",
+    "note": "出産費用の保険適用化は成立済み。施行日は政令で未確定"
+  },
+  "anafamilymile": {
+    "id": "anafamilymile",
+    "title": "ANA：ANAカードファミリーマイル",
+    "url": "https://www.ana.co.jp/ja/jp/amc/anacard/familymile/",
+    "checked": "2026-09-12",
+    "kind": "official",
+    "note": "カード勧誘ではない。対象カード・登録条件は公式で確認"
+  },
+  "jalfamilyprog": {
+    "id": "jalfamilyprog",
+    "title": "JALカード：家族プログラム",
+    "url": "https://www.jal.co.jp/jp/ja/jalcard/function/jfp.html",
+    "checked": "2026-09-12",
+    "kind": "official",
+    "note": "カード勧誘ではない。家族カードとは別登録の案内あり"
+  },
+  "jaf": {
+    "id": "jaf",
+    "title": "JAF：個人会員の入会案内",
+    "url": "https://jaf.or.jp/individual/join-us/membership",
+    "checked": "2026-09-12",
+    "kind": "official",
+    "note": "施設優待は行く前に条件確認。勧誘ではない"
   }
 }
