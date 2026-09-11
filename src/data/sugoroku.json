@@ -162,7 +162,7 @@
       "image": "/phases/phase0b-cohabit.png",
       "chips": [
         "転居・世帯",
-        "社宅・通勤",
+        "引越費用",
         "UR賃貸",
         "マイナ継続"
       ],
@@ -174,7 +174,8 @@
         "C90-1",
         "C90-2",
         "A得13",
-        "D4"
+        "D4",
+        "P7"
       ],
       "branch": null,
       "optional": true,
@@ -312,9 +313,9 @@
       "image": "/phases/phase1-prep.png",
       "chips": [
         "NISA",
+        "株主優待",
         "ふるさと",
-        "贈与",
-        "iDeCo"
+        "贈与"
       ],
       "stampIds": [
         "A得1",
@@ -324,7 +325,8 @@
         "A得6",
         "A得8",
         "A得9",
-        "A得10"
+        "A得10",
+        "A得18"
       ],
       "branch": null,
       "optional": false,
@@ -746,15 +748,18 @@
       "image": "/phases/phase0b-cohabit.png",
       "chips": [
         "生活費",
-        "書類",
-        "家族",
+        "共通口座",
+        "記念旅行",
         "分担"
       ],
       "stampIds": [
         "P1",
         "P2",
         "P3",
-        "P4"
+        "P4",
+        "P5",
+        "P6",
+        "P8"
       ],
       "branch": null,
       "optional": true,

@@ -934,5 +934,69 @@
     "checked": "2026-09-10",
     "kind": "provider",
     "note": ""
+  },
+  "olcbenefit": {
+    "id": "olcbenefit",
+    "title": "オリエンタルランド：株主優待制度",
+    "url": "https://www.olc.co.jp/ja/ir/benefit.html",
+    "checked": "2026-09-11",
+    "kind": "provider",
+    "note": "特別優待・株数・権利日はIRで都度確認。投資助言ではない"
+  },
+  "anabenefit": {
+    "id": "anabenefit",
+    "title": "ANAホールディングス：株主優待",
+    "url": "https://www.ana.co.jp/group/investors/stock/benefit/",
+    "checked": "2026-09-11",
+    "kind": "provider",
+    "note": "枚数・登録方式は公式で確認。例示であり推奨ではない"
+  },
+  "jalguidance": {
+    "id": "jalguidance",
+    "title": "日本航空：投資家情報（株主優待の案内）",
+    "url": "https://www.jal.com/ja-jp/investor/guidance/",
+    "checked": "2026-09-11",
+    "kind": "provider",
+    "note": "必要株数・期は公式で確認。例示であり推奨ではない"
+  },
+  "smbcgold": {
+    "id": "smbcgold",
+    "title": "三井住友カード ゴールド（NL）",
+    "url": "https://www.smbc-card.com/nyukai/card/gold-numberless.jsp",
+    "checked": "2026-09-11",
+    "kind": "provider",
+    "note": "年会費・還元・キャンペーンは変動。自動取得では403の場合あり"
+  },
+  "netbkci": {
+    "id": "netbkci",
+    "title": "ドコモSMTBネット銀行：社名変更などの案内",
+    "url": "https://www.netbk.co.jp/contents/lp/ci/",
+    "checked": "2026-09-11",
+    "kind": "provider",
+    "note": "目的別口座・手数料・ランク条件は公式で確認（断定しない）"
+  },
+  "onebankjoint": {
+    "id": "onebankjoint",
+    "title": "ONE BANK：夫婦の共通口座の作り方（メディア）",
+    "url": "https://onebank.jp/magazine/entry/2026/08/28/175428",
+    "checked": "2026-09-11",
+    "kind": "provider",
+    "note": "メディア記事。代理人カードの条件は各銀行公式で確認"
+  },
+  "hishoney": {
+    "id": "hishoney",
+    "title": "HIS：ハネムーン向け案内（PDF）",
+    "url": "https://e.his-j.com/images/02A/pdf/honeymoon.pdf",
+    "checked": "2026-09-11",
+    "kind": "provider",
+    "note": "対象・申込経路・期限は公式PDFと窓口で確認。式の有無は問わない"
+  },
+  "sakaiir": {
+    "id": "sakaiir",
+    "title": "サカイ引越センター：IR・株主優待の案内",
+    "url": "https://www.hikkoshi-sakai.co.jp/ir/info.html",
+    "checked": "2026-09-11",
+    "kind": "provider",
+    "note": "割引率・保有要件・譲渡条件は公式で確認。推奨ではない"
   }
 }
