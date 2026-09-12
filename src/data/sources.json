@@ -1030,5 +1030,53 @@
     "checked": "2026-09-12",
     "kind": "official",
     "note": "施設優待は行く前に条件確認。勧誘ではない"
+  },
+  "soumufurusato": {
+    "id": "soumufurusato",
+    "title": "総務省：ふるさと納税ポータルサイト",
+    "url": "https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/topics/20150401.html",
+    "checked": "2026-09-12",
+    "kind": "official",
+    "note": ""
+  },
+  "jiminnisa": {
+    "id": "jiminnisa",
+    "title": "自由民主党：こどもNISAなどの資産形成の案内",
+    "url": "https://www.jimin.jp/news/information/212398.html",
+    "checked": "2026-09-12",
+    "kind": "document",
+    "note": "政党資料。制度開始・詳細は金融庁等の公式で再確認"
+  },
+  "urkoso": {
+    "id": "urkoso",
+    "title": "UR賃貸住宅：子育て割（新婚世帯も対象の案内含む）",
+    "url": "https://www.ur-net.go.jp/chintai/whats/system/kosodate/",
+    "checked": "2026-09-12",
+    "kind": "official",
+    "note": ""
+  },
+  "eposfamily": {
+    "id": "eposfamily",
+    "title": "エポスカード：ファミリーゴールド・ポイントシェア",
+    "url": "https://www.eposcard.co.jp/family/point.html",
+    "checked": "2026-09-12",
+    "kind": "provider",
+    "note": "ロボット避けで403になる場合あり"
+  },
+  "sanrioyutai": {
+    "id": "sanrioyutai",
+    "title": "サンリオ：株主優待",
+    "url": "https://corporate.sanrio.co.jp/ir/stock/benefit/",
+    "checked": "2026-09-12",
+    "kind": "provider",
+    "note": ""
+  },
+  "fujitayutai": {
+    "id": "fujitayutai",
+    "title": "藤田観光：株主優待",
+    "url": "https://www.fujita-kanko.co.jp/ir/stock/benefit.html",
+    "checked": "2026-09-12",
+    "kind": "provider",
+    "note": ""
   }
 }

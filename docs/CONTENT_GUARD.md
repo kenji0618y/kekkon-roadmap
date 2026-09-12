@@ -6,8 +6,8 @@
 |---|---|
 | 項目（tasks） | **186** |
 | まとまり（groups） | 33 |
-| FAQ | 895組 |
-| 出典（sources） | 129件 |
+| FAQ | 936組 |
+| 出典（sources） | 135件 |
 | ふたりの練習帳 | 行動52 / 会話16 / 合意18 / 根拠18 |
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
@@ -48,7 +48,7 @@ npm run verify:seed
 | tasks 件数 | **=176**（完全一致）|
 | tasks why / miss / window / track | ≥176 each |
 | tasks pad（絵の上の短縮名） | =176・2〜8字（検査あり）|
-| faq pairs (q+a) | ≥820 |
+| faq pairs (q+a) | ≥930 |
 | deadlines next_absolute / relative | =10 / =6 |
 | exclude.items | =36 |
 | home hero / lies / talk / tomorrow | =3/=4/=10/=3 |
