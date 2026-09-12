@@ -57,6 +57,14 @@ function SheetContent({
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
+        onPointerDownOutside={(e)=>{
+          const el=e.target as HTMLElement|null;
+          if(el?.closest?.('[data-slot=select-content],[data-slot=select-trigger]')) e.preventDefault();
+        }}
+        onInteractOutside={(e)=>{
+          const el=e.target as HTMLElement|null;
+          if(el?.closest?.('[data-slot=select-content],[data-slot=select-trigger]')) e.preventDefault();
+        }}
         className={cn(
           "fixed z-[110] flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500",
           side === "right" &&
