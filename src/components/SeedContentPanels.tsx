@@ -83,7 +83,7 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
   return (
     <section id="institutional-deadlines" className="seed-block institutional-deadlines" aria-label="制度・カレンダー締切">
       <div className="seed-block-head">
-        <span className="eyebrow">INSTITUTIONAL CALENDAR</span>
+        <span className="eyebrow">制度カレンダー</span>
         <h3>制度・カレンダー締切</h3>
         <p className="hint">日付が決まっている締切です。金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。</p>
       </div>
@@ -364,7 +364,7 @@ export function PhasesPanel() {
   return (
     <section className="seed-block phases" aria-label="時期の区切りと出来事">
       <div className="seed-block-head">
-        <span className="eyebrow">PHASES & EVENTS</span>
+        <span className="eyebrow">時期と出来事</span>
         <h3>時期の区切りと出来事</h3>
         <p className="hint">
           婚姻日 = {m0_definition} · 基準日 {as_of} · {phases.length}の区切り / {eventTotal}の出来事

@@ -32,7 +32,7 @@ import {absoluteDeadlines,groups,practices,relativeDeadlines,reviewedOn,sources,
 import {buildQuickSearchHits,groupQuickSearchHits,taskMatchesQuery,type QuickSearchHit} from './lib/quick-search';
 import yearlyUpdateMd from './data/YEARLY_UPDATE.md?raw';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
-const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'マップ',icon:Map},{id:'deadlines',label:'期限と時期',short:'期限',icon:CalendarDays},{id:'pair',label:'ふたりの練習帳',short:'ふたり',icon:HeartHandshake},{id:'find',label:'制度を探す',short:'探す',icon:Search},{id:'settings',label:'ふたりの設定',short:'設定',icon:Settings2}];
+const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'期限と時期',short:'期限',icon:CalendarDays},{id:'pair',label:'ふたりの練習帳',short:'ふたり',icon:HeartHandshake},{id:'find',label:'制度を探す',short:'探す',icon:Search},{id:'settings',label:'ふたりの設定',short:'設定',icon:Settings2}];
 type Modal='profile'|'pair'|null;
 export default function FutureNotebook(){
  const [tab,setTab]=useState('desk'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[chatOpen,setChatOpen]=useState(false);
@@ -134,23 +134,50 @@ export default function FutureNotebook(){
  </section>
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や期限タブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
- <TabsContent value="deadlines" className="tab-surface"><SectionTitle eyebrow="TIME FOR THE TWO OF US" title="期限と、ふたりの予定。" sub="済んだ手続きは外して、これからの予定を日付順に。"><Action secondary onClick={exportCalendar} disabled={!dated.length}><Download/>カレンダーに書き出す</Action></SectionTitle>
- <HeroNumbersPanel profile={p}/>
- <InstitutionalDeadlines child={p.child} home={p.home}/>
- <div className="schedule-layout"><section><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>基準の日付を整える</button></div>
+ <TabsContent value="deadlines" className="tab-surface deadlines-tab">
+ <SectionTitle eyebrow="期限と時期" title="期限と、ふたりの予定。" sub="覚えておきたい数字 → 制度の期限 → これからの予定 → 時期の区切り。"><Action secondary onClick={exportCalendar} disabled={!dated.length}><Download/>カレンダーに書き出す</Action></SectionTitle>
+ <nav className="deadlines-mini-nav" aria-label="期限タブ内の節">
+  <a href="#deadline-block-hero">数字</a>
+  <a href="#institutional-deadlines">制度</a>
+  <a href="#deadline-block-schedule">予定</a>
+  <a href="#deadline-block-phases">時期</a>
+ </nav>
+ <section id="deadline-block-hero" className="deadline-block" aria-label="覚えておきたい数字">
+  <h2 className="deadline-block-label">覚えておきたい数字</h2>
+  <HeroNumbersPanel profile={p}/>
+ </section>
+ <section id="deadline-block-institutional" className="deadline-block" aria-label="制度の期限">
+  <h2 className="deadline-block-label">制度の期限</h2>
+  <InstitutionalDeadlines child={p.child} home={p.home}/>
+ </section>
+ <section id="deadline-block-schedule" className="deadline-block" aria-label="これからの予定">
+  <h2 className="deadline-block-label">これからの予定</h2>
+  <div className="schedule-layout"><section><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>基準の日付を整える</button></div>
  {dated.length?<div className="timeline">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={<Action secondary onClick={openProfile}>基準の日付を設定する</Action>}>日付が分かれば期限を確認できます。各項目に、二人で決めた予定日を入れることもできます。</EmptyState>}
  {missingDates.length>0&&<section className="missing-dates"><h3>日付が分かったら確認すること <span>{missingDates.length}</span></h3>{missingDates.map(({task:t,deadline:d})=><button key={t.id} onClick={()=>openTask(t.id)}><span><strong>{t.title}</strong><small>{d.missing}が未設定</small></span><ChevronRight size={16}/></button>)}</section>}
- </section><aside className="schedule-aside"><div className="paper-card"><span className="eyebrow">BEFORE YOU GO</span><h3>窓口へ行く、その前に。</h3><p>表示した日付は原則の計算です。対象条件や受付方法も、各手続きの公式案内で確認してください。</p><p>出生届の休日補正は、確認できた2026・2027年の祝日を使っています。それ以外の年や他の手続きの休日は、窓口への確認を表示します。</p><SourceLink source={sources.holidays} compact/></div><div className="paper-card"><CalendarDays size={23}/><h3>いつものカレンダーへ。</h3><p>書き出したファイルをGoogle・Appleなどのカレンダーへ読み込めます。3日前の通知を含みますが、通知されるかはカレンダー側の設定によります。</p><p className="hint">この手帳自体から通知は届きません。予定を変えた場合は、取り込んだ予定も更新してください。</p></div></aside></div>
- <div className="phases-in-deadlines">
-  <SectionTitle eyebrow="TIMING ALONG THE WAY" title="時期の区切りと出来事。" sub="結婚前後から暮らしまでの9時期・48出来事。スタンプの進みぐあいとは別の案内です。"/>
-
- <PhasesPanel/>
- </div>
+ <details className="paper-card schedule-tips-fold">
+  <summary><strong>窓口・カレンダーのメモ</strong><span className="hint">必要なときだけ開く</span></summary>
+  <div className="schedule-tips-body">
+   <div><h3>窓口へ行く、その前に。</h3><p>表示した日付は原則の計算です。対象条件や受付方法も、各手続きの公式案内で確認してください。</p><p>出生届の休日補正は、確認できた2026・2027年の祝日を使っています。それ以外の年や他の手続きの休日は、窓口への確認を表示します。</p><SourceLink source={sources.holidays} compact/></div>
+   <div><h3>いつものカレンダーへ。</h3><p>書き出したファイルをGoogle・Appleなどのカレンダーへ読み込めます。3日前の通知を含みますが、通知されるかはカレンダー側の設定によります。</p><p className="hint">この手帳自体から通知は届きません。予定を変えた場合は、取り込んだ予定も更新してください。</p></div>
+  </div>
+ </details>
+ </section></div>
+ </section>
+ <section id="deadline-block-phases" className="deadline-block phases-in-deadlines" aria-label="時期の区切り">
+  <details className="deadline-phases-fold">
+   <summary>
+    <h2 className="deadline-block-label">時期の区切り</h2>
+    <span className="hint">結婚前後から暮らしまでの案内（スタンプの進みぐあいとは別）</span>
+   </summary>
+   <PhasesPanel/>
+  </details>
+ </section>
 </TabsContent>
- <TabsContent value="pair" className="tab-surface"><SectionTitle eyebrow="THE TWO OF US" title="ふたりの練習帳。" sub="手続きの外側にある、日々の過ごし方。試したいものを選んで、合わなければやめる表です。"/>
+ <TabsContent value="pair" className="tab-surface"><SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="手続きの外側にある行動・会話・合意。スタンプを押して、合わなければやめる表です。"/>
   <PairWorkbook book={book} busy={data.busy} onSavePractice={savePractice} onSaveAgreement={saveAgreement}/>
  </TabsContent>
- <TabsContent value="find" className="tab-surface"><SectionTitle eyebrow="A GUIDE TO EVERYDAY LIFE" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。${tasks.length}項目を収録しています。`}/>
+ <TabsContent value="find" className="tab-surface"><SectionTitle eyebrow="制度を探す" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。${tasks.length}項目を収録しています。`}/>
  <div className="search-panel find-search-sticky"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'今回は対象外'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>現在の二人の候補だけ</span></label></div></div>
  <div className="results-label"><strong>{filtered.length}件</strong><span>章ごとにまとめています。表示は対象の確定ではありません。</span></div>
  {filtered.length?<Accordion type="single" collapsible value={findOpenChapter} onValueChange={v=>setFindOpenChapter(v||'')} className="find-by-chapter">
@@ -163,7 +190,13 @@ export default function FutureNotebook(){
    </AccordionItem>;
   })}
  </Accordion>:<EmptyState symbol={<Search/>} title="当てはまる項目がありません。" action={<Action secondary onClick={()=>{setQuery('');setCategory('all');setStatusFilter('all');setScopeOnly(true);setFindOpenChapter('');}}>条件をリセットする</Action>}>短い言葉で探すか、章や状況の条件を変えてみてください。</EmptyState>}
- <ExcludeAndLiesPanel/>
+ <details className="find-exclude-outer paper-card">
+  <summary>
+   <strong>思い込み・もらえない制度</strong>
+   <span className="hint">よくある誤解と、この二人では対象外の制度</span>
+  </summary>
+  <ExcludeAndLiesPanel/>
+ </details>
  </TabsContent>
  <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="MAKE THIS NOTEBOOK YOURS" title="ふたりらしい手帳に。" sub="呼び名、共有、バックアップ。いつでも整え直せます。"/>
  <div className="settings-grid"><section id="settings-profile" className="paper-card settings-card"><div className="settings-icon"><Users/></div><h2>ふたりのプロフィール</h2><p className="profile-names">{p.name1||'一人目'} <span>&</span> {p.name2||'二人目'}</p><dl><div><dt>住まい</dt><dd>広島市 {p.ward==='未設定'?'（区は未設定）':p.ward}</dd></div><div><dt>婚姻日・予定日</dt><dd>{p.wdate?shortDate(p.wdate):'未設定'}</dd></div><div><dt>子育ての章</dt><dd>{['unknown','none'].includes(p.child)?'表示していません':'選んだ段階を表示'}</dd></div></dl><Action secondary onClick={openProfile}>プロフィールを整える<ArrowRight/></Action></section>

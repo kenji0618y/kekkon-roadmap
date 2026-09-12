@@ -93,7 +93,7 @@ const SETTING_ALIASES: Record<string, string[]> = {
 
 export const EMPTY_SUGGESTIONS: QuickSearchHit[] = [
   { id: 'sug-desk', kind: 'tab', title: 'デスク', hint: 'いまの画面', tab: 'desk', score: 1 },
-  { id: 'sug-map', kind: 'tab', title: 'マップ', hint: 'ロードマップ', tab: 'journey', score: 1 },
+  { id: 'sug-map', kind: 'tab', title: 'ロードマップ', hint: 'スタンプ台帳', tab: 'journey', score: 1 },
   { id: 'sug-dead', kind: 'tab', title: '期限', hint: '期限と時期', tab: 'deadlines', score: 1 },
   { id: 'sug-find', kind: 'tab', title: '探す', hint: '制度を探す', tab: 'find', score: 1 },
   { id: 'sug-set', kind: 'tab', title: '設定', hint: 'ふたりの設定', tab: 'settings', score: 1 },

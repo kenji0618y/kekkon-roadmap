@@ -905,3 +905,60 @@
   .header-search-btn{padding:7px 8px;font-size:11px}
   .header-search-btn span{/* keep label for a11y on phone */}
 }
+
+/* 6-char short label (ロードマップ) — shrink slightly, never hide */
+.nav-label-short{letter-spacing:-.02em}
+@media(max-width:700px){
+  .nav-label-short{font-size:9px;letter-spacing:-.05em;line-height:1.15;white-space:nowrap;max-width:100%}
+  .site-header .main-nav [data-slot=tabs-trigger]{font-size:9px}
+}
+@media(max-width:400px){
+  .nav-label-short{font-size:7.5px;letter-spacing:-.06em}
+}
+
+/* ===== ふたり：スタンプ台帳風（.pair-stamp 名前空間） ===== */
+.pair-stamp.stamp-rally{padding:4px 0 8px;background:transparent;gap:18px}
+.pair-stamp .pair-stamp-card{margin:0}
+.pair-stamp .pair-stamp-caption{pointer-events:none;cursor:default}
+.pair-stamp .pair-pad-active{outline:2px solid #0f5c54;outline-offset:2px;z-index:2}
+.pair-stamp-detail{margin:10px 8px 12px;padding:14px 14px 12px;border-radius:10px;border:1px solid #e0d6c0;background:#fffdf8;display:flex;flex-direction:column;gap:8px}
+.pair-stamp-detail-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pair-stamp-detail-title{font-size:15px;line-height:1.7;color:#22352f}
+.pair-stamp-detail .pair-talk-body,.pair-stamp-detail .pair-agree-body{padding:0}
+.pair-stamp-section{margin-top:4px}
+@media(max-width:700px){
+  .pair-stamp.stamp-rally{gap:14px}
+  .pair-stamp-detail{margin:8px 4px 10px;padding:12px}
+}
+
+/* ===== 期限タブ：節ナビ＋ブロック階層 ===== */
+.deadlines-mini-nav{position:sticky;top:0;z-index:18;display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 10px;margin:0 0 14px;background:linear-gradient(180deg,#fffefa 70%,#fffefa00);backdrop-filter:blur(4px)}
+.deadlines-mini-nav a{font-size:12px;font-weight:700;color:#526c5c;background:#f1f4ea;border:1px solid #d8e0d0;border-radius:999px;padding:6px 12px;text-decoration:none}
+.deadlines-mini-nav a:hover{background:#e6eedc;color:#2f4a38}
+.deadline-block{margin-bottom:28px;padding-top:4px;border-top:1px solid #e6ebdf}
+.deadline-block:first-of-type{border-top:0}
+.deadline-block-label{font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;font-size:18px;font-weight:500;margin:0 0 12px;color:#22352f;letter-spacing:.04em}
+.deadline-block .seed-block-head h3{display:none}
+.deadline-block .institutional-deadlines .seed-block-head h3{display:none}
+.schedule-tips-fold{margin-top:16px;padding:12px 14px}
+.schedule-tips-fold>summary{cursor:pointer;display:flex;align-items:baseline;justify-content:space-between;gap:10px;list-style:none}
+.schedule-tips-fold>summary::-webkit-details-marker{display:none}
+.schedule-tips-body{display:grid;gap:14px;margin-top:12px;font-size:13px;line-height:1.8;color:#4a5550}
+.schedule-tips-body h3{font-size:15px;margin:0 0 6px;color:#22352f}
+.deadline-phases-fold>summary{cursor:pointer;list-style:none;display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.deadline-phases-fold>summary::-webkit-details-marker{display:none}
+.deadline-phases-fold .deadline-block-label{margin-bottom:0}
+@media(max-width:700px){
+  .deadlines-mini-nav{margin-left:-15px;margin-right:-15px;padding:8px 15px 10px;gap:5px}
+  .deadlines-mini-nav a{font-size:11px;padding:5px 10px}
+  .deadline-block-label{font-size:16px}
+}
+
+/* ===== 探す：思い込み・対象外を下部折りたたみ ===== */
+.find-exclude-outer{margin-top:18px;padding:12px 14px}
+.find-exclude-outer>summary{cursor:pointer;display:flex;flex-direction:column;gap:4px;list-style:none}
+.find-exclude-outer>summary::-webkit-details-marker{display:none}
+.find-exclude-outer>summary strong{font-size:15px;color:#22352f}
+.find-exclude-outer[open]>summary{margin-bottom:10px}
+.find-exclude-outer .find-exclude-stack{margin-top:4px}
+
