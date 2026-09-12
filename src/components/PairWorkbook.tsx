@@ -1,4 +1,4 @@
-import {useMemo,useState,type Dispatch,type SetStateAction} from 'react';
+import {useEffect,useMemo,useState,type Dispatch,type SetStateAction} from 'react';
 import {ArrowUpRight,BookOpen,ShieldCheck,Sparkles} from 'lucide-react';
 import {agreements,practices,practiceThemes,refById,talks,type Practice,type Ref,type Talk,type Agreement} from '../data/catalog';
 import type {AgreementRecord,Book,PracticeRecord} from '../lib/model';
@@ -148,6 +148,7 @@ export type PairWorkbookProps = {
 export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: PairWorkbookProps) {
   const [draft, setDraft] = useState<Record<string, AgreementRecord>>({});
   const [openPractice, setOpenPractice] = useState('');
+  const [selectedTheme, setSelectedTheme] = useState(practiceThemes[0] || '');
   const [openTalk, setOpenTalk] = useState('');
   const [openAgree, setOpenAgree] = useState('');
 
@@ -172,6 +173,28 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
   const openPracticeObj = practices.find((p) => p.id === openPractice);
   const openTalkObj = talks.find((t) => t.id === openTalk);
   const openAgreeObj = agreements.find((a) => a.id === openAgree);
+
+  useEffect(() => {
+    if (!openPractice) return;
+    const id = window.setTimeout(() => {
+      document.getElementById('pair-practice-detail')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    }, 50);
+    return () => window.clearTimeout(id);
+  }, [openPractice]);
+  useEffect(() => {
+    if (!openTalk) return;
+    const id = window.setTimeout(() => {
+      document.getElementById('pair-talk-detail')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    }, 50);
+    return () => window.clearTimeout(id);
+  }, [openTalk]);
+  useEffect(() => {
+    if (!openAgree) return;
+    const id = window.setTimeout(() => {
+      document.getElementById('pair-agree-detail')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    }, 50);
+    return () => window.clearTimeout(id);
+  }, [openAgree]);
 
   return (
     <div className="pair-book">
@@ -243,11 +266,39 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
         </div>
       </div>
 
+      <div className="pair-theme-nav" role="tablist" aria-label="行動のテーマ">
+        {practiceThemes.map((th) => {
+          const n = practices.filter((p) => p.theme === th).length;
+          const active = selectedTheme === th;
+          return (
+            <button
+              key={th}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              className={active ? 'active' : ''}
+              onClick={() => {
+                setSelectedTheme(th);
+                setOpenPractice('');
+              }}
+            >
+              <strong>{th}</strong>
+              <small>{n}</small>
+            </button>
+          );
+        })}
+      </div>
+
       <div className="pair-stamp stamp-rally" role="list">
-        {practiceThemes.map((theme, themeIdx) => {
+        {(() => {
+          const theme = selectedTheme || practiceThemes[0] || '';
+          const themeIdx = Math.max(0, practiceThemes.indexOf(theme));
           const items = practices.filter((p) => p.theme === theme);
           const chunks = chunkPads(items);
           const image = themeImage(themeIdx);
+          if (!items.length) {
+            return <p className="hint">このテーマの項目はありません。</p>;
+          }
           return chunks.map((chunk, partIdx) => {
             const partTotal = chunks.length;
             const caption = partTotal > 1 ? `${theme} ${partIdx + 1}/${partTotal}` : theme;
@@ -271,7 +322,11 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
                           key={p.id}
                           type="button"
                           className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${practicePadClass(st)}${active ? ' pair-pad-active' : ''}`}
-                          onClick={() => setOpenPractice((cur) => (cur === p.id ? '' : p.id))}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setOpenPractice((cur) => (cur === p.id ? '' : p.id));
+                          }}
                           aria-pressed={active}
                           aria-label={`${p.idea}（${STATUS.find((s) => s.id === st)?.label || 'まだ'}）`}
                           title={p.idea}
@@ -287,25 +342,28 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
                   <span className="illust-no">{String(themeIdx + 1).padStart(2, '0')}</span>
                   <span className="illust-caption-text">
                     <strong>{caption}</strong>
-                    <span className="illust-sub">{chunk.length}マス</span>
+                    <span className="illust-sub">{chunk.length}マス · 押すと下に詳細</span>
                   </span>
                   <span className="illust-progress">{checked}/{chunk.length}</span>
                 </div>
-                {openHere && openPracticeObj ? (
-                  <PracticeDetail
-                    key={openPracticeObj.id}
-                    practice={openPracticeObj}
-                    rec={book.practices[openPracticeObj.id] || EMPTY_PRACTICE}
-                    busy={busy}
-                    onSave={onSavePractice}
-                    onClose={() => setOpenPractice('')}
-                  />
-                ) : null}
               </article>
             );
           });
-        })}
+        })()}
       </div>
+
+      {openPracticeObj ? (
+        <div id="pair-practice-detail" className="pair-detail-dock">
+          <PracticeDetail
+            key={openPracticeObj.id}
+            practice={openPracticeObj}
+            rec={book.practices[openPracticeObj.id] || EMPTY_PRACTICE}
+            busy={busy}
+            onSave={onSavePractice}
+            onClose={() => setOpenPractice('')}
+          />
+        </div>
+      ) : null}
 
       <section className="pair-stamp-section pair-talk-starters" aria-label="制度の話のきっかけ">
         <div className="section-heading pair-heading" id="pair-talk-starters">
@@ -472,9 +530,8 @@ function TalkStampBoard({
       {chunks.map((chunk, partIdx) => {
         const partTotal = chunks.length;
         const caption = partTotal > 1 ? `場面 ${partIdx + 1}/${partTotal}` : '言葉の場面';
-        const openHere = chunk.some((t) => t.id === openId);
         return (
-          <article key={`talk-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${openHere ? ' selected' : ''}`}>
+          <article key={`talk-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${chunk.some((t) => t.id === openId) ? ' selected' : ''}`}>
             <div className="illust-frame">
               <img className="illust-art" src={TALK_ART} alt="" loading="lazy" decoding="async" />
               <div className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`} role="group" aria-label={`${caption}のスタンプ台`}>
@@ -485,7 +542,7 @@ function TalkStampBoard({
                       key={t.id}
                       type="button"
                       className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${active ? 'st-checked pair-pad-active' : 'st-todo'}`}
-                      onClick={() => onToggle(t.id)}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(t.id); }}
                       aria-pressed={active}
                       aria-label={t.scene}
                       title={t.scene}
@@ -502,24 +559,27 @@ function TalkStampBoard({
               <span className="illust-caption-text"><strong>{caption}</strong></span>
               <span className="illust-progress">{chunk.length}</span>
             </div>
-            {openHere && openObj ? (
-              <div className="pair-stamp-detail paper-card">
-                <div className="pair-stamp-detail-head">
-                  <strong>{openObj.scene}</strong>
-                  <button type="button" className="text-button" onClick={() => onToggle(openObj.id)}>閉じる</button>
-                </div>
-                <div className="pair-talk-body">
-                  <p className="pair-say"><span>話す</span>{openObj.say}</p>
-                  <p className="pair-listen"><span>聞く</span>{openObj.listen}</p>
-                  <p className="pair-next"><strong>次に決める小さなこと</strong>{openObj.next}</p>
-                  <p className="pair-caution">{openObj.caution}</p>
-                  <RefChips ids={openObj.refs} />
-                </div>
-              </div>
-            ) : null}
           </article>
         );
       })}
+
+      {openObj ? (
+        <div id="pair-talk-detail" className="pair-detail-dock">
+          <div className="pair-stamp-detail paper-card">
+            <div className="pair-stamp-detail-head">
+              <strong>{openObj.scene}</strong>
+              <button type="button" className="text-button" onClick={() => onToggle(openObj.id)}>閉じる</button>
+            </div>
+            <div className="pair-talk-body">
+              <p className="pair-say"><span>話す</span>{openObj.say}</p>
+              <p className="pair-listen"><span>聞く</span>{openObj.listen}</p>
+              <p className="pair-next"><strong>次に決める小さなこと</strong>{openObj.next}</p>
+              <p className="pair-caution">{openObj.caution}</p>
+              <RefChips ids={openObj.refs} />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -555,11 +615,10 @@ function AgreeStampBoard({
       {chunks.map((chunk, partIdx) => {
         const partTotal = chunks.length;
         const caption = partTotal > 1 ? `合意 ${partIdx + 1}/${partTotal}` : '二人の合意';
-        const openHere = chunk.some((a) => a.id === openId);
         const doneCount = chunk.filter((a) => (book.agreements[a.id]?.agreed || '').trim()).length;
         const allDone = chunk.length > 0 && doneCount === chunk.length;
         return (
-          <article key={`agree-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${openHere ? ' selected' : ''}${allDone ? ' complete' : ''}`}>
+          <article key={`agree-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${chunk.some((a) => a.id === openId) ? ' selected' : ''}${allDone ? ' complete' : ''}`}>
             <div className="illust-frame">
               <img className="illust-art" src={AGREE_ART} alt="" loading="lazy" decoding="async" />
               <div className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`} role="group" aria-label={`${caption}のスタンプ台`}>
@@ -571,7 +630,7 @@ function AgreeStampBoard({
                       key={a.id}
                       type="button"
                       className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${done ? 'st-done' : active ? 'st-checked pair-pad-active' : 'st-todo'}`}
-                      onClick={() => onToggle(a.id)}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(a.id); }}
                       aria-pressed={active}
                       aria-label={a.topic}
                       title={a.topic}
@@ -588,64 +647,67 @@ function AgreeStampBoard({
               <span className="illust-caption-text"><strong>{caption}</strong></span>
               <span className="illust-progress">{doneCount}/{chunk.length}</span>
             </div>
-            {openHere && openObj ? (() => {
-              const d = draftOf(openObj.id);
-              return (
-                <div className="pair-stamp-detail paper-card">
-                  <div className="pair-stamp-detail-head">
-                    <strong>{openObj.topic}</strong>
-                    <button type="button" className="text-button" onClick={() => onToggle(openObj.id)}>閉じる</button>
-                  </div>
-                  <div className="pair-agree-body">
-                    <p className="pair-question">{openObj.question}</p>
-                    <div className="field">
-                      <Label htmlFor={`mine-${openObj.id}`}>一人目の希望</Label>
-                      <Textarea id={`mine-${openObj.id}`} rows={2} maxLength={2000} value={d.mine} onChange={(e) => edit(openObj.id, {mine: e.target.value})} />
-                    </div>
-                    <div className="field">
-                      <Label htmlFor={`theirs-${openObj.id}`}>二人目の希望</Label>
-                      <Textarea id={`theirs-${openObj.id}`} rows={2} maxLength={2000} value={d.theirs} onChange={(e) => edit(openObj.id, {theirs: e.target.value})} />
-                    </div>
-                    <div className="field">
-                      <Label htmlFor={`agreed-${openObj.id}`}>二人の合意・担当</Label>
-                      <Textarea id={`agreed-${openObj.id}`} rows={2} maxLength={2000} value={d.agreed} onChange={(e) => edit(openObj.id, {agreed: e.target.value})} />
-                    </div>
-                    <div className="field">
-                      <Label htmlFor={`review-${openObj.id}`}>見直す日</Label>
-                      <Input id={`review-${openObj.id}`} type="date" value={d.review} onChange={(e) => edit(openObj.id, {review: e.target.value})} />
-                    </div>
-                    <RefChips ids={openObj.refs} />
-                    <div className="pair-agree-actions">
-                      <Action
-                        disabled={busy || !dirty(openObj.id)}
-                        onClick={() => {
-                          onSaveAgreement(openObj.id, d);
-                          setDraft((x) => {
-                            const next = {...x};
-                            delete next[openObj.id];
-                            return next;
-                          });
-                        }}
-                      >
-                        この話題を保存する
-                      </Action>
-                      {dirty(openObj.id) && (
-                        <button type="button" className="text-button" onClick={() => setDraft((x) => {
-                          const next = {...x};
-                          delete next[openObj.id];
-                          return next;
-                        })}>
-                          書きかけを戻す
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })() : null}
           </article>
         );
       })}
+
+      {openObj ? (() => {
+        const d = draftOf(openObj.id);
+        return (
+          <div id="pair-agree-detail" className="pair-detail-dock">
+            <div className="pair-stamp-detail paper-card">
+              <div className="pair-stamp-detail-head">
+                <strong>{openObj.topic}</strong>
+                <button type="button" className="text-button" onClick={() => onToggle(openObj.id)}>閉じる</button>
+              </div>
+              <div className="pair-agree-body">
+                <p className="pair-question">{openObj.question}</p>
+                <div className="field">
+                  <Label htmlFor={`mine-${openObj.id}`}>一人目の希望</Label>
+                  <Textarea id={`mine-${openObj.id}`} rows={2} maxLength={2000} value={d.mine} onChange={(e) => edit(openObj.id, {mine: e.target.value})} />
+                </div>
+                <div className="field">
+                  <Label htmlFor={`theirs-${openObj.id}`}>二人目の希望</Label>
+                  <Textarea id={`theirs-${openObj.id}`} rows={2} maxLength={2000} value={d.theirs} onChange={(e) => edit(openObj.id, {theirs: e.target.value})} />
+                </div>
+                <div className="field">
+                  <Label htmlFor={`agreed-${openObj.id}`}>二人の合意・担当</Label>
+                  <Textarea id={`agreed-${openObj.id}`} rows={2} maxLength={2000} value={d.agreed} onChange={(e) => edit(openObj.id, {agreed: e.target.value})} />
+                </div>
+                <div className="field">
+                  <Label htmlFor={`review-${openObj.id}`}>見直す日</Label>
+                  <Input id={`review-${openObj.id}`} type="date" value={d.review} onChange={(e) => edit(openObj.id, {review: e.target.value})} />
+                </div>
+                <RefChips ids={openObj.refs} />
+                <div className="pair-agree-actions">
+                  <Action
+                    disabled={busy || !dirty(openObj.id)}
+                    onClick={() => {
+                      onSaveAgreement(openObj.id, d);
+                      setDraft((x) => {
+                        const next = {...x};
+                        delete next[openObj.id];
+                        return next;
+                      });
+                    }}
+                  >
+                    この話題を保存する
+                  </Action>
+                  {dirty(openObj.id) && (
+                    <button type="button" className="text-button" onClick={() => setDraft((x) => {
+                      const next = {...x};
+                      delete next[openObj.id];
+                      return next;
+                    })}>
+                      書きかけを戻す
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })() : null}
     </div>
   );
 }
