@@ -10,7 +10,7 @@ import {
 } from '../lib/desk-chat';
 import type {Profile} from '../lib/model';
 import {askGrokResearch, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, hasBundledGrokKey, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
-import {markGrokLocalOnly, readGrokLocalOnlyFlag, GROK_MODE_EVENT} from '../lib/grok-mode';
+import {markGrokLocalOnly} from '../lib/grok-mode';
 
 export type DeskChatPanelProps = {
   open: boolean;
@@ -47,19 +47,6 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
     const saved = loadChatHistory();
     return saved.length ? saved : [WELCOME];
   });
-  const [localOnly, setLocalOnly] = useState(() => !loadGrokKey() || !!readGrokLocalOnlyFlag());
-
-  useEffect(() => {
-    const sync = () => setLocalOnly(!loadGrokKey() || !!readGrokLocalOnlyFlag());
-    sync();
-    window.addEventListener(GROK_MODE_EVENT, sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener(GROK_MODE_EVENT, sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, [open]);
-
   useEffect(() => {
     if (!open && !embedded) return;
     const t = window.setTimeout(() => inputRef.current?.focus(), 80);
@@ -193,15 +180,6 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
           <div>
             <h2 id={titleId}>Amityちゃんに聞く</h2>
             <p>{keyHint}</p>
-            {readGrokLocalOnlyFlag() === 'credits-limit' && (
-              <span className="desk-local-only-chip chat-chip" title="Grok深掘りなし・端末内案内のみ">
-                端末内のみモード
-                {' '}
-                <a className="desk-credits-link" href={GROK_CREDITS_CONSOLE_URL} target="_blank" rel="noopener noreferrer">
-                  クレジットを増やす（xAI）
-                </a>
-              </span>
-            )}
           </div>
         </div>
         <div className="desk-chat-head-actions">

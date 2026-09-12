@@ -3,8 +3,6 @@ import {ArrowRight,Gauge} from 'lucide-react';
 import {chapters,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
 import {difference,formatMoney,moneyTotals,validDate} from '../lib/dates';
 import {groups} from '../data/catalog';
-import {GROK_CREDITS_CONSOLE_URL} from '../lib/amity-grok';
-import {readGrokLocalOnlyFlag} from '../lib/grok-mode';
 
 /** Public Pages URL for friend handoff (copy button). */
 
@@ -158,8 +156,6 @@ export type MarriageDeskProps={
   today:string;
   hasBook:boolean;
   syncStatus?:'off'|'ok'|'error'|'syncing';
-  /** Kept for callers; chip UI gates on credits-limit only. */
-  localOnlyMode?:boolean;
   onOpenTask:(id:string)=>void;
   onOpenProfile:()=>void;
   onGoJourney:()=>void;
@@ -170,7 +166,7 @@ export type MarriageDeskProps={
   /** Opens Amity FAB chat (Amity is chat-only; not embedded here). */
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',localOnlyMode=false,onOpenTask,onOpenProfile,onGoJourney,onOpenSettings,onGoDeadlines}:MarriageDeskProps){
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoJourney,onOpenSettings,onGoDeadlines}:MarriageDeskProps){
   const [showDecor,setShowDecor]=useState(false);
 
   const progressPct=actionable.length?Math.round(done.length/actionable.length*100):0;
@@ -230,12 +226,6 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <span className="desk-subtitle">{names}</span>
         </div>
         <div className="desk-title-right">
-          {readGrokLocalOnlyFlag()==='credits-limit'&&(
-            <span className="desk-local-only-chip" title="Grok深掘りなし・端末内案内のみ">
-              端末内のみモード
-              <a className="desk-credits-link" href={GROK_CREDITS_CONSOLE_URL} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}>クレジットを増やす（xAI）</a>
-            </span>
-          )}
           {syncStatus!=='off'&&(
             <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
               {syncStatus==='syncing'?'同期中…':syncStatus==='ok'?'同期済み':syncStatus==='error'?'同期できず':'同期'}

@@ -737,12 +737,6 @@
 .desk-near-when small{font-size:10px;color:#7a8674}
 .desk-near-title{flex:1;font-size:13px;font-weight:600;color:#3f5d48;line-height:1.45}
 .desk-near-row>svg{color:#8a967f;flex-shrink:0}
-.desk-local-only-chip{
-  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;
-  background:#f3ebe0;border:1px solid #e0c9a4;color:#7a5a2e;font-size:10px;font-weight:700;
-  letter-spacing:.02em;white-space:nowrap;
-}
-.desk-local-only-chip.chat-chip{margin-top:4px}
 .pwa-update-banner{
   position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);
   z-index:140;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
@@ -773,8 +767,6 @@
 .desk-friend-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .desk-friend-url{flex:1;min-width:0;font-size:11px;padding:8px 10px;background:#f4f7f1;border:1px solid #d9e3d4;border-radius:6px;color:#4a6352;word-break:break-all}
 .desk-friend-copy{display:inline-flex;align-items:center;gap:6px;min-height:36px;font-size:12px}
-.desk-credits-link{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;color:#0f766e;text-decoration:underline;text-underline-offset:2px}
-.desk-local-only-chip{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 0}
 .pair-legacy-fold{margin-top:14px;border:1px dashed #d5dcd1;border-radius:6px;padding:10px 12px;background:#fafbf6}
 .pair-legacy-fold>summary{cursor:pointer;font-size:12px;font-weight:700;color:#6a7c6c}
 .pair-legacy-fold[open]>summary{margin-bottom:8px}
