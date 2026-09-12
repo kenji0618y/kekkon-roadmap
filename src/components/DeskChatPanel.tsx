@@ -98,7 +98,6 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
 
     if (!hasKey) {
       markGrokLocalOnly('no-key');
-      setLocalOnly(true);
       return;
     }
 
@@ -129,7 +128,6 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
         const credits = isGrokCreditsLimitResult(grok.error);
         if (credits) {
           markGrokLocalOnly('credits-limit');
-          setLocalOnly(true);
         }
         const chatText = credits
           ? `${GROK_CREDITS_LIMIT_JA}\n\nクレジットを増やす（アプリでは購入不可）→ ${GROK_CREDITS_CONSOLE_URL}`
