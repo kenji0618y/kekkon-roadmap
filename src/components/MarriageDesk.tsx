@@ -16,7 +16,7 @@ const statusTag:Partial<Record<Status,{tag:string,tone:string}>>={
   preparing:{tag:'準備',tone:'yellow'},
   learned:{tag:'確認',tone:'blue'},
   todo:{tag:'これから',tone:'gray'},
-  na:{tag:'対象外',tone:'gray'},
+  na:{tag:'スキップ',tone:'blue'},
 };
 
 type Activity={id:string,title:string,status:Status,at:string,sort:string};

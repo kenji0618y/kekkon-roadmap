@@ -35,7 +35,7 @@ function padMark(status: Status | undefined) {
   const st = status || 'todo'
   if (st === 'done') return '済'
   if (st === 'learned') return <span className="check-blue" aria-hidden />
-  if (st === 'na') return '—'
+  if (st === 'na') return 'ス'
   if (st === 'preparing') return '準'
   if (st === 'applied') return '申'
   if (st === 'waiting') return '待'

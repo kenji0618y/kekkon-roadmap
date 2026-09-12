@@ -1,5 +1,5 @@
 import { z } from 'zod';
-export const statusNames={todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'今回は対象外'} as const;
+export const statusNames={todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'スキップ'} as const;
 export type Status=keyof typeof statusNames;
 const short=z.string().max(100);
 const date=z.string().refine(v=>v===''||(/^\d{4}-\d{2}-\d{2}$/.test(v)&&v>='1900-01-01'&&v<='2100-12-31'&&Number.isFinite(new Date(v+'T00:00:00Z').getTime())&&new Date(v+'T00:00:00Z').toISOString().slice(0,10)===v),'実在する日付を入力してください');
