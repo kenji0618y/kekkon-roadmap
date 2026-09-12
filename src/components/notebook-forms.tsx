@@ -84,7 +84,7 @@ export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook,on
   {t.miss&&<div className="context-card miss"><strong><AlertTriangle size={16}/>やらないと失うもの</strong><p>{t.miss}</p></div>}
   {t.window&&<div className="context-card window"><strong><Clock3 size={16}/>いつやるか</strong><p>{t.window}</p></div>}
  </div>}
- <div className="field-grid"><Choice label="いまの状況" value={r.status} onChange={v=>change({status:v as TaskRecord['status']})} options={statusNames}/><Choice label="担当" value={r.assignee} onChange={v=>change({assignee:v as TaskRecord['assignee']})} options={{together:'二人で',one:p.name1||'一人目',two:p.name2||'二人目'}}/></div>
+ <div className="field-grid"><Choice label="いまの状況" value={r.status} onChange={v=>change({status:v as TaskRecord['status']})} options={statusNames} triggerClassName={r.status==='done'?'status-choice-done':r.status==='na'?'status-choice-na':''}/><Choice label="担当" value={r.assignee} onChange={v=>change({assignee:v as TaskRecord['assignee']})} options={{together:'二人で',one:p.name1||'一人目',two:p.name2||'二人目'}}/></div>
  <h3 className="form-heading"><Check size={18}/>ひとつずつ、進めよう</h3>
  <div className="step-list">{t.steps.map((s,i)=><label className={`check-row ${r.steps.includes(i)?'checked':''}`} key={s}><Checkbox checked={r.steps.includes(i)} onCheckedChange={checked=>change({steps:checked?[...r.steps,i]:r.steps.filter(x=>x!==i)})}/><span><small>0{i+1}</small>{s}</span></label>)}</div>
  <p className="hint">チェックだけでは「完了」になりません。手続きの結果を確かめて、完了にできます。</p>

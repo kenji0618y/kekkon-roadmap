@@ -1173,3 +1173,24 @@
   margin:0;border:2px solid #b29258;box-shadow:0 8px 24px #976b2318;
 }
 
+/* Task status select: 完了=赤 / スキップ=青 */
+.field-control.status-choice-done,
+[data-slot=select-trigger].status-choice-done{
+  background:linear-gradient(145deg,#d64535,#a5281c)!important;
+  border-color:#8f2a1e!important;
+  color:#fff8f0!important;
+}
+.field-control.status-choice-done svg,
+[data-slot=select-trigger].status-choice-done svg{color:#fff8f0!important;opacity:.9}
+.field-control.status-choice-na,
+[data-slot=select-trigger].status-choice-na{
+  background:linear-gradient(145deg,#3b82f6,#1d4f91)!important;
+  border-color:#1d4f91!important;
+  color:#f0f7ff!important;
+}
+.field-control.status-choice-na svg,
+[data-slot=select-trigger].status-choice-na svg{color:#f0f7ff!important;opacity:.9}
+.status-opt-done{color:#a5281c;font-weight:700}
+.status-opt-na{color:#1d4f91;font-weight:700}
+.status-done{background:#fde8e4;color:#a5281c}
+
