@@ -7,6 +7,7 @@ import {Textarea} from './ui/textarea';
 import {Input} from './ui/input';
 import {Label} from './ui/label';
 import {Action} from './book-controls';
+import {TalkStartersPanel} from './SeedContentPanels';
 
 const STATUS: {id: PracticeRecord['status']; label: string}[] = [
   {id: 'none', label: 'まだ'},
@@ -178,6 +179,8 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
       ) : (
         <p className="hint">上のテーマから1つ選んでください。</p>
       )}
+
+      <TalkStartersPanel/>
 
       <div className="section-heading pair-heading">
         <div>

@@ -25,7 +25,7 @@ import {DeskChatPanel} from './components/DeskChatPanel';
 import {PairWorkbook} from './components/PairWorkbook';
 import {MarriageDesk} from './components/MarriageDesk';
 import {StampIllustBoard} from './components/StampIllustBoard';
-import {HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
+import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {OnboardingSheet,isOnboardingDone,markOnboardingDone} from './components/OnboardingSheet';
 import {PwaUpdateBanner} from './components/PwaUpdateBanner';
 import {absoluteDeadlines,groups,practices,relativeDeadlines,reviewedOn,sources,talks,taskById,tasks} from './data/catalog';
@@ -143,6 +143,7 @@ export default function FutureNotebook(){
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や期限タブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface"><SectionTitle eyebrow="TIME FOR THE TWO OF US" title="期限と、ふたりの予定。" sub="済んだ手続きは外して、これからの予定を日付順に。"><Action secondary onClick={exportCalendar} disabled={!dated.length}><Download/>カレンダーに書き出す</Action></SectionTitle>
+ <HeroNumbersPanel profile={p}/>
  <InstitutionalDeadlines child={p.child} home={p.home}/>
  <div className="schedule-layout"><section><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>基準の日付を整える</button></div>
  {dated.length?<div className="timeline">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={<Action secondary onClick={openProfile}>基準の日付を設定する</Action>}>日付が分かれば期限を確認できます。各項目に、二人で決めた予定日を入れることもできます。</EmptyState>}
@@ -170,6 +171,7 @@ export default function FutureNotebook(){
    </AccordionItem>;
   })}
  </Accordion>:<EmptyState symbol={<Search/>} title="当てはまる項目がありません。" action={<Action secondary onClick={()=>{setQuery('');setCategory('all');setStatusFilter('all');setScopeOnly(true);setFindOpenChapter('');}}>条件をリセットする</Action>}>短い言葉で探すか、章や状況の条件を変えてみてください。</EmptyState>}
+ <ExcludeAndLiesPanel/>
  </TabsContent>
  <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="MAKE THIS NOTEBOOK YOURS" title="ふたりらしい手帳に。" sub="呼び名、共有、バックアップ。いつでも整え直せます。"/>
  <div className="settings-grid"><section id="settings-profile" className="paper-card settings-card"><div className="settings-icon"><Users/></div><h2>ふたりのプロフィール</h2><p className="profile-names">{p.name1||'一人目'} <span>&</span> {p.name2||'二人目'}</p><dl><div><dt>住まい</dt><dd>広島市 {p.ward==='未設定'?'（区は未設定）':p.ward}</dd></div><div><dt>婚姻日・予定日</dt><dd>{p.wdate?shortDate(p.wdate):'未設定'}</dd></div><div><dt>子育ての章</dt><dd>{['unknown','none'].includes(p.child)?'表示していません':'選んだ段階を表示'}</dd></div></dl><Action secondary onClick={openProfile}>プロフィールを整える<ArrowRight/></Action></section>
