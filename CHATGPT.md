@@ -4,7 +4,7 @@ Follow **`AGENTS.md`**, then open **`docs/AI_START_HERE.md`** before changing th
 
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-186項目 · 33まとまり · FAQ 936組 · 出典 135件 · 6タブ · 検査 52項目
+186項目 · 33まとまり · FAQ 936組 · 出典 135件 · 6タブ · 検査 58項目
 <!-- /STATE -->
 
 Same hard rules as `AGENTS.md` / `CLAUDE.md`:
@@ -12,9 +12,9 @@ Same hard rules as `AGENTS.md` / `CLAUDE.md`:
 - SoT = `src/data`、終わる前に `npm run handoff`、内容を減らさない（増やしたら下限も上げる）
 - **作り手あてのメモを画面に出さない**（AGENTS.md の §Screen language）
 - 式なしは隠すだけで消さない、Amity は右下ボタンのみ（デスクの吹き出しは削除済み）
-- `pad` / `review` / practices・talks・agreements・refs を残す
+- `pad` / `review` / practices・talks・agreements・reffs を残す
 - `bookSchema` の新欄は既定値つきのまま（必須にすると既存の手帳が壊れる）
-- 秘密情報なし / 円の捏造なし / 結婚新生活を賞品扱いしない
+- 秘密情報なし / 円の捨造なし / 結婚新生活を賞品扱いしない
 
 ## 終わる前に（全AI共通・コマンドは1つ）
 

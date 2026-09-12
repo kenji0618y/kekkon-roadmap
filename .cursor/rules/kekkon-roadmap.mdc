@@ -6,12 +6,12 @@ alwaysApply: true
 Before any edit in this repo, read `AGENTS.md` and `docs/AI_START_HERE.md`.
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-186項目 · 33まとまり · FAQ 936組 · 出典 135件 · 6タブ · 検査 52項目
+186項目 · 33まとまり · FAQ 936組 · 出典 135件 · 6タブ · 検査 58項目
 <!-- /STATE -->
 
 Hard rules: SoT=`src/data`; never thin content (raise verify-seed floors when you add);
 **no builder-facing wording on screen** (AGENTS.md §Screen language); ceremony tasks hidden not
 deleted and "Lean" never shown; Amity = bottom-right FAB only (desk bubble removed);
-keep `pad` / `review` / practices・talks・agreements・refs; keep `bookSchema` new fields optional;
+keep `pad` / `review` / practices・talks・agreements・reffs; keep `bookSchema` new fields optional;
 `npm run handoff` before done（sync:docs + verify:seed）; `npm run build` not bare `vite build`;
 公開は main への push で自動（Actions）; no secrets / no invented yen / no 結婚新生活 prize.

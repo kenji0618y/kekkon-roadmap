@@ -6,7 +6,7 @@ Follow **`AGENTS.md`**, then read **`docs/AI_START_HERE.md`** completely before 
 
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-186項目 · 33まとまり · FAQ 936組 · 出典 135件 · 6タブ · 検査 52項目
+186項目 · 33まとまり · FAQ 936組 · 出典 135件 · 6タブ · 検査 58項目
 <!-- /STATE -->
 
 Critical (do not skip):
@@ -17,9 +17,9 @@ Critical (do not skip):
 - **作り手あてのメモを画面に出さない**（AGENTS.md の §Screen language。過去いちばん多い失敗）
 - 式なしは W* を隠すだけ。JSON からは消さない。"Lean" は社内語で画面には出さない
 - Amity は右下の丸ボタンだけ。デスクの吹き出しは削除済み・戻さない
-- `pad` / `review` / practices・talks・agreements・refs を消さない
+- `pad` / `review` / practices・talks・agreements・reffs を消さない
 - `bookSchema` の新しい欄は既定値つきのまま。必須にすると既存の手帳が壊れる
-- 秘密情報を置かない / 円を捏造しない / 結婚新生活を「もらえる額」にしない
+- 秘密情報を置かない / 円を捨造しない / 結婚新生活を「もらえる額」にしない
 - 公開後、`assets/index-*.js` が HTTP 200 か確認
 
 ## 終わる前に（全AI共通・コマンドは1つ）
