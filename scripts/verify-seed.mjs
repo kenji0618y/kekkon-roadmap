@@ -14,7 +14,6 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const fail = [];
 const ok = [];
 
-// Reminder for agents that skip docs: handoff lives at repo root.
 if (!existsSync(join(root, 'AGENTS.md')) || !existsSync(join(root, 'docs/AI_START_HERE.md'))) {
   fail.push('missing AGENTS.md or docs/AI_START_HERE.md — restore handoff entry files');
 } else {
@@ -94,7 +93,6 @@ check('tasks.faq_pairs', faqPairs, 930);
 check('tasks.money_in', moneyIn, 90);
 check('tasks.money_out', moneyOut, 50);
 check('tasks.track', track, 186);
-// pad = 絵の上に出る短縮名。長いと枠からはみ出し、無いと機械的に切れて読めなくなる。
 const pads = tasks.filter((t) => {
   const n = [...String(t.pad || '').trim()].length;
   return n >= 2 && n <= 8;
@@ -106,13 +104,11 @@ check('exclude.items', excl, 36, true);
 check('home.hero_numbers', hero, 3, true);
 check('home.lies_not_to_buy', lies, 4, true);
 check('home.talk_lines', talk, 10, true);
-check('home.tomorrow_3_actions', tomorrow, 3, true);
+check('home.tomorrow_3_actions', tomorrow, 5, true);
 check('home.anti_lie_banner', banner, 1, true);
 check('phases.count', phaseN, 9, true);
 check('phases.events', events, 48);
 check('groups.subtitle', subtitles, 12);
-
-// 「ふたりの練習帳」の中身。ここも減らさない。
 check('pair.practices', practices.length, 52, true);
 check('pair.practice_themes', new Set(practices.map((p) => p.theme)).size, 14);
 check('pair.talks', talks.length, 16, true);
@@ -147,9 +143,6 @@ for (const a of agreements) {
   }
 }
 check('groups.chips_sets', chipSets, 33);
-
-// Yearly-review items: commercial perks that go stale. Count is a floor;
-// staleness is a WARNING (loud, but never blocks a build a year from now).
 const reviewed = tasks.filter((t) => t.review);
 check('tasks.yearly_review', reviewed.length, 12);
 const warn = [];
@@ -172,7 +165,6 @@ if (warn.length) {
   console.log('');
 }
 
-// UI mounts
 const panels = readText('src/components/SeedContentPanels.tsx');
 const notebook = readText('src/Notebook.tsx');
 const forms = readText('src/components/notebook-forms.tsx');
@@ -206,16 +198,14 @@ const yearlyData = readText('src/data/YEARLY_UPDATE.md');
 if (yearlyDocs && yearlyData && yearlyDocs !== yearlyData) {
   fail.push('YEARLY_UPDATE.md drift: docs/ and src/data/ must be identical (settings imports src/data)');
 } else if (yearlyDocs && yearlyData) {
-  ok.push('YEARLY_UPDATE docs↔src/data identical');
+  ok.push('YEARLY_UPDATE docs\u2194src/data identical');
 }
-
 
 for (const [name, pass] of uiChecks) {
   if (pass) ok.push(`ui:${name}`);
   else fail.push(`ui missing: ${name}`);
 }
 
-// 画面に作り手の言葉が出ていないか（日本語を含む文字列だけを見る）
 const screen = scanScreenLanguage();
 for (const w of screen.warnings) console.error('WARN 画面用語（AIへの指示文なので表示はされません）:', w);
 if (screen.errors.length) {
@@ -224,15 +214,12 @@ if (screen.errors.length) {
   ok.push('screen language clean (src/data + *.tsx)');
 }
 
-// ここまでが「検査項目」。+1 は、このあと必ず1件行う「docs が古くないか」の検査ぶん。
-// こうしておくと、ドキュメントに書かれる数と実行時の "all N checks passed" が一致する。
 const checkTotal = ok.length + fail.length + 1;
 if (process.argv.includes('--emit-checks')) {
   process.stdout.write(String(checkTotal));
   process.exit(0);
 }
 
-// ドキュメントの STATE ブロックが古くなっていないか
 const blocks = renderBlocks(collectState(), checkTotal);
 const stale = DOCS.filter((f) => existsSync(join(root, f)) && applyToFile(f, blocks, { check: true }));
 if (stale.length) {
@@ -241,7 +228,7 @@ if (stale.length) {
   ok.push(`docs state block in sync — ${stateLine(collectState(), checkTotal)}`);
 }
 
-console.log('=== verify-seed inventory ==='); 
+console.log('=== verify-seed inventory ===');
 for (const line of ok) console.log('OK  ', line);
 if (fail.length) {
   console.error('\n=== FAILURES ===');
