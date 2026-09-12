@@ -119,7 +119,8 @@ function chunkPads<T>(items: T[], max = MAX_PADS): T[][] {
 }
 
 function themeImage(themeIndex: number) {
-  return `/${THEME_ART[themeIndex % THEME_ART.length]}`;
+  // Relative to Vite base `./` (GitHub Pages /kekkon-roadmap/). Leading `/` 404s.
+  return THEME_ART[themeIndex % THEME_ART.length];
 }
 
 function RefChips({ids}: {ids: string[]}) {
@@ -174,7 +175,15 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
 
   return (
     <div className="pair-book">
-      <section className="paper-card pair-summary" aria-label="選んだもののまとめ">
+            <nav className="pair-mini-nav" aria-label="ふたりタブ内の節">
+        <a href="#pair-stamp-practices">行動</a>
+        <a href="#pair-stamp-talks">会話</a>
+        <a href="#pair-stamp-agreements">合意</a>
+        <a href="#pair-talk-starters">きっかけ</a>
+      </nav>
+      <details className="paper-card pair-top-fold">
+        <summary><strong>使い方・安全・いまの選び</strong><span className="hint">スタンプから始めて大丈夫</span></summary>
+<section className="paper-card pair-summary" aria-label="選んだもののまとめ">
         <p className="hint" style={{margin: 0}}>
           いま選んでいる行動は <strong>{chosen.length}</strong> 個、合意を書いた話題は <strong>{agreedCount}</strong> 件です。点数ではありません。
         </p>
@@ -224,7 +233,9 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
         </div>
       </section>
 
-      <div className="section-heading pair-heading">
+            </details>
+
+<div className="section-heading pair-heading" id="pair-stamp-practices">
         <div>
           <p className="eyebrow">スタンプで選ぶ</p>
           <h2>試してみる行動</h2>
@@ -297,7 +308,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
       </div>
 
       <section className="pair-stamp-section pair-talk-starters" aria-label="制度の話のきっかけ">
-        <div className="section-heading pair-heading">
+        <div className="section-heading pair-heading" id="pair-talk-starters">
           <div>
             <p className="eyebrow">話すきっかけ</p>
             <h2>制度の話の糸口</h2>
@@ -307,7 +318,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
         <TalkStartersPanel />
       </section>
 
-      <div className="section-heading pair-heading">
+      <div className="section-heading pair-heading" id="pair-stamp-talks">
         <div>
           <p className="eyebrow">言い方の下書き</p>
           <h2>言葉にしにくい場面</h2>
@@ -465,7 +476,7 @@ function TalkStampBoard({
         return (
           <article key={`talk-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${openHere ? ' selected' : ''}`}>
             <div className="illust-frame">
-              <img className="illust-art" src={`/${TALK_ART}`} alt="" loading="lazy" decoding="async" />
+              <img className="illust-art" src={TALK_ART} alt="" loading="lazy" decoding="async" />
               <div className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`} role="group" aria-label={`${caption}のスタンプ台`}>
                 {chunk.map((t, idx) => {
                   const active = openId === t.id;
@@ -550,7 +561,7 @@ function AgreeStampBoard({
         return (
           <article key={`agree-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${openHere ? ' selected' : ''}${allDone ? ' complete' : ''}`}>
             <div className="illust-frame">
-              <img className="illust-art" src={`/${AGREE_ART}`} alt="" loading="lazy" decoding="async" />
+              <img className="illust-art" src={AGREE_ART} alt="" loading="lazy" decoding="async" />
               <div className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`} role="group" aria-label={`${caption}のスタンプ台`}>
                 {chunk.map((a, idx) => {
                   const done = !!(book.agreements[a.id]?.agreed || '').trim();

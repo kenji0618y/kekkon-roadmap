@@ -182,6 +182,9 @@ export default function FutureNotebook(){
  </TabsContent>
  <TabsContent value="find" className="tab-surface find-tab"><SectionTitle eyebrow="制度を探す" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。${tasks.length}項目を収録しています。`}/>
  <div className="search-panel find-search-sticky"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters find-filters-compact"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'今回は対象外'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>いまの二人の候補だけ</span></label></div></div>
+ <nav className="find-pin-nav" aria-label="探すタブ内の近道">
+  <a href="#find-exclude-lies">思い込み・もらえない制度</a>
+ </nav>
  <div className="results-label"><strong>{filtered.length}件</strong><span>章ごとにまとめています。表示は対象の確定ではありません。</span></div>
  {filtered.length?<Accordion type="single" collapsible value={findOpenChapter} onValueChange={v=>setFindOpenChapter(v||'')} className="find-by-chapter">
   {(category==='all'?chapters:chapters.filter(c=>c.id===category)).map(c=>{
@@ -193,7 +196,7 @@ export default function FutureNotebook(){
    </AccordionItem>;
   })}
  </Accordion>:<EmptyState symbol={<Search/>} title="当てはまる項目がありません。" action={<Action secondary onClick={()=>{setQuery('');setCategory('all');setStatusFilter('all');setScopeOnly(true);setFindOpenChapter('');}}>条件をリセットする</Action>}>短い言葉で探すか、章や状況の条件を変えてみてください。</EmptyState>}
- <details className="find-exclude-outer paper-card">
+ <details id="find-exclude-lies" className="find-exclude-outer paper-card">
   <summary>
    <strong>思い込み・もらえない制度（{homeContent.lies_not_to_buy.length}+{excludeItems.length}）</strong>
    <span className="hint">検索のあとで読む用 · 誤解 {homeContent.lies_not_to_buy.length} · 対象外 {excludeItems.length}</span>
