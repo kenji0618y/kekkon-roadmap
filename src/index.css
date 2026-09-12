@@ -962,3 +962,151 @@
 .find-exclude-outer[open]>summary{margin-bottom:10px}
 .find-exclude-outer .find-exclude-stack{margin-top:4px}
 
+/* ===== DEPTH POLISH 2026-09-12 ===== */
+
+/* Nav: ロードマップ 6字を6タブに収める */
+@media(max-width:700px){
+  .nav-label-short{font-size:8.5px;letter-spacing:-.06em;max-width:4.8em;overflow:hidden;text-overflow:clip}
+  .site-header .main-nav [data-slot=tabs-trigger]{padding-left:2px;padding-right:2px}
+}
+@media(max-width:380px){
+  .nav-label-short{font-size:7.5px;letter-spacing:-.08em}
+}
+
+/* ふたり：詳細・親指チップ・キャプション折り返し */
+.pair-stamp .illust-caption-text strong{
+  white-space:normal;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  overflow:hidden;
+  line-height:1.35;
+}
+.pair-stamp .illust-sub{white-space:normal}
+.pair-status-lg{gap:8px;margin-top:4px}
+.pair-status-lg button{
+  min-height:44px;
+  font-size:13px;
+  padding:10px 4px;
+  border-radius:9px;
+  font-weight:600;
+}
+.pair-note-field{margin-top:4px}
+.pair-note-field textarea{min-height:64px}
+.pair-talk-starters{margin-top:8px}
+.pair-talk-starters-fold{
+  border:1px solid #e0d6c0;
+  border-radius:12px;
+  background:#fffdf8;
+  padding:0;
+  overflow:hidden;
+}
+.pair-talk-starters-fold>.seed-fold-summary,
+.pair-talk-starters .seed-fold-summary{
+  padding:14px 16px;
+}
+.pair-talk-starters-fold .seed-fold-body{
+  padding:0 14px 14px;
+}
+.pair-heading .eyebrow{letter-spacing:.08em}
+@media(max-width:700px){
+  .pair-status-lg{grid-template-columns:repeat(2,1fr);gap:8px}
+  .pair-status-lg button{min-height:48px;font-size:14px}
+  .pair-stamp .stamp-pad.corner{min-width:44px;min-height:44px}
+  .pair-stamp .illust-pads.pads-dense .stamp-pad.corner{
+    width:46px;height:46px;min-width:44px;min-height:44px;
+  }
+  .pair-stamp-detail-title{font-size:16px;line-height:1.65}
+  .pair-book{overflow-x:hidden}
+}
+
+/* 期限：イントロ・単独レイアウト・密タイムライン・欠日付フォールド */
+.deadline-block-intro{
+  font-size:13px;
+  color:#6a7973;
+  line-height:1.75;
+  margin:-4px 0 14px;
+  max-width:42em;
+}
+.deadline-block .seed-block-head .eyebrow{display:none}
+.deadline-block .seed-block{margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+.deadline-block .seed-block-head{margin-bottom:10px}
+.schedule-layout-solo{grid-template-columns:1fr;gap:0}
+.schedule-layout-solo .schedule-main{min-width:0}
+.timeline-dense .timeline-item{padding:14px 16px;gap:14px}
+.timeline-dense .timeline-date{min-width:64px;padding-right:12px}
+.timeline-dense .timeline-date strong{font-size:26px}
+.timeline-dense .timeline-body>strong{font-size:15px;margin:4px 0 2px}
+.missing-dates-fold{
+  margin-top:18px;
+  padding:12px 14px;
+  border:1px solid #e4e8dc;
+  border-radius:8px;
+  background:#fffefa;
+}
+.missing-dates-fold>summary{
+  cursor:pointer;
+  list-style:none;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:0;
+}
+.missing-dates-fold>summary::-webkit-details-marker{display:none}
+.missing-dates-fold[open]>summary{
+  margin-bottom:10px;
+  padding-bottom:8px;
+  border-bottom:1px dashed #e4e8dc;
+}
+.missing-dates-fold button{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 2px;
+  border-bottom:1px dashed #dbdfd0;
+  width:100%;
+  text-align:left;
+}
+.missing-dates-fold button:last-of-type{border-bottom:0}
+.phases-in-deadlines .seed-block-head .eyebrow{display:none}
+.phases-in-deadlines .seed-block-head h3{display:none}
+@media(max-width:700px){
+  .deadline-block{margin-bottom:22px}
+  .deadline-block-intro{font-size:12px;margin-bottom:12px}
+  .timeline-dense .timeline-item{padding:12px 10px;gap:10px}
+  .timeline-dense .timeline-date{min-width:52px;padding-right:8px}
+  .timeline-dense .timeline-date strong{font-size:22px}
+  .timeline-dense .timeline-body>strong{font-size:13.5px}
+  .timeline-dense .timeline-body>span:last-child{font-size:10.5px;line-height:1.55}
+  .schedule-summary{margin-bottom:14px}
+}
+
+/* 探す：フィルタを1画面に収める */
+.find-filters-compact{padding-top:12px}
+.find-tab .results-label{padding-top:4px}
+.find-exclude-outer>summary .hint{font-size:12px;color:#6a7973}
+@media(max-width:700px){
+  .find-search-sticky .search-box{padding:4px 12px}
+  .find-search-sticky .search-box [data-slot=input]{height:40px;font-size:15px}
+  .find-filters-compact{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px 8px;
+    padding-top:10px;
+  }
+  .find-filters-compact .field{min-width:0}
+  .find-filters-compact .field>label,
+  .find-filters-compact .field [data-slot=label]{font-size:11px;margin-bottom:2px}
+  .find-filters-compact .scope-toggle{
+    grid-column:1/-1;
+    padding:4px 0 0;
+    font-size:12px;
+    min-height:40px;
+  }
+  .find-by-chapter [data-slot=accordion-trigger]{padding:12px 12px;min-height:48px}
+}
+
+/* 旧アコーディオン残骸は非表示（スタンプ台へ移行済み） */
+.pair-practices{display:none!important}

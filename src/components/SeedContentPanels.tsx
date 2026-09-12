@@ -83,7 +83,6 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
   return (
     <section id="institutional-deadlines" className="seed-block institutional-deadlines" aria-label="制度・カレンダー締切">
       <div className="seed-block-head">
-        <span className="eyebrow">制度カレンダー</span>
         <h3>制度・カレンダー締切</h3>
         <p className="hint">日付が決まっている締切です。金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。</p>
       </div>
@@ -105,9 +104,9 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
         </details>
       )}
       {rel.length > 0 && (
-        <details className="seed-fold seed-fold-relative" open>
+        <details className="seed-fold seed-fold-relative">
           <summary>
-            <span>届出・イベント相対（いつも · {rel.length}）</span>
+            <span>届出・イベントの相対期限（{rel.length}）· 必要なときだけ</span>
           </summary>
           <div className="seed-relative seed-fold-body">
             <ul>
@@ -117,7 +116,7 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
                   <li key={`${d.offset}-${d.title}`}>
                     <strong>{d.title}</strong>
                     <span>{d.offset}</span>
-                    {'miss' in d && d.miss ? <em>MISS: {d.miss}</em> : null}
+                    {'miss' in d && d.miss ? <em>見落とし：{d.miss}</em> : null}
                     {money ? <span className="seed-money">{money}</span> : null}
                   </li>
                 )
@@ -301,7 +300,7 @@ export function TalkStartersPanel() {
   const {talk_lines} = homeContent
   const talkCount = talk_lines.length
   return (
-    <details className="seed-block talk seed-fold seed-fold-heavy" aria-label="制度の話のきっかけ">
+    <details className="seed-block talk seed-fold seed-fold-heavy pair-talk-starters-fold" aria-label="制度の話のきっかけ">
       <summary className="seed-fold-summary">
         <MessageCircle size={16} />
         <span>
@@ -364,7 +363,6 @@ export function PhasesPanel() {
   return (
     <section className="seed-block phases" aria-label="時期の区切りと出来事">
       <div className="seed-block-head">
-        <span className="eyebrow">時期と出来事</span>
         <h3>時期の区切りと出来事</h3>
         <p className="hint">
           婚姻日 = {m0_definition} · 基準日 {as_of} · {phases.length}の区切り / {eventTotal}の出来事

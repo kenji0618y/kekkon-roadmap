@@ -1,5 +1,5 @@
 import {useMemo,useState,type Dispatch,type SetStateAction} from 'react';
-import {ArrowUpRight,BookOpen,Handshake,MessageSquareQuote,ShieldCheck,Sparkles} from 'lucide-react';
+import {ArrowUpRight,BookOpen,ShieldCheck,Sparkles} from 'lucide-react';
 import {agreements,practices,practiceThemes,refById,talks,type Practice,type Ref,type Talk,type Agreement} from '../data/catalog';
 import type {AgreementRecord,Book,PracticeRecord} from '../lib/model';
 import {Textarea} from './ui/textarea';
@@ -47,9 +47,53 @@ function cornerSlot(count: number, index: number) {
   return FILL_ORDER.slice(0, n)[index] ?? index;
 }
 
-function padShort(text: string) {
-  const t = text.replace(/[。．、，「」『』（）()]/g, '').trim();
-  return t.length > 6 ? `${t.slice(0, 6)}` : t;
+/** UI-only short labels (2–8字). Seed には pad を足さない。 */
+const PRACTICE_PAD: Record<string, string> = {
+  A01: '行動感謝', A02: '尊重を表す', A03: 'ほめ方', A04: '感謝と改善',
+  A05: '呼びかけ', A06: '相手の世界', A07: '助け方', A08: '理解確認', A09: '嬉しい話', A10: '話しやすさ',
+  A11: '新体験', A12: '楽しさ好み', A13: '気軽な楽しみ', A14: '感想を聞く',
+  A15: '個人の目標', A16: '外のつながり', A17: '希望の変化',
+  A18: '出来事扱い', A19: '気持ち具体', A20: '話題をしぼる',
+  A21: '一旦休止', A22: '落ち着く', A23: '疲労も条件', A24: '自分も直す',
+  A25: '具体的に謝る', A26: '感じたこと', A27: '離れて考える', A28: '次の行動',
+  A29: '目的と方法', A30: '小さな案',
+  A31: '見えない家事', A32: '担当の範囲', A33: '完了基準', A34: '予定の負担',
+  A35: 'お金の希望', A36: '収入差', A37: '仕事の変化', A38: '支え合い',
+  A39: '親族の支援', A40: '付き合い方', A41: '共有の範囲',
+  A42: 'その都度', A43: '断れる関係', A44: '愛情の型',
+  A45: '親になる前', A46: '産後の備え', A47: '育児段取り', A48: '小さな関心', A49: '希望と同意',
+  A50: '手順を変える', A51: '支援を使う', A52: '安全に話す',
+};
+const TALK_PAD: Record<string, string> = {
+  C01: '小さな感謝', C02: '嬉しい話', C03: '疲れた相手', C04: '家事の不満',
+  C05: '段取り負担', C06: '声が大きく', C07: '言いすぎた後', C08: '受け止め方',
+  C09: '休日の希望', C10: 'お金の使い方', C11: '一人の時間', C12: '親族の訪問',
+  C13: '性の希望', C14: '産後の余裕', C15: '同じ不満', C16: '相談を利用',
+};
+const AGREE_PAD: Record<string, string> = {
+  G01: '大切なし', G02: '短い会話', G03: '楽しい時間', G04: '一人の時間',
+  G05: '食事・買物', G06: '掃除・洗濯', G07: '予定手続き', G08: '忙しい日',
+  G09: '生活費', G10: '働き方変化', G11: 'けんか休止', G12: '仲直り',
+  G13: '親族・帰省', G14: '写真・SNS', G15: '親密さ', G16: '妊娠・育児',
+  G17: '産後の分担', G18: '頼る先',
+};
+
+/** Fallback: strip punctuation, prefer 2–8 graphemes (UI-only). */
+function padShort(text: string, max = 8) {
+  const t = text.replace(/[。．、，「」『』（）()\s：:]/g, '').trim();
+  const chars = [...t];
+  if (chars.length <= max) return t || '…';
+  return chars.slice(0, max).join('');
+}
+
+function practicePadLabel(p: Practice) {
+  return PRACTICE_PAD[p.id] || padShort(p.idea);
+}
+function talkPadLabel(t: Talk) {
+  return TALK_PAD[t.id] || padShort(t.scene);
+}
+function agreePadLabel(a: Agreement) {
+  return AGREE_PAD[a.id] || padShort(a.topic);
 }
 
 function practicePadClass(status: PracticeRecord['status'] | undefined) {
@@ -200,10 +244,11 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
               const s = book.practices[p.id]?.status;
               return s === 'try' || s === 'doing' || s === 'kept';
             }).length;
+            const keptAll = chunk.length > 0 && chunk.every((p) => book.practices[p.id]?.status === 'kept');
             const cardKey = partTotal > 1 ? `${theme}__p${partIdx}` : theme;
             const openHere = chunk.some((p) => p.id === openPractice);
             return (
-              <article key={cardKey} role="listitem" className={`illust-square pair-stamp-card${openHere ? ' selected' : ''}`}>
+              <article key={cardKey} role="listitem" className={`illust-square pair-stamp-card${openHere ? ' selected' : ''}${keptAll ? ' complete' : ''}`}>
                 <div className="illust-frame">
                   <img className="illust-art" src={image} alt="" loading="lazy" decoding="async" />
                   <div className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`} role="group" aria-label={`${caption}のスタンプ台`}>
@@ -221,7 +266,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
                           title={p.idea}
                         >
                           <span className="stamp-pad-mark">{practicePadMark(st)}</span>
-                          <span className="stamp-pad-label">{padShort(p.idea)}</span>
+                          <span className="stamp-pad-label">{practicePadLabel(p)}</span>
                         </button>
                       );
                     })}
@@ -237,6 +282,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
                 </div>
                 {openHere && openPracticeObj ? (
                   <PracticeDetail
+                    key={openPracticeObj.id}
                     practice={openPracticeObj}
                     rec={book.practices[openPracticeObj.id] || EMPTY_PRACTICE}
                     busy={busy}
@@ -250,9 +296,16 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
         })}
       </div>
 
-      <div className="pair-stamp-section">
+      <section className="pair-stamp-section pair-talk-starters" aria-label="制度の話のきっかけ">
+        <div className="section-heading pair-heading">
+          <div>
+            <p className="eyebrow">話すきっかけ</p>
+            <h2>制度の話の糸口</h2>
+            <p className="hint">届出・お金・暮らしの前提を、そのまま読んでもよい文。閉じておいて大丈夫です。</p>
+          </div>
+        </div>
         <TalkStartersPanel />
-      </div>
+      </section>
 
       <div className="section-heading pair-heading">
         <div>
@@ -334,6 +387,8 @@ function PracticeDetail({
   onSave: (id: string, record: PracticeRecord) => void;
   onClose: () => void;
 }) {
+  const [note, setNote] = useState(rec.note || '');
+  const noteDirty = note !== (rec.note || '');
   return (
     <div className="pair-stamp-detail paper-card">
       <div className="pair-stamp-detail-head">
@@ -347,7 +402,7 @@ function PracticeDetail({
       <p className="pair-action">{practice.action}</p>
       <p className="pair-when"><Sparkles size={13} aria-hidden />{practice.when}</p>
       <p className="pair-caution">{practice.caution}</p>
-      <div className="pair-status" role="group" aria-label={`${practice.idea} の状態`}>
+      <div className="pair-status pair-status-lg" role="group" aria-label={`${practice.idea} の状態`}>
         {STATUS.map((s) => (
           <button
             key={s.id}
@@ -355,11 +410,35 @@ function PracticeDetail({
             disabled={busy}
             className={rec.status === s.id ? 'active' : ''}
             aria-pressed={rec.status === s.id}
-            onClick={() => onSave(practice.id, {...rec, status: s.id})}
+            onClick={() => onSave(practice.id, {...rec, status: s.id, note})}
           >
             {s.label}
           </button>
         ))}
+      </div>
+      <div className="field pair-note-field">
+        <Label htmlFor={`practice-note-${practice.id}`}>メモ（任意）</Label>
+        <Textarea
+          id={`practice-note-${practice.id}`}
+          rows={2}
+          maxLength={1000}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="試したこと・合わなかったことなど"
+        />
+      </div>
+      <div className="pair-agree-actions">
+        <Action
+          disabled={busy || !noteDirty}
+          onClick={() => onSave(practice.id, {...rec, note})}
+        >
+          メモを保存する
+        </Action>
+        {noteDirty && (
+          <button type="button" className="text-button" onClick={() => setNote(rec.note || '')}>
+            書きかけを戻す
+          </button>
+        )}
       </div>
     </div>
   );
@@ -400,8 +479,8 @@ function TalkStampBoard({
                       aria-label={t.scene}
                       title={t.scene}
                     >
-                      <span className="stamp-pad-mark"><MessageSquareQuote size={12} aria-hidden /></span>
-                      <span className="stamp-pad-label">{padShort(t.scene)}</span>
+                      <span className="stamp-pad-mark">話</span>
+                      <span className="stamp-pad-label">{talkPadLabel(t)}</span>
                     </button>
                   );
                 })}
@@ -467,8 +546,9 @@ function AgreeStampBoard({
         const caption = partTotal > 1 ? `合意 ${partIdx + 1}/${partTotal}` : '二人の合意';
         const openHere = chunk.some((a) => a.id === openId);
         const doneCount = chunk.filter((a) => (book.agreements[a.id]?.agreed || '').trim()).length;
+        const allDone = chunk.length > 0 && doneCount === chunk.length;
         return (
-          <article key={`agree-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${openHere ? ' selected' : ''}`}>
+          <article key={`agree-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${openHere ? ' selected' : ''}${allDone ? ' complete' : ''}`}>
             <div className="illust-frame">
               <img className="illust-art" src={`/${AGREE_ART}`} alt="" loading="lazy" decoding="async" />
               <div className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`} role="group" aria-label={`${caption}のスタンプ台`}>
@@ -485,8 +565,8 @@ function AgreeStampBoard({
                       aria-label={a.topic}
                       title={a.topic}
                     >
-                      <span className="stamp-pad-mark">{done ? '合' : <Handshake size={12} aria-hidden />}</span>
-                      <span className="stamp-pad-label">{padShort(a.topic)}</span>
+                      <span className="stamp-pad-mark">{done ? '合' : '題'}</span>
+                      <span className="stamp-pad-label">{agreePadLabel(a)}</span>
                     </button>
                   );
                 })}

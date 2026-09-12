@@ -197,6 +197,11 @@ const uiChecks = [
   ['YEARLY_UPDATE in docs', existsSync(join(root, 'docs/YEARLY_UPDATE.md'))],
   ['YEARLY_UPDATE in src/data', existsSync(join(root, 'src/data/YEARLY_UPDATE.md'))],
   ['YEARLY_UPDATE surfaced in Notebook', notebook.includes('毎年更新メモ') || notebook.includes('yearlyUpdateMd')],
+  ['PairWorkbook stamp-rally pads', readText('src/components/PairWorkbook.tsx').includes('pair-stamp') && readText('src/components/PairWorkbook.tsx').includes('PRACTICE_PAD')],
+  ['PairWorkbook practice note save', readText('src/components/PairWorkbook.tsx').includes('メモを保存する')],
+  ['Deadlines block hierarchy', notebook.includes('deadline-block-hero') && notebook.includes('deadline-block-intro')],
+  ['Find exclude outer with counts', notebook.includes('find-exclude-outer') && notebook.includes('excludeItems.length')],
+  ['Nav short ロードマップ', /short:'ロードマップ'/.test(notebook)],
 ];
 
 const yearlyDocs = readText('docs/YEARLY_UPDATE.md');
