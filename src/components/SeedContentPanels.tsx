@@ -5,7 +5,7 @@ import type {Profile} from '../lib/model'
 
 function branchVisible(branch: string | null | undefined, child: string, home: string) {
   if (!branch || branch === 'always') return true
-  if (branch === 'child') return !['none'].includes(child) // show when unknown/someday/pregnant/born
+  if (branch === 'child') return !['none'].includes(child)
   if (branch === 'buy') return home !== 'rent'
   return true
 }
@@ -66,7 +66,6 @@ function DeadlineCard({
   )
 }
 
-/** Upcoming / near / recently overdue stay visible; farther ones fold under 「すべて見る」. */
 function isProminentDeadline(date: string, today: string) {
   const days = difference(date, today)
   return days <= 60 && days >= -30
@@ -135,44 +134,23 @@ export type DeskFillNext = {
   id: string
   title: string
   sub?: string
-  /** When true, this task is already done/applied/waiting — skip when filling. */
   closed?: boolean
 }
+
+const NEXT_TARGET = 5
 
 export function HomeInsightPanels({
   onOpenTask,
   fillNext = [],
   isStampOpen,
-  profile,
+  profile: _profile,
 }: {
   onOpenTask?: (id: string) => void
-  /** Dynamic desk candidates — fill slots after seed tomorrow_3_actions (deduped). */
   fillNext?: DeskFillNext[]
-  /** Return false when a stamp should not count as an open next step. */
   isStampOpen?: (id: string) => boolean
-  /** Used to order 「覚えておきたい数字」 for the current couple. */
   profile?: Profile | null
 } = {}) {
-  const {hero_numbers, lies_not_to_buy, talk_lines, anti_lie_banner, tomorrow_3_actions} = homeContent
-  /** Prefer numbers that matter now: dual-income → NISA first; no wdate → 婚姻届 first; else tax relief first. */
-  const heroOrdered = [...hero_numbers].sort((a, b) => {
-    const rank = (id: string) => {
-      const dual = !profile || profile.work === 'dual' || profile.work === 'unknown'
-      const hasW = !!(profile && profile.wdate)
-      if (dual && id === 'nisa_dual') return 0
-      if (!hasW && id === 'filing_0') return 1
-      if (hasW && id === 'inheritance_spouse') return 1
-      if (id === 'inheritance_spouse') return 2
-      if (id === 'filing_0') return 3
-      return 4
-    }
-    return rank(a.id) - rank(b.id)
-  })
-  const lieCount = lies_not_to_buy.length
-  const talkCount = talk_lines.length
-  const excludeCount = excludeItems.length
-
-  const TARGET = 3
+  const {tomorrow_3_actions} = homeContent
   type NextRow = {
     key: string
     title: string
@@ -189,7 +167,6 @@ export function HomeInsightPanels({
   for (const a of tomorrow_3_actions || []) {
     const ids = a.stamp_ids?.length ? a.stamp_ids : (a.stamp_id ? [a.stamp_id] : [])
     const primary = ids.find((id) => stampOpen(id)) || ids[0]
-    // Prefer open stamps; if every linked stamp is closed, skip and free a slot for dynamic fill.
     if (ids.length > 0 && ids.every((id) => !stampOpen(id))) {
       ids.forEach((id) => used.add(id))
       continue
@@ -203,11 +180,11 @@ export function HomeInsightPanels({
       primary,
       source: 'seed',
     })
-    if (nextRows.length >= TARGET) break
+    if (nextRows.length >= NEXT_TARGET) break
   }
 
   for (const t of fillNext) {
-    if (nextRows.length >= TARGET) break
+    if (nextRows.length >= NEXT_TARGET) break
     if (used.has(t.id) || t.closed) continue
     used.add(t.id)
     nextRows.push({
@@ -224,9 +201,8 @@ export function HomeInsightPanels({
     <div className="seed-home-stack">
       <section className="seed-block tomorrow" aria-label="次のアクション">
         <div className="seed-block-head">
-          <span className="eyebrow">NEXT · DESK ACTIONS</span>
           <h3>次のアクション</h3>
-          <p className="hint">まず取りかかる3つ。埋まらないぶんは、期限の近い項目で補っています。</p>
+          <p className="hint">まず取りかかる5つ。埋まらないぶんは、期限の近い項目で補っています。</p>
         </div>
         {nextRows.length > 0 ? (
           <ol className="seed-tomorrow-list">
@@ -260,13 +236,22 @@ export function HomeInsightPanels({
           <p className="hint seed-next-empty">今の候補はひと通り確認できました。結果待ちや、次の楽しみを手帳で確かめましょう。</p>
         )}
       </section>
+    </div>
+  )
+}
 
+export function ExcludeAndLiesPanel() {
+  const {lies_not_to_buy, anti_lie_banner} = homeContent
+  const lieCount = lies_not_to_buy.length
+  const excludeCount = excludeItems.length
+  return (
+    <div className="seed-home-stack find-exclude-stack">
       <details className="seed-block warn seed-fold seed-fold-heavy" aria-label="思い込みで損しやすいこと">
         <summary className="seed-fold-summary">
           <AlertTriangle size={16} />
           <span>
             <strong>思い込みで損しやすいこと（{lieCount}）</strong>
-            <small>DON&apos;T BUY THESE LIES</small>
+            <small>よく言われる話と、この二人での事実</small>
           </span>
         </summary>
         <div className="seed-fold-body">
@@ -287,7 +272,6 @@ export function HomeInsightPanels({
           </ul>
         </div>
       </details>
-
       <details className="seed-block exclude seed-fold seed-fold-heavy" aria-label="もらえない制度と理由">
         <summary className="seed-fold-summary">
           <Ban size={16} />
@@ -309,44 +293,68 @@ export function HomeInsightPanels({
           </div>
         </div>
       </details>
-
-      <details className="seed-block talk seed-fold seed-fold-heavy" aria-label="ふたりの会話のきっかけ">
-        <summary className="seed-fold-summary">
-          <MessageCircle size={16} />
-          <span>
-            <strong>ふたりの会話のきっかけ（{talkCount}）</strong>
-            <small>いま話してみるとよいこと</small>
-          </span>
-        </summary>
-        <div className="seed-fold-body">
-          <ul className="seed-talk-list">
-            {talk_lines.map((t) => (
-              <li key={t.id}>
-                <MessageCircle size={16} />
-                <p>{t.line}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </details>
-
-      <section className="seed-block" aria-label="覚えておきたい数字">
-        <div className="seed-block-head">
-          <h3>覚えておきたい数字</h3>
-          <p className="hint">いまの二人の前提に合わせて並べています。公式の案内は各項目でも確認できます。</p>
-        </div>
-        <div className="seed-hero-grid">
-          {heroOrdered.map((h) => (
-            <div key={h.id} className="seed-hero-card">
-              <Hash size={16} />
-              <strong>{h.value}</strong>
-              <span>{h.label}</span>
-              {h.note && <p>{h.note}</p>}
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
+  )
+}
+
+export function TalkStartersPanel() {
+  const {talk_lines} = homeContent
+  const talkCount = talk_lines.length
+  return (
+    <details className="seed-block talk seed-fold seed-fold-heavy" aria-label="制度の話のきっかけ">
+      <summary className="seed-fold-summary">
+        <MessageCircle size={16} />
+        <span>
+          <strong>制度の話のきっかけ（{talkCount}）</strong>
+          <small>届出・お金・暮らしの前提を、そのまま読んでもよい文</small>
+        </span>
+      </summary>
+      <div className="seed-fold-body">
+        <ul className="seed-talk-list">
+          {talk_lines.map((t) => (
+            <li key={t.id}>
+              <MessageCircle size={16} />
+              <p>{t.line}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </details>
+  )
+}
+
+export function HeroNumbersPanel({profile}: {profile?: Profile | null} = {}) {
+  const {hero_numbers} = homeContent
+  const heroOrdered = [...hero_numbers].sort((a, b) => {
+    const rank = (id: string) => {
+      const dual = !profile || profile.work === 'dual' || profile.work === 'unknown'
+      const hasW = !!(profile && profile.wdate)
+      if (dual && id === 'nisa_dual') return 0
+      if (!hasW && id === 'filing_0') return 1
+      if (hasW && id === 'inheritance_spouse') return 1
+      if (id === 'inheritance_spouse') return 2
+      if (id === 'filing_0') return 3
+      return 4
+    }
+    return rank(a.id) - rank(b.id)
+  })
+  return (
+    <section className="seed-block" aria-label="覚えておきたい数字">
+      <div className="seed-block-head">
+        <h3>覚えておきたい数字</h3>
+        <p className="hint">いまの二人の前提に合わせて並べています。公式の案内は各項目でも確認できます。</p>
+      </div>
+      <div className="seed-hero-grid">
+        {heroOrdered.map((h) => (
+          <div key={h.id} className="seed-hero-card">
+            <Hash size={16} />
+            <strong>{h.value}</strong>
+            <span>{h.label}</span>
+            {h.note && <p>{h.note}</p>}
+          </div>
+        ))}
+      </div>
+    </section>
   )
 }
 
