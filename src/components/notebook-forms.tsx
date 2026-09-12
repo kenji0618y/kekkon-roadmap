@@ -9,7 +9,7 @@ import {Input} from './ui/input';
 import {Action,Choice,SaveAction,SourceLink,StatusMark,TextField} from './book-controls';
 import {eligibilityLabels,eligibilityNote,emptyRecord,memorySchema,profileSchema,recordSchema,statusNames,type Memory,type Profile,type Task,type TaskRecord} from '../lib/model';
 import {sources} from '../data/catalog';
-import {formatMoney,shortDate,statutoryDeadline,todayJapan} from '../lib/dates';
+import {formatMoney,shortDate,statutoryDeadline} from '../lib/dates';
 
 /** 「2026-09-09」→「2026年9月9日」 */
 function formatReviewed(d:string){
@@ -64,7 +64,10 @@ export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook,on
  const submit=async(done=false)=>{const parsed=recordSchema.safeParse({...r,status:done?'done':r.status,moneyKind:r.amount===null?'none':r.moneyKind});if(!parsed.success){setValidation('金額は0〜10億円の整数、日付は実在する日付を入力してください。');return;}setValidation('');await onSave(parsed.data);};
  const hasFaq=!!(t.faq&&t.faq.length);
  const copyQuestions=async()=>{const body=hasFaq?t.faq!.map((f,i)=>`${i+1}. ${f.q}\n   → ${f.a}`).join('\n\n'):t.questions.map((q,i)=>`${i+1}. ${q}`).join('\n');try{await navigator.clipboard.writeText(`${t.title}\n\n${body}`);toast.success(hasFaq?'FAQをコピーしました':'質問メモをコピーしました');}catch{toast.error('コピーできませんでした。表示された内容を選択してコピーしてください。');}};
+ const accordionDefault=hasFaq?['faq']:(t.questions.length?['question']:['overview']);
  return <div className="task-form form-stack"><fieldset disabled={busy}>
+ <Accordion type="multiple" defaultValue={accordionDefault} className="form-accordion">
+ <AccordionItem value="overview"><AccordionTrigger><span className="inline-flex items-center gap-2"><Info size={17}/>必要か・めやす・いつやるか</span></AccordionTrigger><AccordionContent>
  <div className="condition-note"><Info size={17}/><p>{eligibilityNote(t,p)}</p></div>
  {((t.eligibility&&t.eligibility!=='always')||t.money_in||t.money_out)&&<div className="seed-task-meta">
   <div className="seed-task-badges">
@@ -84,21 +87,21 @@ export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook,on
   {t.miss&&<div className="context-card miss"><strong><AlertTriangle size={16}/>やらないと失うもの</strong><p>{t.miss}</p></div>}
   {t.window&&<div className="context-card window"><strong><Clock3 size={16}/>いつやるか</strong><p>{t.window}</p></div>}
  </div>}
- <div className="field-grid"><Choice label="いまの状況" value={r.status} onChange={v=>change({status:v as TaskRecord['status']})} options={statusNames} triggerClassName={r.status==='done'?'status-choice-done':r.status==='na'?'status-choice-na':''}/><Choice label="担当" value={r.assignee} onChange={v=>change({assignee:v as TaskRecord['assignee']})} options={{together:'二人で',one:p.name1||'一人目',two:p.name2||'二人目'}}/></div>
- <h3 className="form-heading"><Check size={18}/>ひとつずつ、進めよう</h3>
- <div className="step-list">{t.steps.map((s,i)=><label className={`check-row ${r.steps.includes(i)?'checked':''}`} key={s}><Checkbox checked={r.steps.includes(i)} onCheckedChange={checked=>change({steps:checked?[...r.steps,i]:r.steps.filter(x=>x!==i)})}/><span><small>0{i+1}</small>{s}</span></label>)}</div>
- <p className="hint">チェックだけでは「完了」になりません。手続きの結果を確かめて、完了にできます。</p>
- {legal&&<div className="deadline-detail"><CalendarDays size={19}/><div><strong>{legal.date?`${shortDate(legal.date)}${legal.uncertain?'（原則日・要確認）':''}`:`${legal.missing}が未設定`}</strong><p>{legal.basis}</p>{!legal.date&&<button className="text-button" onClick={onProfile}>基準の日付を設定する <ArrowUpRight size={14}/></button>}</div></div>}
- <div className="field-grid"><TextField label="二人で決めた予定日（任意）" type="date" value={r.due} onChange={v=>change({due:v})}/><div className="field"><Label>二人が条件を確認した日</Label><div className="confirm-day"><span>{r.confirmedAt?shortDate(r.confirmedAt):'まだ記録していません'}</span><button className="text-button" onClick={()=>change({confirmedAt:todayJapan()})}>今日にする</button></div></div></div>
- <div className="field"><Label htmlFor="task-note">ふたりのメモ</Label><Textarea id="task-note" value={r.note} onChange={e=>change({note:e.target.value})} maxLength={3000} rows={4} placeholder="窓口で聞いた条件、準備する書類、次にすること…"/></div>
- <Accordion type="multiple" defaultValue={hasFaq?['faq']:(t.questions.length?['question']:[])} className="form-accordion">
+ </AccordionContent></AccordionItem>
  {hasFaq?<AccordionItem value="faq"><AccordionTrigger><span className="inline-flex items-center gap-2"><HelpCircle size={17}/>よくある質問（回答つき）</span></AccordionTrigger><AccordionContent><div className="faq-list">{t.faq!.map(f=><div className="faq-item" key={f.q}><strong className="faq-q">Q. {f.q}</strong><p className="faq-a">A. {f.a}</p></div>)}</div><Action secondary onClick={()=>void copyQuestions()}><ClipboardCopy/>FAQをコピーする</Action></AccordionContent></AccordionItem>:<AccordionItem value="question"><AccordionTrigger><span className="inline-flex items-center gap-2"><BookOpen size={17}/>確認するときの質問メモ</span></AccordionTrigger><AccordionContent><ul className="question-list">{t.questions.map(q=><li key={q}>{q}</li>)}</ul><Action secondary onClick={()=>void copyQuestions()}><ClipboardCopy/>質問をコピーする</Action></AccordionContent></AccordionItem>}
  {t.type!=='investment'&&<AccordionItem value="money"><AccordionTrigger>給付・節約の金額を記録する（任意）</AccordionTrigger><AccordionContent><p className="hint">同じ制度の金額は、一つの項目だけに記録してください。見込額と受取額を重ねて計上しないよう、受取後は区分を変更します。</p>{t.amountNote&&<p className="hint">{t.amountNote}</p>}<div className="field-grid"><Choice label="金額の区分" value={r.moneyKind} onChange={v=>change({moneyKind:v as TaskRecord['moneyKind'],amount:v==='none'?null:r.amount})} options={{none:'記録しない',received:'実際に受け取った給付・祝金',estimate:'まだ受け取っていない見込額',monthlySaving:'固定費の削減額（月額）',taxEstimate:'税負担の軽減見込額'}}/><div className="field"><Label htmlFor="task-amount">{r.moneyKind==='monthlySaving'?'削減額（円／月）':'金額（円）'}</Label><Input id="task-amount" type="number" inputMode="numeric" min={0} max={1000000000} step={1} disabled={r.moneyKind==='none'} value={r.amount??''} onChange={e=>change({amount:e.target.value===''?null:Number(e.target.value)})} placeholder="不明なら空欄"/></div></div></AccordionContent></AccordionItem>}
  <AccordionItem value="source"><AccordionTrigger>制度・手続きの参照先</AccordionTrigger><AccordionContent><div className="source-stack">{t.sources.map(id=><SourceLink source={sources[id]} key={id}/>)}</div><p className="hint">内容確認日以後の変更は自動反映されません。申請・契約前にリンク先で最新条件を確認してください。</p></AccordionContent></AccordionItem>
  </Accordion>
+ <div className="task-save-bar"><SaveAction busy={busy} onClick={()=>void submit()}>{hasBook?'記録を保存する':'保存して手帳を始める'}</SaveAction>{r.status!=='done'&&<Action secondary disabled={busy} onClick={()=>void submit(true)}><Sparkles/>完了にする</Action>}</div>
+ <h3 className="form-heading"><Check size={18}/>ひとつずつ、進めよう</h3>
+ <div className="step-list">{t.steps.map((s,i)=><label className={`check-row ${r.steps.includes(i)?'checked':''}`} key={s}><Checkbox checked={r.steps.includes(i)} onCheckedChange={checked=>change({steps:checked?[...r.steps,i]:r.steps.filter(x=>x!==i)})}/><span><small>0{i+1}</small>{s}</span></label>)}</div>
+ <p className="hint">チェックだけでは「完了」になりません。手続きの結果を確かめて、完了にできます。</p>
+ {legal&&<div className="deadline-detail"><CalendarDays size={19}/><div><strong>{legal.date?`${shortDate(legal.date)}${legal.uncertain?'（原則日・要確認）':''}`:`${legal.missing}が未設定`}</strong><p>{legal.basis}</p>{!legal.date&&<button className="text-button" onClick={onProfile}>基準の日付を設定する <ArrowUpRight size={14}/></button>}</div></div>}
+ <TextField label="二人で決めた予定日（任意）" type="date" value={r.due} onChange={v=>change({due:v})}/>
+ <div className="field"><Label htmlFor="task-note">ふたりのメモ</Label><Textarea id="task-note" value={r.note} onChange={e=>change({note:e.target.value})} maxLength={3000} rows={4} placeholder="窓口で聞いた条件、準備する書類、次にすること…"/></div>
  {t.type==='investment'&&<p className="hint investment-note">{t.amountNote}</p>}
  {validation&&<p role="alert" className="inline-error">{validation}</p>}
- <div className="task-save-bar"><SaveAction busy={busy} onClick={()=>void submit()}>{hasBook?'記録を保存する':'保存して手帳を始める'}</SaveAction>{r.status!=='done'&&<Action secondary disabled={busy} onClick={()=>void submit(true)}><Sparkles/>完了にする</Action>}</div>
+ <Choice label="いまの状況" value={r.status} onChange={v=>change({status:v as TaskRecord['status']})} options={statusNames} triggerClassName={r.status==='done'?'status-choice-done':r.status==='na'?'status-choice-na':''}/>
  </fieldset></div>;
 }
 export function MemoryForm({initial,onSave,busy,onDirty}:{initial:Memory,onSave:(m:Memory)=>Promise<void>,busy:boolean,onDirty:(v:boolean)=>void}){
