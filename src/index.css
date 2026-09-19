@@ -74,7 +74,7 @@
 .desk-sync-pill.sync-ok{border-color:#9cbc9a;color:#3f6b48;background:#e5f0e4}
 .desk-sync-pill.sync-syncing{border-color:#b7c4d8;color:#3f5f8a;background:#e8eef8}
 .desk-sync-pill.sync-error{border-color:#d4a090;color:#8a4332;background:#f8ebe6}
-70%{box-shadow:0 0 0 9px #10b98100}100%{box-shadow:0 0 0 0 #10b98100}}
+
 
 /* Dense command-center HUD (fintech desk vibe; Hiroshima teal palette) */
 .desk-root.desk-washi{
