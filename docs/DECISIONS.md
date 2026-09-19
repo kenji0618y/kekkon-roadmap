@@ -87,3 +87,5 @@
 - 2026-09-13 項目詳細：担当・条件確認日を非表示。概要（必要か〜いつやるか）をFAQと同じ折りたたみに。保存／完了を上へ、いまの状況を最下部へ。
 - 2026-09-13 項目詳細：保存／完了ボタン廃止。いまの状況を選ぶと保存。ひとつずつはシート見出しの直下（タイトル説明は従来どおり最上段）。
 - 2026-09-19 項目詳細：メモ／チェックは静か自動保存。状況の完了・スキップだけシートを閉じる。一覧の担当表示を削除。死んだ pair-practices CSS 削除。
+
+- 2026-09-19 quiet autosave: mutate は working 中に record を破棄せず同一 id は coalesce キュー。TaskForm は dirty を保存成功後のみ解除、unmount 時は debounce を破棄せず flush。ペア検索は theme/item へスクロール選択。印刷は ceremony 除外を UI と同条件。合意見出しに pair-stamp-agreements。分割スタンプは activeTaskId のチャンクのみ selected。G01 ラベル「大切なし」→「大切な話」。

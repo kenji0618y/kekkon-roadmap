@@ -71,7 +71,7 @@ const TALK_PAD: Record<string, string> = {
   C13: '性の希望', C14: '産後の余裕', C15: '同じ不満', C16: '相談を利用',
 };
 const AGREE_PAD: Record<string, string> = {
-  G01: '大切なし', G02: '短い会話', G03: '楽しい時間', G04: '一人の時間',
+  G01: '大切な話', G02: '短い会話', G03: '楽しい時間', G04: '一人の時間',
   G05: '食事・買物', G06: '掃除・洗濯', G07: '予定手続き', G08: '忙しい日',
   G09: '生活費', G10: '働き方変化', G11: 'けんか休止', G12: '仲直り',
   G13: '親族・帰省', G14: '写真・SNS', G15: '親密さ', G16: '妊娠・育児',
@@ -138,14 +138,24 @@ function RefChips({ids}: {ids: string[]}) {
   );
 }
 
+export type PairJump = {
+  theme?: string;
+  practiceId?: string;
+  talkId?: string;
+  agreementId?: string;
+  scrollId?: string;
+};
+
 export type PairWorkbookProps = {
   book: Book;
   busy: boolean;
   onSavePractice: (id: string, record: PracticeRecord) => void;
   onSaveAgreement: (id: string, record: AgreementRecord) => void;
+  jump?: PairJump | null;
+  onJumpHandled?: () => void;
 };
 
-export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: PairWorkbookProps) {
+export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump, onJumpHandled}: PairWorkbookProps) {
   const [draft, setDraft] = useState<Record<string, AgreementRecord>>({});
   const [openPractice, setOpenPractice] = useState('');
   const [selectedTheme, setSelectedTheme] = useState(practiceThemes[0] || '');
@@ -195,6 +205,26 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
     }, 50);
     return () => window.clearTimeout(id);
   }, [openAgree]);
+
+  useEffect(() => {
+    if (!jump) return;
+    if (jump.theme && practiceThemes.includes(jump.theme)) setSelectedTheme(jump.theme);
+    if (jump.practiceId) {
+      const prac = practices.find((p) => p.id === jump.practiceId);
+      if (prac) {
+        setSelectedTheme(prac.theme);
+        setOpenPractice(prac.id);
+      }
+    }
+    if (jump.talkId) setOpenTalk(jump.talkId);
+    if (jump.agreementId) setOpenAgree(jump.agreementId);
+    const scrollTo = jump.scrollId || (jump.agreementId ? 'pair-stamp-agreements' : jump.talkId ? 'pair-stamp-talks' : 'pair-stamp-practices');
+    const timer = window.setTimeout(() => {
+      document.getElementById(scrollTo)?.scrollIntoView({behavior: 'smooth', block: 'start'});
+      onJumpHandled?.();
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [jump, onJumpHandled]);
 
   return (
     <div className="pair-book">
@@ -390,7 +420,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement}: Pair
         openObj={openTalkObj}
       />
 
-      <div className="section-heading pair-heading">
+      <div className="section-heading pair-heading" id="pair-stamp-agreements">
         <div>
           <p className="eyebrow">二人の合意</p>
           <h2>話題ごとに書く</h2>

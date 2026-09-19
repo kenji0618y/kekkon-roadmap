@@ -64,6 +64,8 @@ type Props = {
   tasksFor: (g: Group) => Task[]
   recordStatus: (id: string) => Status | undefined
   activeId?: string
+  /** When set, only the chunk containing this task is selected (split groups). */
+  activeTaskId?: string
   onSelectGroup: (id: string) => void
   onPressStamp: (taskId: string) => void
 }
@@ -73,6 +75,7 @@ export function StampIllustBoard({
   tasksFor,
   recordStatus,
   activeId,
+  activeTaskId,
   onSelectGroup,
   onPressStamp,
 }: Props) {
@@ -95,7 +98,9 @@ export function StampIllustBoard({
             return s === 'done' || s === 'learned'
           }).length
           const complete = chunk.length > 0 && done === chunk.length
-          const selected = activeId === g.id
+          const selected =
+            activeId === g.id &&
+            (!activeTaskId || chunk.some((t) => t.id === activeTaskId))
           const captionTitle =
             partTotal > 1 ? `${g.short} ${partIdx + 1}/${partTotal}` : g.short
           const cardKey = partTotal > 1 ? `${g.id}__p${partIdx}` : g.id

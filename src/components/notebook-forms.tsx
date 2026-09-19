@@ -57,15 +57,39 @@ export function ProfileForm({profile,onSave,busy,onDirty,hasBook}:{profile:Profi
  <div className="form-actions"><SaveAction busy={busy} onClick={()=>void submit()}>{hasBook?'設定を保存する':'この内容で手帳を始める'}</SaveAction></div>
  </fieldset></form>;
 }
-export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook:_hasBook,onProfile}:{task:Task,profile:Profile,record?:TaskRecord,onSave:(r:TaskRecord,mode?:'quiet'|'status')=>Promise<void>,busy:boolean,onDirty:(v:boolean)=>void,hasBook:boolean,onProfile:()=>void}){
+export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook:_hasBook,onProfile}:{task:Task,profile:Profile,record?:TaskRecord,onSave:(r:TaskRecord,mode?:'quiet'|'status')=>Promise<boolean|void>,busy:boolean,onDirty:(v:boolean)=>void,hasBook:boolean,onProfile:()=>void}){
  const [r,setR]=useState<TaskRecord>(structuredClone(record||emptyRecord)),[validation,setValidation]=useState('');
  const rRef=useRef(r); rRef.current=r;
  const quietTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
- useEffect(()=>()=>{if(quietTimer.current)clearTimeout(quietTimer.current);},[]);
+ const persistRef=useRef<(next:TaskRecord,mode:'quiet'|'status')=>Promise<boolean>>(async()=>false);
+ useEffect(()=>()=>{
+  if(quietTimer.current){
+   clearTimeout(quietTimer.current);
+   quietTimer.current=null;
+   void persistRef.current(rRef.current,'quiet');
+  }
+ },[]);
  const legal=statutoryDeadline(t,p);
- const persist=async(next:TaskRecord,mode:'quiet'|'status')=>{const parsed=recordSchema.safeParse({...next,moneyKind:next.amount===null?'none':next.moneyKind});if(!parsed.success){setValidation('金額は0〜10億円の整数、日付は実在する日付を入力してください。');return;}setValidation('');onDirty(false);await onSave(parsed.data,mode);};
- const changeQuiet=(part:Partial<TaskRecord>,debounceMs=0)=>{const next={...rRef.current,...part};rRef.current=next;setR(next);onDirty(true);if(quietTimer.current)clearTimeout(quietTimer.current);const run=()=>{quietTimer.current=null;void persist(rRef.current,'quiet');};if(debounceMs>0)quietTimer.current=setTimeout(run,debounceMs);else void persist(next,'quiet');};
- const chooseStatus=async(v:string)=>{if(quietTimer.current){clearTimeout(quietTimer.current);quietTimer.current=null;}const next={...rRef.current,status:v as TaskRecord['status']};rRef.current=next;setR(next);await persist(next,'status');};
+ const persist=async(next:TaskRecord,mode:'quiet'|'status')=>{
+  const parsed=recordSchema.safeParse({...next,moneyKind:next.amount===null?'none':next.moneyKind});
+  if(!parsed.success){setValidation('金額は0〜10億円の整数、日付は実在する日付を入力してください。');return false;}
+  setValidation('');
+  const ok=await onSave(parsed.data,mode);
+  if(ok!==false)onDirty(false);
+  return ok!==false;
+ };
+ persistRef.current=persist;
+ const changeQuiet=(part:Partial<TaskRecord>,debounceMs=150)=>{
+  const next={...rRef.current,...part};rRef.current=next;setR(next);onDirty(true);
+  if(quietTimer.current)clearTimeout(quietTimer.current);
+  const run=()=>{quietTimer.current=null;void persist(rRef.current,'quiet');};
+  quietTimer.current=setTimeout(run,debounceMs);
+ };
+ const chooseStatus=async(v:string)=>{
+  if(quietTimer.current){clearTimeout(quietTimer.current);quietTimer.current=null;}
+  const next={...rRef.current,status:v as TaskRecord['status']};rRef.current=next;setR(next);
+  await persist(next,'status');
+ };
  const hasFaq=!!(t.faq&&t.faq.length);
  const copyQuestions=async()=>{const body=hasFaq?t.faq!.map((f,i)=>`${i+1}. ${f.q}\n   → ${f.a}`).join('\n\n'):t.questions.map((q,i)=>`${i+1}. ${q}`).join('\n');try{await navigator.clipboard.writeText(`${t.title}\n\n${body}`);toast.success(hasFaq?'FAQをコピーしました':'質問メモをコピーしました');}catch{toast.error('コピーできませんでした。表示された内容を選択してコピーしてください。');}};
  const accordionDefault=hasFaq?['faq']:(t.questions.length?['question']:['overview']);

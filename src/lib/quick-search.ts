@@ -15,6 +15,12 @@ export type QuickSearchHit = {
   scrollId?: string;
   /** task id when kind=task */
   taskId?: string;
+  /** pair deep-link: practice theme name */
+  pairTheme?: string;
+  /** pair deep-link: practice / talk / agreement id */
+  pairPracticeId?: string;
+  pairTalkId?: string;
+  pairAgreementId?: string;
 };
 
 const KIND_ORDER: QuickSearchKind[] = ['tab', 'setting', 'deadline', 'pair', 'task'];
@@ -207,6 +213,9 @@ export function buildQuickSearchHits(input: QuickSearchInput): QuickSearchHit[] 
         title: p.theme,
         hint: p.idea,
         tab: 'pair',
+        scrollId: 'pair-stamp-practices',
+        pairTheme: p.theme,
+        pairPracticeId: p.id,
         score: s,
       });
     }
@@ -220,6 +229,8 @@ export function buildQuickSearchHits(input: QuickSearchInput): QuickSearchHit[] 
         title: t.scene,
         hint: t.say,
         tab: 'pair',
+        scrollId: 'pair-stamp-talks',
+        pairTalkId: t.id,
         score: s,
       });
     }

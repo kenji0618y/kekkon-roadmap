@@ -64,6 +64,8 @@ export function useBook(_paused:boolean){
   const localDirtyRef=useRef(false);
   const syncConfigRef=useRef(syncConfig);
   syncConfigRef.current=syncConfig;
+  type QueuedMutate={payload:Record<string,unknown>,message:string,resolve:(v:Snapshot|null)=>void};
+  const pendingQueue=useRef<QueuedMutate[]>([]);
 
   const accept=useCallback((data:Snapshot)=>{
     current.current=data;
@@ -196,8 +198,32 @@ export function useBook(_paused:boolean){
     };
   },[pullAndReconcile]);
 
-  const mutate=useCallback(async(payload:Record<string,unknown>,message='保存しました')=>{
-    if(working.current)return null;
+  const coalesceKey=(payload:Record<string,unknown>)=>{
+    const action=String(payload.action||'');
+    if(action==='record'||action==='practice'||action==='agreement')return `${action}:${String(payload.id||'')}`;
+    if(action==='profile')return 'profile';
+    if(action==='memory'){
+      const mem=payload.memory as Memory|undefined;
+      return mem?.id?`memory:${mem.id}`:'memory';
+    }
+    return '';
+  };
+
+  const mutate=useCallback(async(payload:Record<string,unknown>,message='保存しました'):Promise<Snapshot|null>=>{
+    if(working.current){
+      return new Promise((resolve)=>{
+        const key=coalesceKey(payload);
+        if(key){
+          const idx=pendingQueue.current.findIndex(q=>coalesceKey(q.payload)===key);
+          if(idx>=0){
+            const prev=pendingQueue.current[idx];
+            pendingQueue.current[idx]={payload,message,resolve:(v)=>{prev.resolve(v);resolve(v);}};
+            return;
+          }
+        }
+        pendingQueue.current.push({payload,message,resolve});
+      });
+    }
     working.current=true;setBusy(true);setError('');
     try{
       const action=String(payload.action||'');
@@ -270,6 +296,10 @@ export function useBook(_paused:boolean){
       return null;
     }finally{
       working.current=false;setBusy(false);
+      const nextQ=pendingQueue.current.shift();
+      if(nextQ){
+        void mutate(nextQ.payload,nextQ.message).then(nextQ.resolve);
+      }
     }
   },[accept,schedulePush]);
 

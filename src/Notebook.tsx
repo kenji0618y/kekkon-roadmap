@@ -47,6 +47,7 @@ export default function FutureNotebook(){
  const [researchQ,setResearchQ]=useState(''),[researchBusy,setResearchBusy]=useState(false),[researchOut,setResearchOut]=useState('');
  const [onboardOpen,setOnboardOpen]=useState(false);
  const [quickOpen,setQuickOpen]=useState(false),[quickQ,setQuickQ]=useState('');
+ const [pairJump,setPairJump]=useState<{theme?:string,practiceId?:string,talkId?:string,agreementId?:string,scrollId?:string}|null>(null);
  const data=useBook(!!modal||!!taskId||dirty),book=data.book||emptyBook,p=book.profile,today=todayJapan();
  const scoped=useMemo(()=>tasks.filter(t=>inScope(t,p)),[p]);
  const actionable=scoped.filter(t=>book.records[t.id]?.status!=='na'),done=actionable.filter(t=>book.records[t.id]?.status==='done');
@@ -82,10 +83,10 @@ export default function FutureNotebook(){
  const openTask=(id:string)=>{setDirty(false);setTaskId(id);};
  const quickHits=useMemo(()=>buildQuickSearchHits({query:quickQ,tasks,absoluteDeadlines,relativeDeadlines,practices,talks,includeTask:t=>p.ceremony!=='no'||!isCeremonyTask(t),limit:20}),[quickQ,p.ceremony]);
  const quickGroups=useMemo(()=>groupQuickSearchHits(quickHits),[quickHits]);
- const runQuickHit=(hit:QuickSearchHit)=>{setQuickOpen(false);setQuickQ('');if(hit.tab)setTab(hit.tab);if(hit.taskId){if(hit.tab==='find')setQuery(hit.title);requestAnimationFrame(()=>openTask(hit.taskId!));}else if(hit.scrollId){requestAnimationFrame(()=>document.getElementById(hit.scrollId!)?.scrollIntoView({behavior:'smooth',block:'start'}));}else if(hit.kind==='pair'){/* pair tab only */}else if(hit.tab==='find'&&quickQ.trim()){setQuery(quickQ.trim());}};
+ const runQuickHit=(hit:QuickSearchHit)=>{setQuickOpen(false);setQuickQ('');if(hit.tab)setTab(hit.tab);if(hit.taskId){if(hit.tab==='find')setQuery(hit.title);requestAnimationFrame(()=>openTask(hit.taskId!));}else if(hit.kind==='pair'){setPairJump({theme:hit.pairTheme,practiceId:hit.pairPracticeId,talkId:hit.pairTalkId,agreementId:hit.pairAgreementId,scrollId:hit.scrollId});}else if(hit.scrollId){requestAnimationFrame(()=>document.getElementById(hit.scrollId!)?.scrollIntoView({behavior:'smooth',block:'start'}));}else if(hit.tab==='find'&&quickQ.trim()){setQuery(quickQ.trim());}};
  const openProfile=()=>{callClose(()=>{setTaskId(null);setDirty(false);setModal('profile');});};
  const selectChapter=(id:string)=>{setChapter(id);setGroupId(groups.find(g=>g.chapter===id&&scoped.some(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na'))?.id||groups.find(g=>g.chapter===id)?.id||'');};
- const saveRecord=async(r:TaskRecord,mode:'quiet'|'status'='status')=>{if(!task)return;const msg=mode==='quiet'?'':r.status==='done'?'記録を保存しました':r.status==='na'?'スキップとして保存しました':'ふたりの記録を保存しました';const result=await data.mutate({action:'record',id:task.id,record:r},msg);if(result){setDirty(false);if(mode==='status'&&(r.status==='done'||r.status==='na'))forceClose();}};
+ const saveRecord=async(r:TaskRecord,mode:'quiet'|'status'='status')=>{if(!task)return false;const msg=mode==='quiet'?'':r.status==='done'?'記録を保存しました':r.status==='na'?'スキップとして保存しました':'ふたりの記録を保存しました';const result=await data.mutate({action:'record',id:task.id,record:r},msg);if(result){setDirty(false);if(mode==='status'&&(r.status==='done'||r.status==='na'))forceClose();}return !!result;};
  const saveProfile=async(profile:Profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'))forceClose();};
  const savePractice=(id:string,record:PracticeRecord)=>{void data.mutate({action:'practice',id,record},'');};
  const saveAgreement=(id:string,record:AgreementRecord)=>{void data.mutate({action:'agreement',id,record},'この話題を保存しました');};
@@ -128,7 +129,7 @@ export default function FutureNotebook(){
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
  <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.en}</span><h3>{activeChapter.description}</h3></div><span className="hint">絵の縁のスタンプを押すと、その項目が開きます。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:!chapterGroups.length?<EmptyState symbol={<Map/>} title="この章に、今の二人向けのスタンプはありません。" action={<Action secondary onClick={openProfile}>ふたりの設定を開く</Action>}>式の有無や働き方を変えると、表示されるマスが変わります。</EmptyState>:<>
- <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} onSelectGroup={setGroupId} onPressStamp={openTask}/>
+ <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} activeTaskId={taskId||undefined} onSelectGroup={setGroupId} onPressStamp={openTask}/>
 
  </>}
  </section>
@@ -178,7 +179,7 @@ export default function FutureNotebook(){
  </section>
 </TabsContent>
  <TabsContent value="pair" className="tab-surface pair-tab"><SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
-  <PairWorkbook book={book} busy={data.busy} onSavePractice={savePractice} onSaveAgreement={saveAgreement}/>
+  <PairWorkbook book={book} busy={data.busy} onSavePractice={savePractice} onSaveAgreement={saveAgreement} jump={pairJump} onJumpHandled={()=>setPairJump(null)}/>
  </TabsContent>
  <TabsContent value="find" className="tab-surface find-tab"><SectionTitle eyebrow="制度を探す" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。${tasks.length}項目を収録しています。`}/>
  <div className="search-panel find-search-sticky"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters find-filters-compact"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'スキップ'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>いまの二人の候補だけ</span></label></div></div>
@@ -257,6 +258,6 @@ export default function FutureNotebook(){
  <DeskChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} profile={p} onOpenTask={(id)=>{setChatOpen(false);openTask(id);}} onGoFind={(kw)=>{setChatOpen(false);if(kw)setQuery(kw);setTab('find');}}/>
  <OnboardingSheet open={onboardOpen&&!modal&&!taskId} profile={p} busy={data.busy} onSave={async(profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました')){markOnboardingDone();setOnboardOpen(false);}}} onSkip={()=>{markOnboardingDone();setOnboardOpen(false);}}/>
 
- <div className="print-book"><h1>Amityちゃんにきく</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{book.records[t.id].status} · {book.records[t.id].note}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
+ <div className="print-book"><h1>Amityちゃんにきく</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{book.records[t.id].status} · {book.records[t.id].note}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
  </>;
 }
