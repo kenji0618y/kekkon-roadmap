@@ -176,7 +176,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
         <div className="desk-chat-title">
           <img src="./desk-mascot.png" alt="" width={36} height={36} decoding="async" />
           <div>
-            <h2 id={titleId}>Amityちゃんに聞く</h2>
+            <h2 id={titleId}>Amityちゃんにきく</h2>
             <p>{keyHint}</p>
           </div>
         </div>

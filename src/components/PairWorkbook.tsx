@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useState,type Dispatch,type SetStateAction} from 'react';
+import {useEffect,useMemo,useRef,useState,type Dispatch,type SetStateAction} from 'react';
 import {ArrowUpRight,BookOpen,ShieldCheck,Sparkles} from 'lucide-react';
 import {agreements,practices,practiceThemes,refById,talks,type Practice,type Ref,type Talk,type Agreement} from '../data/catalog';
 import type {AgreementRecord,Book,PracticeRecord} from '../lib/model';
@@ -149,7 +149,7 @@ export type PairJump = {
 export type PairWorkbookProps = {
   book: Book;
   busy: boolean;
-  onSavePractice: (id: string, record: PracticeRecord) => void;
+  onSavePractice: (id: string, record: PracticeRecord) => boolean | Promise<boolean>;
   onSaveAgreement: (id: string, record: AgreementRecord) => boolean | Promise<boolean>;
   jump?: PairJump | null;
   onJumpHandled?: () => void;
@@ -230,9 +230,9 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
     <div className="pair-book">
             <nav className="pair-mini-nav" aria-label="ふたりタブ内の節">
         <a href="#pair-stamp-practices">行動</a>
+        <a href="#pair-talk-starters">きっかけ</a>
         <a href="#pair-stamp-talks">会話</a>
         <a href="#pair-stamp-agreements">合意</a>
-        <a href="#pair-talk-starters">きっかけ</a>
       </nav>
       <details className="paper-card pair-top-fold">
         <summary><strong>使い方・安全・いまの選び</strong><span className="hint">スタンプから始めて大丈夫</span></summary>
@@ -482,10 +482,54 @@ function PracticeDetail({
   practice: Practice;
   rec: PracticeRecord;
   busy: boolean;
-  onSave: (id: string, record: PracticeRecord) => void;
+  onSave: (id: string, record: PracticeRecord) => boolean | Promise<boolean>;
   onClose: () => void;
 }) {
   const [note, setNote] = useState(rec.note || '');
+  const noteRef = useRef(note);
+  noteRef.current = note;
+  const recRef = useRef(rec);
+  recRef.current = rec;
+  const quietTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const persistRef = useRef<(next: PracticeRecord) => Promise<boolean>>(async () => false);
+
+  const persist = async (next: PracticeRecord) => {
+    const ok = await onSave(practice.id, next);
+    return ok !== false;
+  };
+  persistRef.current = persist;
+
+  useEffect(() => () => {
+    if (quietTimer.current) {
+      clearTimeout(quietTimer.current);
+      quietTimer.current = null;
+      const latest = {...recRef.current, note: noteRef.current};
+      if (latest.note !== (recRef.current.note || '')) {
+        void persistRef.current(latest);
+      }
+    }
+  }, [practice.id]);
+
+  const changeNote = (value: string) => {
+    setNote(value);
+    noteRef.current = value;
+    if (quietTimer.current) clearTimeout(quietTimer.current);
+    quietTimer.current = setTimeout(() => {
+      quietTimer.current = null;
+      void persistRef.current({...recRef.current, note: noteRef.current});
+    }, 450);
+  };
+
+  const chooseStatus = async (status: PracticeRecord['status']) => {
+    if (quietTimer.current) {
+      clearTimeout(quietTimer.current);
+      quietTimer.current = null;
+    }
+    const next = {...recRef.current, status, note: noteRef.current};
+    const ok = await persist(next);
+    if (ok && status === 'kept') onClose();
+  };
+
   const noteDirty = note !== (rec.note || '');
   return (
     <div className="pair-stamp-detail paper-card">
@@ -508,7 +552,7 @@ function PracticeDetail({
             disabled={busy}
             className={rec.status === s.id ? 'active' : ''}
             aria-pressed={rec.status === s.id}
-            onClick={() => onSave(practice.id, {...rec, status: s.id, note})}
+            onClick={() => void chooseStatus(s.id)}
           >
             {s.label}
           </button>
@@ -521,19 +565,26 @@ function PracticeDetail({
           rows={2}
           maxLength={1000}
           value={note}
-          onChange={(e) => setNote(e.target.value)}
+          onChange={(e) => changeNote(e.target.value)}
           placeholder="試したこと・合わなかったことなど"
         />
+        <p className="hint">メモは自動で保存されます。「続いている」を選ぶと詳細を閉じます。</p>
       </div>
       <div className="pair-agree-actions">
         <Action
           disabled={busy || !noteDirty}
-          onClick={() => onSave(practice.id, {...rec, note})}
+          onClick={() => {
+            if (quietTimer.current) {
+              clearTimeout(quietTimer.current);
+              quietTimer.current = null;
+            }
+            void persist({...rec, note});
+          }}
         >
           メモを保存する
         </Action>
         {noteDirty && (
-          <button type="button" className="text-button" onClick={() => setNote(rec.note || '')}>
+          <button type="button" className="text-button" onClick={() => { setNote(rec.note || ''); noteRef.current = rec.note || ''; if (quietTimer.current) { clearTimeout(quietTimer.current); quietTimer.current = null; } }}>
             書きかけを戻す
           </button>
         )}

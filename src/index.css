@@ -70,13 +70,11 @@
 .desk-title-left h1{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:700;letter-spacing:.04em;color:var(--desk-ink);margin:0}
 .desk-subtitle{font-size:12px;color:var(--desk-muted);padding:2px 8px;border:1px solid var(--desk-border);border-radius:999px;background:#fff}
 .desk-title-right{display:flex;align-items:center;gap:10px}
-.desk-live{display:inline-flex;align-items:center;gap:7px;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;border-radius:999px;padding:5px 11px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;letter-spacing:.12em}
-.desk-live i{width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 0 0 #10b981aa;animation:desk-pulse 1.6s ease-out infinite}
 .desk-sync-pill{font-size:10px;letter-spacing:.08em;font-weight:700;padding:3px 8px;border-radius:999px;border:1px solid #c5d0c4;color:#5d7a62;background:#eef3ea;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .desk-sync-pill.sync-ok{border-color:#9cbc9a;color:#3f6b48;background:#e5f0e4}
 .desk-sync-pill.sync-syncing{border-color:#b7c4d8;color:#3f5f8a;background:#e8eef8}
 .desk-sync-pill.sync-error{border-color:#d4a090;color:#8a4332;background:#f8ebe6}
-@keyframes desk-pulse{0%{box-shadow:0 0 0 0 #10b98188}70%{box-shadow:0 0 0 9px #10b98100}100%{box-shadow:0 0 0 0 #10b98100}}
+70%{box-shadow:0 0 0 9px #10b98100}100%{box-shadow:0 0 0 0 #10b98100}}
 
 /* Dense command-center HUD (fintech desk vibe; Hiroshima teal palette) */
 .desk-root.desk-washi{
@@ -105,14 +103,6 @@
 .desk-washi .desk-sync-pill.sync-ok{background:#eef3ea;border-color:#c3d3c0;color:#3f6b48}
 .desk-washi .desk-sync-pill.sync-syncing{background:#eef2f8;border-color:#c6d2e4;color:#3f5f8a}
 .desk-washi .desk-sync-pill.sync-error{background:#fbeeea;border-color:#e2c0b4;color:#8f2a1e}
-.desk-washi .desk-navi{background:linear-gradient(180deg,#fffdf8,#f7f3e8);border-color:#e6ddc8}
-.desk-washi .desk-navi-bubble{background:#fffdf8;border-color:#e0d9c8;box-shadow:0 6px 16px #1d35270f;color:#2a3f3a}
-.desk-washi .desk-navi-bubble::before{background:#fffdf8;border-left-color:#e0d9c8;border-bottom-color:#e0d9c8}
-.desk-washi .desk-navi-bubble p{color:#3a4a44}
-.desk-washi .desk-navi-actions button{background:#f5f1e6;border-color:#ddd3bf;color:#3f6b58}
-.desk-washi .desk-navi-actions button:hover{background:#ece5d5;color:#22352f}
-.desk-washi .desk-navi-actions button.desk-navi-ask{background:#0f5c54;color:#fffdf8;border-color:#0f5c54}
-.desk-washi .desk-navi-actions button.desk-navi-ask:hover{background:#14746a}
 .desk-washi .desk-metric,.desk-washi .desk-card{background:#fffdf8;border-color:#e6ddc8;box-shadow:0 2px 8px #1d352708}
 .desk-washi .desk-metric-label{color:#8f9988;letter-spacing:.04em}
 .desk-washi .desk-metric-value{font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;color:#22352f}
@@ -162,20 +152,7 @@
 .desk-clock{color:#d1fae5}
 
 .desk-clock{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;font-variant-numeric:tabular-nums;color:var(--desk-ink);letter-spacing:.04em}
-.desk-navi{display:flex;align-items:flex-end;gap:12px;margin:0 0 14px;padding:10px 12px;border:1px solid var(--desk-border);border-radius:12px;background:linear-gradient(180deg,#ffffffee,#f3f7f2cc)}
-.desk-navi-mascot{flex:0 0 auto;width:88px;height:88px;padding:0;border:0;border-radius:18px;background:transparent;cursor:pointer;transition:transform .18s ease}
-.desk-navi-mascot:hover{transform:translateY(-2px) scale(1.03)}
-.desk-navi-mascot:active{transform:scale(.97)}
-.desk-navi-mascot img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;filter:drop-shadow(0 6px 10px #0f766e18)}
-.desk-navi-bubble{position:relative;flex:1;min-width:0;background:#fff;border:1px solid #d7e3d8;border-radius:12px;padding:10px 12px 10px 14px;box-shadow:0 8px 18px #1a33400a}
-.desk-navi-bubble::before{content:"";position:absolute;left:-7px;bottom:22px;width:12px;height:12px;background:#fff;border-left:1px solid #d7e3d8;border-bottom:1px solid #d7e3d8;transform:rotate(45deg)}
-.desk-navi-bubble p{margin:0;font-size:13px;line-height:1.55;color:#294652;min-height:2.6em;animation:desk-tip-in .35s ease}
-.desk-navi-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.desk-navi-actions button{font-size:11px;font-weight:700;letter-spacing:.02em;padding:4px 9px;border-radius:999px;border:1px solid #b7cdc0;background:#f3faf6;color:#0f766e;cursor:pointer}
-.desk-navi-actions button:hover{background:#dff5ea}
 @keyframes desk-tip-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.desk-navi-actions button.desk-navi-ask{display:inline-flex;align-items:center;gap:4px;background:#134e4a;color:#ecfdf5;border-color:#134e4a}
-.desk-navi-actions button.desk-navi-ask:hover{background:#0f766e;color:#fff}
 .desk-chat{position:fixed;inset:0;z-index:90;display:flex;align-items:flex-end;justify-content:center;padding:12px;pointer-events:none}
 .desk-chat-backdrop{position:absolute;inset:0;background:#0f172a55;backdrop-filter:blur(2px);pointer-events:auto}
 .desk-chat-panel{position:relative;z-index:1;pointer-events:auto;width:min(440px,100%);max-height:min(78vh,640px);display:flex;flex-direction:column;background:#f8faf7;border:1px solid #c5d5c8;border-radius:16px 16px 12px 12px;box-shadow:0 18px 48px #0f172a33;overflow:hidden;animation:desk-chat-in .22s ease}
@@ -254,10 +231,7 @@
   .desk-chat.desk-chat-embedded .desk-chat-panel{border-radius:14px;margin-top:0}
 }
 @media (max-width:640px){
-  .desk-navi{align-items:center;gap:10px;padding:8px 10px}
-  .desk-navi-mascot{width:72px;height:72px}
-  .desk-navi-bubble p{font-size:12px;min-height:2.4em}
-  .desk-chat{padding:0;align-items:stretch}
+        .desk-chat{padding:0;align-items:stretch}
   .desk-chat-panel{width:100%;max-height:min(88vh,100%);border-radius:16px 16px 0 0;margin-top:auto}
 }
 
@@ -382,7 +356,7 @@
   .main-nav [data-slot=tabs-trigger] svg{width:16px;height:16px}
 }
 @media (prefers-reduced-motion:reduce){
-  .desk-live i,.desk-ridge-layer,.desk-ridge-callout,.desk-chord-arc,.desk-net-link,.desk-lattice-cube{animation:none!important}
+  .desk-ridge-layer,.desk-ridge-callout,.desk-chord-arc,.desk-net-link,.desk-lattice-cube{animation:none!important}
 }
 
 /* —— Stamp-on-illustration roadmap (art-first, corner pads) —— */

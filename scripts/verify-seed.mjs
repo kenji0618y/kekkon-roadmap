@@ -143,6 +143,34 @@ for (const a of agreements) {
   }
 }
 check('groups.chips_sets', chipSets, 33);
+
+// Phase / public asset paths: relative only (Pages subdirectory). Files must exist.
+const phaseImages = loadJson('src/data/phase-images.json') || {};
+const phaseVals = Object.values(phaseImages);
+const absPhase = phaseVals.filter((v) => typeof v === 'string' && v.startsWith('/'));
+if (absPhase.length) fail.push(`phase-images.json: absolute path(s) break Pages base — ${absPhase.slice(0, 3).join(', ')}`);
+else ok.push('phase-images.json: no absolute /paths');
+const missingPhase = phaseVals.filter((v) => typeof v === 'string' && !existsSync(join(root, 'public', v)));
+if (missingPhase.length) fail.push(`phase-images.json: missing public file(s) — ${missingPhase.slice(0, 5).join(', ')}`);
+else ok.push(`phase-images.json: ${phaseVals.length} files exist under public/`);
+
+const sugoroku = loadJson('src/data/sugoroku.json');
+if (sugoroku) {
+  const abs = [];
+  const walk = (o) => {
+    if (!o || typeof o !== 'object') return;
+    if (Array.isArray(o)) return o.forEach(walk);
+    for (const [k, v] of Object.entries(o)) {
+      if (k === 'image' && typeof v === 'string' && v.startsWith('/')) abs.push(v);
+      else walk(v);
+    }
+  };
+  walk(sugoroku);
+  if (abs.length) fail.push(`sugoroku.json: ${abs.length} absolute image path(s) (use phases/... not /phases/...)`);
+  else ok.push('sugoroku.json: no absolute image paths');
+}
+
+
 const reviewed = tasks.filter((t) => t.review);
 check('tasks.yearly_review', reviewed.length, 12);
 const warn = [];
@@ -194,11 +222,12 @@ const uiChecks = [
   ['PairWorkbook mounted', notebook.includes('PairWorkbook')],
   ['PairWorkbook safety note', readText('src/components/PairWorkbook.tsx').includes('pair-safety')],
   ['Pair tab in nav', /id:'pair'/.test(notebook)],
+  ['DeskChatPanel brand きく', readText('src/components/DeskChatPanel.tsx').includes('Amityちゃんにきく') && !readText('src/components/DeskChatPanel.tsx').includes('Amityちゃんに聞く')],
   ['YEARLY_UPDATE in docs', existsSync(join(root, 'docs/YEARLY_UPDATE.md'))],
   ['YEARLY_UPDATE in src/data', existsSync(join(root, 'src/data/YEARLY_UPDATE.md'))],
   ['YEARLY_UPDATE surfaced in Notebook', notebook.includes('毎年更新メモ') || notebook.includes('yearlyUpdateMd')],
   ['PairWorkbook stamp-rally pads', readText('src/components/PairWorkbook.tsx').includes('pair-stamp') && readText('src/components/PairWorkbook.tsx').includes('PRACTICE_PAD')],
-  ['PairWorkbook practice note save', readText('src/components/PairWorkbook.tsx').includes('メモを保存する')],
+  ['PairWorkbook practice quiet autosave', (pw => pw.includes('メモを保存する') && pw.includes('メモは自動で保存されます') && pw.includes('quietTimer'))(readText('src/components/PairWorkbook.tsx'))],
   ['Deadlines block hierarchy', notebook.includes('deadline-block-hero') && notebook.includes('deadline-block-intro')],
   ['Find exclude outer with counts', notebook.includes('find-exclude-outer') && notebook.includes('excludeItems.length')],
   ['Nav short ロードマップ', /short:'ロードマップ'/.test(notebook)],

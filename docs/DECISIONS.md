@@ -91,3 +91,4 @@
 - 2026-09-19 quiet autosave: mutate は working 中に record を破棄せず同一 id は coalesce キュー。TaskForm は dirty を保存成功後のみ解除、unmount 時は debounce を破棄せず flush。ペア検索は theme/item へスクロール選択。印刷は ceremony 除外を UI と同条件。合意見出しに pair-stamp-agreements。分割スタンプは activeTaskId のチャンクのみ selected。G01 ラベル「大切なし」→「大切な話」。
 
 - 2026-09-19 合意ドラフトは保存成功後のみクリア（失敗時に入力が消えない）。オンボーディング完了マークも mutate 成功時のみ。期限タブの制度締切・時期フェーズは profile（child/home）で UI フィルタ（seed は残す・unknown/none の子向け・賃貸時の購入系を隠す）。モバイル Amity FAB を下ナビ＋safe-area の上へ。テーマ切替は tab 偽ロールをやめて button group（aria-pressed）。groups／sugoroku サブタイトルの「名義変更の」重複を削除。未使用 CSS（.task-save-bar / .confirm-day）を削除。
+- 2026-09-19 練習メモは静か自動保存（閉じる／切替時 flush）。「続いている」で詳細を閉じる。探すピンは details を開いてからスクロール。DeskChat 見出しをブランド表記「きく」に統一。pair ミニナビ順を DOM（行動→きっかけ→会話→合意）に合わせる。sugoroku 画像パスの先頭 `/` を相対化。死んだ desk-navi / desk-live CSS を削除。verify に phase 画像存在と絶対パス禁止を追加。
