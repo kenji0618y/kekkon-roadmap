@@ -874,12 +874,6 @@
 .pair-intro-fold>summary::-webkit-details-marker{display:none}
 .pair-intro-fold[open]>summary{margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed #e6ddc8}
 .pair-intro-fold>summary strong{font-size:14px;color:#22352f}
-.pair-practices{border:1px solid #e6ddc8;border-radius:11px;background:#fffdf8;overflow:hidden}
-.pair-practices [data-slot=accordion-item]{border-bottom:1px solid #efe8d8}
-.pair-practices [data-slot=accordion-trigger]{padding:12px 14px;font-size:13.5px}
-.pair-practice-trigger{display:flex;align-items:center;gap:8px;flex-wrap:wrap;text-align:left;width:100%}
-.pair-practice-trigger strong{font-size:13.5px;font-weight:600;color:#22352f;flex:1;min-width:140px}
-.pair-practice-trigger em{font-style:normal;font-size:10.5px;color:#3f6b48;background:#eef3ea;border:1px solid #c3d3c0;border-radius:999px;padding:2px 8px}
 .pair-card.inline{border:0;box-shadow:none;padding:4px 14px 14px;background:transparent}
 .pair-refs-card>summary{cursor:pointer;display:flex;flex-direction:column;gap:4px}
 .pair-refs-card[open]>summary{margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed #e6ddc8}
@@ -1111,7 +1105,6 @@
 }
 
 /* 旧アコーディオン残骸は非表示（スタンプ台へ移行済み） */
-.pair-practices{display:none!important}
 
 /* Mobile top nav: 6 tabs incl. ロードマップ — readable, not clipped */
 @media (max-width: 700px) {
