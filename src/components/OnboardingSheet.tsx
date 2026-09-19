@@ -37,7 +37,7 @@ export function OnboardingSheet({
   open: boolean;
   profile: Profile;
   busy: boolean;
-  onSave: (p: Profile) => Promise<void>;
+  onSave: (p: Profile) => Promise<boolean>;
   onSkip: () => void;
 }) {
   const [p, setP] = useState<Profile>(() => ({
@@ -59,8 +59,8 @@ export function OnboardingSheet({
       return;
     }
     setErr('');
-    await onSave(parsed.data);
-    markOnboardingDone();
+    const ok = await onSave(parsed.data);
+    if (ok) markOnboardingDone();
   };
 
   return (

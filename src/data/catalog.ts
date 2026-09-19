@@ -76,5 +76,5 @@ export const homeContent = homeData as {
 export const phasesContent = phasesData as {
   as_of: string;
   m0_definition: string;
-  phases: {id:string;title:string;range:string;events:{title:string;when:string;money?:string;offset?:string}[]}[];
+  phases: {id:string;title:string;range:string;branch?:string|null;events:{title:string;when:string;money?:string;offset?:string}[]}[];
 };

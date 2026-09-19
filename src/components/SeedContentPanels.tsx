@@ -5,7 +5,8 @@ import type {Profile} from '../lib/model'
 
 function branchVisible(branch: string | null | undefined, child: string, home: string) {
   if (!branch || branch === 'always') return true
-  if (branch === 'child') return !['none'].includes(child)
+  // Align with inScope: child tasks hide when unknown/none; buy hides on rent.
+  if (branch === 'child') return !['none', 'unknown'].includes(child)
   if (branch === 'buy') return home !== 'rent'
   return true
 }
@@ -357,20 +358,21 @@ export function HeroNumbersPanel({profile}: {profile?: Profile | null} = {}) {
   )
 }
 
-export function PhasesPanel() {
+export function PhasesPanel({child, home}: {child: string; home: string}) {
   const {phases, m0_definition, as_of} = phasesContent
-  const eventTotal = phases.reduce((n, p) => n + p.events.length, 0)
+  const visible = phases.filter((ph) => branchVisible(ph.branch, child, home))
+  const eventTotal = visible.reduce((n, p) => n + p.events.length, 0)
   return (
     <section className="seed-block phases" aria-label="時期の区切りと出来事">
       <div className="seed-block-head">
         <h3>時期の区切りと出来事</h3>
         <p className="hint">
-          婚姻日 = {m0_definition} · 基準日 {as_of} · {phases.length}の区切り / {eventTotal}の出来事
+          婚姻日 = {m0_definition} · 基準日 {as_of} · {visible.length}の区切り / {eventTotal}の出来事
         </p>
       </div>
       <div className="seed-phase-list">
-        {phases.map((ph, idx) => (
-          <details key={ph.id} className="seed-phase" open={ph.id === 'phase0' || (idx === 0 && !phases.some((p) => p.id === 'phase0'))}>
+        {visible.map((ph, idx) => (
+          <details key={ph.id} className="seed-phase" open={ph.id === 'phase0' || (idx === 0 && !visible.some((p) => p.id === 'phase0'))}>
             <summary>
               <Layers size={16} />
               <span>

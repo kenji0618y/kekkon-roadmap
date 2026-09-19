@@ -150,7 +150,7 @@ export type PairWorkbookProps = {
   book: Book;
   busy: boolean;
   onSavePractice: (id: string, record: PracticeRecord) => void;
-  onSaveAgreement: (id: string, record: AgreementRecord) => void;
+  onSaveAgreement: (id: string, record: AgreementRecord) => boolean | Promise<boolean>;
   jump?: PairJump | null;
   onJumpHandled?: () => void;
 };
@@ -296,7 +296,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
         </div>
       </div>
 
-      <div className="pair-theme-nav" role="tablist" aria-label="行動のテーマ">
+      <div className="pair-theme-nav" role="group" aria-label="行動のテーマ">
         {practiceThemes.map((th) => {
           const n = practices.filter((p) => p.theme === th).length;
           const active = selectedTheme === th;
@@ -304,8 +304,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
             <button
               key={th}
               type="button"
-              role="tab"
-              aria-selected={active}
+              aria-pressed={active}
               className={active ? 'active' : ''}
               onClick={() => {
                 setSelectedTheme(th);
@@ -636,7 +635,7 @@ function AgreeStampBoard({
   edit: (id: string, patch: Partial<AgreementRecord>) => void;
   dirty: (id: string) => boolean;
   busy: boolean;
-  onSaveAgreement: (id: string, record: AgreementRecord) => void;
+  onSaveAgreement: (id: string, record: AgreementRecord) => boolean | Promise<boolean>;
   setDraft: Dispatch<SetStateAction<Record<string, AgreementRecord>>>;
 }) {
   const chunks = chunkPads(items);
@@ -713,12 +712,15 @@ function AgreeStampBoard({
                   <Action
                     disabled={busy || !dirty(openObj.id)}
                     onClick={() => {
-                      onSaveAgreement(openObj.id, d);
-                      setDraft((x) => {
-                        const next = {...x};
-                        delete next[openObj.id];
-                        return next;
-                      });
+                      void (async () => {
+                        const ok = await onSaveAgreement(openObj.id, d);
+                        if (!ok) return;
+                        setDraft((x) => {
+                          const next = {...x};
+                          delete next[openObj.id];
+                          return next;
+                        });
+                      })();
                     }}
                   >
                     この話題を保存する

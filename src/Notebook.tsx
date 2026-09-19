@@ -89,7 +89,7 @@ export default function FutureNotebook(){
  const saveRecord=async(r:TaskRecord,mode:'quiet'|'status'='status')=>{if(!task)return false;const msg=mode==='quiet'?'':r.status==='done'?'記録を保存しました':r.status==='na'?'スキップとして保存しました':'ふたりの記録を保存しました';const result=await data.mutate({action:'record',id:task.id,record:r},msg);if(result){setDirty(false);if(mode==='status'&&(r.status==='done'||r.status==='na'))forceClose();}return !!result;};
  const saveProfile=async(profile:Profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'))forceClose();};
  const savePractice=(id:string,record:PracticeRecord)=>{void data.mutate({action:'practice',id,record},'');};
- const saveAgreement=(id:string,record:AgreementRecord)=>{void data.mutate({action:'agreement',id,record},'この話題を保存しました');};
+ const saveAgreement=async(id:string,record:AgreementRecord)=>{return !!(await data.mutate({action:'agreement',id,record},'この話題を保存しました'));};
  const exportBackup=()=>{if(!data.book){toast.info('手帳を始めてから保存できます');return;}downloadText(`futari-miraicho-${today}.json`,backupText(data.book));toast.success('バックアップを書き出しました');};
  const exportCalendar=()=>{if(!dated.length){toast.info('基準の日付か予定日を設定してください');return;}downloadText('amity-chan-ni-kiku.ics',calendarFile(dated),'text/calendar;charset=utf-8');toast.success('予定を書き出しました。お使いのカレンダーに読み込んでください。');};
  const loadBackup=async(file:File)=>{try{if(file.size>2000000)throw new Error('2MB以内のJSONファイルを選んでください。');setImportDraft(readBackup(JSON.parse(await file.text())));}catch(e){toast.error(e instanceof Error?e.message:'読み込めませんでした');}};
@@ -174,7 +174,7 @@ export default function FutureNotebook(){
     <h2 className="deadline-block-label">時期の区切り</h2>
     <span className="hint">結婚前後から暮らしまでの案内（スタンプの進みぐあいとは別）</span>
    </summary>
-   <PhasesPanel/>
+   <PhasesPanel child={p.child} home={p.home}/>
   </details>
  </section>
 </TabsContent>
@@ -256,7 +256,7 @@ export default function FutureNotebook(){
  <Sheet open={quickOpen} onOpenChange={open=>{setQuickOpen(open);if(!open)setQuickQ('');}}><SheetContent side="bottom" className="quick-search-sheet" showCloseButton={true}><SheetHeader><SheetTitle>さがす</SheetTitle><SheetDescription>項目・画面・期限・設定・ふたりの練習へジャンプできます。</SheetDescription></SheetHeader><div className="quick-search-body"><label className="search-box quick-search-input"><Search size={20}/><Input autoFocus value={quickQ} onChange={e=>setQuickQ(e.target.value)} placeholder="項目・画面・期限を検索" aria-label="項目・画面・期限を検索" maxLength={80}/>{quickQ&&<button type="button" className="icon-button" onClick={()=>setQuickQ('')} aria-label="クリア"><X size={16}/></button>}</label><div className="quick-search-list" role="listbox" aria-label="検索結果">{!quickQ.trim()&&<p className="quick-search-hint">よく使う画面</p>}{quickGroups.map(g=><div key={g.kind} className="quick-search-group"><h3>{g.label}</h3>{g.items.map(hit=><button type="button" key={hit.id} className="quick-search-item" onClick={()=>runQuickHit(hit)}><span className="quick-search-item-main"><strong>{hit.title}</strong>{hit.hint&&<small>{hit.hint}</small>}</span><ChevronRight size={16}/></button>)}</div>)}{quickQ.trim()&&!quickHits.length&&<p className="quick-search-empty">見つかりませんでした。別の言葉で試してください。</p>}</div></div></SheetContent></Sheet>
 
  <DeskChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} profile={p} onOpenTask={(id)=>{setChatOpen(false);openTask(id);}} onGoFind={(kw)=>{setChatOpen(false);if(kw)setQuery(kw);setTab('find');}}/>
- <OnboardingSheet open={onboardOpen&&!modal&&!taskId} profile={p} busy={data.busy} onSave={async(profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました')){markOnboardingDone();setOnboardOpen(false);}}} onSkip={()=>{markOnboardingDone();setOnboardOpen(false);}}/>
+ <OnboardingSheet open={onboardOpen&&!modal&&!taskId} profile={p} busy={data.busy} onSave={async(profile)=>{const ok=!!(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'));if(ok)setOnboardOpen(false);return ok;}} onSkip={()=>{markOnboardingDone();setOnboardOpen(false);}}/>
 
  <div className="print-book"><h1>Amityちゃんにきく</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{book.records[t.id].status} · {book.records[t.id].note}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
  </>;
