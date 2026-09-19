@@ -93,3 +93,4 @@
 - 2026-09-19 合意ドラフトは保存成功後のみクリア（失敗時に入力が消えない）。オンボーディング完了マークも mutate 成功時のみ。期限タブの制度締切・時期フェーズは profile（child/home）で UI フィルタ（seed は残す・unknown/none の子向け・賃貸時の購入系を隠す）。モバイル Amity FAB を下ナビ＋safe-area の上へ。テーマ切替は tab 偽ロールをやめて button group（aria-pressed）。groups／sugoroku サブタイトルの「名義変更の」重複を削除。未使用 CSS（.task-save-bar / .confirm-day）を削除。
 - 2026-09-19 練習メモは静か自動保存（閉じる／切替時 flush）。「続いている」で詳細を閉じる。探すピンは details を開いてからスクロール。DeskChat 見出しをブランド表記「きく」に統一。pair ミニナビ順を DOM（行動→きっかけ→会話→合意）に合わせる。sugoroku 画像パスの先頭 `/` を相対化。死んだ desk-navi / desk-live CSS を削除。verify に phase 画像存在と絶対パス禁止を追加。
 - 2026-09-20 ロードマップ：完了スタンプは既定で非表示。トグルで表示／「完了したまとまり」折りたたみ。設定は端末に記憶。
+- 2026-09-20 英字 eyebrow（OUR DESK／JOURNEY／NOTEBOOK／MAKE THIS…／FIRST STEPS）と章見出しの en を日本語へ。ふたりタブは forceMount で合意ドラフトをタブ切替でも保持。探すピンは preventDefault→details を開いてから scrollIntoView。未使用 CSS（旧 sugoroku-board／square*／monthly-invite／home-bottom／local-note／chapter-list）を削除。
