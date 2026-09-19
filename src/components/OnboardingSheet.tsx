@@ -67,7 +67,7 @@ export function OnboardingSheet({
     <Dialog open={open} onOpenChange={(o) => { if (!o) onSkip(); }}>
       <DialogContent className="notebook-dialog dialog-onboard" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <p className="eyebrow">FIRST STEPS</p>
+          <p className="eyebrow">はじめの一歩</p>
           <DialogTitle>まずは、ふたりの前提を。</DialogTitle>
           <DialogDescription>
             広島市で、式は挙げない前提の共働き向けです。分かるところだけで大丈夫。金額は入れません。

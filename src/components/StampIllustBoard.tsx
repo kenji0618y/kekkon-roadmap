@@ -1,9 +1,11 @@
+import {useEffect, useMemo, useState} from 'react'
 import type {Status, Group, Task} from '../lib/model'
 import {statusNames} from '../lib/model'
 import {phaseImage} from '../data/catalog'
 
 /** Max stamps per illustration card. Overflow → sub-mass split */
 const MAX_CORNER_PADS = 12
+const SHOW_DONE_KEY = 'amity-stamp-show-done'
 
 /** Slot order: keep the scene open when few stamps (prefer bottom), then fill the rim up to 12. */
 const FILL_ORDER = [3, 2, 0, 1, 4, 5, 6, 7, 8, 9, 10, 11]
@@ -70,6 +72,26 @@ type Props = {
   onPressStamp: (taskId: string) => void
 }
 
+type CardModel = {
+  g: Group
+  chunk: Task[]
+  partIdx: number
+  partTotal: number
+  cardKey: string
+  complete: boolean
+  doneCount: number
+  checkedCount: number
+  image: string
+}
+
+function loadShowDone() {
+  try {
+    return localStorage.getItem(SHOW_DONE_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 export function StampIllustBoard({
   groups,
   tasksFor,
@@ -79,108 +101,209 @@ export function StampIllustBoard({
   onSelectGroup,
   onPressStamp,
 }: Props) {
+  const [showDone, setShowDone] = useState(loadShowDone)
+  const [foldOpen, setFoldOpen] = useState(false)
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SHOW_DONE_KEY, showDone ? '1' : '0')
+    } catch {
+      /* ignore */
+    }
+  }, [showDone])
+
+  // Opening a completed stamp from elsewhere should reveal done pads once.
+  useEffect(() => {
+    if (!activeTaskId) return
+    if (recordStatus(activeTaskId) === 'done') {
+      setShowDone(true)
+      setFoldOpen(true)
+    }
+    // recordStatus is an inline lambda from the parent; depend only on activeTaskId.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTaskId])
+
+  const {activeCards, foldedCards, hiddenDonePads} = useMemo(() => {
+    const active: CardModel[] = []
+    const folded: CardModel[] = []
+    let hiddenDonePads = 0
+
+    for (const g of groups) {
+      const ts = tasksFor(g)
+      const chunks = chunkTasksForCards(ts)
+      const image = phaseImage(g.id)
+      const partTotal = chunks.length
+
+      chunks.forEach((chunk, partIdx) => {
+        const doneCount = chunk.filter((t) => recordStatus(t.id) === 'done').length
+        const checkedCount = chunk.filter((t) => {
+          const s = recordStatus(t.id)
+          return s === 'done' || s === 'learned'
+        }).length
+        const complete = chunk.length > 0 && doneCount === chunk.length
+        const cardKey = partTotal > 1 ? `${g.id}__p${partIdx}` : g.id
+        const model: CardModel = {
+          g,
+          chunk,
+          partIdx,
+          partTotal,
+          cardKey,
+          complete,
+          doneCount,
+          checkedCount,
+          image,
+        }
+
+        if (showDone) {
+          active.push(model)
+          return
+        }
+
+        // Hide completed pads; fully-done cards go to the fold tray.
+        if (complete) {
+          hiddenDonePads += doneCount
+          folded.push(model)
+          return
+        }
+
+        const visible = chunk.filter((t) => recordStatus(t.id) !== 'done')
+        hiddenDonePads += chunk.length - visible.length
+        if (visible.length === 0) {
+          folded.push({...model, complete: true})
+          return
+        }
+        active.push({
+          ...model,
+          chunk: visible,
+          // progress still reflects full chunk intent via doneCount/checked on original
+          doneCount,
+          checkedCount,
+          complete: false,
+        })
+      })
+    }
+
+    return {activeCards: active, foldedCards: folded, hiddenDonePads}
+  }, [groups, tasksFor, recordStatus, showDone])
+
   let cardNo = 0
 
+  const renderCard = (model: CardModel, muted = false) => {
+    cardNo += 1
+    const no = String(cardNo).padStart(2, '0')
+    const {g, chunk, partIdx, partTotal, cardKey, complete, checkedCount, image} = model
+    const fullLen = chunkTasksForCards(tasksFor(g))[partIdx]?.length ?? chunk.length
+    const captionTitle = partTotal > 1 ? `${g.short} ${partIdx + 1}/${partTotal}` : g.short
+    const selected =
+      activeId === g.id &&
+      (!activeTaskId || chunk.some((t) => t.id === activeTaskId))
+
+    return (
+      <article
+        key={cardKey}
+        role="listitem"
+        className={`illust-square ${selected ? 'selected' : ''} ${complete ? 'complete' : ''} ${muted ? 'illust-folded' : ''}`}
+      >
+        <div className="illust-frame">
+          <img className="illust-art" src={image} alt="" loading="lazy" decoding="async" />
+          <div
+            className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`}
+            role="group"
+            aria-label={`${captionTitle}のスタンプ台`}
+          >
+            {chunk.length === 0 ? (
+              <span className="stamp-pad-empty corner-empty">この設定では対象項目なし</span>
+            ) : (
+              chunk.map((t, idx) => {
+                const st = recordStatus(t.id)
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${padClass(st)}`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onSelectGroup(g.id)
+                      onPressStamp(t.id)
+                    }}
+                    aria-label={`${t.title}（${statusAria(st)}）`}
+                    title={t.title}
+                  >
+                    <span className="stamp-pad-mark">{padMark(st)}</span>
+                    <span className="stamp-pad-label">{tinyLabel(t)}</span>
+                  </button>
+                )
+              })
+            )}
+          </div>
+        </div>
+        <button
+          type="button"
+          className="illust-caption"
+          onClick={() => onSelectGroup(g.id)}
+          aria-pressed={selected}
+        >
+          <span className="illust-no">{no}</span>
+          <span className="illust-caption-text">
+            <strong>{captionTitle}</strong>
+            {partIdx === 0 && g.subtitle ? <span className="illust-sub">{g.subtitle}</span> : null}
+          </span>
+          <span className="illust-progress">
+            {fullLen ? `${checkedCount}/${fullLen}` : '—'}
+            {complete ? ' 済' : ''}
+          </span>
+        </button>
+        {partIdx === 0 && g.chips && g.chips.length > 0 ? (
+          <div className="illust-chips" aria-label={`${g.short}のチップ`}>
+            {g.chips.slice(0, 4).map((c) => (
+              <span key={c} className="illust-chip">
+                {c}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </article>
+    )
+  }
+
   return (
-    <div className="stamp-rally" role="list">
-      {groups.flatMap((g) => {
-        const ts = tasksFor(g)
-        const chunks = chunkTasksForCards(ts)
-        const image = phaseImage(g.id)
-        const partTotal = chunks.length
+    <div className="stamp-rally-wrap">
+      <div className="stamp-done-bar" role="group" aria-label="完了スタンプの表示">
+        <button
+          type="button"
+          className={`stamp-done-toggle ${showDone ? 'is-on' : ''}`}
+          aria-pressed={showDone}
+          onClick={() => {
+            setShowDone((v) => !v)
+            if (showDone) setFoldOpen(false)
+          }}
+        >
+          {showDone ? '完了スタンプを畳む' : `完了を非表示中${hiddenDonePads ? `（${hiddenDonePads}）` : ''}`}
+        </button>
+        {!showDone && foldedCards.length > 0 ? (
+          <button
+            type="button"
+            className={`stamp-done-fold ${foldOpen ? 'is-open' : ''}`}
+            aria-expanded={foldOpen}
+            onClick={() => setFoldOpen((v) => !v)}
+          >
+            {foldOpen ? '完了したまとまりを閉じる' : `完了したまとまり ${foldedCards.length}`}
+          </button>
+        ) : null}
+      </div>
 
-        return chunks.map((chunk, partIdx) => {
-          cardNo += 1
-          const no = String(cardNo).padStart(2, '0')
-          const done = chunk.filter((t) => recordStatus(t.id) === 'done').length
-          const checked = chunk.filter((t) => {
-            const s = recordStatus(t.id)
-            return s === 'done' || s === 'learned'
-          }).length
-          const complete = chunk.length > 0 && done === chunk.length
-          const selected =
-            activeId === g.id &&
-            (!activeTaskId || chunk.some((t) => t.id === activeTaskId))
-          const captionTitle =
-            partTotal > 1 ? `${g.short} ${partIdx + 1}/${partTotal}` : g.short
-          const cardKey = partTotal > 1 ? `${g.id}__p${partIdx}` : g.id
+      <div className="stamp-rally" role="list">
+        {activeCards.map((m) => renderCard(m))}
+      </div>
 
-          return (
-            <article
-              key={cardKey}
-              role="listitem"
-              className={`illust-square ${selected ? 'selected' : ''} ${complete ? 'complete' : ''}`}
-            >
-              <div className="illust-frame">
-                <img
-                  className="illust-art"
-                  src={image}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                />
-
-                <div
-                  className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`}
-                  role="group"
-                  aria-label={`${captionTitle}のスタンプ台`}
-                >
-                  {chunk.length === 0 ? (
-                    <span className="stamp-pad-empty corner-empty">この設定では対象項目なし</span>
-                  ) : (
-                    chunk.map((t, idx) => {
-                      const st = recordStatus(t.id)
-                      return (
-                        <button
-                          key={t.id}
-                          type="button"
-                          className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${padClass(st)}`}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            onSelectGroup(g.id)
-                            onPressStamp(t.id)
-                          }}
-                          aria-label={`${t.title}（${statusAria(st)}）`}
-                          title={t.title}
-                        >
-                          <span className="stamp-pad-mark">{padMark(st)}</span>
-                          <span className="stamp-pad-label">{tinyLabel(t)}</span>
-                        </button>
-                      )
-                    })
-                  )}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className="illust-caption"
-                onClick={() => onSelectGroup(g.id)}
-                aria-pressed={selected}
-              >
-                <span className="illust-no">{no}</span>
-                <span className="illust-caption-text">
-                  <strong>{captionTitle}</strong>
-                  {partIdx === 0 && g.subtitle ? (
-                    <span className="illust-sub">{g.subtitle}</span>
-                  ) : null}
-                </span>
-                <span className="illust-progress">
-                  {chunk.length ? `${checked}/${chunk.length}` : '—'}
-                  {complete ? ' 済' : ''}
-                </span>
-              </button>
-              {partIdx === 0 && g.chips && g.chips.length > 0 ? (
-                <div className="illust-chips" aria-label={`${g.short}のチップ`}>
-                  {g.chips.slice(0, 4).map((c) => (
-                    <span key={c} className="illust-chip">{c}</span>
-                  ))}
-                </div>
-              ) : null}
-            </article>
-          )
-        })
-      })}
+      {!showDone && foldOpen && foldedCards.length > 0 ? (
+        <div className="stamp-folded-tray" aria-label="完了したまとまり">
+          <p className="hint">すべて完了したイラスト台です。スタンプを押すと詳細を開けます。</p>
+          <div className="stamp-rally" role="list">
+            {foldedCards.map((m) => renderCard(m, true))}
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

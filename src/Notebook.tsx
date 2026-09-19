@@ -115,7 +115,7 @@ export default function FutureNotebook(){
  <main className="workspace" id="main-content">
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p><button onClick={()=>void data.refresh()}>再読み込み</button></div>}
  <TabsContent value="desk" className="tab-surface">
- <div className="welcome-line"><div><p className="eyebrow">OUR DESK</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">いまの進みぐあいと、次にやることをまとめた画面です。項目はマップ、締切と時期の流れは期限のタブにあります。</p></div></div>
+ <div className="welcome-line"><div><p className="eyebrow">ふたりのデスク</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">いまの進みぐあいと、次にやることをまとめた画面です。項目はマップ、締切と時期の流れは期限のタブにあります。</p></div></div>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoJourney={()=>setTab('journey')} onOpenSettings={()=>setTab('settings')} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('institutional-deadlines')?.scrollIntoView({behavior:'smooth',block:'start'}));}} onGoFind={(kw)=>{if(kw)setQuery(kw);setTab('find');}}/>
  <HomeInsightPanels
   onOpenTask={openTask}
@@ -125,9 +125,9 @@ export default function FutureNotebook(){
  />
  </TabsContent>
  <TabsContent value="journey" className="tab-surface">
- <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">OUR JOURNEY</p><h2>スタンプで進める、暮らしロードマップ</h2><p className="hint" style={{marginTop:6}}>章を選んで、絵の縁にあるスタンプを押していきます。項目の多い章は、絵が何枚かに分かれます。</p></div></div>
+ <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">暮らしの道のり</p><h2>スタンプで進める、暮らしロードマップ</h2><p className="hint" style={{marginTop:6}}>章を選んで、絵の縁にあるスタンプを押していきます。項目の多い章は、絵が何枚かに分かれます。</p></div></div>
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
- <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.en}</span><h3>{activeChapter.description}</h3></div><span className="hint">絵の縁のスタンプを押すと、その項目が開きます。</span></div>
+ <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.label}</span><h3>{activeChapter.description}</h3></div><span className="hint">絵の縁のスタンプを押すと、その項目が開きます。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:!chapterGroups.length?<EmptyState symbol={<Map/>} title="この章に、今の二人向けのスタンプはありません。" action={<Action secondary onClick={openProfile}>ふたりの設定を開く</Action>}>式の有無や働き方を変えると、表示されるマスが変わります。</EmptyState>:<>
  <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} activeTaskId={taskId||undefined} onSelectGroup={setGroupId} onPressStamp={openTask}/>
 
@@ -178,13 +178,13 @@ export default function FutureNotebook(){
   </details>
  </section>
 </TabsContent>
- <TabsContent value="pair" className="tab-surface pair-tab"><SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
+ <TabsContent value="pair" forceMount className="tab-surface pair-tab data-[state=inactive]:hidden"><SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
   <PairWorkbook book={book} busy={data.busy} onSavePractice={savePractice} onSaveAgreement={saveAgreement} jump={pairJump} onJumpHandled={()=>setPairJump(null)}/>
  </TabsContent>
  <TabsContent value="find" className="tab-surface find-tab"><SectionTitle eyebrow="制度を探す" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。${tasks.length}項目を収録しています。`}/>
  <div className="search-panel find-search-sticky"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters find-filters-compact"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'スキップ'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>いまの二人の候補だけ</span></label></div></div>
   <nav className="find-pin-nav" aria-label="探すタブ内の近道">
-  <a href="#find-exclude-lies" onClick={(e)=>{const el=document.getElementById('find-exclude-lies');if(el instanceof HTMLDetailsElement){el.open=true;}}}>思い込み・もらえない制度</a>
+  <a href="#find-exclude-lies" onClick={(e)=>{e.preventDefault();const el=document.getElementById('find-exclude-lies');if(el instanceof HTMLDetailsElement){el.open=true;}el?.scrollIntoView({behavior:'smooth',block:'start'});}}>思い込み・もらえない制度</a>
  </nav>
  <div className="results-label"><strong>{filtered.length}件</strong><span>章ごとにまとめています。表示は対象の確定ではありません。</span></div>
  {filtered.length?<Accordion type="single" collapsible value={findOpenChapter} onValueChange={v=>setFindOpenChapter(v||'')} className="find-by-chapter">
@@ -205,7 +205,7 @@ export default function FutureNotebook(){
   <ExcludeAndLiesPanel/>
  </details>
  </TabsContent>
- <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="MAKE THIS NOTEBOOK YOURS" title="ふたりらしい手帳に。" sub="呼び名、共有、バックアップ。いつでも整え直せます。"/>
+ <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="ふたりらしい手帳に" title="ふたりらしい手帳に。" sub="呼び名、共有、バックアップ。いつでも整え直せます。"/>
  <div className="settings-grid"><section id="settings-profile" className="paper-card settings-card"><div className="settings-icon"><Users/></div><h2>ふたりのプロフィール</h2><p className="profile-names">{p.name1||'一人目'} <span>&</span> {p.name2||'二人目'}</p><dl><div><dt>住まい</dt><dd>広島市 {p.ward==='未設定'?'（区は未設定）':p.ward}</dd></div><div><dt>婚姻日・予定日</dt><dd>{p.wdate?shortDate(p.wdate):'未設定'}</dd></div><div><dt>子育ての章</dt><dd>{['unknown','none'].includes(p.child)?'表示していません':'選んだ段階を表示'}</dd></div></dl><Action secondary onClick={openProfile}>プロフィールを整える<ArrowRight/></Action></section>
  <section className="paper-card settings-card"><div className="settings-icon"><Heart/></div><h2>同じ手帳を、二人で。</h2><p>招待コードは未対応です。端末間は<strong>バックアップの書き出し／読み込み</strong>、または下の<strong>GitHub Gist 同期</strong>で受け渡してください。</p><div className="stack-actions"><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>バックアップを書き出す</Action><Action secondary onClick={()=>{const el=document.getElementById('settings-gist-sync');el?.scrollIntoView({behavior:'smooth',block:'start'});}}><Cloud/>Gist同期へ</Action></div></section>
  <section className="paper-card settings-card"><div className="settings-icon"><ShieldCheck/></div><h2>この端末に保存します。</h2><p>進捗・メモ・金額はブラウザ内に残ります。端末を変えるときはバックアップJSONを書き出してください。</p><p className="hint">二人で使う場合は、バックアップの受け渡しか「ふたりで使う」から始めてください。</p><div className="stack-actions"><Action secondary onClick={exportBackup}><Download/>バックアップを書き出す</Action></div></section>
@@ -225,7 +225,7 @@ export default function FutureNotebook(){
  <footer className="book-footer"><span>Amityちゃんにきく · 広島市 · 確認日 {reviewedOn}</span></footer>
  </main></Tabs>
  <Sheet open={!!task} onOpenChange={open=>{if(!open)callClose(forceClose);}}><SheetContent side="right" className="task-sheet"><SheetHeader><span className="eyebrow">{task?typeLabels[task.type]:''} <i> / </i> ふたりの一歩</span><SheetTitle>{task?.title}</SheetTitle><SheetDescription>{task?.summary}</SheetDescription></SheetHeader>{task&&<TaskForm key={task.id} task={task} profile={p} record={book.records[task.id]} onSave={saveRecord} busy={data.busy} onDirty={setDirty} hasBook={!!data.book} onProfile={openProfile}/>}</SheetContent></Sheet>
- <Dialog open={!!modal} onOpenChange={open=>{if(!open)callClose(forceClose);}}><DialogContent className={`notebook-dialog dialog-${modal}`}><DialogHeader><p className="eyebrow">OUR NOTEBOOK</p><DialogTitle>{modal==='profile'?'ふたりに合わせて、整える。':'同じ手帳を、バックアップで。'}</DialogTitle><DialogDescription>{modal==='profile'?'すべての項目はあとから変えられます。':'この公開版は端末内＋バックアップ／Gist。クラウド招待は未対応です。'}</DialogDescription></DialogHeader>
+ <Dialog open={!!modal} onOpenChange={open=>{if(!open)callClose(forceClose);}}><DialogContent className={`notebook-dialog dialog-${modal}`}><DialogHeader><p className="eyebrow">ふたりの手帳</p><DialogTitle>{modal==='profile'?'ふたりに合わせて、整える。':'同じ手帳を、バックアップで。'}</DialogTitle><DialogDescription>{modal==='profile'?'すべての項目はあとから変えられます。':'この公開版は端末内＋バックアップ／Gist。クラウド招待は未対応です。'}</DialogDescription></DialogHeader>
  {modal==='profile'&&<ProfileForm profile={p} onSave={saveProfile} busy={data.busy} onDirty={setDirty} hasBook={!!data.book}/>}
  {modal==='pair'&&<div className="form-stack pair-content">
  <div className="condition-note"><Users size={19}/><p><strong>この公開版は端末内＋バックアップ／Gist</strong>です。クラウド招待コードは未対応です。</p></div>
