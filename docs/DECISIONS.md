@@ -97,3 +97,5 @@
 
 
 - 2026-09-20 「変更を破棄して閉じる」時は TaskForm の unmount flush を抑止（破棄なのに quiet 保存されていた）。印刷の状況は statusNames の日本語。PracticeDetail の冗長な「メモを保存する」を削除（自動保存＋書きかけ戻すのみ）。Amity チャットは Escape で閉じる。死んだ .celebration* CSS を削除。期限ミニナビの「制度」を #deadline-block-institutional に統一。
+
+- 2026-09-20 カレンダー書き出し：制度の絶対期限（profile 分岐つき）を ICS に含める。ボタンは常時有効（0件時は toast＋ふたりに合わせる）。ICS は ASCII UID・UTC DTSTAMP・STATUS/TRANSP・VALARM エスケープ・text/calendar UTF-8。seed は薄くしない。

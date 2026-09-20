@@ -1,15 +1,7 @@
 import {CalendarDays,ExternalLink,MessageCircle,AlertTriangle,Hash,Ban,Layers,ChevronRight} from 'lucide-react'
 import {formatMoney,monthDay,shortDate,todayJapan,difference,deadlineText} from '../lib/dates'
 import {absoluteDeadlines,relativeDeadlines,excludeItems,excludeMeta,homeContent,phasesContent} from '../data/catalog'
-import type {Profile} from '../lib/model'
-
-function branchVisible(branch: string | null | undefined, child: string, home: string) {
-  if (!branch || branch === 'always') return true
-  // Align with inScope: child tasks hide when unknown/none; buy hides on rent.
-  if (branch === 'child') return !['none', 'unknown'].includes(child)
-  if (branch === 'buy') return home !== 'rent'
-  return true
-}
+import {branchVisible, type Profile} from '../lib/model'
 
 function seedMoneyLine(d: {
   money?: {amount_yen: number | null; unit?: string | null} | null

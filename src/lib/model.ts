@@ -52,4 +52,12 @@ export function inScope(t:Task,p:Profile){
   }
   return true;
 }
+/** Seed branch visibility (absolute deadlines / phases). Align with inScope child/buy. */
+export function branchVisible(branch: string | null | undefined, child: string, home: string) {
+  if (!branch || branch === 'always') return true;
+  // child tasks hide when unknown/none; buy hides on rent.
+  if (branch === 'child') return !['none', 'unknown'].includes(child);
+  if (branch === 'buy') return home !== 'rent';
+  return true;
+}
 export function eligibilityNote(t:Task,p:Profile){if(t.need.includes('company'))return '勤務先の規程と、各自の加入制度を確認してください。';if(['A必6','C他1','C他7','D3'].includes(t.id))return p.work==='dual'?'二人の働き方・各自の所得・加入条件を別々に確認します。':'扶養・税の控除・勤務先の手当は、それぞれの条件を確認します。';if(['benefit','tax'].includes(t.type))return '候補として表示しています。すべての対象条件を確認してから申請してください。';return 'お二人に必要か、公式案内と現在の状況を確認しましょう。';}

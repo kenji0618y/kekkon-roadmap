@@ -13,8 +13,8 @@ import {Switch} from './components/ui/switch';
 import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
-import {chapters,emptyBook,inScope,isCeremonyTask,type AgreementRecord,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord, statusNames} from './lib/model';
-import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan} from './lib/dates';
+import {branchVisible,chapters,emptyBook,inScope,isCeremonyTask,type AgreementRecord,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord, statusNames} from './lib/model';
+import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
 import {DEFAULT_GIST_ID} from './lib/gist-sync';
@@ -58,6 +58,8 @@ export default function FutureNotebook(){
  const task=taskId?taskById[taskId]:null;
  const dates=useMemo(()=>scoped.filter(t=>!['done','na'].includes(book.records[t.id]?.status||'todo')).flatMap(task=>taskDeadlines(task,p,book.records[task.id]).map(deadline=>({task,deadline}))).sort((a,b)=>(a.deadline.date||'9999').localeCompare(b.deadline.date||'9999')),[scoped,p,book.records]);
  const dated=dates.filter(x=>x.deadline.date),missingDates=dates.filter(x=>!x.deadline.date),soon=dated.filter(x=>difference(x.deadline.date,today)<=14);
+ const absExport=useMemo(():CalendarEvent[]=>absoluteDeadlines.filter(d=>branchVisible(d.branch,p.child,p.home)&&validDate(d.date)).map(d=>({id:`abs-${d.date}-${d.title}`,title:d.title,deadline:{date:d.date,label:d.title,basis:d.note||'制度・カレンダーの絶対期限です。公式案内で最新条件を確認してください。',kind:'rule' as const,uncertain:true}})),[p.child,p.home]);
+ const calendarEvents=useMemo(():CalendarEvent[]=>[...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline})),...absExport],[dated,absExport]);
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
   const da=nearestDeadline(a,p,book.records[a.id])?.date||'9999',db=nearestDeadline(b,p,book.records[b.id])?.date||'9999';
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
@@ -92,7 +94,15 @@ export default function FutureNotebook(){
  const savePractice=async(id:string,record:PracticeRecord)=>{return !!(await data.mutate({action:'practice',id,record},''));};
  const saveAgreement=async(id:string,record:AgreementRecord)=>{return !!(await data.mutate({action:'agreement',id,record},'この話題を保存しました'));};
  const exportBackup=()=>{if(!data.book){toast.info('手帳を始めてから保存できます');return;}downloadText(`futari-miraicho-${today}.json`,backupText(data.book));toast.success('バックアップを書き出しました');};
- const exportCalendar=()=>{if(!dated.length){toast.info('基準の日付か予定日を設定してください');return;}downloadText('amity-chan-ni-kiku.ics',calendarFile(dated),'text/calendar;charset=utf-8');toast.success('予定を書き出しました。お使いのカレンダーに読み込んでください。');};
+ const exportCalendar=()=>{
+  if(!calendarEvents.length){
+   toast.info('書き出せる日付がありません。ふたりに合わせるで基準の日付を設定するか、項目の予定日・制度の絶対期限を確認してください。',{action:{label:'ふたりに合わせる',onClick:()=>openProfile()}});
+   openProfile();
+   return;
+  }
+  downloadText('amity-chan-ni-kiku.ics',calendarFile(calendarEvents),'text/calendar;charset=utf-8');
+  toast.success(`${calendarEvents.length}件の予定を書き出しました。お使いのカレンダーに読み込んでください。`);
+ };
  const loadBackup=async(file:File)=>{try{if(file.size>2000000)throw new Error('2MB以内のJSONファイルを選んでください。');setImportDraft(readBackup(JSON.parse(await file.text())));}catch(e){toast.error(e instanceof Error?e.message:'読み込めませんでした');}};
  useEffect(()=>{setSyncToken(data.syncConfig.token);setSyncGistId(data.syncConfig.gistId);setSyncEnabled(data.syncConfig.enabled);},[data.syncConfig.token,data.syncConfig.gistId,data.syncConfig.enabled]);
  useEffect(()=>{try{setGrokKey(localStorage.getItem('amity-grok-key')||'')}catch{setGrokKey('')}setGrokBase(loadGrokBase());},[]);
@@ -137,7 +147,7 @@ export default function FutureNotebook(){
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や期限タブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">
- <SectionTitle eyebrow="期限と時期" title="期限と、ふたりの予定。" sub="数字 → 制度 → 予定 → 時期。上から順に、いま必要な節だけ開けば足ります。"><Action secondary onClick={exportCalendar} disabled={!dated.length}><Download/>カレンダーに書き出す</Action></SectionTitle>
+ <SectionTitle eyebrow="期限と時期" title="期限と、ふたりの予定。" sub="数字 → 制度 → 予定 → 時期。上から順に、いま必要な節だけ開けば足ります。"><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length?<p className="hint export-cal-hint">基準の日付か予定日を設定すると書き出せます。制度の絶対期限も対象です。</p>:!dated.length&&absExport.length>0?<p className="hint export-cal-hint">いまは制度の絶対期限（{absExport.length}件）を書き出します。基準の日付・予定日を足すと項目の期限も入ります。</p>:null}</div></SectionTitle>
  <nav className="deadlines-mini-nav" aria-label="期限タブ内の節">
   <a href="#deadline-block-hero">数字</a>
   <a href="#deadline-block-institutional">制度</a>

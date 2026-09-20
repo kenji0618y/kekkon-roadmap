@@ -34,8 +34,36 @@ export function moneyTotals(book:Book){const totals={received:0,estimate:0,month
 export function formatMoney(v:number){return new Intl.NumberFormat('ja-JP').format(v);}
 function icsEscape(s:string){return s.replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');}
 function foldIcs(line:string){let out='',part='',bytes=0;for(const c of line){const n=new TextEncoder().encode(c).length;if(bytes+n>73){out+=part+'\r\n ';part='';bytes=1;}part+=c;bytes+=n;}return out+part;}
-export function calendarFile(entries:{task:Task,deadline:Deadline}[],generated=todayJapan()){
+/** UID fragment: ASCII only, no % encodings (Apple/Google import-friendly). */
+function icsUidPart(s:string){return s.replace(/[^A-Za-z0-9._-]+/g,'_').replace(/_+/g,'_').replace(/-+/g,'-').replace(/^[-_]+|[-_]+$/g,'').slice(0,64)||'item';}
+function utcStamp(d=new Date()){const p=(n:number)=>String(n).padStart(2,'0');return `${d.getUTCFullYear()}${p(d.getUTCMonth()+1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}Z`;}
+export type CalendarEvent={id:string,title:string,deadline:Deadline};
+export function calendarFile(entries:CalendarEvent[],stamp=utcStamp()){
  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Amity-chan ni kiku//Hiroshima//JA','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Amityちゃんにきく'];
- for(const {task,deadline:d} of entries){if(!validDate(d.date))continue;lines.push('BEGIN:VEVENT',`UID:${encodeURIComponent(task.id)}-${d.kind}-${d.date}@amity-chan-ni-kiku`,`DTSTAMP:${generated.replace(/-/g,'')}T000000Z`,`DTSTART;VALUE=DATE:${d.date.replace(/-/g,'')}`,`DTEND;VALUE=DATE:${plusDays(d.date,1).replace(/-/g,'')}`,`SUMMARY:${icsEscape(`【${d.kind==='personal'?'予定':'期限の確認'}】${task.title}`)}`,`DESCRIPTION:${icsEscape(d.basis+'\n公式案内で最新条件を確認してください。')}`,'BEGIN:VALARM','TRIGGER:-P3D','ACTION:DISPLAY','DESCRIPTION:Amityちゃんにきくの予定','END:VALARM','END:VEVENT');}
- lines.push('END:VCALENDAR');return lines.map(foldIcs).join('\r\n')+'\r\n';
+ const alarmDesc=icsEscape('Amityちゃんにきくの予定');
+ for(const {id,title,deadline:d} of entries){
+  if(!validDate(d.date))continue;
+  const uid=`${icsUidPart(id)}-${d.kind}-${d.date.replace(/-/g,'')}@amity-chan-ni-kiku`;
+  const summary=icsEscape(`【${d.kind==='personal'?'予定':'期限の確認'}】${title}`);
+  const description=icsEscape(d.basis+'\n公式案内で最新条件を確認してください。');
+  lines.push(
+   'BEGIN:VEVENT',
+   `UID:${uid}`,
+   `DTSTAMP:${stamp}`,
+   `DTSTART;VALUE=DATE:${d.date.replace(/-/g,'')}`,
+   `DTEND;VALUE=DATE:${plusDays(d.date,1).replace(/-/g,'')}`,
+   'STATUS:CONFIRMED',
+   'TRANSP:TRANSPARENT',
+   `SUMMARY:${summary}`,
+   `DESCRIPTION:${description}`,
+   'BEGIN:VALARM',
+   'TRIGGER:-P3D',
+   'ACTION:DISPLAY',
+   `DESCRIPTION:${alarmDesc}`,
+   'END:VALARM',
+   'END:VEVENT',
+  );
+ }
+ lines.push('END:VCALENDAR');
+ return lines.map(foldIcs).join('\r\n')+'\r\n';
 }
