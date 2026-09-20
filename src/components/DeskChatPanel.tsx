@@ -54,6 +54,18 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
   }, [open, embedded]);
 
   useEffect(() => {
+    if (!open || embedded) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, embedded, onClose]);
+
+  useEffect(() => {
     if (!open && !embedded) return;
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;

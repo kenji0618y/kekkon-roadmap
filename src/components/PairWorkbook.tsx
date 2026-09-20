@@ -570,25 +570,14 @@ function PracticeDetail({
         />
         <p className="hint">メモは自動で保存されます。「続いている」を選ぶと詳細を閉じます。</p>
       </div>
-      <div className="pair-agree-actions">
-        <Action
-          disabled={busy || !noteDirty}
-          onClick={() => {
-            if (quietTimer.current) {
-              clearTimeout(quietTimer.current);
-              quietTimer.current = null;
-            }
-            void persist({...rec, note});
-          }}
-        >
-          メモを保存する
-        </Action>
-        {noteDirty && (
+      {noteDirty && (
+        <div className="pair-agree-actions">
           <button type="button" className="text-button" onClick={() => { setNote(rec.note || ''); noteRef.current = rec.note || ''; if (quietTimer.current) { clearTimeout(quietTimer.current); quietTimer.current = null; } }}>
             書きかけを戻す
           </button>
-        )}
-      </div>
+        </div>
+      )}
+
     </div>
   );
 }

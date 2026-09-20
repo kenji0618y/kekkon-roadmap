@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef,useState,type MutableRefObject} from 'react';
 import {toast} from 'sonner';
 import {AlertTriangle,ArrowUpRight,BookOpen,CalendarDays,Check,ClipboardCopy,Clock3,Heart,HelpCircle,Info,RefreshCw,ShieldCheck,Wallet} from 'lucide-react';
 import {Accordion,AccordionContent,AccordionItem,AccordionTrigger} from './ui/accordion';
@@ -57,7 +57,7 @@ export function ProfileForm({profile,onSave,busy,onDirty,hasBook}:{profile:Profi
  <div className="form-actions"><SaveAction busy={busy} onClick={()=>void submit()}>{hasBook?'設定を保存する':'この内容で手帳を始める'}</SaveAction></div>
  </fieldset></form>;
 }
-export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook:_hasBook,onProfile}:{task:Task,profile:Profile,record?:TaskRecord,onSave:(r:TaskRecord,mode?:'quiet'|'status')=>Promise<boolean|void>,busy:boolean,onDirty:(v:boolean)=>void,hasBook:boolean,onProfile:()=>void}){
+export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook:_hasBook,onProfile,flushOnUnmountRef}:{task:Task,profile:Profile,record?:TaskRecord,onSave:(r:TaskRecord,mode?:'quiet'|'status')=>Promise<boolean|void>,busy:boolean,onDirty:(v:boolean)=>void,hasBook:boolean,onProfile:()=>void,flushOnUnmountRef?:MutableRefObject<boolean>}){
  const [r,setR]=useState<TaskRecord>(structuredClone(record||emptyRecord)),[validation,setValidation]=useState('');
  const rRef=useRef(r); rRef.current=r;
  const quietTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -66,6 +66,8 @@ export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook:_h
   if(quietTimer.current){
    clearTimeout(quietTimer.current);
    quietTimer.current=null;
+   // Discard dialog sets flushOnUnmountRef.current=false so we don't re-save.
+   if(flushOnUnmountRef && flushOnUnmountRef.current===false) return;
    void persistRef.current(rRef.current,'quiet');
   }
  },[]);

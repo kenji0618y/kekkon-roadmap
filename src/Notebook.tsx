@@ -13,7 +13,7 @@ import {Switch} from './components/ui/switch';
 import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
-import {chapters,emptyBook,inScope,isCeremonyTask,type AgreementRecord,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord} from './lib/model';
+import {chapters,emptyBook,inScope,isCeremonyTask,type AgreementRecord,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord, statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -41,6 +41,7 @@ export default function FutureNotebook(){
  const [resetOpen,setResetOpen]=useState(false),[resetTyped,setResetTyped]=useState(''),[resetAck,setResetAck]=useState(false);
  const [findOpenChapter,setFindOpenChapter]=useState('');
  const [joinCode,setJoinCode]=useState(''),[importDraft,setImportDraft]=useState<{book:Book,legacy:boolean}|null>(null);
+ const flushTaskOnUnmountRef=useRef(true);
  const uploadRef=useRef<HTMLInputElement>(null);
  const [syncToken,setSyncToken]=useState(''),[syncGistId,setSyncGistId]=useState(DEFAULT_GIST_ID),[syncEnabled,setSyncEnabled]=useState(false),[syncBusy,setSyncBusy]=useState(false);
  const [grokKey,setGrokKey]=useState(''),[grokBase,setGrokBase]=useState('');
@@ -139,7 +140,7 @@ export default function FutureNotebook(){
  <SectionTitle eyebrow="期限と時期" title="期限と、ふたりの予定。" sub="数字 → 制度 → 予定 → 時期。上から順に、いま必要な節だけ開けば足ります。"><Action secondary onClick={exportCalendar} disabled={!dated.length}><Download/>カレンダーに書き出す</Action></SectionTitle>
  <nav className="deadlines-mini-nav" aria-label="期限タブ内の節">
   <a href="#deadline-block-hero">数字</a>
-  <a href="#institutional-deadlines">制度</a>
+  <a href="#deadline-block-institutional">制度</a>
   <a href="#deadline-block-schedule">予定</a>
   <a href="#deadline-block-phases">時期</a>
  </nav>
@@ -224,7 +225,7 @@ export default function FutureNotebook(){
  </TabsContent>
  <footer className="book-footer"><span>Amityちゃんにきく · 広島市 · 確認日 {reviewedOn}</span></footer>
  </main></Tabs>
- <Sheet open={!!task} onOpenChange={open=>{if(!open)callClose(forceClose);}}><SheetContent side="right" className="task-sheet"><SheetHeader><span className="eyebrow">{task?typeLabels[task.type]:''} <i> / </i> ふたりの一歩</span><SheetTitle>{task?.title}</SheetTitle><SheetDescription>{task?.summary}</SheetDescription></SheetHeader>{task&&<TaskForm key={task.id} task={task} profile={p} record={book.records[task.id]} onSave={saveRecord} busy={data.busy} onDirty={setDirty} hasBook={!!data.book} onProfile={openProfile}/>}</SheetContent></Sheet>
+ <Sheet open={!!task} onOpenChange={open=>{if(!open)callClose(forceClose);}}><SheetContent side="right" className="task-sheet"><SheetHeader><span className="eyebrow">{task?typeLabels[task.type]:''} <i> / </i> ふたりの一歩</span><SheetTitle>{task?.title}</SheetTitle><SheetDescription>{task?.summary}</SheetDescription></SheetHeader>{task&&<TaskForm key={task.id} task={task} profile={p} record={book.records[task.id]} onSave={saveRecord} busy={data.busy} onDirty={setDirty} hasBook={!!data.book} onProfile={openProfile} flushOnUnmountRef={flushTaskOnUnmountRef}/>}</SheetContent></Sheet>
  <Dialog open={!!modal} onOpenChange={open=>{if(!open)callClose(forceClose);}}><DialogContent className={`notebook-dialog dialog-${modal}`}><DialogHeader><p className="eyebrow">ふたりの手帳</p><DialogTitle>{modal==='profile'?'ふたりに合わせて、整える。':'同じ手帳を、バックアップで。'}</DialogTitle><DialogDescription>{modal==='profile'?'すべての項目はあとから変えられます。':'この公開版は端末内＋バックアップ／Gist。クラウド招待は未対応です。'}</DialogDescription></DialogHeader>
  {modal==='profile'&&<ProfileForm profile={p} onSave={saveProfile} busy={data.busy} onDirty={setDirty} hasBook={!!data.book}/>}
  {modal==='pair'&&<div className="form-stack pair-content">
@@ -245,7 +246,7 @@ export default function FutureNotebook(){
 </div>}
  </DialogContent></Dialog>
  <AlertDialog open={resetOpen} onOpenChange={open=>{if(!open&&!data.busy){setResetOpen(false);setResetTyped('');setResetAck(false);}}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>スタンプ進捗をリセットしますか？</AlertDialogTitle><AlertDialogDescription>ロードマップのスタンプ状態・入力した金額・項目メモ（records）をすべて消します。プロフィール（呼び名・婚姻日など）と記念手帳の文章は残ります。この操作は取り消せません。先にバックアップの書き出しを推奨します。</AlertDialogDescription></AlertDialogHeader><div className="reset-lock"><div className="field"><Label htmlFor="reset-type">確認のため「リセット」と入力</Label><Input id="reset-type" value={resetTyped} onChange={e=>setResetTyped(e.target.value)} placeholder="リセット" autoComplete="off" maxLength={20} disabled={data.busy}/></div><label className="reset-confirm-row"><Checkbox checked={resetAck} onCheckedChange={v=>setResetAck(!!v)} disabled={data.busy}/><span>上記の内容を理解し、スタンプ進捗だけを消すことに同意します（二重確認）</span></label></div><AlertDialogFooter><AlertDialogCancel disabled={data.busy}>やめる</AlertDialogCancel><AlertDialogAction disabled={data.busy||resetTyped!=='リセット'||!resetAck} onClick={e=>{e.preventDefault();void resetStampProgress();}}>本当にリセットする</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
- <AlertDialog open={!!pendingClose} onOpenChange={open=>{if(!open)setPendingClose(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>入力中の内容を閉じますか？</AlertDialogTitle><AlertDialogDescription>まだ保存していない変更があります。編集を続けるか、変更を破棄して閉じられます。</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>編集を続ける</AlertDialogCancel><AlertDialogAction onClick={()=>{setDirty(false);pendingClose?.();setPendingClose(null);}}>変更を破棄して閉じる</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+ <AlertDialog open={!!pendingClose} onOpenChange={open=>{if(!open)setPendingClose(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>入力中の内容を閉じますか？</AlertDialogTitle><AlertDialogDescription>まだ保存していない変更があります。編集を続けるか、変更を破棄して閉じられます。</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>編集を続ける</AlertDialogCancel><AlertDialogAction onClick={()=>{flushTaskOnUnmountRef.current=false;setDirty(false);pendingClose?.();setPendingClose(null);window.setTimeout(()=>{flushTaskOnUnmountRef.current=true;},0);}}>変更を破棄して閉じる</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
  <AlertDialog open={!!importDraft} onOpenChange={open=>{if(!open&&!data.busy)setImportDraft(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>このバックアップを読み込みますか？</AlertDialogTitle><AlertDialogDescription>{importDraft?.legacy?'旧版の状況を移行します。手順が変わっているため、旧版の小さなチェックと調査メモ・除外理由は自動移行しません。働き方は各自で設定し直してください。':'名前・日付・進捗・記念手帳を復元します。'} 現在の二人の手帳の内容は、このバックアップで置き換わります。</AlertDialogDescription></AlertDialogHeader><div className="import-details"><p>{importDraft?.book.profile.name1||'名前未設定'} & {importDraft?.book.profile.name2||'名前未設定'}</p><p>{Object.keys(importDraft?.book.records||{}).length}項目の記録 · {importDraft?.book.memories.length}件の記念</p><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>現在の内容を先に書き出す</Action></div><AlertDialogFooter><AlertDialogCancel disabled={data.busy}>キャンセル</AlertDialogCancel><AlertDialogAction disabled={data.busy} onClick={e=>{e.preventDefault();void(async()=>{if(importDraft&&await data.mutate({action:'import',book:importDraft.book},'手帳を読み込みました'))setImportDraft(null);})();}}>この内容に置き換える</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
 
 
@@ -258,6 +259,6 @@ export default function FutureNotebook(){
  <DeskChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} profile={p} onOpenTask={(id)=>{setChatOpen(false);openTask(id);}} onGoFind={(kw)=>{setChatOpen(false);if(kw)setQuery(kw);setTab('find');}}/>
  <OnboardingSheet open={onboardOpen&&!modal&&!taskId} profile={p} busy={data.busy} onSave={async(profile)=>{const ok=!!(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'));if(ok)setOnboardOpen(false);return ok;}} onSkip={()=>{markOnboardingDone();setOnboardOpen(false);}}/>
 
- <div className="print-book"><h1>Amityちゃんにきく</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{book.records[t.id].status} · {book.records[t.id].note}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
+ <div className="print-book"><h1>Amityちゃんにきく</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{statusNames[book.records[t.id].status]||book.records[t.id].status}{book.records[t.id].note?` · ${book.records[t.id].note}`:''}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
  </>;
 }

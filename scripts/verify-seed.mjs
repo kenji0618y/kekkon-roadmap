@@ -228,7 +228,7 @@ const uiChecks = [
   ['YEARLY_UPDATE surfaced in Notebook', notebook.includes('毎年更新メモ') || notebook.includes('yearlyUpdateMd')],
   ['PairWorkbook stamp-rally pads', readText('src/components/PairWorkbook.tsx').includes('pair-stamp') && readText('src/components/PairWorkbook.tsx').includes('PRACTICE_PAD')],
   ['StampIllustBoard fold done stamps', readText('src/components/StampIllustBoard.tsx').includes('stamp-done-bar') && readText('src/components/StampIllustBoard.tsx').includes('SHOW_DONE_KEY')],
-  ['PairWorkbook practice quiet autosave', (pw => pw.includes('メモを保存する') && pw.includes('メモは自動で保存されます') && pw.includes('quietTimer'))(readText('src/components/PairWorkbook.tsx'))],
+  ['PairWorkbook practice quiet autosave', (pw => pw.includes('quietTimer') && pw.includes('メモは自動で保存されます') && pw.includes('書きかけを戻す') && !pw.includes('メモを保存する'))(readText('src/components/PairWorkbook.tsx'))],
   ['Deadlines block hierarchy', notebook.includes('deadline-block-hero') && notebook.includes('deadline-block-intro')],
   ['Find exclude outer with counts', notebook.includes('find-exclude-outer') && notebook.includes('excludeItems.length')],
   ['Nav short ロードマップ', /short:'ロードマップ'/.test(notebook)],

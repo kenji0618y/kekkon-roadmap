@@ -94,3 +94,6 @@
 - 2026-09-19 練習メモは静か自動保存（閉じる／切替時 flush）。「続いている」で詳細を閉じる。探すピンは details を開いてからスクロール。DeskChat 見出しをブランド表記「きく」に統一。pair ミニナビ順を DOM（行動→きっかけ→会話→合意）に合わせる。sugoroku 画像パスの先頭 `/` を相対化。死んだ desk-navi / desk-live CSS を削除。verify に phase 画像存在と絶対パス禁止を追加。
 - 2026-09-20 ロードマップ：完了スタンプは既定で非表示。トグルで表示／「完了したまとまり」折りたたみ。設定は端末に記憶。
 - 2026-09-20 英字 eyebrow（OUR DESK／JOURNEY／NOTEBOOK／MAKE THIS…／FIRST STEPS）と章見出しの en を日本語へ。ふたりタブは forceMount で合意ドラフトをタブ切替でも保持。探すピンは preventDefault→details を開いてから scrollIntoView。未使用 CSS（旧 sugoroku-board／square*／monthly-invite／home-bottom／local-note／chapter-list）を削除。
+
+
+- 2026-09-20 「変更を破棄して閉じる」時は TaskForm の unmount flush を抑止（破棄なのに quiet 保存されていた）。印刷の状況は statusNames の日本語。PracticeDetail の冗長な「メモを保存する」を削除（自動保存＋書きかけ戻すのみ）。Amity チャットは Escape で閉じる。死んだ .celebration* CSS を削除。期限ミニナビの「制度」を #deadline-block-institutional に統一。
