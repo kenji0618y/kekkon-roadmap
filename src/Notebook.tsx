@@ -13,7 +13,7 @@ import {Switch} from './components/ui/switch';
 import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
-import {branchVisible,chapters,emptyBook,inScope,isCeremonyTask,type AgreementRecord,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord, statusNames} from './lib/model';
+import {branchVisible,chapters,emptyBook,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,type AgreementRecord,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -84,6 +84,14 @@ export default function FutureNotebook(){
  const callClose=(action:()=>void)=>{if(data.busy)return;if(dirty)setPendingClose(()=>action);else{setDirty(false);action();}};
  const forceClose=()=>{setDirty(false);setTaskId(null);setModal(null);};
  const openTask=(id:string)=>{setDirty(false);setTaskId(id);};
+ const togglePairCheck=async(id:string,who:'male'|'female')=>{
+  const cur={...emptyRecord,...(book.records[id]||{})};
+  const pair=pairChecks(cur);
+  const on=who==='male'?!pair.male:!pair.female;
+  const next=applyPairCheck(cur,who,on);
+  const msg=next.status==='done'?'男・女どちらもチェック済み。完了にしました。':undefined;
+  await data.mutate({action:'record',id,record:next},msg);
+ };
  const quickHits=useMemo(()=>buildQuickSearchHits({query:quickQ,tasks,absoluteDeadlines,relativeDeadlines,practices,talks,includeTask:t=>p.ceremony!=='no'||!isCeremonyTask(t),limit:20}),[quickQ,p.ceremony]);
  const quickGroups=useMemo(()=>groupQuickSearchHits(quickHits),[quickHits]);
  const runQuickHit=(hit:QuickSearchHit)=>{setQuickOpen(false);setQuickQ('');if(hit.tab)setTab(hit.tab);if(hit.taskId){if(hit.tab==='find')setQuery(hit.title);requestAnimationFrame(()=>openTask(hit.taskId!));}else if(hit.kind==='pair'){setPairJump({theme:hit.pairTheme,practiceId:hit.pairPracticeId,talkId:hit.pairTalkId,agreementId:hit.pairAgreementId,scrollId:hit.scrollId});}else if(hit.scrollId){requestAnimationFrame(()=>document.getElementById(hit.scrollId!)?.scrollIntoView({behavior:'smooth',block:'start'}));}else if(hit.tab==='find'&&quickQ.trim()){setQuery(quickQ.trim());}};
@@ -140,7 +148,7 @@ export default function FutureNotebook(){
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
  <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.label}</span><h3>{activeChapter.description}</h3></div><span className="hint">絵の縁のスタンプを押すと、その項目が開きます。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:!chapterGroups.length?<EmptyState symbol={<Map/>} title="この章に、今の二人向けのスタンプはありません。" action={<Action secondary onClick={openProfile}>ふたりの設定を開く</Action>}>式の有無や働き方を変えると、表示されるマスが変わります。</EmptyState>:<>
- <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} activeTaskId={taskId||undefined} onSelectGroup={setGroupId} onPressStamp={openTask}/>
+ <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} activeTaskId={taskId||undefined} onSelectGroup={setGroupId} onPressStamp={openTask} recordPair={id=>pairChecks(book.records[id])} onTogglePair={(id,who)=>void togglePairCheck(id,who)} />
 
  </>}
  </section>
