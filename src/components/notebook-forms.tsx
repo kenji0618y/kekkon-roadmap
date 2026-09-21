@@ -7,7 +7,7 @@ import {Checkbox} from './ui/checkbox';
 import {Label} from './ui/label';
 import {Input} from './ui/input';
 import {Action,Choice,SaveAction,SourceLink,StatusMark,TextField} from './book-controls';
-import {eligibilityLabels,eligibilityNote,emptyRecord,memorySchema,profileSchema,recordSchema,statusNames,type Memory,type Profile,type Task,type TaskRecord} from '../lib/model';
+import {eligibilityLabels,eligibilityNote,emptyRecord,pairChecks,applyPairCheck,applyStatusWithPair,memorySchema,profileSchema,recordSchema,statusNames,type Memory,type Profile,type Task,type TaskRecord} from '../lib/model';
 import {sources} from '../data/catalog';
 import {formatMoney,shortDate,statutoryDeadline} from '../lib/dates';
 
@@ -89,8 +89,15 @@ export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook:_h
  };
  const chooseStatus=async(v:string)=>{
   if(quietTimer.current){clearTimeout(quietTimer.current);quietTimer.current=null;}
-  const next={...rRef.current,status:v as TaskRecord['status']};rRef.current=next;setR(next);
+  const next=applyStatusWithPair(rRef.current,v as TaskRecord['status']);rRef.current=next;setR(next);
   await persist(next,'status');
+ };
+ const togglePair=async(who:'male'|'female')=>{
+  if(quietTimer.current){clearTimeout(quietTimer.current);quietTimer.current=null;}
+  const cur=pairChecks(rRef.current);
+  const on=who==='male'?!cur.male:!cur.female;
+  const next=applyPairCheck(rRef.current,who,on);rRef.current=next;setR(next);
+  await persist(next, next.status==='done' || r.status==='done' ? 'status' : 'quiet');
  };
  const hasFaq=!!(t.faq&&t.faq.length);
  const copyQuestions=async()=>{const body=hasFaq?t.faq!.map((f,i)=>`${i+1}. ${f.q}\n   → ${f.a}`).join('\n\n'):t.questions.map((q,i)=>`${i+1}. ${q}`).join('\n');try{await navigator.clipboard.writeText(`${t.title}\n\n${body}`);toast.success(hasFaq?'FAQをコピーしました':'質問メモをコピーしました');}catch{toast.error('コピーできませんでした。表示された内容を選択してコピーしてください。');}};
@@ -130,6 +137,13 @@ export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook:_h
  </Accordion>
  {t.type==='investment'&&<p className="hint investment-note">{t.amountNote}</p>}
  {validation&&<p role="alert" className="inline-error">{validation}</p>}
+ <div className="pair-check-row" role="group" aria-label="男・女のチェック（両方で完了）">
+  <p className="hint">スタンプは半分ずつ。男と女の両方がチェックすると完了になります。</p>
+  <div className="pair-check-actions">
+   <button type="button" className={`pair-check-btn male ${pairChecks(r).male?'on':''}`} aria-pressed={pairChecks(r).male} onClick={()=>void togglePair('male')}>男 {pairChecks(r).male?'✓':'○'}</button>
+   <button type="button" className={`pair-check-btn female ${pairChecks(r).female?'on':''}`} aria-pressed={pairChecks(r).female} onClick={()=>void togglePair('female')}>女 {pairChecks(r).female?'✓':'○'}</button>
+  </div>
+ </div>
  <Choice label="いまの状況（選ぶと保存）" value={r.status} onChange={v=>void chooseStatus(v)} options={statusNames} triggerClassName={r.status==='done'?'status-choice-done':r.status==='na'?'status-choice-na':''}/>
  </fieldset></div>;
 }
