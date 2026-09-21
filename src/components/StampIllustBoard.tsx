@@ -65,11 +65,13 @@ type Props = {
   groups: Group[]
   tasksFor: (g: Group) => Task[]
   recordStatus: (id: string) => Status | undefined
+  recordPair?: (id: string) => {male: boolean; female: boolean}
   activeId?: string
   /** When set, only the chunk containing this task is selected (split groups). */
   activeTaskId?: string
   onSelectGroup: (id: string) => void
   onPressStamp: (taskId: string) => void
+  onTogglePair?: (taskId: string, who: 'male' | 'female') => void
 }
 
 type CardModel = {
@@ -96,10 +98,12 @@ export function StampIllustBoard({
   groups,
   tasksFor,
   recordStatus,
+  recordPair,
   activeId,
   activeTaskId,
   onSelectGroup,
   onPressStamp,
+  onTogglePair,
 }: Props) {
   const [showDone, setShowDone] = useState(loadShowDone)
   const [foldOpen, setFoldOpen] = useState(false)
@@ -216,22 +220,56 @@ export function StampIllustBoard({
             ) : (
               chunk.map((t, idx) => {
                 const st = recordStatus(t.id)
+                const pair = recordPair ? recordPair(t.id) : {male: st === 'done', female: st === 'done'}
+                const halfClass = pair.male && pair.female ? '' : pair.male || pair.female ? 'st-half' : ''
                 return (
-                  <button
+                  <div
                     key={t.id}
-                    type="button"
-                    className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${padClass(st)}`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onSelectGroup(g.id)
-                      onPressStamp(t.id)
-                    }}
-                    aria-label={`${t.title}（${statusAria(st)}）`}
+                    className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${padClass(st)} ${halfClass}`}
                     title={t.title}
                   >
-                    <span className="stamp-pad-mark">{padMark(st)}</span>
-                    <span className="stamp-pad-label">{tinyLabel(t)}</span>
-                  </button>
+                    <button
+                      type="button"
+                      className={`stamp-half left ${pair.male ? 'on' : ''}`}
+                      aria-label={`${t.title}・男（${pair.male ? 'チェック済' : '未チェック'}）`}
+                      aria-pressed={pair.male}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSelectGroup(g.id)
+                        if (onTogglePair) onTogglePair(t.id, 'male')
+                        else onPressStamp(t.id)
+                      }}
+                    >
+                      男
+                    </button>
+                    <button
+                      type="button"
+                      className={`stamp-half right ${pair.female ? 'on' : ''}`}
+                      aria-label={`${t.title}・女（${pair.female ? 'チェック済' : '未チェック'}）`}
+                      aria-pressed={pair.female}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSelectGroup(g.id)
+                        if (onTogglePair) onTogglePair(t.id, 'female')
+                        else onPressStamp(t.id)
+                      }}
+                    >
+                      女
+                    </button>
+                    <button
+                      type="button"
+                      className="stamp-pad-body"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSelectGroup(g.id)
+                        onPressStamp(t.id)
+                      }}
+                      aria-label={`${t.title}（${statusAria(st)}）詳細`}
+                    >
+                      <span className="stamp-pad-mark">{padMark(st)}</span>
+                      <span className="stamp-pad-label">{tinyLabel(t)}</span>
+                    </button>
+                  </div>
                 )
               })
             )}
