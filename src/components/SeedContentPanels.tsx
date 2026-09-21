@@ -61,13 +61,15 @@ function DeadlineCard({
 
 function isProminentDeadline(date: string, today: string) {
   const days = difference(date, today)
-  return days <= 60 && days >= -30
+  // 期限当日〜60日先だけ前面表示。期限切れは下の filter で除外済み。
+  return days <= 60 && days >= 0
 }
 
 export function InstitutionalDeadlines({child, home}: {child: string; home: string}) {
   const today = todayJapan()
+  // 絶対日付は Asia/Tokyo の今日より前なら自動で非表示（シードJSONは残す）
   const abs = [...absoluteDeadlines]
-    .filter((d) => branchVisible(d.branch, child, home))
+    .filter((d) => branchVisible(d.branch, child, home) && difference(d.date, today) >= 0)
     .sort((a, b) => a.date.localeCompare(b.date))
   const rel = relativeDeadlines.filter((d) => branchVisible(d.branch, child, home))
   const featured = abs.filter((d) => isProminentDeadline(d.date, today))
@@ -77,13 +79,17 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
     <section id="institutional-deadlines" className="seed-block institutional-deadlines" aria-label="制度・カレンダー締切">
       <div className="seed-block-head">
         <h3>制度・カレンダー締切</h3>
-        <p className="hint">日付が決まっている締切です。金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。</p>
+        <p className="hint">日付が決まっている締切です。金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。過ぎた日付は自動で消えます。</p>
       </div>
+      {abs.length === 0 ? (
+        <p className="hint seed-deadline-empty">いま表示できる絶対締切はありません。相対期限は下を見てください。</p>
+      ) : (
       <div className="seed-deadline-list">
         {featured.map((d) => (
           <DeadlineCard key={`${d.date}-${d.title}`} d={d} today={today} />
         ))}
       </div>
+      )}
       {rest.length > 0 && (
         <details className="seed-fold seed-fold-deadlines">
           <summary>
