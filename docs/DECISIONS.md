@@ -99,3 +99,8 @@
 - 2026-09-20 「変更を破棄して閉じる」時は TaskForm の unmount flush を抑止（破棄なのに quiet 保存されていた）。印刷の状況は statusNames の日本語。PracticeDetail の冗長な「メモを保存する」を削除（自動保存＋書きかけ戻すのみ）。Amity チャットは Escape で閉じる。死んだ .celebration* CSS を削除。期限ミニナビの「制度」を #deadline-block-institutional に統一。
 
 - 2026-09-20 カレンダー書き出し：制度の絶対期限（profile 分岐つき）を ICS に含める。ボタンは常時有効（0件時は toast＋ふたりに合わせる）。ICS は ASCII UID・UTC DTSTAMP・STATUS/TRANSP・VALARM エスケープ・text/calendar UTF-8。seed は薄くしない。
+
+- 2026-09-22 デスクの二重表示を畳む：Amity司令室から「明日の一手」を外し `#desk-next-actions` へ横断。最短パスは既定閉じ。シード（tomorrow / filing_week）は残す。
+- 2026-09-22 `inScope` が `hidden_if: ceremony_none_skip_optional` を式なしで隠す（B7）。W* は従来どおり。他の hidden_if は未配線のまま。
+- 2026-09-22 desk-chat が同一正規化FAQ質問の top-12 重複をコード側で畳む。FAQシードは消さない。
+- 2026-09-22 DeskRoleLabels の公式リンクに aria-label（別タブ）を付与。

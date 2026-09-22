@@ -63,6 +63,8 @@ export function isCeremonyTask(t:Task){
 }
 export function inScope(t:Task,p:Profile){
   if(p.ceremony==='no'&&isCeremonyTask(t))return false;
+  // Optional ceremony-adjacent stamps (e.g. B7): hide when 式なし. Seed stays.
+  if(p.ceremony==='no'&&(t.hidden_if||[]).includes('ceremony_none_skip_optional'))return false;
   for(const n of t.need){
     if(n==='company'&&!['unknown','company','public'].includes(p.employment1)&&!['unknown','company','public'].includes(p.employment2))return false;
     if(n==='self'&&p.employment1!=='unknown'&&p.employment2!=='unknown'&&p.employment1!=='self'&&p.employment2!=='self')return false;

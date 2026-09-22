@@ -242,6 +242,10 @@
 .amity-brief-head strong{font-size:14px;color:var(--desk-ink,#22352f)}
 .amity-brief-head span{font-size:11px;color:var(--desk-muted,#6d7c75)}
 .amity-brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.amity-brief-grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.amity-brief-cross{margin:0 0 10px;font-size:12px;line-height:1.55;color:var(--desk-muted,#6d7c75)}
+.amity-brief-jump{color:var(--desk-ink,#22352f);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.amity-brief-jump:hover,.amity-brief-jump:focus-visible{color:#1a5c45}
 .amity-brief-col h3{margin:0 0 6px;font-size:11px;letter-spacing:.04em;color:#5f7268;font-weight:700}
 .amity-brief-col ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .amity-brief-link{width:100%;text-align:left;border:1px solid #e3ebe4;background:#fff;border-radius:8px;padding:8px 9px;cursor:pointer}
