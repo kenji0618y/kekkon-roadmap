@@ -127,7 +127,7 @@ export async function askGrokResearch(
       body: JSON.stringify({
         model: DEFAULT_GROK_MODEL,
         temperature: 0.3,
-        max_tokens: 700,
+        max_tokens: 1600,
         messages: [
           {role: 'system', content: AMITY_GROK_SYSTEM},
           {role: 'user', content: userContent},

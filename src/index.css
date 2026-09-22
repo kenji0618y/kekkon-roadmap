@@ -236,6 +236,21 @@
 }
 
 .desk-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+
+.amity-brief{margin:0 0 14px;padding:12px 14px;border:1px solid var(--desk-border,#d7e0d8);border-radius:12px;background:linear-gradient(180deg,#f7fbf8 0%,#fffefa 100%)}
+.amity-brief-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.amity-brief-head strong{font-size:14px;color:var(--desk-ink,#22352f)}
+.amity-brief-head span{font-size:11px;color:var(--desk-muted,#6d7c75)}
+.amity-brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.amity-brief-col h3{margin:0 0 6px;font-size:11px;letter-spacing:.04em;color:#5f7268;font-weight:700}
+.amity-brief-col ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.amity-brief-link{width:100%;text-align:left;border:1px solid #e3ebe4;background:#fff;border-radius:8px;padding:8px 9px;cursor:pointer}
+.amity-brief-link span{display:block;font-size:12px;font-weight:700;color:#24362f;line-height:1.35}
+.amity-brief-link small{display:block;margin-top:3px;font-size:10px;color:#7a8a82;line-height:1.4}
+.amity-brief-link:hover{border-color:#b7cfc0;background:#f4faf6}
+.amity-brief-empty{margin:0;font-size:11px;color:#809089;line-height:1.5}
+@media (max-width:860px){.amity-brief-grid{grid-template-columns:1fr}}
+
 .desk-metric{background:#fff;border:1px solid var(--desk-border);border-radius:10px;padding:12px 13px;min-height:92px;display:flex;flex-direction:column;gap:4px}
 .desk-metric-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--desk-muted);font-weight:700}
 .desk-metric-value{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:26px;line-height:1.15;font-weight:700;color:var(--desk-ink);font-variant-numeric:tabular-nums}
