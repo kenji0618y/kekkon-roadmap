@@ -237,6 +237,10 @@
 
 .desk-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
 
+.desk-meta-bar{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:0 0 10px;min-height:22px}
+.desk-metric-btn{appearance:none;border:inherit;background:inherit;font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%}
+.desk-metric-btn:hover{border-color:#b7cfc0;background:#f4faf6}
+.desk-metric-btn:focus-visible{outline:3px solid #af904f;outline-offset:2px}
 .amity-brief{margin:0 0 14px;padding:12px 14px;border:1px solid var(--desk-border,#d7e0d8);border-radius:12px;background:linear-gradient(180deg,#f7fbf8 0%,#fffefa 100%)}
 .amity-brief-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
 .amity-brief-head strong{font-size:14px;color:var(--desk-ink,#22352f)}

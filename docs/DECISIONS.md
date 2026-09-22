@@ -104,3 +104,4 @@
 - 2026-09-22 `inScope` が `hidden_if: ceremony_none_skip_optional` を式なしで隠す（B7）。W* は従来どおり。他の hidden_if は未配線のまま。
 - 2026-09-22 desk-chat が同一正規化FAQ質問の top-12 重複をコード側で畳む。FAQシードは消さない。
 - 2026-09-22 DeskRoleLabels の公式リンクに aria-label（別タブ）を付与。
+- 2026-09-22 デスク同一ジョブの二重表示をさらに畳む：司令室から期限リストを外し指標「次の期限」を期限タブへの単一CTAに。二重見出し（desk-titlebar）をやめ meta-bar のみ。次アクション SoT は HomeInsightPanels のまま。シードは残す。

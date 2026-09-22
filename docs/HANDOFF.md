@@ -19,7 +19,7 @@
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / 期限 / ふたり / 探す / 設定） |
-| verify-seed | 73項目 |
+| verify-seed | 78項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -79,7 +79,7 @@
 
 | id | ラベル（short） | 中身 |
 |----|-----------------|------|
-| `desk` | デスク | `MarriageDesk`（**和紙・明朝**。数字は これまで/婚姻日/次の期限 の3つ）+ **金額グリッド4枚**（記念から移動）+ `HomeInsightPanels`（大きな数字/次のアクション/思い込み/対象外/会話のきっかけ）|
+| `desk` | デスク | `MarriageDesk`（どこを見るか / 最短パス折りたたみ / 指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ `HomeInsightPanels`（次のアクション SoT）|
 | `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
 | `deadlines` | **期限と時期**（期限） | `InstitutionalDeadlines` + 個人タイムライン/ICS + **`PhasesPanel`（9時期・48出来事）** ← 旧「時期」タブを統合 |
 | `pair` | **ふたりの練習帳**（ふたり） | `PairWorkbook` — 行動52 / 会話16 / 合意18 / 根拠18。行動の状態と合意は端末に保存 |
@@ -314,10 +314,10 @@ npx gh-pages -d dist
 | faq pairs | 681 | **658**（≥650 · MERGE_OVERLAPS 吸収済。`npm run verify:seed` が正） | TaskForm FAQ |
 | absolute deadlines | 10 next_absolute | 10 in `deadlines.json` | 期限タブ「制度・カレンダー締切」 |
 | relative deadlines | 6 | 6 | 同タブ・相対リスト |
-| exclude | 36 | 36 | デスク HomeInsightPanels「もらえない制度と理由」 |
-| lies_not_to_buy | 4 | 4 | デスク HomeInsightPanels |
-| hero_numbers | 3 | 3 | デスク HomeInsightPanels |
-| talk_lines | 10 | 10 | デスク HomeInsightPanels |
+| exclude | 36 | 36 | 探すタブ ExcludeAndLiesPanel |
+| lies_not_to_buy | 4 | 4 | 探すタブ ExcludeAndLiesPanel |
+| hero_numbers | 3 | 3 | 期限タブ HeroNumbersPanel |
+| talk_lines | 10 | 10 | ふたりタブ TalkStartersPanel |
 | phases | 9 | 9 | **時期**タブ PhasesPanel |
 | events | 48 | 48 | 時期タブ details |
 | square subtitles | 10 | 10 on `groups.json` | StampIllustBoard caption |

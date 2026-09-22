@@ -1,8 +1,8 @@
-import {useEffect,useMemo,useState} from 'react';
-import {ArrowRight,ExternalLink,Gauge} from 'lucide-react';
+import {useMemo,useState} from 'react';
+import {ArrowRight,ExternalLink} from 'lucide-react';
 import {chapters,pairChecks,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
-import {difference,formatMoney,moneyTotals,todayJapan,validDate} from '../lib/dates';
-import {absoluteDeadlines,groups,homeContent,sources} from '../data/catalog';
+import {difference,formatMoney,moneyTotals,validDate} from '../lib/dates';
+import {groups,homeContent,sources} from '../data/catalog';
 
 /** Public Pages URL for friend handoff (copy button). */
 
@@ -230,34 +230,19 @@ export type MarriageDeskProps={
   syncStatus?:'off'|'ok'|'error'|'syncing';
   onOpenTask:(id:string)=>void;
   onOpenProfile:()=>void;
-  onGoJourney:()=>void;
-  onOpenSettings?:()=>void;
-  onGoFind?:(keyword?:string)=>void;
-  /** Jump to 期限 tab (InstitutionalDeadlines). */
+  /** Jump to 期限 tab (InstitutionalDeadlines). Metric「次の期限」の単一CTA。 */
   onGoDeadlines?:()=>void;
-  /** Opens Amity FAB chat (Amity is chat-only; not embedded here). */
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoJourney,onOpenSettings,onGoDeadlines}:MarriageDeskProps){
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoDeadlines}:MarriageDeskProps){
   const [showDecor,setShowDecor]=useState(false);
 
   const progressPct=actionable.length?Math.round(done.length/actionable.length*100):0;
 
+  // 次のアクション＝HomeInsightPanels（#desk-next-actions）。期限リスト＝期限タブ／指標「次の期限」。
+  // 司令室はペア確認のすきまだけ（同じ期限・明日リストを二重に出さない）。
   const amityBrief=useMemo(()=>{
-    const today=todayJapan();
-    const deadlines=absoluteDeadlines
-      .filter((d)=>difference(d.date,today)>=0)
-      .slice()
-      .sort((a,b)=>a.date.localeCompare(b.date))
-      .slice(0,4)
-      .map((d)=>({
-        id:`dl-${d.date}-${d.title}`,
-        title:d.title,
-        sub:`${d.date}${d.note?` · ${d.note}`:''}`,
-        kind:'deadline' as const,
-      }));
-    // tomorrow_3_actions は HomeInsightPanels（#desk-next-actions）が単一の表示元。
-    const half: {id:string;title:string;sub:string;kind:'pair';stamp?:string}[]=[];
+    const half: {id:string;title:string;sub:string}[]=[];
     for(const task of actionable){
       const r=book.records[task.id];
       const pc=pairChecks(r);
@@ -266,13 +251,11 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           id:task.id,
           title:task.title,
           sub:pc.male?'男だけ確認・女の確認待ち':'女だけ確認・男の確認待ち',
-          kind:'pair',
-          stamp:task.id,
         });
       }
       if(half.length>=4)break;
     }
-    return {deadlines,half};
+    return {half};
   },[actionable,book.records]);
 
   const weddingMetric=useMemo(()=>{
@@ -318,26 +301,19 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
     return {id:g.id,short:g.short,kanji:g.kanji,done:d,total:ts.length,ratio:ts.length?d/ts.length:0};
   }),[scoped,book.records]);
 
-  const names=p.name1&&p.name2?`${p.name1} × ${p.name2}`:p.name1||p.name2||'これからの二人';
   const totals=moneyTotals(book);
 
   return (
     <div className="desk-root desk-washi">
-      <header className="desk-titlebar">
-        <div className="desk-title-left">
-          <Gauge size={18} aria-hidden/>
-          <h1>ふたりの手帳</h1>
-          <span className="desk-subtitle">{names}</span>
-        </div>
-        <div className="desk-title-right">
-          {syncStatus!=='off'&&(
-            <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
-              {syncStatus==='syncing'?'同期中…':syncStatus==='ok'?'同期済み':syncStatus==='error'?'同期できず':'同期'}
-            </span>
-          )}
-          <time className="desk-clock" dateTime={today}>{japanToday()}</time>
-        </div>
-      </header>
+      {/* 見出しは Notebook の welcome-line。ここは同期と日付のみ。 */}
+      <div className="desk-meta-bar" aria-label="デスクの状態">
+        {syncStatus!=='off'&&(
+          <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
+            {syncStatus==='syncing'?'同期中…':syncStatus==='ok'?'同期済み':syncStatus==='error'?'同期できず':'同期'}
+          </span>
+        )}
+        <time className="desk-clock" dateTime={today}>{japanToday()}</time>
+      </div>
 
       <DeskRoleLabels/>
       <FilingWeekPath onOpenTask={onOpenTask}/>
@@ -354,54 +330,41 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <strong className="desk-metric-value">{weddingMetric.value}{weddingMetric.sub&&weddingMetric.value!=='—'&&weddingMetric.value!=='今日'&&<small>{weddingMetric.sub}</small>}</strong>
           <span className="desk-metric-sub">{validDate(p.wdate)?`基準 ${p.wdate}`:'プロフィールで設定'}</span>
         </article>
-        <article className={`desk-metric ${soonCount>0?'tone-warn':''}`}>
+        <button
+          type="button"
+          className={`desk-metric desk-metric-btn ${soonCount>0?'tone-warn':''}`}
+          onClick={()=>onGoDeadlines?.()}
+          aria-label="次の期限。期限タブへ"
+        >
           <span className="desk-metric-label">次の期限</span>
           <strong className="desk-metric-value">{soonCount}<small>件</small></strong>
-          <span className="desk-metric-sub">手帳の予定・14日以内</span>
-        </article>
+          <span className="desk-metric-sub">手帳の予定・14日以内 · 期限タブへ</span>
+        </button>
       </section>
 
-      <section className="amity-brief" aria-label="Amity司令室">
+      <section className="amity-brief" aria-label="ペア確認のすきま">
         <header className="amity-brief-head">
-          <strong>Amity司令室</strong>
-          <span>横断ナビ · 期限 · ペア確認</span>
+          <strong>ペア確認のすきま</strong>
+          <span>片方だけ進んだ項目</span>
         </header>
         <p className="amity-brief-cross">
           明日の一手・次にやることは下の
           <a href="#desk-next-actions" className="amity-brief-jump" onClick={(e)=>{e.preventDefault();document.getElementById('desk-next-actions')?.scrollIntoView({behavior:'smooth',block:'start'});}}>次のアクション</a>
-          にまとめてあります（同じリストを二重に出しません）。
+          にまとめてあります。日付つきの予定は上の件数タップで期限タブへ。
         </p>
-        <div className="amity-brief-grid amity-brief-grid-2">
-          <div className="amity-brief-col">
-            <h3>次の期限</h3>
-            {amityBrief.deadlines.length?(
-              <ul>
-                {amityBrief.deadlines.map((d)=>(
-                  <li key={d.id}>
-                    <button type="button" className="amity-brief-link" onClick={()=>onGoDeadlines?.()}>
-                      <span>{d.title}</span>
-                      <small>{d.sub}</small>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ):<p className="amity-brief-empty">直近の絶対期限はなし（相対期限は期限タブ）</p>}
-          </div>
-          <div className="amity-brief-col">
-            <h3>ペア確認のすきま</h3>
-            {amityBrief.half.length?(
-              <ul>
-                {amityBrief.half.map((h)=>(
-                  <li key={h.id}>
-                    <button type="button" className="amity-brief-link" onClick={()=>onOpenTask(h.id)}>
-                      <span>{h.title}</span>
-                      <small>{h.sub}</small>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ):<p className="amity-brief-empty">片方だけの確認はいまないよ</p>}
-          </div>
+        <div className="amity-brief-col">
+          {amityBrief.half.length?(
+            <ul>
+              {amityBrief.half.map((h)=>(
+                <li key={h.id}>
+                  <button type="button" className="amity-brief-link" onClick={()=>onOpenTask(h.id)}>
+                    <span>{h.title}</span>
+                    <small>{h.sub}</small>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ):<p className="amity-brief-empty">片方だけの確認はいまないよ</p>}
         </div>
       </section>
 
