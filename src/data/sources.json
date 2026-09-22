@@ -7,6 +7,14 @@
     "kind": "official",
     "note": ""
   },
+  "graffer": {
+    "id": "graffer",
+    "title": "広島市：オンライン手続き（Graffer）",
+    "url": "https://ttzk.graffer.jp/city-hiroshima",
+    "checked": "2026-09-22",
+    "kind": "official",
+    "note": "婚姻届の事前確認や関連手続きの入口。窓口・持ち物は市の婚姻届案内とあわせて確認。"
+  },
   "certificate": {
     "id": "certificate",
     "title": "広島市：婚姻届の受理証明",
