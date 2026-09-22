@@ -6,9 +6,37 @@ const date=z.string().refine(v=>v===''||(/^\d{4}-\d{2}-\d{2}$/.test(v)&&v>='1900
 export const profileSchema=z.object({name1:short,name2:short,ward:short,wdate:date,movedate:date,reported:date,birthdate:date,duedate:date,propertydate:date,carNameDate:date,carAddressDate:date,ceremony:z.enum(['unknown','yes','no']),employment1:z.enum(['unknown','company','public','self','other']),employment2:z.enum(['unknown','company','public','self','other']),work:z.enum(['unknown','dual','dependent']),move:z.enum(['unknown','yes','already','no']),child:z.enum(['unknown','none','someday','pregnant','born']),home:z.enum(['unknown','rent','soon','buying','owned']),car:z.enum(['unknown','yes','no']),foreign:z.enum(['unknown','yes','no']),giver:short,letter:z.string().max(3000)});
 export type Profile=z.infer<typeof profileSchema>;
 export const defaultProfile:Profile={name1:'',name2:'',ward:'未設定',wdate:'',movedate:'',reported:'',birthdate:'',duedate:'',propertydate:'',carNameDate:'',carAddressDate:'',ceremony:'no',employment1:'company',employment2:'company',work:'dual',move:'unknown',child:'unknown',home:'unknown',car:'unknown',foreign:'unknown',giver:'',letter:''};
-export const recordSchema=z.object({status:z.enum(['todo','learned','preparing','applied','waiting','done','na']),steps:z.array(z.number().int().min(0).max(30)).max(31),assignee:z.enum(['together','one','two']),note:z.string().max(3000),due:date,amount:z.number().int().min(0).max(1000000000).nullable(),moneyKind:z.enum(['received','estimate','monthlySaving','taxEstimate','none']),confirmedAt:date,updatedAt:z.string().max(40)});
+export const recordSchema=z.object({status:z.enum(['todo','learned','preparing','applied','waiting','done','na']),steps:z.array(z.number().int().min(0).max(30)).max(31),assignee:z.enum(['together','one','two']),note:z.string().max(3000),due:date,amount:z.number().int().min(0).max(1000000000).nullable(),moneyKind:z.enum(['received','estimate','monthlySaving','taxEstimate','none']),confirmedAt:date,updatedAt:z.string().max(40),checkMale:z.boolean().catch(false).default(false),checkFemale:z.boolean().catch(false).default(false)});
 export type TaskRecord=z.infer<typeof recordSchema>;
-export const emptyRecord:TaskRecord={status:'todo',steps:[],assignee:'together',note:'',due:'',amount:null,moneyKind:'none',confirmedAt:'',updatedAt:''};
+export const emptyRecord:TaskRecord={status:'todo',steps:[],assignee:'together',note:'',due:'',amount:null,moneyKind:'none',confirmedAt:'',updatedAt:'',checkMale:false,checkFemale:false};
+
+/** スタンプ半分チェック：両方オンで完了。旧データで status=done のみの場合は両方オン扱い。 */
+export function pairChecks(r: TaskRecord | undefined): {male: boolean; female: boolean} {
+  if (!r) return {male: false, female: false};
+  if (r.status === 'done' && !r.checkMale && !r.checkFemale) return {male: true, female: true};
+  return {male: !!r.checkMale, female: !!r.checkFemale};
+}
+export function applyPairCheck(r: TaskRecord, who: 'male' | 'female', on: boolean): TaskRecord {
+  const next: TaskRecord = {
+    ...r,
+    checkMale: who === 'male' ? on : !!r.checkMale,
+    checkFemale: who === 'female' ? on : !!r.checkFemale,
+  };
+  if (next.checkMale && next.checkFemale) {
+    next.status = 'done';
+  } else if (r.status === 'done') {
+    next.status = 'learned';
+  }
+  return next;
+}
+export function applyStatusWithPair(r: TaskRecord, status: Status): TaskRecord {
+  if (status === 'done') return {...r, status, checkMale: true, checkFemale: true};
+  if (status === 'na') return {...r, status};
+  // ここまで来たら status は done 以外。完了から戻すときは半分チェックも外す。
+  if (r.status === 'done') return {...r, status, checkMale: false, checkFemale: false};
+  return {...r, status};
+}
+
 export const memorySchema=z.object({id:short,date:date,title:z.string().min(1).max(100),text:z.string().max(3000),kind:z.enum(['memory','monthly','dream']),complete:z.boolean()});
 export type Memory=z.infer<typeof memorySchema>;
 /** 「ふたり」タブ：試している行動。既存の手帳を壊さないよう既定値つき。 */
