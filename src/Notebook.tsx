@@ -57,8 +57,8 @@ export default function FutureNotebook(){
  const activeGroup=chapterGroups.find(g=>g.id===groupId)||chapterGroups[0];
  const task=taskId?taskById[taskId]:null;
  const dates=useMemo(()=>scoped.filter(t=>!['done','na'].includes(book.records[t.id]?.status||'todo')).flatMap(task=>taskDeadlines(task,p,book.records[task.id]).map(deadline=>({task,deadline}))).sort((a,b)=>(a.deadline.date||'9999').localeCompare(b.deadline.date||'9999')),[scoped,p,book.records]);
- const dated=dates.filter(x=>x.deadline.date),missingDates=dates.filter(x=>!x.deadline.date),soon=dated.filter(x=>difference(x.deadline.date,today)<=14);
- const absExport=useMemo(():CalendarEvent[]=>absoluteDeadlines.filter(d=>branchVisible(d.branch,p.child,p.home)&&validDate(d.date)).map(d=>({id:`abs-${d.date}-${d.title}`,title:d.title,deadline:{date:d.date,label:d.title,basis:d.note||'制度・カレンダーの絶対期限です。公式案内で最新条件を確認してください。',kind:'rule' as const,uncertain:true}})),[p.child,p.home]);
+ const dated=dates.filter(x=>x.deadline.date&&difference(x.deadline.date,today)>=0),missingDates=dates.filter(x=>!x.deadline.date),soon=dated.filter(x=>difference(x.deadline.date,today)<=14);
+ const absExport=useMemo(():CalendarEvent[]=>absoluteDeadlines.filter(d=>branchVisible(d.branch,p.child,p.home)&&validDate(d.date)&&difference(d.date,today)>=0).map(d=>({id:`abs-${d.date}-${d.title}`,title:d.title,deadline:{date:d.date,label:d.title,basis:d.note||'制度・カレンダーの絶対期限です。公式案内で最新条件を確認してください。',kind:'rule' as const,uncertain:true}})),[p.child,p.home,today]);
  const calendarEvents=useMemo(():CalendarEvent[]=>[...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline})),...absExport],[dated,absExport]);
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
   const da=nearestDeadline(a,p,book.records[a.id])?.date||'9999',db=nearestDeadline(b,p,book.records[b.id])?.date||'9999';
