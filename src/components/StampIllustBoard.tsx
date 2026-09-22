@@ -225,37 +225,9 @@ export function StampIllustBoard({
                 return (
                   <div
                     key={t.id}
-                    className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${padClass(st)} ${halfClass}`}
+                    className={`stamp-pad corner c${cornerSlot(chunk.length, idx)} ${padClass(st)} ${halfClass}${pair.male ? ' male-on' : ''}${pair.female ? ' female-on' : ''}`}
                     title={t.title}
                   >
-                    <button
-                      type="button"
-                      className={`stamp-half left ${pair.male ? 'on' : ''}`}
-                      aria-label={`${t.title}・男（${pair.male ? 'チェック済' : '未チェック'}）`}
-                      aria-pressed={pair.male}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onSelectGroup(g.id)
-                        if (onTogglePair) onTogglePair(t.id, 'male')
-                        else onPressStamp(t.id)
-                      }}
-                    >
-                      男
-                    </button>
-                    <button
-                      type="button"
-                      className={`stamp-half right ${pair.female ? 'on' : ''}`}
-                      aria-label={`${t.title}・女（${pair.female ? 'チェック済' : '未チェック'}）`}
-                      aria-pressed={pair.female}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onSelectGroup(g.id)
-                        if (onTogglePair) onTogglePair(t.id, 'female')
-                        else onPressStamp(t.id)
-                      }}
-                    >
-                      女
-                    </button>
                     <button
                       type="button"
                       className="stamp-pad-body"
@@ -269,6 +241,36 @@ export function StampIllustBoard({
                       <span className="stamp-pad-mark">{padMark(st)}</span>
                       <span className="stamp-pad-label">{tinyLabel(t)}</span>
                     </button>
+                    <div className="stamp-half-row" role="group" aria-label={`${t.title}の男・女チェック`}>
+                      <button
+                        type="button"
+                        className={`stamp-half left ${pair.male ? 'on' : ''}`}
+                        aria-label={`${t.title}・男（${pair.male ? 'チェック済' : '未チェック'}）`}
+                        aria-pressed={pair.male}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onSelectGroup(g.id)
+                          if (onTogglePair) onTogglePair(t.id, 'male')
+                          else onPressStamp(t.id)
+                        }}
+                      >
+                        男
+                      </button>
+                      <button
+                        type="button"
+                        className={`stamp-half right ${pair.female ? 'on' : ''}`}
+                        aria-label={`${t.title}・女（${pair.female ? 'チェック済' : '未チェック'}）`}
+                        aria-pressed={pair.female}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onSelectGroup(g.id)
+                          if (onTogglePair) onTogglePair(t.id, 'female')
+                          else onPressStamp(t.id)
+                        }}
+                      >
+                        女
+                      </button>
+                    </div>
                   </div>
                 )
               })
