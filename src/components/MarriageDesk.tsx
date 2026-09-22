@@ -1,8 +1,8 @@
 import {useEffect,useMemo,useState} from 'react';
 import {ArrowRight,Gauge} from 'lucide-react';
-import {chapters,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
-import {difference,formatMoney,moneyTotals,validDate} from '../lib/dates';
-import {groups} from '../data/catalog';
+import {chapters,pairChecks,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
+import {difference,formatMoney,moneyTotals,todayJapan,validDate} from '../lib/dates';
+import {absoluteDeadlines,groups,homeContent} from '../data/catalog';
 
 /** Public Pages URL for friend handoff (copy button). */
 
@@ -171,6 +171,44 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
 
   const progressPct=actionable.length?Math.round(done.length/actionable.length*100):0;
 
+  const amityBrief=useMemo(()=>{
+    const today=todayJapan();
+    const deadlines=absoluteDeadlines
+      .filter((d)=>difference(d.date,today)>=0)
+      .slice()
+      .sort((a,b)=>a.date.localeCompare(b.date))
+      .slice(0,4)
+      .map((d)=>({
+        id:`dl-${d.date}-${d.title}`,
+        title:d.title,
+        sub:`${d.date}${d.note?` · ${d.note}`:''}`,
+        kind:'deadline' as const,
+      }));
+    const tomorrow=(homeContent.tomorrow_3_actions||[]).slice(0,5).map((a)=>({
+      id:a.id,
+      title:a.title,
+      sub:a.detail||'明日の一手',
+      kind:'tomorrow' as const,
+      stamp:a.stamp_id||a.stamp_ids?.[0],
+    }));
+    const half: {id:string;title:string;sub:string;kind:'pair';stamp?:string}[]=[];
+    for(const task of actionable){
+      const r=book.records[task.id];
+      const pc=pairChecks(r);
+      if(pc.male!==pc.female){
+        half.push({
+          id:task.id,
+          title:task.title,
+          sub:pc.male?'男だけ確認・女の確認待ち':'女だけ確認・男の確認待ち',
+          kind:'pair',
+          stamp:task.id,
+        });
+      }
+      if(half.length>=4)break;
+    }
+    return {deadlines,tomorrow,half};
+  },[actionable,book.records]);
+
   const weddingMetric=useMemo(()=>{
     if(!validDate(p.wdate))return {label:'婚姻日',value:'—',sub:'婚姻日を設定',tone:'' as string};
     const days=difference(p.wdate,today);
@@ -252,6 +290,62 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <strong className="desk-metric-value">{soonCount}<small>件</small></strong>
           <span className="desk-metric-sub">手帳の予定・14日以内</span>
         </article>
+      </section>
+
+      <section className="amity-brief" aria-label="Amity司令室">
+        <header className="amity-brief-head">
+          <strong>Amity司令室</strong>
+          <span>横断ナビ · 期限 · 明日 · ペア確認</span>
+        </header>
+        <div className="amity-brief-grid">
+          <div className="amity-brief-col">
+            <h3>次の期限</h3>
+            {amityBrief.deadlines.length?(
+              <ul>
+                {amityBrief.deadlines.map((d)=>(
+                  <li key={d.id}>
+                    <button type="button" className="amity-brief-link" onClick={()=>onGoDeadlines?.()}>
+                      <span>{d.title}</span>
+                      <small>{d.sub}</small>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ):<p className="amity-brief-empty">直近の絶対期限はなし（相対期限は期限タブ）</p>}
+          </div>
+          <div className="amity-brief-col">
+            <h3>明日の一手</h3>
+            <ul>
+              {amityBrief.tomorrow.map((a)=>(
+                <li key={a.id}>
+                  <button
+                    type="button"
+                    className="amity-brief-link"
+                    onClick={()=>a.stamp?onOpenTask(a.stamp):onGoJourney()}
+                  >
+                    <span>{a.title}</span>
+                    <small>{a.sub}</small>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="amity-brief-col">
+            <h3>ペア確認のすきま</h3>
+            {amityBrief.half.length?(
+              <ul>
+                {amityBrief.half.map((h)=>(
+                  <li key={h.id}>
+                    <button type="button" className="amity-brief-link" onClick={()=>onOpenTask(h.id)}>
+                      <span>{h.title}</span>
+                      <small>{h.sub}</small>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ):<p className="amity-brief-empty">片方だけの確認はいまないよ</p>}
+          </div>
+        </div>
       </section>
 
       {!hasBook&&(

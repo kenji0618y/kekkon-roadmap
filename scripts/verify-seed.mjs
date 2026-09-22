@@ -89,7 +89,7 @@ check('tasks.count', tasks.length, 186, true);
 check('tasks.why', why, 186);
 check('tasks.miss', miss, 186);
 check('tasks.window', window, 186);
-check('tasks.faq_pairs', faqPairs, 930);
+check('tasks.faq_pairs', faqPairs, 2000);
 check('tasks.money_in', moneyIn, 90);
 check('tasks.money_out', moneyOut, 50);
 check('tasks.track', track, 186);

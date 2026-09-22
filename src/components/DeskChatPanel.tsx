@@ -3,6 +3,7 @@ import {LoaderCircle, MessageCircle, Send, X} from 'lucide-react';
 import {toast} from 'sonner';
 import {
   answerDeskQuery,
+  buildGrokLocalContext,
   clearChatHistory,
   loadChatHistory,
   saveChatHistory,
@@ -30,7 +31,7 @@ function uid() {
 const WELCOME: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
-  text: 'Amityちゃんです。スタンプや手続き・期限・広島の制度、なんでも聞いてね。端末内の検索に加えて、キーがあれば Grok で深掘りするよ。',
+  text: 'Amityちゃんです。スタンプ・手続き・期限・対象外・フェーズ・会話練習まで横断して探すよ。候補は多めに出す。キーがあれば Grok で深掘りするよ。',
   at: 0,
 };
 
@@ -83,15 +84,15 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
   }, []);
 
   const canSend = useMemo(
-    () => !busy && input.trim().length > 0 && input.trim().length <= 200,
+    () => !busy && input.trim().length > 0 && input.trim().length <= 500,
     [input, busy],
   );
 
   async function ask(raw: string) {
-    const q = raw.trim().slice(0, 200);
+    const q = raw.trim().slice(0, 500);
     if (!q || busy) return;
     const userMsg: ChatMessage = {id: uid(), role: 'user', text: q, at: Date.now()};
-    const ans = answerDeskQuery(q, 3, profile);
+    const ans = answerDeskQuery(q, 12, profile);
     const localText = ans.text;
     const hasKey = !!loadGrokKey();
 
@@ -118,14 +119,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
     abortRef.current = ac;
     setBusy(true);
     try {
-      const localContext = [
-        localText,
-        ans.matches.length
-          ? `候補項目：${ans.matches.map((m) => `${m.title} — ${m.snippet}`).join(' / ')}`
-          : '',
-      ]
-        .filter(Boolean)
-        .join('\n');
+      const localContext = buildGrokLocalContext(ans, q);
       const grok = await askGrokResearch(q, localContext, ac.signal);
       if (ac.signal.aborted) return;
       if (grok.ok) {
@@ -255,7 +249,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
           id="desk-chat-input"
           ref={inputRef}
           value={input}
-          maxLength={200}
+          maxLength={500}
           placeholder="例：転入届の期限は？／児童手当って？"
           onChange={(e) => setInput(e.target.value)}
           autoComplete="off"
