@@ -1,8 +1,8 @@
 import {useEffect,useMemo,useState} from 'react';
-import {ArrowRight,Gauge} from 'lucide-react';
+import {ArrowRight,ExternalLink,Gauge} from 'lucide-react';
 import {chapters,pairChecks,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
 import {difference,formatMoney,moneyTotals,todayJapan,validDate} from '../lib/dates';
-import {absoluteDeadlines,groups,homeContent} from '../data/catalog';
+import {absoluteDeadlines,groups,homeContent,sources} from '../data/catalog';
 
 /** Public Pages URL for friend handoff (copy button). */
 
@@ -146,6 +146,78 @@ function LatticeWire(){
 }
 
 
+
+const CITY_MARRY = sources.marry;
+const CITY_GRAFFER = sources.graffer;
+const CITY_NOGRANT = sources.nogrant;
+
+function DeskRoleLabels(){
+  return (
+    <section className="desk-roles" aria-label="役割の分け方">
+      <header className="desk-roles-head">
+        <strong>どこを見るか</strong>
+        <span>市の窓口／未導入の支援／このサイト</span>
+      </header>
+      <ul className="desk-roles-list">
+        <li>
+          <span className="desk-roles-label">市の窓口・持ち物</span>
+          <span className="desk-roles-body">
+            <a href={CITY_MARRY.url} target="_blank" rel="noopener noreferrer">
+              広島市・婚姻届と必要書類 <ExternalLink size={11} aria-hidden/>
+            </a>
+            <a href={CITY_GRAFFER.url} target="_blank" rel="noopener noreferrer">
+              オンライン手続き（Graffer） <ExternalLink size={11} aria-hidden/>
+            </a>
+          </span>
+        </li>
+        <li>
+          <span className="desk-roles-label">結婚新生活支援</span>
+          <span className="desk-roles-body">
+            <span className="desk-roles-note">広島市は未導入（もらえる前提にしない）</span>
+            <a href={CITY_NOGRANT.url} target="_blank" rel="noopener noreferrer">
+              市FAQ：実施について <ExternalLink size={11} aria-hidden/>
+            </a>
+          </span>
+        </li>
+        <li>
+          <span className="desk-roles-label">民間・税・除外・二人の進捗</span>
+          <span className="desk-roles-body">
+            <span className="desk-roles-here">このサイト</span>
+          </span>
+        </li>
+      </ul>
+    </section>
+  );
+}
+
+function FilingWeekPath({onOpenTask}:{onOpenTask:(id:string)=>void}){
+  const path = homeContent.filing_week_path;
+  const steps = path?.steps || [];
+  if(!steps.length)return null;
+  return (
+    <details className="desk-filing-path" open>
+      <summary>
+        <strong>最短パス：届出週</strong>
+        <span>式なし・広島市 · 届出そのものは0円</span>
+      </summary>
+      {path?.blurb && <p className="desk-filing-blurb">{path.blurb}</p>}
+      <ol className="desk-filing-steps">
+        {steps.map((s,i)=>(
+          <li key={s.id}>
+            <button type="button" className="desk-filing-step" onClick={()=>onOpenTask(s.stamp_id)}>
+              <em>{i+1}</em>
+              <span>
+                <strong>{s.title}</strong>
+                {s.detail && <small>{s.detail}</small>}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </details>
+  );
+}
+
 export type MarriageDeskProps={
   book:Book;
   profile:Profile;
@@ -272,6 +344,9 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           <time className="desk-clock" dateTime={today}>{japanToday()}</time>
         </div>
       </header>
+
+      <DeskRoleLabels/>
+      <FilingWeekPath onOpenTask={onOpenTask}/>
 
       <section className="desk-metrics" aria-label="主要指標">
         <article className="desk-metric">

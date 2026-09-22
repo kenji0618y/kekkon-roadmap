@@ -25,7 +25,7 @@ export default defineConfig({
       manifest: {
         name: "Amityちゃんにきく",
         short_name: "Amity",
-        description: "広島市向け結婚ロードマップ／Amityちゃんにきく。端末内に保存。",
+        description: "広島市・式なし・共働き向け。手続きと除外。結婚新生活支援は未導入。Amityちゃんにきく。",
         theme_color: "#183645",
         background_color: "#f6f4ee",
         display: "standalone",

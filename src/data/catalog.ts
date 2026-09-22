@@ -65,12 +65,20 @@ export type TomorrowAction = {
   stamp_ids?: string[];
 };
 
+export type FilingWeekStep = {
+  id: string;
+  stamp_id: string;
+  title: string;
+  detail?: string;
+};
+
 export const homeContent = homeData as {
   hero_numbers: {id:string;label:string;value:string;note?:string}[];
   lies_not_to_buy: {id:string;title:string;truth:string}[];
   talk_lines: {id:string;line:string;from?:string}[];
   tomorrow_3_actions: TomorrowAction[];
   anti_lie_banner?: string;
+  filing_week_path?: {blurb?: string; steps: FilingWeekStep[]};
 };
 
 export const phasesContent = phasesData as {

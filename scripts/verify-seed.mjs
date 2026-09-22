@@ -79,6 +79,8 @@ const hero = (home.hero_numbers || []).length;
 const lies = (home.lies_not_to_buy || []).length;
 const talk = (home.talk_lines || []).length;
 const tomorrow = (home.tomorrow_3_actions || []).length;
+const filingWeek = (home.filing_week_path && home.filing_week_path.steps) || [];
+const filingWeekN = filingWeek.length;
 const banner = home.anti_lie_banner && String(home.anti_lie_banner).trim() ? 1 : 0;
 const phaseN = (phases.phases || []).length;
 const events = (phases.phases || []).reduce((n, p) => n + ((p.events || []).length), 0);
@@ -105,6 +107,20 @@ check('home.hero_numbers', hero, 3, true);
 check('home.lies_not_to_buy', lies, 4, true);
 check('home.talk_lines', talk, 10, true);
 check('home.tomorrow_3_actions', tomorrow, 5, true);
+check('home.filing_week_path.steps', filingWeekN, 7, true);
+const taskIds = new Set(tasks.map((t) => t.id));
+for (const step of filingWeek) {
+  if (!step.stamp_id || !taskIds.has(step.stamp_id)) {
+    fail.push(`home.filing_week_path: unknown stamp_id ${step?.stamp_id || '(empty)'}`);
+  } else if (!String(step.title || '').trim()) {
+    fail.push(`home.filing_week_path: empty title for ${step.stamp_id}`);
+  }
+}
+if (!Object.keys(loadJson('src/data/sources.json') || {}).includes('graffer')) {
+  fail.push('sources.graffer missing (広島市オンライン手続き)');
+} else {
+  ok.push('sources.graffer present');
+}
 check('home.anti_lie_banner', banner, 1, true);
 check('phases.count', phaseN, 9, true);
 check('phases.events', events, 48);
@@ -200,6 +216,9 @@ const marriageDesk = readText('src/components/MarriageDesk.tsx');
 
 const uiChecks = [
   ['MarriageDesk mounts desk-money before くわしく見る', /desk-money[\s\S]*desk-decor-fold|desk-more-viz/.test(marriageDesk) && marriageDesk.includes('desk-money') && marriageDesk.includes('くわしく見る')],
+  ['MarriageDesk role labels desk-roles', marriageDesk.includes('desk-roles') && marriageDesk.includes('市の窓口・持ち物') && marriageDesk.includes('結婚新生活支援') && marriageDesk.includes('このサイト')],
+  ['MarriageDesk filing week path', marriageDesk.includes('desk-filing-path') && marriageDesk.includes('最短パス：届出週')],
+  ['index meta mentions 広島・式なし・未導入', (() => { const html = readText('index.html'); return html.includes('式なし') && html.includes('未導入') && html.includes('og:description'); })()],
   ['Money block has no old headings', !marriageDesk.includes('暮らしに増えた') && !marriageDesk.includes('各項目で二人が入力した金額を集計') && !notebook.includes('暮らしに増えた') && !notebook.includes('各項目で二人が入力した金額を集計')],
   ['Notebook desk tab has no standalone money-section', !notebook.includes('money-section')],
   ['SeedContentPanels HomeInsightPanels', panels.includes('export function HomeInsightPanels')],
