@@ -1176,32 +1176,52 @@
 
 
 /* Pair half-stamps: male / female checks; both => done */
-.stamp-pad{position:relative;overflow:hidden;padding:0;gap:0}
-.stamp-pad .stamp-half{
-  position:absolute;top:0;bottom:0;width:50%;z-index:2;
-  border:0;padding:0;margin:0;cursor:pointer;
-  font-size:9px;font-weight:800;letter-spacing:.02em;
-  color:rgba(31,56,51,.55);background:transparent;
-  display:flex;align-items:flex-start;justify-content:center;
-  padding-top:3px;line-height:1;
-  -webkit-tap-highlight-color:transparent;
+/* Pair stamps: keep mark+label visible; male/female are top chips only */
+.stamp-pad{position:relative;overflow:hidden;padding:0;gap:0;display:flex;flex-direction:column}
+.stamp-pad.male-on:not(.female-on){
+  background:
+    linear-gradient(90deg,rgba(29,79,145,.22),rgba(29,79,145,.06) 55%,rgba(255,253,248,.78));
 }
-.stamp-pad .stamp-half.left{left:0;border-radius:9px 0 0 9px}
-.stamp-pad .stamp-half.right{right:0;border-radius:0 9px 9px 0}
-.stamp-pad .stamp-half.on{color:#fff8f0;text-shadow:0 1px 1px rgba(0,0,0,.2)}
-.stamp-pad .stamp-half.left.on{background:linear-gradient(180deg,rgba(29,79,145,.55),rgba(29,79,145,.22))}
-.stamp-pad .stamp-half.right.on{background:linear-gradient(180deg,rgba(162,40,28,.55),rgba(162,40,28,.22))}
-.stamp-pad.st-half{border-style:dashed}
+.stamp-pad.female-on:not(.male-on){
+  background:
+    linear-gradient(90deg,rgba(255,253,248,.78) 45%,rgba(162,40,28,.06),rgba(162,40,28,.22));
+}
+.stamp-pad.male-on.female-on{
+  /* both checked → keep done/red styling from .st-done; mild dual tint if not done yet */
+  box-shadow:0 2px 8px rgba(26,46,43,.18),0 0 0 1px rgba(255,255,255,.35) inset;
+}
 .stamp-pad .stamp-pad-body{
-  position:relative;z-index:1;width:100%;height:100%;
-  border:0;background:transparent;padding:4px 3px;
+  position:relative;z-index:1;flex:1 1 auto;width:100%;min-height:0;
+  border:0;background:transparent;padding:14px 3px 3px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
   cursor:pointer;-webkit-tap-highlight-color:transparent;
+  -webkit-appearance:none;appearance:none;color:inherit;
 }
+.stamp-pad .stamp-half-row{
+  position:absolute;left:0;right:0;top:0;z-index:3;
+  display:grid;grid-template-columns:1fr 1fr;height:16px;pointer-events:auto;
+}
+.stamp-pad .stamp-half{
+  border:0;margin:0;padding:0;cursor:pointer;line-height:1;
+  font-size:8px;font-weight:800;letter-spacing:.02em;
+  color:rgba(31,56,51,.7);background:rgba(255,253,248,.55);
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-appearance:none;appearance:none;
+}
+.stamp-pad .stamp-half.left{border-radius:9px 0 0 0;border-right:1px solid rgba(15,92,84,.12)}
+.stamp-pad .stamp-half.right{border-radius:0 9px 0 0}
+.stamp-pad .stamp-half.on{color:#fff8f0;text-shadow:0 1px 1px rgba(0,0,0,.18)}
+.stamp-pad .stamp-half.left.on{background:rgba(29,79,145,.82)}
+.stamp-pad .stamp-half.right.on{background:rgba(162,40,28,.82)}
+.stamp-pad.st-half{border-style:dashed}
 .stamp-pad .stamp-half:focus-visible,.stamp-pad .stamp-pad-body:focus-visible{outline:2px solid #1d4f91;outline-offset:-2px}
+.illust-pads.pads-dense .stamp-pad .stamp-half-row{height:14px}
+.illust-pads.pads-dense .stamp-pad .stamp-pad-body{padding-top:12px}
+.illust-pads.pads-dense .stamp-pad .stamp-half{font-size:7px}
 .pair-check-row{display:grid;gap:8px;margin:8px 0 12px;padding:12px;border-radius:12px;background:rgba(255,253,248,.9);border:1px solid rgba(15,92,84,.14)}
 .pair-check-row .hint{margin:0;font-size:12px;color:#4a5c56}
 .pair-check-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pair-check-btn{appearance:none;border-radius:999px;border:1.5px solid rgba(15,92,84,.28);background:#fff;padding:10px 12px;font-weight:800;font-size:14px;cursor:pointer}
+.pair-check-btn{appearance:none;-webkit-appearance:none;border-radius:999px;border:1.5px solid rgba(15,92,84,.28);background:#fff;padding:10px 12px;font-weight:800;font-size:14px;cursor:pointer}
 .pair-check-btn.male.on{border-color:#1d4f91;background:#1d4f91;color:#f0f7ff}
 .pair-check-btn.female.on{border-color:#a5281c;background:#a5281c;color:#fff8f0}
