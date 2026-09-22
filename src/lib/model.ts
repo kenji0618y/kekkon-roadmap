@@ -32,7 +32,8 @@ export function applyPairCheck(r: TaskRecord, who: 'male' | 'female', on: boolea
 export function applyStatusWithPair(r: TaskRecord, status: Status): TaskRecord {
   if (status === 'done') return {...r, status, checkMale: true, checkFemale: true};
   if (status === 'na') return {...r, status};
-  if (r.status === 'done' && status !== 'done') return {...r, status, checkMale: false, checkFemale: false};
+  // ここまで来たら status は done 以外。完了から戻すときは半分チェックも外す。
+  if (r.status === 'done') return {...r, status, checkMale: false, checkFemale: false};
   return {...r, status};
 }
 
