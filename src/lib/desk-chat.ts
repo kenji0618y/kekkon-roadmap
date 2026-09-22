@@ -59,6 +59,13 @@ function normalize(s: string): string {
   return s.normalize('NFKC').toLowerCase().trim();
 }
 
+/** Normalize FAQ question text for near-dupe collapse in top-N (seed kept). */
+function faqQuestionKey(snippet: string): string {
+  const m = snippet.match(/^Q:\s*([\s\S]+?)\s*\/\s*A:/);
+  const q = (m ? m[1] : snippet).trim();
+  return normalize(q).replace(/[\s　・、。]/g, '').slice(0, 48);
+}
+
 function tokenize(q: string): string[] {
   const n = normalize(q);
   const spaced = n
@@ -341,12 +348,19 @@ export function answerDeskQuery(query: string, limit = 12, profile?: Profile | n
     .filter((x) => x.score >= 16)
     .sort((a, b) => b.score - a.score || a.c.openId.localeCompare(b.c.openId));
 
-  // Deduplicate by openId+kind preference (keep best per title)
+  // Deduplicate by openId+title, and collapse FAQ rows that share the same normalized Q
+  // (template questions flood top-12 across tasks; seed FAQ rows stay in JSON).
   const seenTitle = new Set<string>();
+  const seenFaqQ = new Set<string>();
   const top: {c: CorpusHit; score: number}[] = [];
   for (const row of scored) {
     const key = `${row.c.openId}::${row.c.title}`;
     if (seenTitle.has(key)) continue;
+    if (row.c.kind === 'faq') {
+      const qk = faqQuestionKey(row.c.snippet);
+      if (qk && seenFaqQ.has(qk)) continue;
+      if (qk) seenFaqQ.add(qk);
+    }
     seenTitle.add(key);
     top.push(row);
     if (top.length >= limit) break;

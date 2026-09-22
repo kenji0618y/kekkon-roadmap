@@ -197,7 +197,7 @@ export function HomeInsightPanels({
 
   return (
     <div className="seed-home-stack">
-      <section className="seed-block tomorrow" aria-label="次のアクション">
+      <section id="desk-next-actions" className="seed-block tomorrow" aria-label="次のアクション">
         <div className="seed-block-head">
           <h3>次のアクション</h3>
           <p className="hint">まず取りかかる5つ。埋まらないぶんは、期限の近い項目で補っています。</p>

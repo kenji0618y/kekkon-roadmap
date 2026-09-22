@@ -160,21 +160,21 @@ function DeskRoleLabels(){
       </header>
       <ul className="desk-roles-list">
         <li>
-          <span className="desk-roles-label">市の窓口・持ち物</span>
-          <span className="desk-roles-body">
-            <a href={CITY_MARRY.url} target="_blank" rel="noopener noreferrer">
+          <span className="desk-roles-label" id="desk-role-city">市の窓口・持ち物</span>
+          <span className="desk-roles-body" role="group" aria-labelledby="desk-role-city">
+            <a href={CITY_MARRY.url} target="_blank" rel="noopener noreferrer" aria-label="広島市・婚姻届と必要書類（公式・別タブ）">
               広島市・婚姻届と必要書類 <ExternalLink size={11} aria-hidden/>
             </a>
-            <a href={CITY_GRAFFER.url} target="_blank" rel="noopener noreferrer">
+            <a href={CITY_GRAFFER.url} target="_blank" rel="noopener noreferrer" aria-label="オンライン手続き Graffer（公式・別タブ）">
               オンライン手続き（Graffer） <ExternalLink size={11} aria-hidden/>
             </a>
           </span>
         </li>
         <li>
-          <span className="desk-roles-label">結婚新生活支援</span>
-          <span className="desk-roles-body">
+          <span className="desk-roles-label" id="desk-role-nogrant">結婚新生活支援</span>
+          <span className="desk-roles-body" role="group" aria-labelledby="desk-role-nogrant">
             <span className="desk-roles-note">広島市は未導入（もらえる前提にしない）</span>
-            <a href={CITY_NOGRANT.url} target="_blank" rel="noopener noreferrer">
+            <a href={CITY_NOGRANT.url} target="_blank" rel="noopener noreferrer" aria-label="市FAQ：結婚新生活支援の実施について（公式・別タブ）">
               市FAQ：実施について <ExternalLink size={11} aria-hidden/>
             </a>
           </span>
@@ -195,10 +195,10 @@ function FilingWeekPath({onOpenTask}:{onOpenTask:(id:string)=>void}){
   const steps = path?.steps || [];
   if(!steps.length)return null;
   return (
-    <details className="desk-filing-path" open>
+    <details className="desk-filing-path">
       <summary>
         <strong>最短パス：届出週</strong>
-        <span>式なし・広島市 · 届出そのものは0円</span>
+        <span>式なし・広島市 · 届出そのものは0円 · 開くと手順</span>
       </summary>
       {path?.blurb && <p className="desk-filing-blurb">{path.blurb}</p>}
       <ol className="desk-filing-steps">
@@ -256,13 +256,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         sub:`${d.date}${d.note?` · ${d.note}`:''}`,
         kind:'deadline' as const,
       }));
-    const tomorrow=(homeContent.tomorrow_3_actions||[]).slice(0,5).map((a)=>({
-      id:a.id,
-      title:a.title,
-      sub:a.detail||'明日の一手',
-      kind:'tomorrow' as const,
-      stamp:a.stamp_id||a.stamp_ids?.[0],
-    }));
+    // tomorrow_3_actions は HomeInsightPanels（#desk-next-actions）が単一の表示元。
     const half: {id:string;title:string;sub:string;kind:'pair';stamp?:string}[]=[];
     for(const task of actionable){
       const r=book.records[task.id];
@@ -278,7 +272,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
       }
       if(half.length>=4)break;
     }
-    return {deadlines,tomorrow,half};
+    return {deadlines,half};
   },[actionable,book.records]);
 
   const weddingMetric=useMemo(()=>{
@@ -370,9 +364,14 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
       <section className="amity-brief" aria-label="Amity司令室">
         <header className="amity-brief-head">
           <strong>Amity司令室</strong>
-          <span>横断ナビ · 期限 · 明日 · ペア確認</span>
+          <span>横断ナビ · 期限 · ペア確認</span>
         </header>
-        <div className="amity-brief-grid">
+        <p className="amity-brief-cross">
+          明日の一手・次にやることは下の
+          <a href="#desk-next-actions" className="amity-brief-jump" onClick={(e)=>{e.preventDefault();document.getElementById('desk-next-actions')?.scrollIntoView({behavior:'smooth',block:'start'});}}>次のアクション</a>
+          にまとめてあります（同じリストを二重に出しません）。
+        </p>
+        <div className="amity-brief-grid amity-brief-grid-2">
           <div className="amity-brief-col">
             <h3>次の期限</h3>
             {amityBrief.deadlines.length?(
@@ -387,23 +386,6 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
                 ))}
               </ul>
             ):<p className="amity-brief-empty">直近の絶対期限はなし（相対期限は期限タブ）</p>}
-          </div>
-          <div className="amity-brief-col">
-            <h3>明日の一手</h3>
-            <ul>
-              {amityBrief.tomorrow.map((a)=>(
-                <li key={a.id}>
-                  <button
-                    type="button"
-                    className="amity-brief-link"
-                    onClick={()=>a.stamp?onOpenTask(a.stamp):onGoJourney()}
-                  >
-                    <span>{a.title}</span>
-                    <small>{a.sub}</small>
-                  </button>
-                </li>
-              ))}
-            </ul>
           </div>
           <div className="amity-brief-col">
             <h3>ペア確認のすきま</h3>
