@@ -13,7 +13,7 @@ import {Switch} from './components/ui/switch';
 import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
-import {branchVisible,chapters,emptyBook,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
+import {branchVisible,chapters,emptyBook,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -91,7 +91,7 @@ export default function FutureNotebook(){
   const pair=pairChecks(cur);
   const on=who==='male'?!pair.male:!pair.female;
   const next=applyPairCheck(cur,who,on);
-  const msg=next.status==='done'?'男・女どちらもチェック済み。完了にしました。':undefined;
+  const whoLabels=pairEventWhoLabels(p); const msg=next.status==='done'?`${whoLabels.male}・${whoLabels.female}どちらもチェック済み。完了にしました。`:undefined;
   await data.mutate({action:'record',id,record:next},msg);
  };
  const quickHits=useMemo(()=>buildQuickSearchHits({query:quickQ,tasks,absoluteDeadlines,relativeDeadlines,practices,talks,includeTask:t=>p.ceremony!=='no'||!isCeremonyTask(t),limit:20}),[quickQ,p.ceremony]);
@@ -152,14 +152,14 @@ export default function FutureNotebook(){
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
  <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.label}</span><h3>{activeChapter.description}</h3></div><span className="hint">絵の縁のスタンプを押すと、その項目が開きます。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:!chapterGroups.length?<EmptyState symbol={<Map/>} title="この章に、今の二人向けのスタンプはありません。" action={<Action secondary onClick={openProfile}>ふたりの設定を開く</Action>}>式の有無や働き方を変えると、表示されるマスが変わります。</EmptyState>:<>
- <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} activeId={activeGroup?.id} activeTaskId={taskId||undefined} onSelectGroup={setGroupId} onPressStamp={openTask} recordPair={id=>pairChecks(book.records[id])} onTogglePair={(id,who)=>void togglePairCheck(id,who)} />
+ <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} profile={p} activeId={activeGroup?.id} activeTaskId={taskId||undefined} onSelectGroup={setGroupId} onPressStamp={openTask} recordPair={id=>pairChecks(book.records[id])} onTogglePair={(id,who)=>void togglePairCheck(id,who)} />
 
  </>}
  </section>
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や期限タブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">
- <SectionTitle eyebrow="期限と時期" title="カレンダーで、ふたりの予定を。" sub="月のカレンダーが中心です。制度の締切は日付に点で出ます。男・女・ふたりで予定を残せます。"><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length?<p className="hint export-cal-hint">基準の日付か予定日を設定すると書き出せます。制度の絶対期限と、カレンダーに入れた予定も対象です。</p>:!dated.length&&!pairExport.length&&absExport.length>0?<p className="hint export-cal-hint">いまは制度の絶対期限（{absExport.length}件）を書き出します。基準の日付・予定日やカレンダー予定を足すとそれも入ります。</p>:null}</div></SectionTitle>
+ <SectionTitle eyebrow="期限と時期" title="カレンダーで、ふたりの予定を。" sub={(()=>{const w=pairEventWhoLabels(p);return `月のカレンダーが中心です。制度の締切は日付に点で出ます。${w.male}・${w.female}・ふたりで予定を残せます。`;})()}><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length?<p className="hint export-cal-hint">基準の日付か予定日を設定すると書き出せます。制度の絶対期限と、カレンダーに入れた予定も対象です。</p>:!dated.length&&!pairExport.length&&absExport.length>0?<p className="hint export-cal-hint">いまは制度の絶対期限（{absExport.length}件）を書き出します。基準の日付・予定日やカレンダー予定を足すとそれも入ります。</p>:null}</div></SectionTitle>
  <nav className="deadlines-mini-nav" aria-label="期限タブ内の節">
   <a href="#deadline-block-calendar">カレンダー</a>
   <a href="#deadline-block-hero">数字</a>

@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
-import type {Status, Group, Task} from '../lib/model'
-import {statusNames} from '../lib/model'
+import type {Status, Group, Task, Profile} from '../lib/model'
+import {pairEventWhoLabels, statusNames} from '../lib/model'
 import {phaseImage} from '../data/catalog'
 
 /** Max stamps per illustration card. Overflow → sub-mass split */
@@ -66,6 +66,8 @@ type Props = {
   tasksFor: (g: Group) => Task[]
   recordStatus: (id: string) => Status | undefined
   recordPair?: (id: string) => {male: boolean; female: boolean}
+  /** For half-check button labels (name1 / name2). */
+  profile: Pick<Profile, 'name1' | 'name2'>
   activeId?: string
   /** When set, only the chunk containing this task is selected (split groups). */
   activeTaskId?: string
@@ -99,6 +101,7 @@ export function StampIllustBoard({
   tasksFor,
   recordStatus,
   recordPair,
+  profile,
   activeId,
   activeTaskId,
   onSelectGroup,
@@ -107,6 +110,7 @@ export function StampIllustBoard({
 }: Props) {
   const [showDone, setShowDone] = useState(loadShowDone)
   const [foldOpen, setFoldOpen] = useState(false)
+  const whoLabels = useMemo(() => pairEventWhoLabels(profile), [profile.name1, profile.name2])
 
   useEffect(() => {
     try {
@@ -241,11 +245,11 @@ export function StampIllustBoard({
                       <span className="stamp-pad-mark">{padMark(st)}</span>
                       <span className="stamp-pad-label">{tinyLabel(t)}</span>
                     </button>
-                    <div className="stamp-half-row" role="group" aria-label={`${t.title}の男・女チェック`}>
+                    <div className="stamp-half-row" role="group" aria-label={`${t.title}の${whoLabels.male}・${whoLabels.female}チェック`}>
                       <button
                         type="button"
                         className={`stamp-half left ${pair.male ? 'on' : ''}`}
-                        aria-label={`${t.title}・男（${pair.male ? 'チェック済' : '未チェック'}）`}
+                        aria-label={`${t.title}・${whoLabels.male}（${pair.male ? 'チェック済' : '未チェック'}）`}
                         aria-pressed={pair.male}
                         onClick={(e) => {
                           e.stopPropagation()
@@ -254,12 +258,12 @@ export function StampIllustBoard({
                           else onPressStamp(t.id)
                         }}
                       >
-                        男
+                        {whoLabels.male}
                       </button>
                       <button
                         type="button"
                         className={`stamp-half right ${pair.female ? 'on' : ''}`}
-                        aria-label={`${t.title}・女（${pair.female ? 'チェック済' : '未チェック'}）`}
+                        aria-label={`${t.title}・${whoLabels.female}（${pair.female ? 'チェック済' : '未チェック'}）`}
                         aria-pressed={pair.female}
                         onClick={(e) => {
                           e.stopPropagation()
@@ -268,7 +272,7 @@ export function StampIllustBoard({
                           else onPressStamp(t.id)
                         }}
                       >
-                        女
+                        {whoLabels.female}
                       </button>
                     </div>
                   </div>

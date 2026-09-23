@@ -1,6 +1,6 @@
 import {useMemo,useState} from 'react';
 import {ArrowRight,ExternalLink} from 'lucide-react';
-import {chapters,pairChecks,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
+import {chapters,pairChecks,pairEventWhoLabels,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
 import {difference,formatMoney,moneyTotals,validDate} from '../lib/dates';
 import {groups,homeContent,sources} from '../data/catalog';
 
@@ -241,6 +241,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
 
   // 次のアクション＝HomeInsightPanels（#desk-next-actions）。期限リスト＝期限タブ／指標「次の期限」。
   // 司令室はペア確認のすきまだけ（同じ期限・明日リストを二重に出さない）。
+  const whoLabels=useMemo(()=>pairEventWhoLabels(p),[p.name1,p.name2]);
   const amityBrief=useMemo(()=>{
     const half: {id:string;title:string;sub:string}[]=[];
     for(const task of actionable){
@@ -250,13 +251,13 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         half.push({
           id:task.id,
           title:task.title,
-          sub:pc.male?'男だけ確認・女の確認待ち':'女だけ確認・男の確認待ち',
+          sub:pc.male?`${whoLabels.male}だけ確認・${whoLabels.female}の確認待ち`:`${whoLabels.female}だけ確認・${whoLabels.male}の確認待ち`,
         });
       }
       if(half.length>=4)break;
     }
     return {half};
-  },[actionable,book.records]);
+  },[actionable,book.records,whoLabels]);
 
   const weddingMetric=useMemo(()=>{
     if(!validDate(p.wdate))return {label:'婚姻日',value:'—',sub:'婚姻日を設定',tone:'' as string};
