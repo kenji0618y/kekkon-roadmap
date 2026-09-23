@@ -77,6 +77,8 @@ export function DeadlinesCalendar({
   const [draft, setDraft] = useState<Draft | null>(null)
   const [formError, setFormError] = useState('')
 
+  const whoLabels = useMemo(() => pairEventWhoLabels(profile), [profile.name1, profile.name2])
+
   const seedMarks = useMemo((): SeedMark[] => {
     return absoluteDeadlines
       .filter(
@@ -198,7 +200,7 @@ export function DeadlinesCalendar({
     <section id="deadline-block-calendar" className="deadline-block cal-block" aria-label="ふたりのカレンダー">
       <h2 className="deadline-block-label">ふたりのカレンダー</h2>
       <p className="deadline-block-intro">
-        日付をタップして、男・女・ふたりの予定を残せます。制度の締切も同じ月に点で出ます。
+        日付をタップして、{whoLabels.male}・{whoLabels.female}・ふたりの予定を残せます。制度の締切も同じ月に点で出ます。
       </p>
 
       <div className="cal-month-bar">
@@ -275,11 +277,11 @@ export function DeadlinesCalendar({
         </span>
         <span>
           <i className="cal-dot who-male" />
-          男
+          {whoLabels.male}
         </span>
         <span>
           <i className="cal-dot who-female" />
-          女
+          {whoLabels.female}
         </span>
         <span>
           <i className="cal-dot who-both" />
@@ -321,7 +323,7 @@ export function DeadlinesCalendar({
           <ul className="cal-day-list">
             {dayCustoms.map((e) => (
               <li key={e.id} className={`cal-item custom who-${e.who}`}>
-                <span className={`cal-item-chip who-${e.who}`}>{pairEventWhoLabels[e.who]}</span>
+                <span className={`cal-item-chip who-${e.who}`}>{whoLabels[e.who]}</span>
                 <div className="cal-item-body">
                   <strong>{e.title}</strong>
                   {e.note ? <span className="hint">{e.note}</span> : null}
@@ -391,7 +393,7 @@ export function DeadlinesCalendar({
                       disabled={busy}
                       onClick={() => setDraft({...draft, who: w})}
                     >
-                      {pairEventWhoLabels[w]}
+                      {whoLabels[w]}
                     </button>
                   ))}
                 </div>
@@ -448,7 +450,7 @@ export function DeadlinesCalendar({
                   {row.kind === 'seed' ? (
                     <span className="cal-item-chip seed">制度</span>
                   ) : (
-                    <span className={`cal-item-chip who-${row.who}`}>{pairEventWhoLabels[row.who]}</span>
+                    <span className={`cal-item-chip who-${row.who}`}>{whoLabels[row.who]}</span>
                   )}
                   <strong>{row.title}</strong>
                 </button>

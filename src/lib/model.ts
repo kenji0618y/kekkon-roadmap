@@ -55,7 +55,17 @@ export const pairEventSchema=z.object({
   updatedAt:z.string().max(40).catch(''),
 });
 export type PairEvent=z.infer<typeof pairEventSchema>;
-export const pairEventWhoLabels={male:'男',female:'女',both:'ふたり'} as const;
+/** UI labels for pair who / half-check. Storage keys stay male/female/both. */
+export function pairEventWhoLabels(p: Pick<Profile, 'name1' | 'name2'>) {
+  return {
+    male: p.name1.trim() || '一人目',
+    female: p.name2.trim() || '二人目',
+    both: 'ふたり',
+  } as const;
+}
+export function pairWhoLabel(who: 'male' | 'female' | 'both', p: Pick<Profile, 'name1' | 'name2'>) {
+  return pairEventWhoLabels(p)[who];
+}
 export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([])});
 export type Book=z.infer<typeof bookSchema>;
 export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[]};
