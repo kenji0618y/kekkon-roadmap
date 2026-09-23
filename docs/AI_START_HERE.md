@@ -14,7 +14,7 @@ Do **not** rediscover product history by chatting with Kenji.
 | Docs tip (main) | 下の「いまの状態」を見てください |
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-186項目 · 33まとまり · FAQ 2074組 · 出典 136件 · 6タブ · 検査 78項目
+186項目 · 33まとまり · FAQ 2074組 · 出典 136件 · 6タブ · 検査 82項目
 <!-- /STATE -->
 | Live app | Pages `gh-pages` = shipped app。`main` push で Actions が検査→公開。結果は Actions タブ／URL で確認 |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
@@ -73,7 +73,7 @@ Default tab = **デスク**。**ルール: タブの名前と中身を一致さ�
 |----|---------------|----------|
 | `desk` | デスク | `MarriageDesk`（どこを見るか / 最短パス折りたたみ / 指標3つ / ペア確認 / 金額4枚）+ `HomeInsightPanels`（**次のアクション**のみ）。数字・思い込み・会話は期限／探す／ふたりタブ |
 | `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
-| `deadlines` | 期限と時期（期限） | `InstitutionalDeadlines` + 個人予定/ICS + **`PhasesPanel`（9時期・48出来事）** ← 旧「時期」タブを統合 |
+| `deadlines` | 期限と時期（期限） | **月カレンダー**（`DeadlinesCalendar`・`book.events`）+ 制度締切マーカー + 一覧折りたたみ/ICS + **`PhasesPanel`** |
 | `pair` | ふたりの練習帳（ふたり） | `PairWorkbook` — 行動52 / 会話16 / 合意18 / 根拠18。合意と行動は端末に保存 |
 | `find` | 制度を探す（探す） | 検索のみ |
 | `settings` | ふたりの設定（設定） | プロフィール / Gist / Grok / 毎年更新メモ / リセット |

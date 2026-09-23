@@ -19,7 +19,7 @@
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / 期限 / ふたり / 探す / 設定） |
-| verify-seed | 78項目 |
+| verify-seed | 82項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -81,7 +81,7 @@
 |----|-----------------|------|
 | `desk` | デスク | `MarriageDesk`（どこを見るか / 最短パス折りたたみ / 指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ `HomeInsightPanels`（次のアクション SoT）|
 | `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
-| `deadlines` | **期限と時期**（期限） | `InstitutionalDeadlines` + 個人タイムライン/ICS + **`PhasesPanel`（9時期・48出来事）** ← 旧「時期」タブを統合 |
+| `deadlines` | **期限と時期**（期限） | **月カレンダー**（`DeadlinesCalendar`・`book.events` 男/女/ふたり）+ 制度締切マーカー + `InstitutionalDeadlines`/項目予定（折りたたみ）/ICS + **`PhasesPanel`** |
 | `pair` | **ふたりの練習帳**（ふたり） | `PairWorkbook` — 行動52 / 会話16 / 合意18 / 根拠18。行動の状態と合意は端末に保存 |
 | `find` | 制度を探す（探す） | 検索のみ |
 | `settings` | ふたりの設定（設定） | プロフィール／Gist／Grok／YEARLY_UPDATE／リセット |

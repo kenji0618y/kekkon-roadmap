@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {toast} from 'sonner';
-import {bookSchema,emptyBook,type AgreementRecord,type Book,type Memory,type PracticeRecord,type Profile,type TaskRecord} from './model';
+import {bookSchema,emptyBook,type AgreementRecord,type Book,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
 import {validateCatalogBook} from './backup';
 import {
   buildPayload,
@@ -206,6 +206,11 @@ export function useBook(_paused:boolean){
       const mem=payload.memory as Memory|undefined;
       return mem?.id?`memory:${mem.id}`:'memory';
     }
+    if(action==='event'){
+      const ev=payload.event as PairEvent|undefined;
+      return ev?.id?`event:${ev.id}`:'event';
+    }
+    if(action==='deleteEvent')return `deleteEvent:${String(payload.id||'')}`;
     return '';
   };
 
@@ -267,6 +272,18 @@ export function useBook(_paused:boolean){
       }else if(action==='agreement'){
         ensureBook();
         book!.agreements[String(payload.id)]=payload.record as AgreementRecord;
+      }else if(action==='event'){
+        ensureBook();
+        if(!book!.events)book!.events=[];
+        const event=payload.event as PairEvent;
+        const withStamp={...event,updatedAt:event.updatedAt||new Date().toISOString()};
+        const idx=book!.events.findIndex(e=>e.id===withStamp.id);
+        if(idx>=0)book!.events[idx]=withStamp;else book!.events.unshift(withStamp);
+      }else if(action==='deleteEvent'){
+        ensureBook();
+        if(!book!.events)book!.events=[];
+        const id=String(payload.id);
+        book!.events=book!.events.filter(e=>e.id!==id);
       }else if(action==='import'){
         book=structuredClone(payload.book as Book);
         revision=0;

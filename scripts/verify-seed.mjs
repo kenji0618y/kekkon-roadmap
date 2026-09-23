@@ -254,6 +254,10 @@ const uiChecks = [
   ['StampIllustBoard fold done stamps', readText('src/components/StampIllustBoard.tsx').includes('stamp-done-bar') && readText('src/components/StampIllustBoard.tsx').includes('SHOW_DONE_KEY')],
   ['PairWorkbook practice quiet autosave', (pw => pw.includes('quietTimer') && pw.includes('メモは自動で保存されます') && pw.includes('書きかけを戻す') && !pw.includes('メモを保存する'))(readText('src/components/PairWorkbook.tsx'))],
   ['Deadlines block hierarchy', notebook.includes('deadline-block-hero') && notebook.includes('deadline-block-intro')],
+  ['Deadlines calendar mounted', notebook.includes('DeadlinesCalendar') && notebook.includes('deadline-block-calendar')],
+  ['DeadlinesCalendar component', existsSync(join(root, 'src/components/DeadlinesCalendar.tsx')) && readText('src/components/DeadlinesCalendar.tsx').includes('ふたりのカレンダー')],
+  ['Book events schema', readText('src/lib/model.ts').includes('pairEventSchema') && readText('src/lib/model.ts').includes('events:z.array(pairEventSchema)')],
+  ['use-book event mutate', readText('src/lib/use-book.ts').includes("action==='event'") && readText('src/lib/use-book.ts').includes("action==='deleteEvent'")],
   ['Find exclude outer with counts', notebook.includes('find-exclude-outer') && notebook.includes('excludeItems.length')],
   ['Nav short ロードマップ', /short:'ロードマップ'/.test(notebook)],
 ];
