@@ -45,9 +45,20 @@ export type PracticeRecord=z.infer<typeof practiceSchema>;
 /** 「ふたり」タブ：二人の合意。書き込みは任意なので、すべて空でよい。 */
 export const agreementSchema=z.object({mine:z.string().max(2000).catch(''),theirs:z.string().max(2000).catch(''),agreed:z.string().max(2000).catch(''),review:date.catch('')});
 export type AgreementRecord=z.infer<typeof agreementSchema>;
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({})});
+/** 期限タブのカレンダー予定。既存手帳を壊さないよう既定値つき。 */
+export const pairEventSchema=z.object({
+  id:short,
+  title:z.string().min(1).max(100),
+  date:date.refine(v=>v!=='','日付を入力してください'),
+  note:z.string().max(1000).catch(''),
+  who:z.enum(['male','female','both']),
+  updatedAt:z.string().max(40).catch(''),
+});
+export type PairEvent=z.infer<typeof pairEventSchema>;
+export const pairEventWhoLabels={male:'男',female:'女',both:'ふたり'} as const;
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([])});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{}};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[]};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};
