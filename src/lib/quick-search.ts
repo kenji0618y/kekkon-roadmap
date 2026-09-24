@@ -66,7 +66,7 @@ function bestScore(fields: string[], q: string): number {
 export const TAB_HITS: Omit<QuickSearchHit, 'score'>[] = [
   { id: 'tab-desk', kind: 'tab', title: 'デスク', hint: 'いまの進みぐあい', tab: 'desk' },
   { id: 'tab-journey', kind: 'tab', title: 'ロードマップ', hint: 'スタンプ・マップ', tab: 'journey' },
-  { id: 'tab-deadlines', kind: 'tab', title: '期限と時期', hint: 'カレンダー・制度締切・ふたりの予定', tab: 'deadlines' },
+  { id: 'tab-deadlines', kind: 'tab', title: 'カレンダー', hint: 'カレンダー・制度締切・ふたりの予定', tab: 'deadlines' },
   { id: 'tab-pair', kind: 'tab', title: 'ふたりの練習帳', hint: '行動・会話・合意', tab: 'pair' },
   { id: 'tab-find', kind: 'tab', title: '制度を探す', hint: '項目の一覧検索', tab: 'find' },
   { id: 'tab-settings', kind: 'tab', title: 'ふたりの設定', hint: 'プロフィール・同期・キー', tab: 'settings' },
@@ -100,7 +100,7 @@ const SETTING_ALIASES: Record<string, string[]> = {
 export const EMPTY_SUGGESTIONS: QuickSearchHit[] = [
   { id: 'sug-desk', kind: 'tab', title: 'デスク', hint: 'いまの画面', tab: 'desk', score: 1 },
   { id: 'sug-map', kind: 'tab', title: 'ロードマップ', hint: 'スタンプ台帳', tab: 'journey', score: 1 },
-  { id: 'sug-dead', kind: 'tab', title: '期限', hint: '期限と時期', tab: 'deadlines', score: 1 },
+  { id: 'sug-dead', kind: 'tab', title: 'カレンダー', hint: '制度締切・ふたりの予定', tab: 'deadlines', score: 1 },
   { id: 'sug-find', kind: 'tab', title: '探す', hint: '制度を探す', tab: 'find', score: 1 },
   { id: 'sug-set', kind: 'tab', title: '設定', hint: 'ふたりの設定', tab: 'settings', score: 1 },
   {
