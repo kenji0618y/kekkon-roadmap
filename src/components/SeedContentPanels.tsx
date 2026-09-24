@@ -2,6 +2,7 @@ import {CalendarDays,ExternalLink,MessageCircle,AlertTriangle,Hash,Ban,Layers,Ch
 import {formatMoney,monthDay,shortDate,todayJapan,difference,deadlineText} from '../lib/dates'
 import {absoluteDeadlines,relativeDeadlines,excludeItems,excludeMeta,homeContent,phasesContent} from '../data/catalog'
 import {branchVisible, type Profile} from '../lib/model'
+import {Action, EmptyState} from './book-controls'
 
 function seedMoneyLine(d: {
   money?: {amount_yen: number | null; unit?: string | null} | null
@@ -356,7 +357,15 @@ export function HeroNumbersPanel({profile}: {profile?: Profile | null} = {}) {
   )
 }
 
-export function PhasesPanel({child, home}: {child: string; home: string}) {
+export function PhasesPanel({
+  child,
+  home,
+  onOpenProfile,
+}: {
+  child: string
+  home: string
+  onOpenProfile?: () => void
+}) {
   const {phases, m0_definition, as_of} = phasesContent
   const visible = phases.filter((ph) => branchVisible(ph.branch, child, home))
   const eventTotal = visible.reduce((n, p) => n + p.events.length, 0)
@@ -368,31 +377,53 @@ export function PhasesPanel({child, home}: {child: string; home: string}) {
           婚姻日 = {m0_definition} · 基準日 {as_of} · {visible.length}の区切り / {eventTotal}の出来事
         </p>
       </div>
-      <div className="seed-phase-list">
-        {visible.map((ph, idx) => (
-          <details key={ph.id} className="seed-phase" open={ph.id === 'phase0' || (idx === 0 && !visible.some((p) => p.id === 'phase0'))}>
-            <summary>
-              <Layers size={16} />
-              <span>
-                <strong>{ph.title}</strong>
-                <small>{ph.range} · {ph.events.length}件</small>
-              </span>
-            </summary>
-            <ul>
-              {ph.events.map((ev) => (
-                <li key={`${ph.id}-${ev.title}`}>
-                  <div className="seed-event-top">
-                    <strong>{ev.title}</strong>
-                    <span>{ev.when}</span>
-                  </div>
-                  {ev.money && <p className="seed-money">{ev.money}</p>}
-                  {ev.offset && <p className="seed-note">{ev.offset}</p>}
-                </li>
-              ))}
-            </ul>
-          </details>
-        ))}
-      </div>
+      {visible.length === 0 ? (
+        <EmptyState
+          symbol={<Layers />}
+          title="いまの前提では、時期の案内がありません。"
+          action={
+            onOpenProfile ? (
+              <Action secondary onClick={onOpenProfile}>
+                ふたりの設定を開く
+              </Action>
+            ) : undefined
+          }
+        >
+          子どもの希望や住まいの計画を設定すると、合わせて案内が出ます。ロードマップの章でも進め方を確認できます。
+        </EmptyState>
+      ) : (
+        <div className="seed-phase-list">
+          {visible.map((ph, idx) => (
+            <details
+              key={ph.id}
+              className="seed-phase"
+              open={ph.id === 'phase0' || (idx === 0 && !visible.some((p) => p.id === 'phase0'))}
+            >
+              <summary>
+                <Layers size={16} />
+                <span>
+                  <strong>{ph.title}</strong>
+                  <small>
+                    {ph.range} · {ph.events.length}件
+                  </small>
+                </span>
+              </summary>
+              <ul>
+                {ph.events.map((ev) => (
+                  <li key={`${ph.id}-${ev.title}`}>
+                    <div className="seed-event-top">
+                      <strong>{ev.title}</strong>
+                      <span>{ev.when}</span>
+                    </div>
+                    {ev.money && <p className="seed-money">{ev.money}</p>}
+                    {ev.offset && <p className="seed-note">{ev.offset}</p>}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ))}
+        </div>
+      )}
     </section>
   )
 }

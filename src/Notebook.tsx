@@ -189,7 +189,7 @@ export default function FutureNotebook(){
   </details>
  </section>
  <section id="deadline-block-schedule" className="deadline-block" aria-label="これからの予定">
-  <details className="deadline-secondary-fold">
+  <details className="deadline-secondary-fold" open>
    <summary>
     <h2 className="deadline-block-label">項目の予定</h2>
     <span className="hint">手帳の項目に紐づく日付・未設定</span>
@@ -209,12 +209,12 @@ export default function FutureNotebook(){
   </details>
  </section>
  <section id="deadline-block-phases" className="deadline-block phases-in-deadlines" aria-label="時期の区切り">
-  <details className="deadline-phases-fold">
+  <details className="deadline-phases-fold" open>
    <summary>
     <h2 className="deadline-block-label">時期の区切り</h2>
     <span className="hint">結婚前後から暮らしまでの案内（スタンプの進みぐあいとは別）</span>
    </summary>
-   <PhasesPanel child={p.child} home={p.home}/>
+   <PhasesPanel child={p.child} home={p.home} onOpenProfile={openProfile}/>
   </details>
  </section>
 </TabsContent>
