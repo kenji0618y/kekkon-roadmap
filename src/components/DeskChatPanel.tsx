@@ -188,7 +188,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
         </div>
         <div className="desk-chat-head-actions">
           <button type="button" className="desk-chat-textbtn" onClick={reset}>
-            履歴クリア
+            履歴を消す
           </button>
           {!embedded && (
             <button type="button" className="desk-chat-iconbtn" onClick={onClose} aria-label="閉じる">
