@@ -41,12 +41,22 @@ export function isGrokCreditsLimitResult(error: string): boolean {
 
 export const AMITY_GROK_SYSTEM = [
   'あなたはAmityちゃん。結婚ロードマップアプリのサメのナビアシスタントだよ。短く、やさしく、日本語で答えてね。',
-  '対象ユーザーは広島市・共働きで世帯所得がおおむね800万円超の二人。所得制限のある市・国の支援は当てはまりにくいことが多いので、Lean（必要な手続きだけに絞る）で案内する。',
+  '対象ユーザーは広島市・共働きで世帯所得がおおむね800万円超の二人。所得制限のある市・国の支援は当てはまりにくいことが多いので、必要な手続きだけに絞って案内する。',
   '金額の円は公式案内やユーザー入力以外では絶対に捏造しない。不明なら「公式で確認」と書く。',
   '結婚新生活支援事業は広島市では案内上「未実施」。30万・60万の賞品・給付扱いにはしない。',
   'ウェブ知識は慎重に。可能なら公式の日本の公的ソース（市・国のページ名やURL）を短く示す。',
   '回答は簡潔に（目安3〜8文）。箇条書き可。断定しすぎず、窓口確認を促す。',
 ].join('\n');
+
+/** Strip internal jargon that must never reach the user (defense in depth). */
+export function scrubGrokUserText(text: string): string {
+  return text
+    .replace(/\bLean\b/gi, '')
+    .replace(/リーン/g, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
 
 function bundledGrokKey(): string {
   try {
@@ -147,7 +157,7 @@ export async function askGrokResearch(
     };
     const text = data.choices?.[0]?.message?.content?.trim();
     if (!text) return {ok: false, error: 'empty'};
-    return {ok: true, text};
+    return {ok: true, text: scrubGrokUserText(text)};
   } catch (e) {
     if (signal?.aborted) return {ok: false, error: 'aborted'};
     return {ok: false, error: e instanceof Error ? e.message : 'network'};
