@@ -33,7 +33,7 @@ import {absoluteDeadlines,excludeItems,groups,homeContent,practices,relativeDead
 import {buildQuickSearchHits,groupQuickSearchHits,taskMatchesQuery,type QuickSearchHit} from './lib/quick-search';
 import yearlyUpdateMd from './data/YEARLY_UPDATE.md?raw';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
-const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'期限と時期',short:'期限',icon:CalendarDays},{id:'pair',label:'ふたりの練習帳',short:'ふたり',icon:HeartHandshake},{id:'find',label:'制度を探す',short:'探す',icon:Search},{id:'settings',label:'ふたりの設定',short:'設定',icon:Settings2}];
+const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'pair',label:'ふたりの練習帳',short:'ふたり',icon:HeartHandshake},{id:'find',label:'制度を探す',short:'探す',icon:Search},{id:'settings',label:'ふたりの設定',short:'設定',icon:Settings2}];
 type Modal='profile'|'pair'|null;
 export default function FutureNotebook(){
  const [tab,setTab]=useState('desk'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[chatOpen,setChatOpen]=useState(false);
@@ -159,7 +159,7 @@ export default function FutureNotebook(){
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や期限タブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">
- <SectionTitle eyebrow="期限と時期" title="カレンダーで、ふたりの予定を。" sub={(()=>{const w=pairEventWhoLabels(p);return `月のカレンダーが中心です。制度の締切は日付に点で出ます。${w.male}・${w.female}・ふたりで予定を残せます。`;})()}><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length?<p className="hint export-cal-hint">基準の日付か予定日を設定すると書き出せます。制度の絶対期限と、カレンダーに入れた予定も対象です。</p>:!dated.length&&!pairExport.length&&absExport.length>0?<p className="hint export-cal-hint">いまは制度の絶対期限（{absExport.length}件）を書き出します。基準の日付・予定日やカレンダー予定を足すとそれも入ります。</p>:null}</div></SectionTitle>
+ <SectionTitle eyebrow="カレンダー" title="カレンダーで、ふたりの予定を。" sub={(()=>{const w=pairEventWhoLabels(p);return `月のカレンダーが中心です。制度の締切は日付に点で出ます。${w.male}・${w.female}・ふたりで予定を残せます。`;})()}><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length?<p className="hint export-cal-hint">基準の日付か予定日を設定すると書き出せます。制度の絶対期限と、カレンダーに入れた予定も対象です。</p>:!dated.length&&!pairExport.length&&absExport.length>0?<p className="hint export-cal-hint">いまは制度の絶対期限（{absExport.length}件）を書き出します。基準の日付・予定日やカレンダー予定を足すとそれも入ります。</p>:null}</div></SectionTitle>
  <nav className="deadlines-mini-nav" aria-label="期限タブ内の節">
   <a href="#deadline-block-calendar">カレンダー</a>
   <a href="#deadline-block-hero">数字</a>

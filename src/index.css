@@ -1160,7 +1160,9 @@
     white-space: nowrap;
   }
   .site-header .main-nav [data-slot=tabs-trigger][value="journey"] .nav-label-short,
-  .site-header .main-nav [data-slot=tabs-trigger]:nth-child(2) .nav-label-short {
+  .site-header .main-nav [data-slot=tabs-trigger]:nth-child(2) .nav-label-short,
+  .site-header .main-nav [data-slot=tabs-trigger][value="deadlines"] .nav-label-short,
+  .site-header .main-nav [data-slot=tabs-trigger]:nth-child(3) .nav-label-short {
     letter-spacing: -0.04em;
     font-size: 8.5px;
   }
