@@ -23,6 +23,7 @@ import {clearGrokLocalOnly,markGrokLocalOnly} from './lib/grok-mode';
 import {answerDeskQuery} from './lib/desk-chat';
 import {DeskChatPanel} from './components/DeskChatPanel';
 import {PairWorkbook} from './components/PairWorkbook';
+import {FutariDaily,type FutariSave} from './components/FutariDaily';
 import {MarriageDesk} from './components/MarriageDesk';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
@@ -50,6 +51,9 @@ export default function FutureNotebook(){
  const [onboardOpen,setOnboardOpen]=useState(false);
  const [quickOpen,setQuickOpen]=useState(false),[quickQ,setQuickQ]=useState('');
  const [pairJump,setPairJump]=useState<{theme?:string,practiceId?:string,talkId?:string,agreementId?:string,scrollId?:string}|null>(null);
+ const [pairBookOpen,setPairBookOpen]=useState(false);
+ useEffect(()=>{if(pairJump)setPairBookOpen(true);},[pairJump]);
+ useEffect(()=>{if(tab==='pair')setChatOpen(false);},[tab]);
  const data=useBook(!!modal||!!taskId||dirty),book=data.book||emptyBook,p=book.profile,today=todayJapan();
  const scoped=useMemo(()=>tasks.filter(t=>inScope(t,p)),[p]);
  const actionable=scoped.filter(t=>book.records[t.id]?.status!=='na'),done=actionable.filter(t=>book.records[t.id]?.status==='done');
@@ -103,6 +107,11 @@ export default function FutureNotebook(){
  const saveProfile=async(profile:Profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'))forceClose();};
  const savePractice=async(id:string,record:PracticeRecord)=>{return !!(await data.mutate({action:'practice',id,record},''));};
  const saveAgreement=async(id:string,record:AgreementRecord)=>{return !!(await data.mutate({action:'agreement',id,record},'この話題を保存しました'));};
+ const futariSave:FutariSave={
+  answer:async({date,who,cardId,mode,answer})=>!!(await data.mutate({action:'futariAnswer',date,who,cardId,mode,answer},'')),
+  meeting:async(date,note)=>!!(await data.mutate({action:'futariMeeting',date,note},'会議のメモを残しました')),
+  settings:async(patch)=>!!(await data.mutate({action:'futariSettings',patch},'保存しました')),
+ };
  const savePairEvent=async(event:PairEvent)=>{return !!(await data.mutate({action:'event',event},event.id&&book.events?.some(e=>e.id===event.id)?'予定を更新しました':'予定を手帳に残しました'));};
  const deletePairEvent=async(id:string)=>{return !!(await data.mutate({action:'deleteEvent',id},'予定を削除しました'));};
  const exportBackup=()=>{if(!data.book){toast.info('手帳を始めてから保存できます');return;}downloadText(`futari-miraicho-${today}.json`,backupText(data.book));toast.success('バックアップを書き出しました');};
@@ -132,7 +141,7 @@ export default function FutureNotebook(){
  const lastSyncLabel=data.lastSyncAt?new Date(data.lastSyncAt).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'—';
  const renderTask=(t:Task,compact=false)=>{const r=book.records[t.id],deadline=nearestDeadline(t,p,r);return <button key={t.id} className={`task-row ${compact?'compact':''} ${r?.status==='done'?'task-done':''}`} onClick={()=>openTask(t.id)}><span className="task-circle">{r?.status==='done'?<Check size={17}/>:t.type==='conversation'?<Heart size={16}/>:<span/>}</span><span className="task-row-body"><span className="task-row-top"><span className="task-type">{typeLabels[t.type]}</span>{r&&<StatusMark status={r.status}/>}</span><strong>{t.title}</strong>{!compact&&<span className="task-summary">{t.summary}</span>}<span className="task-meta">{deadline&&!['done','na'].includes(r?.status||'')&&<span className={difference(deadline.date,today)<=7?'urgency':''}><CalendarDays size={13}/>{monthDay(deadline.date)} · {deadline.kind==='personal'?'予定':deadline.uncertain?'原則日':'届出期限'}</span>}</span></span><ChevronRight size={17}/></button>;};
  return <><a className="skip-link" href="#main-content">本文へ進む</a><Toaster theme="light" position="top-center" richColors/><PwaUpdateBanner/>
- <Tabs value={tab} onValueChange={setTab} className="notebook-tabs">
+ <Tabs value={tab} onValueChange={v=>{if(v==='pair')setChatOpen(false);setTab(v);}} className="notebook-tabs">
  <header className="masthead site-header"><div className="masthead-inner"><button className="brand" onClick={()=>setTab('desk')} aria-label="Amityちゃんにきく ホーム"><span className="brand-seal">結</span><span className="wordmark">Amityちゃんにきく<small>AMITY CHAN NI KIKU · 広島</small></span></button><div className="header-right"><button type="button" className="header-search-btn" onClick={()=>{setQuickOpen(true);setQuickQ('');}} aria-label="項目・画面・期限を検索"><Search size={16}/><span>検索</span></button><span className="city-tag"><MapPin size={15}/>広島市{p.ward!=='未設定'?` ${p.ward}`:''}</span><button className="pair-pill" onClick={()=>setModal('pair')}><Users size={16}/><span>ふたりで使う</span></button><span className="save-status header-save" role="status">{data.busy?<><LoaderCircle className="spin" size={14}/>保存中</>:data.phase==='loading'?<>読み込み中…</>:data.phase==='error'?<>接続を確認</>:data.book?<><CloudCheck size={15}/>この端末に保存済み</>:<>まだ手帳を始めていません</>}</span></div></div>
  <div className="nav-wrap"><TabsList className="main-nav" aria-label="メインメニュー">{nav.map(n=><TabsTrigger key={n.id} value={n.id}><n.icon/><span className="nav-label-full">{n.label}</span><span className="nav-label-short">{n.short}</span>{n.id==='deadlines'&&soon.length>0&&<i className="nav-dot"/>}</TabsTrigger>)}</TabsList></div></header>
  <main className="workspace" id="main-content">
@@ -218,8 +227,13 @@ export default function FutureNotebook(){
   </details>
  </section>
 </TabsContent>
- <TabsContent value="pair" forceMount className="tab-surface pair-tab data-[state=inactive]:hidden"><SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
-  <PairWorkbook book={book} busy={data.busy} onSavePractice={savePractice} onSaveAgreement={saveAgreement} jump={pairJump} onJumpHandled={()=>setPairJump(null)}/>
+ <TabsContent value="pair" forceMount className="tab-surface pair-tab data-[state=inactive]:hidden">
+  <FutariDaily book={book} busy={data.busy} save={futariSave}/>
+  <details className="paper-card pair-workbook-fold" id="pair-workbook" open={pairBookOpen} onToggle={e=>setPairBookOpen((e.currentTarget as HTMLDetailsElement).open)}>
+   <summary><strong>ふたりの練習帳（行動・会話・合意）</strong><span className="hint">これまでのスタンプ台と、書きためた合意</span></summary>
+   <SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
+   <PairWorkbook book={book} busy={data.busy} onSavePractice={savePractice} onSaveAgreement={saveAgreement} jump={pairJump} onJumpHandled={()=>setPairJump(null)}/>
+  </details>
  </TabsContent>
  <TabsContent value="find" className="tab-surface find-tab"><SectionTitle eyebrow="制度を探す" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。${tasks.length}項目を収録しています。`}/>
  <div className="search-panel find-search-sticky"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters find-filters-compact"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'スキップ'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>いまの二人の候補だけ</span></label></div></div>
@@ -289,7 +303,7 @@ export default function FutureNotebook(){
  <AlertDialog open={!!importDraft} onOpenChange={open=>{if(!open&&!data.busy)setImportDraft(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>このバックアップを読み込みますか？</AlertDialogTitle><AlertDialogDescription>{importDraft?.legacy?'旧版の状況を移行します。手順が変わっているため、旧版の小さなチェックと調査メモ・除外理由は自動移行しません。働き方は各自で設定し直してください。':'名前・日付・進捗・記念手帳を復元します。'} 現在の二人の手帳の内容は、このバックアップで置き換わります。</AlertDialogDescription></AlertDialogHeader><div className="import-details"><p>{importDraft?.book.profile.name1||'名前未設定'} & {importDraft?.book.profile.name2||'名前未設定'}</p><p>{Object.keys(importDraft?.book.records||{}).length}項目の記録 · {importDraft?.book.memories.length}件の記念</p><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>現在の内容を先に書き出す</Action></div><AlertDialogFooter><AlertDialogCancel disabled={data.busy}>キャンセル</AlertDialogCancel><AlertDialogAction disabled={data.busy} onClick={e=>{e.preventDefault();void(async()=>{if(importDraft&&await data.mutate({action:'import',book:importDraft.book},'手帳を読み込みました'))setImportDraft(null);})();}}>この内容に置き換える</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
 
 
- <button type="button" className="amity-fab" onClick={()=>setChatOpen(true)} aria-label="Amityちゃんにきく" hidden={chatOpen || !!taskId} aria-hidden={chatOpen || !!taskId}>
+ <button type="button" className="amity-fab" onClick={()=>setChatOpen(true)} aria-label="Amityちゃんにきく" hidden={chatOpen || !!taskId || tab==='pair'} aria-hidden={chatOpen || !!taskId || tab==='pair'}>
   <img src="./desk-mascot.png" alt="" decoding="async"/>
  </button>
  

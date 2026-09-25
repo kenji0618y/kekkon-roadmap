@@ -1,6 +1,7 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {toast} from 'sonner';
-import {bookSchema,emptyBook,type AgreementRecord,type Book,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
+import {bookSchema,emptyBook,emptyFutari,type AgreementRecord,type Book,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
+import {mergeFutari,sameFutari} from './futari';
 import {validateCatalogBook} from './backup';
 import {
   buildPayload,
@@ -119,6 +120,30 @@ export function useBook(_paused:boolean){
     });
   },[accept]);
 
+  /** 他の端末の更新を取り込むとき、ふたりの一問の答えだけは両方を残す（同時に答えても消えない）。 */
+  const applyRemoteMerged=useCallback((remote:{book:Book,revision:number,savedAt:string})=>{
+    const local=current.current.book;
+    const merged=mergeFutari(local?.futari,remote.book.futari);
+    if(local&&!sameFutari(merged,remote.book.futari)){
+      applyRemote({book:{...remote.book,futari:merged},revision:remote.revision+1,savedAt:new Date().toISOString()});
+      localDirtyRef.current=true;
+      return true;
+    }
+    applyRemote(remote);
+    return false;
+  },[applyRemote]);
+  const mergeRemoteIntoLocal=useCallback((remote:{book:Book})=>{
+    const snap=current.current;
+    if(!snap.book)return;
+    const merged=mergeFutari(snap.book.futari,remote.book.futari);
+    if(sameFutari(merged,snap.book.futari))return;
+    const book={...snap.book,futari:merged};
+    const at=writeStored(book,snap.revision);
+    savedAtRef.current=at;
+    setSavedAt(at);
+    accept({...snap,book});
+  },[accept]);
+
   const pullAndReconcile=useCallback(async(opts?:{quiet?:boolean})=>{
     const cfg=syncConfigRef.current;
     if(!cfg.enabled||!cfg.token||!cfg.gistId)return;
@@ -135,9 +160,14 @@ export function useBook(_paused:boolean){
       const verdict=compareRemote(local,remote);
       // Concurrent conflict: prefer higher revision; if equal, prefer higher savedAt (see compareRemote).
       if(verdict==='remote'){
-        applyRemote(remote);
+        const needsPush=applyRemoteMerged(remote);
         if(!opts?.quiet)toast.message('他の端末の更新を取り込みました');
+        if(needsPush&&current.current.book){
+          await pushToGist(cfg,buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined));
+          localDirtyRef.current=false;
+        }
       }else if(verdict==='local'&&(localDirtyRef.current||current.current.revision>remote.revision)){
+        mergeRemoteIntoLocal(remote);
         if(current.current.book){
           const payload=buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined);
           await pushToGist(cfg,payload);
@@ -152,7 +182,7 @@ export function useBook(_paused:boolean){
     }finally{
       syncingRef.current=false;
     }
-  },[applyRemote]);
+  },[applyRemoteMerged,mergeRemoteIntoLocal]);
 
   const refresh=useCallback(async(_quiet=false)=>{
     try{
@@ -211,6 +241,9 @@ export function useBook(_paused:boolean){
       return ev?.id?`event:${ev.id}`:'event';
     }
     if(action==='deleteEvent')return `deleteEvent:${String(payload.id||'')}`;
+    if(action==='futariAnswer')return `futariAnswer:${String(payload.date||'')}:${String(payload.who||'')}`;
+    if(action==='futariMeeting')return `futariMeeting:${String(payload.date||'')}`;
+    if(action==='futariSettings')return 'futariSettings';
     return '';
   };
 
@@ -284,6 +317,25 @@ export function useBook(_paused:boolean){
         if(!book!.events)book!.events=[];
         const id=String(payload.id);
         book!.events=book!.events.filter(e=>e.id!==id);
+      }else if(action==='futariAnswer'){
+        ensureBook();
+        if(!book!.futari)book!.futari=structuredClone(emptyFutari);
+        const date=String(payload.date);
+        const who=payload.who==='n2'?'n2':'n1';
+        const f=book!.futari;
+        const day=f.days[date]||{cardId:String(payload.cardId),mode:(payload.mode as FutariMode)||'answer',n1:null,n2:null};
+        const prev:FutariAnswer=day[who]||{text:'',guess:'',changed:'',result:'',at:''};
+        day[who]={...prev,...(payload.answer as Partial<FutariAnswer>),at:new Date().toISOString()};
+        f.days[date]=day;
+        if(!f.startedAt||date<f.startedAt)f.startedAt=date;
+      }else if(action==='futariMeeting'){
+        ensureBook();
+        if(!book!.futari)book!.futari=structuredClone(emptyFutari);
+        book!.futari.meetings[String(payload.date)]={note:String(payload.note||''),at:new Date().toISOString()};
+      }else if(action==='futariSettings'){
+        ensureBook();
+        if(!book!.futari)book!.futari=structuredClone(emptyFutari);
+        book!.futari={...book!.futari,...(payload.patch as object),settingsAt:new Date().toISOString()};
       }else if(action==='import'){
         book=structuredClone(payload.book as Book);
         revision=0;
@@ -374,10 +426,15 @@ export function useBook(_paused:boolean){
         const local={revision:current.current.revision,savedAt:savedAtRef.current};
         const verdict=compareRemote(local,remote);
         if(verdict==='remote'){
-          applyRemote(remote);
+          const needsPush=applyRemoteMerged(remote);
+          if(needsPush&&current.current.book){
+            await pushToGist(cfg,buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined));
+            localDirtyRef.current=false;
+          }
           toast.success('リモートの内容を取り込みました');
         }else if(verdict==='local'||localDirtyRef.current){
           if(!current.current.book)throw new Error('まだ手帳がありません。');
+          mergeRemoteIntoLocal(remote);
           const payload=buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined);
           await pushToGist(cfg,payload);
           localDirtyRef.current=false;
@@ -405,7 +462,7 @@ export function useBook(_paused:boolean){
     }finally{
       syncingRef.current=false;
     }
-  },[applyRemote]);
+  },[applyRemoteMerged,mergeRemoteIntoLocal]);
 
   const testSync=useCallback(async()=>{
     const cfg=syncConfigRef.current;

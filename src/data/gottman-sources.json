@@ -1,0 +1,342 @@
+{
+  "checked": "2026-09-25",
+  "about": "ゴットマン博士の書籍と gottman.com の記事。内容はここに挙げたものだけから作っています。ページ番号は確認できたものだけを書いています。",
+  "ai_allowed": [
+    "7P-4",
+    "7P-5",
+    "7P-6",
+    "7P-7",
+    "7P-9",
+    "G-HORSEMEN",
+    "G-ANTIDOTE",
+    "G-SOFT",
+    "G-FLOODPERP",
+    "G-TURN",
+    "G-FONDNESS",
+    "G-LOVEMAP",
+    "G-INFLUENCE",
+    "G-SRH",
+    "G-REPAIR",
+    "G-PERPETUAL",
+    "G-FINANCE"
+  ],
+  "sources": [
+    {
+      "id": "7P-3",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第3章「How I Predict Divorce」",
+      "short": "本 第3章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "7P-4",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第4章「Principle 1: Enhance Your Love Maps」",
+      "short": "本 第4章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "7P-5",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第5章「Principle 2: Nurture Your Fondness and Admiration」",
+      "short": "本 第5章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "7P-6",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第6章「Principle 3: Turn Toward Each Other Instead of Away」",
+      "short": "本 第6章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "7P-7",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第7章「Principle 4: Let Your Partner Influence You」",
+      "short": "本 第7章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "7P-8",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第8章「The Two Kinds of Marital Conflict」",
+      "short": "本 第8章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "7P-9",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第9章「Principle 5: Solve Your Solvable Problems」",
+      "short": "本 第9章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "7P-11",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第11章「Principle 6: Overcome Gridlock」",
+      "short": "本 第11章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "7P-12",
+      "kind": "book",
+      "title": "『The Seven Principles for Making Marriage Work』改訂版（John M. Gottman & Nan Silver, 2015） 第12章「Principle 7: Create Shared Meaning」",
+      "short": "本 第12章",
+      "url": "",
+      "note": "邦訳：『結婚生活を成功させる七つの原則』（第三文明社。邦訳は旧版がもとのため章番号が1つずれます）"
+    },
+    {
+      "id": "G-HORSEMEN",
+      "kind": "web",
+      "title": "gottman.com「The Four Horsemen: Criticism, Contempt, Defensiveness, and Stonewalling」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/the-four-horsemen-recognizing-criticism-contempt-defensiveness-and-stonewalling/"
+    },
+    {
+      "id": "G-ANTIDOTE",
+      "kind": "web",
+      "title": "gottman.com「The Four Horsemen: The Antidotes」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/the-four-horsemen-the-antidotes/"
+    },
+    {
+      "id": "G-RATIO",
+      "kind": "web",
+      "title": "gottman.com「The Magic Relationship Ratio, According to Science」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/the-magic-relationship-ratio-according-science/"
+    },
+    {
+      "id": "G-SOFT",
+      "kind": "web",
+      "title": "gottman.com「How to Fight Smarter: Soften Your Start-Up」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/softening-startup/"
+    },
+    {
+      "id": "G-6PREDICT",
+      "kind": "web",
+      "title": "gottman.com「The 6 Things That Predict Divorce」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/the-6-things-that-predict-divorce/"
+    },
+    {
+      "id": "G-TURN",
+      "kind": "web",
+      "title": "gottman.com「Turn Towards Instead of Away」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/turn-toward-instead-of-away/"
+    },
+    {
+      "id": "G-PERPETUAL",
+      "kind": "web",
+      "title": "gottman.com「Managing Conflict: Solvable vs. Perpetual Problems」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/managing-conflict-solvable-vs-perpetual-problems/"
+    },
+    {
+      "id": "G-FINANCE",
+      "kind": "web",
+      "title": "gottman.com「Perpetual Problems Around Finances」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/perpetual-problems-around-finances/"
+    },
+    {
+      "id": "G-FLOODPERP",
+      "kind": "web",
+      "title": "gottman.com「Does Flooding Play a Role in Your Perpetual Conflict?」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/does-flooding-play-a-role-in-your-perpetual-conflict/"
+    },
+    {
+      "id": "G-MANAGE4",
+      "kind": "web",
+      "title": "gottman.com「Manage Conflict - Part 4」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/manage-conflict-part-4/"
+    },
+    {
+      "id": "G-DARKANGER",
+      "kind": "web",
+      "title": "gottman.com「The Dark Side of Anger」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/the-dark-side-of-anger-what-every-couple-should-know/"
+    },
+    {
+      "id": "G-LOVEMAP",
+      "kind": "web",
+      "title": "gottman.com「The Sound Relationship House: Build Love Maps」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/the-sound-relationship-house-build-love-maps/"
+    },
+    {
+      "id": "G-SRH",
+      "kind": "web",
+      "title": "gottman.com「What is The Sound Relationship House?」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/what-is-the-sound-relationship-house/"
+    },
+    {
+      "id": "G-FONDNESS",
+      "kind": "web",
+      "title": "gottman.com「Share Fondness and Admiration」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/share-fondness-and-admiration/"
+    },
+    {
+      "id": "G-6HOURS",
+      "kind": "web",
+      "title": "gottman.com「6 Hours a Week to a Better Relationship」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/6-hours-a-week-to-a-better-relationship/"
+    },
+    {
+      "id": "G-DAILYTALK",
+      "kind": "web",
+      "title": "gottman.com「The One Daily Talk That Will Benefit Your Marriage」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/the-one-daily-talk-that-will-benefit-your-marriage/"
+    },
+    {
+      "id": "G-REPAIR",
+      "kind": "web",
+      "title": "gottman.com「Repair is the Secret Weapon of Emotionally Connected Couples」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/repair-secret-weapon-emotionally-connected-couples/"
+    },
+    {
+      "id": "G-INFLUENCE",
+      "kind": "web",
+      "title": "gottman.com「Manage Conflict: Accepting Influence」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/manage-conflict-accepting-influence/"
+    },
+    {
+      "id": "G-SOTU",
+      "kind": "web",
+      "title": "gottman.com「State of the Union Meetings Will Strengthen Your Relationship」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/state-of-the-union-meeting-will-strengthen-your-relationship-heres-how-to-start-yours/"
+    },
+    {
+      "id": "G-SOTUHOW",
+      "kind": "web",
+      "title": "gottman.com「How to Have a State of the Union Meeting」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/how-to-have-a-state-of-the-union-meeting/"
+    },
+    {
+      "id": "G-SOTU2",
+      "kind": "web",
+      "title": "gottman.com「Reaching a Compromise: The Second Part of the State of the Union Meeting」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/reaching-compromise-second-part-state-union-meeting/"
+    },
+    {
+      "id": "G-LMPDF",
+      "kind": "web",
+      "title": "gottman.com「Love Maps（PDF）」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/wp-content/uploads/2016/10/Love-Maps-Exercise.pdf"
+    },
+    {
+      "id": "G-HOWLOVEMAP",
+      "kind": "web",
+      "title": "gottman.com「How to Build Love Maps」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/how-to-build-love-maps/"
+    },
+    {
+      "id": "G-APPREC",
+      "kind": "web",
+      "title": "gottman.com「Build a Culture of Appreciation」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/weekend-homework-assignment-build-a-culture-of-appreciation/"
+    },
+    {
+      "id": "G-8DQ",
+      "kind": "web",
+      "title": "gottman.com「Getting to Know You: Questions to Ask Your Dating Partner」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/getting-to-know-you-questions-to-ask-your-dating-partner/"
+    },
+    {
+      "id": "G-COVID",
+      "kind": "web",
+      "title": "gottman.com「Communication During Coronavirus: Listening and Learning」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/communication-during-coronavirus-listening-and-learning/"
+    },
+    {
+      "id": "G-BIDS",
+      "kind": "web",
+      "title": "gottman.com「An Introduction to Emotional Bids and Trust」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/an-introduction-to-emotional-bids-and-trust/"
+    },
+    {
+      "id": "G-RITUALS",
+      "kind": "web",
+      "title": "gottman.com「Create Shared Meaning: Examining Your Rituals」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/create-shared-meaning-examining-rituals/"
+    },
+    {
+      "id": "G-5RITUALS",
+      "kind": "web",
+      "title": "gottman.com「5 Rituals to Reconnect in Your Relationship」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/5-rituals-reconnect-relationship/"
+    },
+    {
+      "id": "G-AFTERMATH",
+      "kind": "web",
+      "title": "gottman.com「Manage Conflict: The Aftermath of a Fight」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/manage-conflict-the-aftermath-of-a-fight/"
+    },
+    {
+      "id": "G-GRIDLOCK",
+      "kind": "web",
+      "title": "gottman.com「Overcoming Gridlocked Conflict」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/overcoming-gridlocked-conflict/"
+    },
+    {
+      "id": "G-ATTUNE",
+      "kind": "web",
+      "title": "gottman.com「Practicing Emotional Attunement」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/self-care-emotional-attunement/"
+    },
+    {
+      "id": "G-TRUST",
+      "kind": "web",
+      "title": "gottman.com「The Deeper Meaning of Trust」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/blog/the-deeper-meaning-of-trust/"
+    },
+    {
+      "id": "G-RCURE",
+      "kind": "web",
+      "title": "gottman.com「The Relationship Cure（書籍の紹介ページ）」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/product/the-relationship-cure/"
+    },
+    {
+      "id": "G-WMLL",
+      "kind": "web",
+      "title": "gottman.com「What Makes Love Last?（書籍の紹介ページ）」",
+      "short": "gottman.com",
+      "url": "https://www.gottman.com/product/what-makes-love-last/"
+    }
+  ]
+}

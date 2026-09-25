@@ -66,9 +66,52 @@ export function pairEventWhoLabels(p: Pick<Profile, 'name1' | 'name2'>) {
 export function pairWhoLabel(who: 'male' | 'female' | 'both', p: Pick<Profile, 'name1' | 'name2'>) {
   return pairEventWhoLabels(p)[who];
 }
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([])});
+/** 「ふたり」タブ：今日の一問（毎日1分）。二人の答えは手帳（端末＋Gist同期）に入る。既定値つきで既存の手帳を壊さない。 */
+const isoDay=/^\d{4}-\d{2}-\d{2}$/;
+export const futariAnswerSchema=z.object({
+  text:z.string().max(1000).catch(''),
+  guess:z.string().max(1000).catch(''),
+  changed:z.string().max(500).catch(''),
+  result:z.enum(['','hit','new']).catch(''),
+  at:z.string().max(40).catch(''),
+});
+export type FutariAnswer=z.infer<typeof futariAnswerSchema>;
+export const futariModes=['answer','compare','guess'] as const;
+export type FutariMode=typeof futariModes[number];
+export const futariDaySchema=z.object({
+  cardId:z.string().min(1).max(20),
+  mode:z.enum(futariModes).catch('answer'),
+  n1:futariAnswerSchema.nullable().catch(null).default(null),
+  n2:futariAnswerSchema.nullable().catch(null).default(null),
+});
+export type FutariDay=z.infer<typeof futariDaySchema>;
+export const futariMeetingSchema=z.object({note:z.string().max(2000).catch(''),at:z.string().max(40).catch('')});
+export type FutariMeeting=z.infer<typeof futariMeetingSchema>;
+/** 1件だけ壊れていても他の日を消さないよう、日ごとに検査して残す。 */
+function dayRecord<T extends z.ZodTypeAny>(item:T){
+  return z.record(z.unknown()).catch({}).transform((obj)=>{
+    const out:Record<string,z.infer<T>>={};
+    for(const [k,v] of Object.entries(obj)){
+      if(!isoDay.test(k))continue;
+      const r=item.safeParse(v);
+      if(r.success)out[k]=r.data;
+    }
+    return out;
+  });
+}
+export const futariSchema=z.object({
+  startedAt:z.string().refine(v=>v===''||isoDay.test(v)).catch(''),
+  modeOverride:z.enum(['auto',...futariModes]).catch('auto'),
+  signal:z.string().max(40).catch(''),
+  settingsAt:z.string().max(40).catch(''),
+  days:dayRecord(futariDaySchema),
+  meetings:dayRecord(futariMeetingSchema),
+});
+export type Futari=z.infer<typeof futariSchema>;
+export const emptyFutari:Futari={startedAt:'',modeOverride:'auto',signal:'',settingsAt:'',days:{},meetings:{}};
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari)});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[]};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};
