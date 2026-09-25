@@ -33,7 +33,7 @@ function Teach({ids,children}:{ids:string[],children?:ReactNode}){
   return <div className="fu-teach"><span className="fu-teach-label">ゴットマン博士の教え</span>{children}<Sources ids={ids}/></div>;
 }
 
-export function FutariDaily({book,busy,save}:{book:Book,busy:boolean,save:FutariSave}){
+export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean,save:FutariSave,active?:boolean}){
   const today=todayJapan();
   const p:Profile=book.profile;
   const w=pairEventWhoLabels(p);
@@ -48,9 +48,12 @@ export function FutariDaily({book,busy,save}:{book:Book,busy:boolean,save:Futari
   return <div className="fu" ref={topRef}>
     {view==='home'&&<>
       <div className="fu-hello">
-        <p className="eyebrow">ふたりの時間 ・ 1日1分</p>
-        <h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、今日の一問。`:'ふたりの、今日の一問。'}</h1>
-        <p>ゴットマン博士の研究をもとにした、ふたりのための小さな習慣です。</p>
+        <img className="fu-hello-doctor" src={DOCTOR_ICON} alt="イラスト（イメージ）" width={56} height={56}/>
+        <div className="fu-hello-text">
+          <p className="eyebrow">ふたりの時間 ・ 1日1分</p>
+          <h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、今日の一問。`:'ふたりの、今日の一問。'}</h1>
+          <p>ゴットマン博士の研究をもとにした、ふたりのための小さな習慣です。</p>
+        </div>
       </div>
       <WeekStrip today={today} book={book}/>
       <DailyCard today={today} book={book} me={me} names={names} busy={busy} save={save} onChooseMe={chooseMe} onMeeting={()=>go('meeting')}/>
@@ -71,8 +74,9 @@ export function FutariDaily({book,busy,save}:{book:Book,busy:boolean,save:Futari
     {view==='videos'&&<VideosView/>}
     {view==='long'&&<LongView today={today} book={book} busy={busy} save={save}/>}
 
-    <button type="button" className="fu-trouble" onClick={()=>setTroubleOpen(true)}><Smile size={18} aria-hidden/>困ったとき（ひと休み・言いかえ）</button>
+    <button type="button" className={active?'fu-trouble has-fab':'fu-trouble'} onClick={()=>setTroubleOpen(true)}><Smile size={18} aria-hidden/>困ったとき（ひと休み・言いかえ）</button>
     <TroubleSheet open={troubleOpen} onOpenChange={setTroubleOpen} book={book} busy={busy} save={save}/>
+    {active&&<button type="button" className="amity-fab doctor-fab" onClick={()=>setTroubleOpen(true)} aria-label="困ったとき（ゴットマン博士の教え）" hidden={troubleOpen} aria-hidden={troubleOpen}><img src={DOCTOR_ICON} alt="" width={60} height={60}/></button>}
   </div>;
 }
 
