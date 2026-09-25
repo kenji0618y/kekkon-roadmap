@@ -116,10 +116,50 @@ body{padding-top:62px}
 .pv-tabs a.on{background:#1c3c4a;color:#fffefa;border-color:#1c3c4a}
 .lesson-video{padding:12px 15px 4px}
 .lesson-video video{display:block;width:100%;max-height:560px;aspect-ratio:9/16;object-fit:contain;background:#ece9df;border-radius:10px}
+/* preview-only: long-term screens */
+.pg{display:none}
+body[data-s="long"] .home,body[data-s="compare"] .home,body[data-s="guess"] .home,body[data-s="videos"] .home{display:none}
+body[data-s="long"] .pg-long,body[data-s="compare"] .pg-compare,body[data-s="guess"] .pg-guess,body[data-s="videos"] .pg-videos{display:block}
+.pg-title{font-family:"Shippori Mincho",serif;font-size:22px;font-weight:600;margin:4px 0 4px;line-height:1.5}
+.pg-lead{font-size:12px;color:#687774;margin-bottom:12px}
+.sec{padding:10px 15px 12px}
+.sec p{font-size:12px;color:#475e55;line-height:1.75}
+.wk{list-style:none;margin:0;padding:0}
+.wk li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed #e1e4d8;font-size:12.5px;line-height:1.55}
+.wk li:last-child{border-bottom:0}
+.wk .d{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-content:center;font-size:12px;font-weight:700;background:#e9eee9;color:#4d7864}
+.wk li.sun .d{background:#e4ebf3;color:#3f5d7a}
+.wk small{display:block;font-size:10.5px;color:#7c8a80}
+.yr{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed #e1e4d8}.yr:last-child{border-bottom:0}
+.yr .n{flex:none;width:52px;font-family:"Shippori Mincho",serif;font-size:14px;font-weight:600;color:var(--gold);line-height:1.4}
+.yr b{font-size:13px}.yr p{font-size:11.5px;color:#6a7973;line-height:1.6;margin-top:1px}
+.yr a{font-size:11.5px;font-weight:700;color:var(--primary)}
+.num{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 15px}
+.num div{background:#f5f3e6;border:1px solid #e4dcc2;border-radius:9px;padding:9px 10px}
+.num b{display:block;font-family:"Shippori Mincho",serif;font-size:15px;color:#5a4a2c;line-height:1.45}
+.num small{font-size:10.5px;color:#7a6a4c;line-height:1.5;display:block;margin-top:2px}
+.mode{display:inline-block;font-size:10px;font-weight:700;color:#fffefa;background:#99773c;border-radius:20px;padding:1px 9px;margin-bottom:6px;margin-right:4px}
+.prev{margin-top:5px;border:1px dashed #cdbf9f;border-radius:8px;background:#faf7ee;padding:8px 10px;font-size:12.5px;color:#8a7d62}
+.prev .pl{display:block;font-size:10.5px;font-weight:700;color:#99773c;margin-bottom:2px}
+.ph{color:#9aa39c}
+.step-h{font-size:12px;font-weight:700;color:#526c5c;margin:2px 0 4px;display:flex;align-items:center;gap:6px}
+.step-h i{font-style:normal;width:20px;height:20px;border-radius:50%;background:#e9eee9;color:#4d7864;font-size:11px;display:grid;place-content:center}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:5px}
+.vs .box{border:1px solid #e2e6d9;border-radius:8px;background:#fbfbf7;padding:7px 9px;font-size:12px;min-height:70px}
+.vs .box .pl{display:block;font-size:10.5px;font-weight:700;color:#526c5c;margin-bottom:2px}
+.vs .box.n2{background:#f0f4f8;border-color:#dde5ee}.vs .box.n2 .pl{color:#3f5d7a}
+.vlist{list-style:none;margin:0;padding:0 15px 6px}
+.vlist li{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed #e1e4d8}.vlist li:last-child{border-bottom:0}
+.vlist .no{flex:none;width:24px;font-size:11px;font-weight:700;color:#99773c;padding-top:1px}
+.vlist .tt{flex:1;min-width:0;font-size:13px;line-height:1.5}
+.vlist .tt small{display:block;font-size:10px;color:#7e8a7c;margin-top:1px}
+.vlist .bd{flex:none;font-size:10px;border-radius:10px;padding:1px 8px;margin-top:1px;border:1px solid #d4dbd1;color:#8a927c;background:#fffefa}
+.vlist .bd.ok{background:#1c3c4a;border-color:#1c3c4a;color:#fffefa}
+.vlist li.has{background:#f3f6f0;margin:0 -15px;padding:8px 15px}
 </style></head>
 <body data-s="before">
 <div class="pv-banner">見本（まだサイトには入っていません）</div>
-<nav class="pv-tabs"><a href="?s=before">答える前</a><a href="?s=wait">相手待ち</a><a href="?s=open">ふたり回答＋アドバイス</a><a href="?s=trouble">困ったとき</a><a href="?s=practice">言いかえ練習</a></nav>
+<nav class="pv-tabs"><a href="?s=before">答える前</a><a href="?s=wait">相手待ち</a><a href="?s=open">ふたり回答＋アドバイス</a><a href="?s=trouble">困ったとき</a><a href="?s=practice">言いかえ練習</a><a href="?s=long">長く使う仕組み</a><a href="?s=compare">去年と比べる</a><a href="?s=guess">予想してから答える</a><a href="?s=videos">動画一覧</a></nav>
 <header class="masthead"><div class="brand"><span class="seal">結</span><span class="wordmark">Amityちゃんにきく<small>AMITY CHAN NI KIKU · 広島</small></span></div><span class="pair">ふたりで使う</span></header>
 
 <main>
@@ -194,6 +234,155 @@ body{padding-top:62px}
     <p class="disc">ゴットマン研究をもとにAIが作った一般的なアドバイスです。ゴットマン博士本人や The Gottman Institute によるフィードバックではありません。イラストはイメージです。</p>
   </div>
 </section>
+
+<section class="pg pg-long">
+  <p class="eyebrow">長く使う仕組み ・ 3年目以降も</p>
+  <h1 class="pg-title">毎日1分を、何年も<br>続けられる形に。</h1>
+  <p class="pg-lead">曜日ごとにテーマを決めて、年ごとに答え方を変えます。同じ問いにもう一度答えることにも意味があります（ラブマップは「定期的に更新する」もの）。</p>
+
+  <article class="card">
+    <div class="card-h"><span><i class="dot"></i>カードと動画の量</span><small>出典で確認できた範囲</small></div>
+    <div class="num">
+      <div><b>約150〜200枚</b><small>出典から作れるカードは約150〜200枚。365日すべてを違う問いにはしません。</small></div>
+      <div><b>24本</b><small>レッスン動画は24本（細かく分けると約35本）。</small></div>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card-h"><span><i class="dot"></i>曜日ごとのテーマ</span><small>毎週おなじ流れ</small></div>
+    <div class="sec"><ul class="wk">
+      <li><span class="d">月</span><div>ラブマップ（軽め）<small>相手の今を知る、短い質問</small></div></li>
+      <li><span class="d">火</span><div>感謝<small>人柄＋具体的な出来事</small></div></li>
+      <li><span class="d">水</span><div>呼びかけ・「行ってきます」「おかえり」<small>今日の呼びかけ、別れ際と再会</small></div></li>
+      <li><span class="d">木</span><div>深めの質問<small>はい／いいえで終わらない問い</small></div></li>
+      <li><span class="d">金</span><div>感謝<small>＋ストレスを減らす会話のひとこと</small></div></li>
+      <li><span class="d">土</span><div>儀式と夢<small>ふたりの「いつもの」、叶えたいこと、遊び</small></div></li>
+      <li class="sun"><span class="d">日</span><div>ふたり会議＋感謝5つ<small>カードの代わりに「今週の感謝5つ」を用意して会議へ</small></div></li>
+    </ul>
+    <p class="src">出典：gottman.com「Love Maps」PDF／「Share Fondness and Admiration」／「6 Hours a Week to a Better Relationship」／「Turn Towards Instead of Away」／「The One Daily Talk That Will Benefit Your Marriage」／「Create Shared Meaning: Examining Your Rituals」／「How to Have a State of the Union Meeting」</p></div>
+  </article>
+
+  <article class="card">
+    <div class="card-h"><span><i class="dot"></i>年ごとの答え方</span><small>同じ問いを別の形で</small></div>
+    <div class="sec">
+      <div class="yr"><span class="n">1年目</span><div><b>ふつうに答える</b><p>それぞれ答える → 相手の答えを見る → スタンプ。</p></div></div>
+      <div class="yr"><span class="n">2年目</span><div><b>去年の答えと比べる</b><p>答えたあとに、1年前のふたりの答えを表示。「変わった？」をひとこと。</p><a href="?s=compare">画面の見本 →</a></div></div>
+      <div class="yr"><span class="n">3年目</span><div><b>相手の答えを予想してから答える</b><p>点数はつけません。「当たった」「新しく知った」だけ。</p><a href="?s=guess">画面の見本 →</a></div></div>
+      <div class="yr"><span class="n">4年目〜</span><div><b>1〜3年目をくり返す</b><p>新しいカードは毎年20〜30枚追加。答えの履歴が、ふたりの年表になります。</p></div></div>
+      <p class="src">出典：gottman.com「Build Love Maps」（定期的に更新する）／「Love Maps」PDF（20問ゲームの形式）</p>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card-h"><span><i class="dot" style="background:#729780"></i>年1回の振り返り</span><small>結婚記念日など</small></div>
+    <div class="sec">
+      <p>本の質問票を開いて、自分で採点。アプリには<b>点数だけ</b>を記録して、去年の点数と並べて見ます。質問の文面はアプリには載せません。</p>
+      <p class="src">出典：『The Seven Principles for Making Marriage Work』改訂版の質問票（出版社の公式抜粋で確認）</p>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card-h"><span><i class="dot" style="background:#729780"></i>動画のペース</span><small><a href="?s=videos" style="color:var(--primary);font-weight:700;text-decoration:none">動画一覧 →</a></small></div>
+    <div class="sec">
+      <div class="yr"><span class="n">1年目</span><div><b>隔週で1本（24本）</b><p>最初はハウスの下の階から（全体像 → ラブマップ → 好意と称賛 → 呼びかけ → 4つの危険な言い方 → やわらかい話し始め）。</p></div></div>
+      <div class="yr"><span class="n">2年目</span><div><b>月1本の深掘り回（約12本）</b><p>解毒剤を1本ずつ、ケンカの後の振り返り、ふたり会議のパートごと など。</p></div></div>
+      <div class="yr"><span class="n">3年目〜</span><div><b>出来事に合わせて見る</b><p>「困ったとき」を使った翌日にフラッディングや修復の回、など。毎年1月にハウス全体を復習。</p></div></div>
+    </div>
+  </article>
+</section>
+
+<section class="pg pg-compare">
+  <p class="eyebrow">2年目の今日の一問</p>
+  <h1 class="pg-title">去年の答えと、<br>くらべてみる。</h1>
+  <p class="pg-lead">同じ問いに、今年も答えます。答えたあとに、1年前のふたりの答えが出ます。</p>
+  <article class="card">
+    <div class="card-h"><span><i class="dot"></i>今日の一問</span><small>月曜 ・ ラブマップ</small></div>
+    <div class="q"><span class="mode">2年目 ・ 去年と比べる</span><span class="tag">ラブマップ</span>
+      <h2>今、いちばん気になっていること（仕事・体調・家のことなど）は？</h2>
+      <p class="hint">相手の答えに「そうなんだ」で返すだけでOK。</p></div>
+    <div class="ans">
+      <div class="who"><span class="av n1">name1</span><div class="body"><div class="nm">name1 <em>あなた ・ 今年の答え</em></div>
+        <div class="input">ここに書く（30秒でOK）</div>
+        <div class="prev"><span class="pl">去年のあなたの答え</span><span class="ph">（ここに去年の答えが出ます）</span></div>
+        <div class="prev"><span class="pl">去年の name2さんの答え</span><span class="ph">（ここに去年の name2さんの答えが出ます）</span></div>
+      </div><span class="stamp off">未</span></div>
+    </div>
+    <div class="card-f">
+      <div class="lbl" style="margin-top:0">変わった？（ひとこと）</div>
+      <div class="input" style="min-height:40px">（ここにひとこと書きます）</div>
+      <button class="btn" style="margin-top:10px">答える</button>
+      <p class="note">去年の答えは、今年の答えを書いたあとに表示されます（見本では枠だけ表示）</p>
+      <p class="src">出典：『The Seven Principles for Making Marriage Work』Principle 1（第4章）／gottman.com「Build Love Maps」（ラブマップは定期的に更新する）</p>
+    </div>
+  </article>
+</section>
+
+<section class="pg pg-guess">
+  <p class="eyebrow">3年目の今日の一問</p>
+  <h1 class="pg-title">相手の答えを、<br>予想してから答える。</h1>
+  <p class="pg-lead">先に相手の答えを予想して、そのあと本人が答えます。点数はつけません。</p>
+  <article class="card">
+    <div class="card-h"><span><i class="dot"></i>今日の一問</span><small>予想 → 答え合わせ</small></div>
+    <div class="q"><span class="mode">3年目 ・ 予想する</span><span class="tag">ラブマップ</span>
+      <h2>いつか叶えたい小さな夢を1つ。（行きたい場所、やってみたいこと）</h2>
+      <p class="hint">相手の夢には「いいね、なんで？」と1つだけ質問。</p></div>
+    <div class="sec">
+      <p class="step-h"><i>1</i>name2さんの答えを予想する</p>
+      <div class="input">（ここに、あなたの予想を書きます）</div>
+      <p class="step-h" style="margin-top:12px"><i>2</i>自分の答えを書く</p>
+      <div class="input">（ここに、あなた自身の答えを書きます）</div>
+    </div>
+    <div class="card-f" style="padding-top:0"><button class="btn">予想と答えを送る</button><p class="note">ふたりとも書くと、答え合わせが開きます</p></div>
+  </article>
+  <article class="card">
+    <div class="card-h"><span><i class="dot" style="background:#729780"></i>答え合わせ</span><small>ふたりとも書いたあと</small></div>
+    <div class="sec">
+      <div class="vs">
+        <div class="box"><span class="pl">あなたの予想</span><span class="ph">（ここにあなたの予想が出ます）</span></div>
+        <div class="box n2"><span class="pl">name2さんの答え</span><span class="ph">（ここに name2さんの答えが出ます）</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px"><button class="btn ghost" style="min-height:38px;font-size:12px">当たった</button><button class="btn ghost" style="min-height:38px;font-size:12px">新しく知った</button></div>
+      <p class="note">点数やランキングはつけません</p>
+      <p class="src">出典：gottman.com「Love Maps」PDF（相手の答えを当てる20問ゲームの形式）／「Build Love Maps」／「What is The Sound Relationship House?」（人生の夢の実現）</p>
+    </div>
+  </article>
+</section>
+
+<section class="pg pg-videos">
+  <p class="eyebrow">レッスン動画 ・ 約30秒ずつ</p>
+  <h1 class="pg-title">動画一覧</h1>
+  <p class="pg-lead">24本（細かく分けると約35本）。1年目は隔週で1本ずつ届きます。</p>
+  <article class="card">
+    <div class="card-h"><span><i class="dot" style="background:#729780"></i>全24本</span><small>「本」＝『The Seven Principles…』改訂版</small></div>
+    <ul class="vlist">
+      <li><span class="no">1</span><span class="tt">ハウス（Sound Relationship House）の全体像<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">2</span><span class="tt">ラブマップ<small>本 第4章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">3</span><span class="tt">オープンクエスチョン<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">4</span><span class="tt">好意と称賛（I Appreciate）<small>本 第5章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">5</span><span class="tt">呼びかけ（ビッド）に応える<small>本 第6章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">6</span><span class="tt">感情の銀行口座<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">7</span><span class="tt">ポジティブな視点／感情のフィルター<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">8</span><span class="tt">5:1 の法則<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li class="has"><span class="no">9</span><span class="tt">4つの危険な言い方と言いかえ（四騎士）<small>本 第3章／gottman.com</small></span><span class="bd ok">見本あり</span></li>
+      <li><span class="no">10</span><span class="tt">解毒剤<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">11</span><span class="tt">やわらかい話し始め<small>本 第9章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">12</span><span class="tt">フラッディングと20分の休憩<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">13</span><span class="tt">修復の試み<small>本 第3章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">14</span><span class="tt">相手の影響を受け入れる<small>本 第7章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">15</span><span class="tt">解決できる問題と、ずっと続く問題<small>本 第8章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">16</span><span class="tt">膠着と「対立の奥にある夢」<small>本 第11章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">17</span><span class="tt">2つの円（妥協）<small>本 第9章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">18</span><span class="tt">ケンカの後の振り返り<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">19</span><span class="tt">ストレスを減らす会話<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">20</span><span class="tt">別れ際と再会の儀式<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">21</span><span class="tt">つながりの儀式と共有された意味<small>本 第12章／gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">22</span><span class="tt">人生の夢の実現<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">23</span><span class="tt">ATTUNE と信頼<small>gottman.com</small></span><span class="bd">これから</span></li>
+      <li><span class="no">24</span><span class="tt">ふたり会議（State of the Union）<small>gottman.com</small></span><span class="bd">これから</span></li>
+    </ul>
+    <p class="src" style="padding:0 15px 12px">並びは内容の一覧です。届く順番は「長く使う仕組み」のとおり、ハウスの下の階から。「見本あり」はこのページの「答える前」画面で再生できます。</p>
+  </article>
+</section>
 </main>
 
 <button class="trouble"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a4f32" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01M8.5 15.5c2-1.5 5-1.5 7 0"/></svg>困ったとき（ひと休み・言いかえ）</button>
@@ -244,8 +433,8 @@ body{padding-top:62px}
 
 <script>
 const s=new URLSearchParams(location.search).get('s')||'before';document.body.dataset.s=s;
-document.querySelectorAll('.pv-tabs a').forEach(a=>{if(a.getAttribute('href')==='?s='+s)a.classList.add('on')});
-const map={before:'before',wait:'wait',open:'open',feedback:'open',trouble:'before',lesson:'before',practice:'before'};
+document.querySelectorAll('.pv-tabs a').forEach(a=>{if(a.getAttribute('href')==='?s='+s){a.classList.add('on');const t=a.parentNode;t.scrollLeft=Math.max(0,a.offsetLeft-(t.clientWidth-a.offsetWidth)/2);}});
+const map={before:'before',wait:'wait',open:'open',feedback:'open',trouble:'before',lesson:'before',practice:'before',long:'before',compare:'before',guess:'before',videos:'before'};
 const st=map[s]||'before';
 document.querySelectorAll('[class*="st-"]').forEach(el=>{const cls=[...el.classList].filter(c=>c.startsWith('st-'));if(cls.length)el.style.display=cls.includes('st-'+st)?'':'none';});
 </script>
