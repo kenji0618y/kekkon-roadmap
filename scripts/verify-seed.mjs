@@ -224,7 +224,7 @@ for (const x of gsrc.sources || []) {
   if (x.kind === 'web' && !/^https:\/\//.test(x.url || '')) fail.push(`futari.sources: ${x.id} の url がありません`);
 }
 const cardsArr = fcards.cards || [];
-check('futari.cards', cardsArr.length, 14);
+check('futari.cards', cardsArr.length, 180);
 check('futari.week_themes', (fcards.week || []).length, 7, true);
 check('futari.year_modes', (fcards.years || []).length, 4, true);
 const DAYS = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat']);
@@ -235,6 +235,11 @@ for (const c of cardsArr) {
   if (!Array.isArray(c.days) || !c.days.length || c.days.some((d) => !DAYS.has(d))) fail.push(`futari.cards: ${c.id} の days が正しくありません`);
 }
 for (const d of DAYS) if (!cardsArr.some((c) => (c.days || []).includes(d))) fail.push(`futari.cards: ${d} のカードがありません`);
+// 曜日ごとの回転が偏らないよう、各曜日に20枚以上。id と問いの重複は不可（既存の答えは id で結びつく）。
+for (const d of DAYS) { const n = cardsArr.filter((c) => (c.days || []).includes(d)).length; if (n < 20) fail.push(`futari.cards: ${d} のカードが ${n} 枚（20枚以上）`); }
+{ const ids = cardsArr.map((c) => c.id), qs = cardsArr.map((c) => String(c.question || '').trim());
+  if (new Set(ids).size !== ids.length) fail.push('futari.cards: id が重複しています');
+  if (new Set(qs).size !== qs.length) fail.push('futari.cards: 同じ問いが重複しています'); }
 const lessonArr = flessons.lessons || [];
 check('futari.lesson_scripts', lessonArr.length, 5);
 check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 25);
