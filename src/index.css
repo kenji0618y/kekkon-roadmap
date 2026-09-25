@@ -1540,11 +1540,6 @@
 .fu-wk li.sun .d{background:#e4ebf3;color:#3f5d7a}.fu-wk li.now .d{background:#1c3c4a;color:#fffefa}
 .fu-wk small{display:block;font-size:10.5px;color:#7c8a80}
 .fu-past{margin-top:12px}
-.fu-trouble{position:fixed;left:50%;transform:translateX(-50%);bottom:max(20px,calc(16px + env(safe-area-inset-bottom)));width:min(362px,calc(100% - 28px));display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;border-radius:24px;background:#fffefa;border:1.5px solid #c9a98a;color:#8a4f32;font:inherit;font-weight:700;font-size:14px;box-shadow:0 6px 18px #5a3b2020;z-index:60;cursor:pointer}
-@media (max-width:700px){.fu-trouble{bottom:calc(64px + 12px + env(safe-area-inset-bottom,0px))}}
-@media print{.fu-trouble{display:none!important}}
-/* 博士の丸ボタンと重ならないよう、狭い画面では左寄せにして右に空きを作る */
-@media (max-width:560px){.fu-trouble.has-fab{left:max(14px,env(safe-area-inset-left));transform:none;width:calc(100% - 28px - 68px)}}
 .fu-sheet{max-height:92vh;overflow-y:auto;background:#fcfcf6}
 .fu-sheet [data-slot=sheet-title]{font-family:"Shippori Mincho",serif;font-size:21px;font-weight:600}
 .fu-sheet-body{padding:0 18px 22px}
