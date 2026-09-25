@@ -241,11 +241,11 @@ for (const d of DAYS) { const n = cardsArr.filter((c) => (c.days || []).includes
   if (new Set(ids).size !== ids.length) fail.push('futari.cards: id が重複しています');
   if (new Set(qs).size !== qs.length) fail.push('futari.cards: 同じ問いが重複しています'); }
 const lessonArr = flessons.lessons || [];
-check('futari.lesson_scripts', lessonArr.length, 5);
-check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 25);
+check('futari.lesson_scripts', lessonArr.length, 6);
+check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 29);
 check('futari.video_topics', (flessons.topics || []).length, 24);
 const videos = lessonArr.filter((l) => l.video);
-check('futari.lesson_videos', videos.length, 3);
+check('futari.lesson_videos', videos.length, 5);
 for (const l of videos) {
   if (l.video.startsWith('/') || !existsSync(join(root, 'public', l.video))) fail.push(`futari.lessons: 動画 ${l.video} が public/ にありません`);
   if (l.poster && !existsSync(join(root, 'public', l.poster))) fail.push(`futari.lessons: ポスター ${l.poster} が public/ にありません`);
