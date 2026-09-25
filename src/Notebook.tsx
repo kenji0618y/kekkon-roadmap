@@ -228,7 +228,7 @@ export default function FutureNotebook(){
  </section>
 </TabsContent>
  <TabsContent value="pair" forceMount className="tab-surface pair-tab data-[state=inactive]:hidden">
-  <FutariDaily book={book} busy={data.busy} save={futariSave}/>
+  <FutariDaily book={book} busy={data.busy} save={futariSave} active={tab==='pair'}/>
   <details className="paper-card pair-workbook-fold" id="pair-workbook" open={pairBookOpen} onToggle={e=>setPairBookOpen((e.currentTarget as HTMLDetailsElement).open)}>
    <summary><strong>ふたりの練習帳（行動・会話・合意）</strong><span className="hint">これまでのスタンプ台と、書きためた合意</span></summary>
    <SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
