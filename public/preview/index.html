@@ -159,7 +159,7 @@ body[data-s="long"] .pg-long,body[data-s="compare"] .pg-compare,body[data-s="gue
 </style></head>
 <body data-s="before">
 <div class="pv-banner">見本（まだサイトには入っていません）</div>
-<nav class="pv-tabs"><a href="?s=before">答える前</a><a href="?s=wait">相手待ち</a><a href="?s=open">ふたり回答＋アドバイス</a><a href="?s=trouble">困ったとき</a><a href="?s=practice">言いかえ練習</a><a href="?s=long">長く使う仕組み</a><a href="?s=compare">去年と比べる</a><a href="?s=guess">予想してから答える</a><a href="?s=videos">動画一覧</a></nav>
+<nav class="pv-tabs"><a href="#before">答える前</a><a href="#wait">相手待ち</a><a href="#open">ふたり回答＋アドバイス</a><a href="#trouble">困ったとき</a><a href="#practice">言いかえ練習</a><a href="#long">長く使う仕組み</a><a href="#compare">去年と比べる</a><a href="#guess">予想してから答える</a><a href="#videos">動画一覧</a></nav>
 <header class="masthead"><div class="brand"><span class="seal">結</span><span class="wordmark">Amityちゃんにきく<small>AMITY CHAN NI KIKU · 広島</small></span></div><span class="pair">ふたりで使う</span></header>
 
 <main>
@@ -266,8 +266,8 @@ body[data-s="long"] .pg-long,body[data-s="compare"] .pg-compare,body[data-s="gue
     <div class="card-h"><span><i class="dot"></i>年ごとの答え方</span><small>同じ問いを別の形で</small></div>
     <div class="sec">
       <div class="yr"><span class="n">1年目</span><div><b>ふつうに答える</b><p>それぞれ答える → 相手の答えを見る → スタンプ。</p></div></div>
-      <div class="yr"><span class="n">2年目</span><div><b>去年の答えと比べる</b><p>答えたあとに、1年前のふたりの答えを表示。「変わった？」をひとこと。</p><a href="?s=compare">画面の見本 →</a></div></div>
-      <div class="yr"><span class="n">3年目</span><div><b>相手の答えを予想してから答える</b><p>点数はつけません。「当たった」「新しく知った」だけ。</p><a href="?s=guess">画面の見本 →</a></div></div>
+      <div class="yr"><span class="n">2年目</span><div><b>去年の答えと比べる</b><p>答えたあとに、1年前のふたりの答えを表示。「変わった？」をひとこと。</p><a href="#compare">画面の見本 →</a></div></div>
+      <div class="yr"><span class="n">3年目</span><div><b>相手の答えを予想してから答える</b><p>点数はつけません。「当たった」「新しく知った」だけ。</p><a href="#guess">画面の見本 →</a></div></div>
       <div class="yr"><span class="n">4年目〜</span><div><b>1〜3年目をくり返す</b><p>新しいカードは毎年20〜30枚追加。答えの履歴が、ふたりの年表になります。</p></div></div>
       <p class="src">出典：gottman.com「Build Love Maps」（定期的に更新する）／「Love Maps」PDF（20問ゲームの形式）</p>
     </div>
@@ -282,7 +282,7 @@ body[data-s="long"] .pg-long,body[data-s="compare"] .pg-compare,body[data-s="gue
   </article>
 
   <article class="card">
-    <div class="card-h"><span><i class="dot" style="background:#729780"></i>動画のペース</span><small><a href="?s=videos" style="color:var(--primary);font-weight:700;text-decoration:none">動画一覧 →</a></small></div>
+    <div class="card-h"><span><i class="dot" style="background:#729780"></i>動画のペース</span><small><a href="#videos" style="color:var(--primary);font-weight:700;text-decoration:none">動画一覧 →</a></small></div>
     <div class="sec">
       <div class="yr"><span class="n">1年目</span><div><b>隔週で1本（24本）</b><p>最初はハウスの下の階から（全体像 → ラブマップ → 好意と称賛 → 呼びかけ → 4つの危険な言い方 → やわらかい話し始め）。</p></div></div>
       <div class="yr"><span class="n">2年目</span><div><b>月1本の深掘り回（約12本）</b><p>解毒剤を1本ずつ、ケンカの後の振り返り、ふたり会議のパートごと など。</p></div></div>
@@ -432,8 +432,8 @@ body[data-s="long"] .pg-long,body[data-s="compare"] .pg-compare,body[data-s="gue
 </div>
 
 <script>
-const s=new URLSearchParams(location.search).get('s')||'before';document.body.dataset.s=s;
-document.querySelectorAll('.pv-tabs a').forEach(a=>{if(a.getAttribute('href')==='?s='+s){a.classList.add('on');const t=a.parentNode;t.scrollLeft=Math.max(0,a.offsetLeft-(t.clientWidth-a.offsetWidth)/2);}});
+function pvShow(){const s=(location.hash.slice(1)||new URLSearchParams(location.search).get('s')||'before');document.body.dataset.s=s;document.querySelectorAll('.pv-tabs a').forEach(a=>{const on=a.getAttribute('href')==='#'+s;a.classList.toggle('on',on);if(on){const t=a.parentNode;t.scrollLeft=Math.max(0,a.offsetLeft-(t.clientWidth-a.offsetWidth)/2);}});window.scrollTo(0,0);}
+pvShow();window.addEventListener('hashchange',pvShow);
 const map={before:'before',wait:'wait',open:'open',feedback:'open',trouble:'before',lesson:'before',practice:'before',long:'before',compare:'before',guess:'before',videos:'before'};
 const st=map[s]||'before';
 document.querySelectorAll('[class*="st-"]').forEach(el=>{const cls=[...el.classList].filter(c=>c.startsWith('st-'));if(cls.length)el.style.display=cls.includes('st-'+st)?'':'none';});
