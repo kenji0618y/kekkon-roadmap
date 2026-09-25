@@ -5,7 +5,7 @@ or applying changes.
 
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-186項目 · 33まとまり · FAQ 2074組 · 出典 136件 · 6タブ · 検査 82項目
+186項目 · 33まとまり · FAQ 2074組 · 出典 136件 · 6タブ · 検査 102項目
 <!-- /STATE -->
 
 - Product: Amityちゃんにきく (Hiroshima marriage roadmap PWA)

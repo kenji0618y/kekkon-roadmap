@@ -3,7 +3,7 @@
  * Permanent guardrail: never drop or thin app-seed content.
  * Exits non-zero if inventory counts fall below minima OR UI mounts are missing.
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { scanScreenLanguage } from './screen-language.mjs';
@@ -209,6 +209,78 @@ if (warn.length) {
   console.log('');
 }
 
+// ===== ふたりタブ：今日の一問・レッスン・困ったとき・ふたり会議（2026-09-25） =====
+// 内容を足したら、ここの下限も上げる。出典のないカードは入れない。
+const gsrc = loadJson('src/data/gottman-sources.json') || {};
+const fcards = loadJson('src/data/futari-cards.json') || {};
+const flessons = loadJson('src/data/futari-lessons.json') || {};
+const fguide = loadJson('src/data/futari-guide.json') || {};
+const gIds = new Set((gsrc.sources || []).map((x) => x.id));
+check('futari.sources', gIds.size, 44);
+check('futari.ai_allowed_sources', (gsrc.ai_allowed || []).length, 17, true);
+for (const id of gsrc.ai_allowed || []) if (!gIds.has(id)) fail.push(`futari.ai_allowed: ${id} が出典表にありません`);
+for (const x of gsrc.sources || []) {
+  if (!String(x.title || '').trim()) fail.push(`futari.sources: ${x.id} の title が空です`);
+  if (x.kind === 'web' && !/^https:\/\//.test(x.url || '')) fail.push(`futari.sources: ${x.id} の url がありません`);
+}
+const cardsArr = fcards.cards || [];
+check('futari.cards', cardsArr.length, 14);
+check('futari.week_themes', (fcards.week || []).length, 7, true);
+check('futari.year_modes', (fcards.years || []).length, 4, true);
+const DAYS = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat']);
+for (const c of cardsArr) {
+  for (const key of ['id', 'question', 'hint', 'concept']) if (!String(c[key] || '').trim()) fail.push(`futari.cards: ${c.id} の ${key} が空です`);
+  if (!Array.isArray(c.sourceIds) || !c.sourceIds.length) fail.push(`futari.cards: ${c.id} に出典（sourceIds）がありません`);
+  for (const id of c.sourceIds || []) if (!gIds.has(id)) fail.push(`futari.cards: ${c.id} が知らない出典 ${id} を指しています`);
+  if (!Array.isArray(c.days) || !c.days.length || c.days.some((d) => !DAYS.has(d))) fail.push(`futari.cards: ${c.id} の days が正しくありません`);
+}
+for (const d of DAYS) if (!cardsArr.some((c) => (c.days || []).includes(d))) fail.push(`futari.cards: ${d} のカードがありません`);
+const lessonArr = flessons.lessons || [];
+check('futari.lesson_scripts', lessonArr.length, 5);
+check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 25);
+check('futari.video_topics', (flessons.topics || []).length, 24);
+const videos = lessonArr.filter((l) => l.video);
+check('futari.lesson_videos', videos.length, 1);
+for (const l of videos) {
+  if (l.video.startsWith('/') || !existsSync(join(root, 'public', l.video))) fail.push(`futari.lessons: 動画 ${l.video} が public/ にありません`);
+  if (l.poster && !existsSync(join(root, 'public', l.poster))) fail.push(`futari.lessons: ポスター ${l.poster} が public/ にありません`);
+}
+check('futari.trouble_steps', ((fguide.trouble || {}).steps || []).length, 6);
+check('futari.rephrase_rows', (fguide.rephrase || []).length, 8);
+check('futari.meeting_steps', ((fguide.meeting || {}).steps || []).length, 5);
+check('futari.feedback_rules', (fguide.feedbackRules || []).length, 13);
+const allRefs = [
+  ...lessonArr.flatMap((l) => l.sourceIds || []),
+  ...(flessons.topics || []).flatMap((t) => t.sourceIds || []),
+  ...(fcards.week || []).flatMap((w) => w.sourceIds || []),
+  ...((fguide.trouble || {}).steps || []).flatMap((t) => t.sourceIds || []),
+  ...(fguide.rephrase || []).flatMap((r) => r.sourceIds || []),
+  ...((fguide.meeting || {}).sourceIds || []),
+  ...(fguide.feedbackRules || []).flatMap((r) => r.sourceIds || []),
+];
+const unknownRefs = [...new Set(allRefs.filter((id) => !gIds.has(id)))];
+if (unknownRefs.length) fail.push(`futari: 出典表にないID ${unknownRefs.join(', ')}`);
+else ok.push(`futari: all ${allRefs.length} source refs resolve`);
+if (!existsSync(join(root, 'public/futari/doctor-icon.png'))) fail.push('futari: public/futari/doctor-icon.png がありません');
+// 博士のイラストは ふたりタブ（FutariDaily）だけ。Amity と同じ画面に出さない。
+{
+  const offenders = [];
+  const walkSrc = (dir) => {
+    for (const name of readdirSync(join(root, dir))) {
+      const rel = `${dir}/${name}`;
+      if (statSync(join(root, rel)).isDirectory()) walkSrc(rel);
+      else if (/\.(tsx?|css)$/.test(name) && readFileSync(join(root, rel), 'utf8').includes('doctor-icon')) offenders.push(rel);
+    }
+  };
+  walkSrc('src');
+  const bad = offenders.filter((f) => f !== 'src/components/FutariDaily.tsx');
+  if (bad.length) fail.push(`futari: 博士のイラストが ふたりタブ以外で使われています（${bad.join(', ')}）`);
+  else ok.push('futari: doctor icon only in FutariDaily');
+  const fd = readText('src/components/FutariDaily.tsx');
+  if (/desk-mascot|amity-shark/.test(fd)) fail.push('futari: ふたりタブのコンポーネントに Amity の画像があります');
+}
+if (existsSync(join(root, 'public/preview'))) fail.push('public/preview/ は削除済みのはずです（見本ページ）');
+
 const panels = readText('src/components/SeedContentPanels.tsx');
 const notebook = readText('src/Notebook.tsx');
 const forms = readText('src/components/notebook-forms.tsx');
@@ -260,6 +332,11 @@ const uiChecks = [
   ['use-book event mutate', readText('src/lib/use-book.ts').includes("action==='event'") && readText('src/lib/use-book.ts').includes("action==='deleteEvent'")],
   ['Find exclude outer with counts', notebook.includes('find-exclude-outer') && notebook.includes('excludeItems.length')],
   ['Nav short ロードマップ', /short:'ロードマップ'/.test(notebook)],
+  ['Notebook mounts FutariDaily on pair tab', notebook.includes('<FutariDaily') && /value="pair"[\s\S]*<FutariDaily[\s\S]*<PairWorkbook/.test(notebook)],
+  ['Amity button hidden on ふたり tab', /amity-fab[^\n]*tab==='pair'/.test(notebook)],
+  ['FutariDaily labels', (fd => fd.includes('ゴットマン博士の教え') && fd.includes('ゴットマン博士の研究にもとづくアドバイス') && fd.includes('イラストはイメージです') && fd.includes('AIにみてもらう') && fd.includes('playsInline'))(readText('src/components/FutariDaily.tsx'))],
+  ['futari AI citations constrained', (ai => ai.includes('AI_ALLOWED_SOURCE_IDS') && ai.includes('cleanIds') && ai.includes('validateFeedback'))(readText('src/lib/futari-ai.ts'))],
+  ['futari answers in book schema', readText('src/lib/model.ts').includes('futari:futariSchema') && readText('src/lib/use-book.ts').includes("action==='futariAnswer'") && readText('src/lib/use-book.ts').includes('mergeFutari')],
 ];
 
 const yearlyDocs = readText('docs/YEARLY_UPDATE.md');

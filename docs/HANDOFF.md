@@ -16,10 +16,11 @@
 | FAQ | 2074組 |
 | 出典（sources） | 136件 |
 | ふたりの練習帳 | 行動52 / 会話16 / 合意18 / 根拠18 |
+| ふたりの今日の一問 | 問い14 / レッスン台本5 / 動画テーマ24 / 出典44 |
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 82項目 |
+| verify-seed | 102項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -67,6 +68,8 @@
    - `review`（毎年見直す民間サービス）≥ **12**・最終確認から15か月超はビルドが警告（止めない）
    - ふたりタブ: practices=**52** / talks=**16** / agreements=**18** / refs=**18**、
      `refs` の DV相談・性犯罪/性暴力の窓口は**外すと fail**
+   - ふたりの今日の一問: cards ≥**14**（全カードに `sourceIds`）/ レッスン台本 ≥**5** / 動画テーマ ≥**24** /
+     困ったとき6・言いかえ8・会議5・助言ルール13 / AIが使える出典 = **17**（exact）/ 出典表 ≥**44**
    - **内容を増やしたら、この下限も一緒に上げること。**
 7. Before claiming done: run **`npm run verify:seed`** and paste the counts. See also `docs/CONTENT_GUARD.md`.
 
@@ -82,7 +85,7 @@
 | `desk` | デスク | `MarriageDesk`（どこを見るか / 最短パス折りたたみ / 指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ `HomeInsightPanels`（次のアクション SoT）|
 | `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
 | `deadlines` | **期限と時期**（期限） | **月カレンダー**（`DeadlinesCalendar`・`book.events` 男/女/ふたり）+ 制度締切マーカー + `InstitutionalDeadlines`/項目予定（折りたたみ）/ICS + **`PhasesPanel`** |
-| `pair` | **ふたりの練習帳**（ふたり） | `PairWorkbook` — 行動52 / 会話16 / 合意18 / 根拠18。行動の状態と合意は端末に保存 |
+| `pair` | **ふたりの練習帳**（ふたり） | `FutariDaily`（今日の一問・週の帯・レッスン動画・言いかえ練習・ふたり会議・動画一覧・長く使う仕組み・困ったとき）＋折りたたみの `PairWorkbook`（行動52 / 会話16 / 合意18 / 根拠18）。答えは `book.futari` |
 | `find` | 制度を探す（探す） | 検索のみ |
 | `settings` | ふたりの設定（設定） | プロフィール／Gist／Grok／YEARLY_UPDATE／リセット |
 
@@ -129,7 +132,12 @@ src/components/MarriageDesk.tsx     # デスク上部のパネル（和紙 .desk
 src/components/DeskChatPanel.tsx    # FAB チャット
 src/components/StampIllustBoard.tsx # アート優先・MAX=12・サブマス分割
 src/components/SeedContentPanels.tsx # 大きな数字/次のアクション/思い込み/対象外/会話 + Phases（期限タブ）
-src/components/PairWorkbook.tsx     # 「ふたり」タブ（行動52/会話16/合意18/根拠18）
+src/components/FutariDaily.tsx      # 「ふたり」タブ上部：今日の一問ほか（博士のイラストはここだけ）
+src/lib/futari.ts                   # カード選び（曜日×週）・年ごとのモード・Gist同時回答のマージ
+src/lib/futari-ai.ts                # AIの助言：固定17出典IDのみ・出力検査（不明ID/数字/URL/なりすましを捨てる）
+src/data/futari-cards.json / futari-lessons.json / futari-guide.json / gottman-sources.json
+public/futari/                      # lesson1.mp4（precache対象外・Range配信）/ poster.jpg / doctor-icon.png
+src/components/PairWorkbook.tsx     # 「ふたり」タブ下部の折りたたみ（行動52/会話16/合意18/根拠18）
 src/components/OnboardingSheet.tsx
 src/components/PwaUpdateBanner.tsx
 src/lib/model.ts                    # inScope / isCeremonyTask（式なしのとき非表示）+ practice/agreement スキーマ（既定値つき）

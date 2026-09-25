@@ -163,3 +163,45 @@ export async function askGrokResearch(
     return {ok: false, error: e instanceof Error ? e.message : 'network'};
   }
 }
+
+/**
+ * Generic chat call with a caller-supplied system prompt (same key/base/model as above).
+ * Used by the ふたり tab feedback — that prompt is NOT Amity's persona.
+ */
+export async function askGrokWithSystem(
+  system: string,
+  user: string,
+  opts: {maxTokens?: number; temperature?: number; signal?: AbortSignal} = {},
+): Promise<GrokResearchResult> {
+  const key = loadGrokKey();
+  if (!key) return {ok: false, error: 'no-key'};
+  const base = loadGrokBase().replace(/\/+$/, '') || DEFAULT_GROK_BASE;
+  try {
+    const res = await fetch(`${base}/chat/completions`, {
+      method: 'POST',
+      signal: opts.signal,
+      headers: {'Content-Type': 'application/json', Authorization: `Bearer ${key}`},
+      body: JSON.stringify({
+        model: DEFAULT_GROK_MODEL,
+        temperature: opts.temperature ?? 0.2,
+        max_tokens: opts.maxTokens ?? 700,
+        messages: [
+          {role: 'system', content: system},
+          {role: 'user', content: user},
+        ],
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      if (isGrokCreditsLimitError(res.status, body)) return {ok: false, error: GROK_ERROR_CREDITS};
+      return {ok: false, error: `HTTP ${res.status}`};
+    }
+    const data = (await res.json()) as {choices?: {message?: {content?: string}}[]};
+    const text = data.choices?.[0]?.message?.content?.trim();
+    if (!text) return {ok: false, error: 'empty'};
+    return {ok: true, text};
+  } catch (e) {
+    if (opts.signal?.aborted) return {ok: false, error: 'aborted'};
+    return {ok: false, error: e instanceof Error ? e.message : 'network'};
+  }
+}
