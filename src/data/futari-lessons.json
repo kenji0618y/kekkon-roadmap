@@ -74,7 +74,9 @@
         "G-SOFT",
         "G-ANTIDOTE",
         "7P-9"
-      ]
+      ],
+      "video": "futari/lesson2.mp4",
+      "poster": "futari/poster2.jpg"
     },
     {
       "id": "L3",
@@ -139,7 +141,9 @@
       "sourceIds": [
         "G-TURN",
         "7P-6"
-      ]
+      ],
+      "video": "futari/lesson3.mp4",
+      "poster": "futari/poster3.jpg"
     },
     {
       "id": "L5",
