@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
-import {ArrowLeft,ArrowUpRight,ChevronRight,Copy,LoaderCircle,Play,Smile} from 'lucide-react';
+import {ArrowLeft,ArrowUpRight,ChevronRight,Copy,LoaderCircle,Play} from 'lucide-react';
 import {toast} from 'sonner';
 import type {Book,FutariAnswer,FutariMode,Profile} from '../lib/model';
 import {pairEventWhoLabels} from '../lib/model';
@@ -74,7 +74,6 @@ export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean
     {view==='videos'&&<VideosView/>}
     {view==='long'&&<LongView today={today} book={book} busy={busy} save={save}/>}
 
-    <button type="button" className={active?'fu-trouble has-fab':'fu-trouble'} onClick={()=>setTroubleOpen(true)}><Smile size={18} aria-hidden/>困ったとき（ひと休み・言いかえ）</button>
     <TroubleSheet open={troubleOpen} onOpenChange={setTroubleOpen} book={book} busy={busy} save={save}/>
     {active&&<button type="button" className="amity-fab doctor-fab" onClick={()=>setTroubleOpen(true)} aria-label="困ったとき（ゴットマン博士の教え）" hidden={troubleOpen} aria-hidden={troubleOpen}><img src={DOCTOR_ICON} alt="" width={60} height={60}/></button>}
   </div>;
