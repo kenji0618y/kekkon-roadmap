@@ -107,7 +107,7 @@ export function TaskForm({task:t,profile:p,record,onSave,busy,onDirty,hasBook:_h
  <h3 className="form-heading"><Check size={18}/>ひとつずつ、進めよう</h3>
  <div className="step-list">{t.steps.map((s,i)=><label className={`check-row ${r.steps.includes(i)?'checked':''}`} key={s}><Checkbox checked={r.steps.includes(i)} onCheckedChange={checked=>changeQuiet({steps:checked?[...rRef.current.steps,i]:rRef.current.steps.filter(x=>x!==i)})}/><span><small>0{i+1}</small>{s}</span></label>)}</div>
  <p className="hint">チェックやメモは自動で保存されます。完了・スキップを選ぶとこの画面を閉じます。</p>
- {legal&&<div className="deadline-detail"><CalendarDays size={19}/><div><strong>{legal.date?`${shortDate(legal.date)}${legal.uncertain?'（原則日・要確認）':''}`:`${legal.missing}が未設定`}</strong><p>{legal.basis}</p>{!legal.date&&<button className="text-button" onClick={onProfile}>基準の日付を設定する <ArrowUpRight size={14}/></button>}</div></div>}
+ {legal&&<div className="deadline-detail"><CalendarDays size={19}/><div><strong>{legal.date?`${shortDate(legal.date)}${legal.uncertain?'（原則日・要確認）':''}`:`${legal.missing}が未設定`}</strong><p>{legal.basis}</p>{!legal.date&&<button className="text-button" onClick={onProfile}>{legal.missing}を入れる <ArrowUpRight size={14}/></button>}</div></div>}
  <TextField label="二人で決めた予定日（任意）" type="date" value={r.due} onChange={v=>changeQuiet({due:v})}/>
  <div className="field"><Label htmlFor="task-note">ふたりのメモ</Label><Textarea id="task-note" value={r.note} onChange={e=>changeQuiet({note:e.target.value},450)} maxLength={3000} rows={4} placeholder="窓口で聞いた条件、準備する書類、次にすること…"/></div>
  <Accordion type="multiple" defaultValue={accordionDefault} className="form-accordion">

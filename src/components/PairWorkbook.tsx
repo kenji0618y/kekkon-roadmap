@@ -469,7 +469,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
           ))}
         </ul>
         <p className="hint">
-          確認日 2026年9月10日。学術誌のページは自動チェックでは開けないことがありますが、ブラウザからは読めます。
+          情報の確認日 2026年9月10日。学術誌のページは自動チェックでは開けないことがありますが、ブラウザからは読めます。
           日本語版の有無、図書館の所蔵、価格は確認していません。
         </p>
       </details>
