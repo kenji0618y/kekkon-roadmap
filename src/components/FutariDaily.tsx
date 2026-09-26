@@ -41,6 +41,18 @@ export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean
   const [me,setMe]=useState<Who|''>(()=>readMe());
   const [view,setView]=useState<View>('home');
   const [troubleOpen,setTroubleOpen]=useState(false);
+  const [fabOverVideo,setFabOverVideo]=useState(false);
+  // 博士の丸ボタンが動画の操作バーに重なるあいだは、ボタンを隠す（動画の再生・音量を押せるように）。
+  useEffect(()=>{
+    if(!active)return;
+    let raf=0;
+    const check=()=>{raf=0;const h=window.innerHeight,w=window.innerWidth;const zone={top:h-150,left:w-90};const over=[...document.querySelectorAll<HTMLVideoElement>('.fu video')].some(v=>{const r=v.getBoundingClientRect();return r.height>0&&r.bottom>zone.top&&r.top<h&&r.right>zone.left;});setFabOverVideo(over);};
+    const onScroll=()=>{if(!raf)raf=requestAnimationFrame(check);};
+    window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll);
+    const t=window.setInterval(onScroll,800);
+    onScroll();
+    return ()=>{window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onScroll);window.clearInterval(t);if(raf)cancelAnimationFrame(raf);};
+  },[active]);
   const topRef=useRef<HTMLDivElement>(null);
   const go=(v:View)=>{setView(v);requestAnimationFrame(()=>topRef.current?.scrollIntoView({block:'start'}));};
   const chooseMe=(v:Who)=>{writeMe(v);setMe(v);};
@@ -74,7 +86,7 @@ export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean
     {view==='long'&&<LongView today={today} book={book} busy={busy} save={save}/>}
 
     <TroubleSheet open={troubleOpen} onOpenChange={setTroubleOpen} book={book} busy={busy} save={save}/>
-    {active&&<button type="button" className="amity-fab doctor-fab" onClick={()=>setTroubleOpen(true)} aria-label="困ったとき（ゴットマン博士の教え）" hidden={troubleOpen} aria-hidden={troubleOpen}><img src={DOCTOR_ICON} alt="" width={60} height={60}/></button>}
+    {active&&<button type="button" className="amity-fab doctor-fab" onClick={()=>setTroubleOpen(true)} aria-label="困ったとき（ゴットマン博士の教え）" hidden={troubleOpen||fabOverVideo} aria-hidden={troubleOpen||fabOverVideo}><img src={DOCTOR_ICON} alt="" width={60} height={60}/></button>}
   </div>;
 }
 

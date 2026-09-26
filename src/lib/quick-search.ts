@@ -1,7 +1,7 @@
 import type { Task } from './model';
 import type { AbsoluteDeadline, RelativeDeadline, Practice, Talk } from '../data/catalog';
 
-export type QuickSearchKind = 'task' | 'tab' | 'deadline' | 'setting' | 'pair';
+export type QuickSearchKind = 'exclude' | 'task' | 'tab' | 'deadline' | 'setting' | 'pair';
 
 export type QuickSearchHit = {
   id: string;
@@ -23,9 +23,10 @@ export type QuickSearchHit = {
   pairAgreementId?: string;
 };
 
-const KIND_ORDER: QuickSearchKind[] = ['tab', 'setting', 'deadline', 'pair', 'task'];
+const KIND_ORDER: QuickSearchKind[] = ['exclude', 'tab', 'setting', 'deadline', 'pair', 'task'];
 
 export const KIND_LABELS: Record<QuickSearchKind, string> = {
+  exclude: '対象外（受けられない制度）',
   task: '項目',
   tab: '画面',
   deadline: '期限',
@@ -148,6 +149,8 @@ export type QuickSearchInput = {
   relativeDeadlines?: RelativeDeadline[];
   practices: Practice[];
   talks: Talk[];
+  /** もらえない制度（exclude.json）。名前が合えば一番上に出す。 */
+  excludeItems?: {id: string; title: string; why: string}[];
   /** hide ceremony tasks when ceremony==='no' */
   includeTask?: (t: Task) => boolean;
   limit?: number;
@@ -159,6 +162,24 @@ export function buildQuickSearchHits(input: QuickSearchInput): QuickSearchHit[] 
   if (!q) return EMPTY_SUGGESTIONS;
 
   const hits: QuickSearchHit[] = [];
+
+  for (const ex of input.excludeItems || []) {
+    const titleScore = scoreMatch(ex.title, q);
+    const whyScore = scoreMatch(ex.why, q);
+    const s = Math.max(titleScore, whyScore > 0 ? whyScore - 10 : 0);
+    if (s > 0) {
+      hits.push({
+        id: `exclude-${ex.id}`,
+        kind: 'exclude',
+        title: ex.title,
+        hint: `対象外 · ${ex.why}`,
+        tab: 'find',
+        scrollId: `exclude-${ex.id}`,
+        // 対象外の制度は、同じ言葉の項目より先に出す（もらえると誤解しないため）
+        score: s + 200,
+      });
+    }
+  }
 
   for (const tab of TAB_HITS) {
     const aliases = TAB_ALIASES[tab.id] || [];

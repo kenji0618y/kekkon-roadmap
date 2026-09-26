@@ -756,6 +756,7 @@
 .desk-money .money-grid{margin-bottom:8px}
 .desk-money>.hint{font-size:11px;line-height:1.7;color:var(--desk-muted,#6d7c75);max-width:none;margin:0}
 .desk-money .money-card{background:#fffefaee}
+.desk-money .money-card.primary{background:#254754;border-color:#254754}
 .desk-decor-fold{margin-bottom:10px}
 .desk-decor-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 8px}
 .desk-linkish{background:transparent;border:0;color:#3d6a78;font-size:12px;text-decoration:underline;cursor:pointer;padding:0}
@@ -1578,3 +1579,31 @@
 .seed-closed{display:inline-block;margin:4px 0 6px;padding:3px 8px;border:1px solid #d7d9d1;border-radius:4px;background:#fff;font-size:12px;line-height:1.6;color:#5f6861}
 .cal-closed{display:inline-block;margin-left:6px;font-size:11px;color:#6d756e;border:1px solid #d7d9d1;border-radius:3px;padding:0 5px;background:#fff}
 .cal-item-body .cal-closed{margin:3px 0;display:block;width:fit-content}
+/* 2026-09-26 丸ボタン（Amity・博士）の下に、ページの最後の中身がかくれないように */
+.workspace{padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))}
+/* 2026-09-26 ロードマップの絵はPCで引きのばさない（元画像1024px） */
+@media(min-width:701px){.illust-square{max-width:560px;width:100%;margin-inline:auto}}
+/* 2026-09-26 日付の入力をスマホで押しやすく */
+input[type=date].date-input,.field input[type=date]{min-height:44px;font-size:16px;width:100%;display:block;text-align:left;-webkit-appearance:none;appearance:none;background:#fff}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
+.date-clear{margin-top:6px;font-size:12px}
+/* 2026-09-26 スマホのヘッダーを1段に。下へスクロールすると上段を隠す */
+@media(max-width:700px){
+  .workspace{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  .amity-fab{bottom:max(14px,calc(10px + env(safe-area-inset-bottom,0px)))}
+  .site-header.masthead{transition:top .2s ease}
+  .site-header.masthead.is-collapsed{top:calc(-1 * var(--mh-inner,52px))}
+  .site-header .masthead-inner{flex-wrap:nowrap;padding:8px 12px 4px;gap:8px}
+  .site-header .brand{gap:8px;min-width:0}
+  .site-header .brand-seal{width:28px;height:32px;font-size:17px}
+  .site-header .wordmark{font-size:17px;letter-spacing:.05em;white-space:nowrap}
+  .site-header .wordmark small{font-size:8px;margin-top:2px}
+  .site-header .header-right{gap:6px;flex-shrink:0}
+  .site-header .city-tag{display:none}
+  .site-header .header-search-btn{padding:8px 9px}
+  .site-header .header-search-btn span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .site-header .pair-pill{padding:8px 9px}
+  .site-header .nav-wrap{padding:0 4px 4px}
+  .site-header .main-nav[data-slot]{height:46px}
+  .site-header .main-nav [data-slot=tabs-trigger]{height:42px}
+}

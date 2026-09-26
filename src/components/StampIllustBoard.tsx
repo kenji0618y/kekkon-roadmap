@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import type {Status, Group, Task, Profile} from '../lib/model'
 import {pairEventWhoLabels, statusNames} from '../lib/model'
 import {phaseImage} from '../data/catalog'
@@ -131,6 +131,23 @@ export function StampIllustBoard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTaskId])
 
+  // この画面を開いている間に「完了」にしたスタンプは、すぐ消さずに済みの印で残す（タブを離れる／開き直すと畳む）。
+  const prevStatusRef = useRef<Map<string, string> | null>(null)
+  const justDoneRef = useRef<Set<string>>(new Set())
+  {
+    const now = new Map<string, string>()
+    for (const g of groups) for (const t of tasksFor(g)) now.set(t.id, recordStatus(t.id) ?? "")
+    const prev = prevStatusRef.current
+    if (prev) {
+      for (const [id, st] of now) {
+        if (st === 'done' && prev.has(id) && prev.get(id) !== 'done') justDoneRef.current.add(id)
+      }
+    }
+    prevStatusRef.current = now
+  }
+  const justDoneKey = [...justDoneRef.current].join(',')
+  const hiddenAsDone = (id: string) => recordStatus(id) === 'done' && !justDoneRef.current.has(id)
+
   const {activeCards, foldedCards, hiddenDonePads} = useMemo(() => {
     const active: CardModel[] = []
     const folded: CardModel[] = []
@@ -168,13 +185,13 @@ export function StampIllustBoard({
         }
 
         // Hide completed pads; fully-done cards go to the fold tray.
-        if (complete) {
+        if (complete && chunk.every((t) => hiddenAsDone(t.id))) {
           hiddenDonePads += doneCount
           folded.push(model)
           return
         }
 
-        const visible = chunk.filter((t) => recordStatus(t.id) !== 'done')
+        const visible = chunk.filter((t) => !hiddenAsDone(t.id))
         hiddenDonePads += chunk.length - visible.length
         if (visible.length === 0) {
           folded.push({...model, complete: true})
@@ -192,7 +209,8 @@ export function StampIllustBoard({
     }
 
     return {activeCards: active, foldedCards: folded, hiddenDonePads}
-  }, [groups, tasksFor, recordStatus, showDone])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groups, tasksFor, recordStatus, showDone, justDoneKey])
 
   let cardNo = 0
 

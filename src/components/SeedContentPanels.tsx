@@ -285,7 +285,7 @@ export function ExcludeAndLiesPanel() {
         <div className="seed-fold-body">
           <div className="seed-exclude-list">
             {excludeItems.map((it) => (
-              <article key={it.id} className="seed-exclude-card">
+              <article key={it.id} id={`exclude-${it.id}`} className="seed-exclude-card">
                 <span className="seed-badge"><Ban size={12} />対象外</span>
                 <strong>{it.title}</strong>
                 <p>{it.why}</p>
