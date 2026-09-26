@@ -147,6 +147,7 @@ src/lib/amity-grok.ts               # grok-3 · credits → console.x.ai
 src/lib/amity-grok-bundle.ts        # ciphertext only（連続 "xai-" 禁止）
 src/lib/desk-chat.ts                # 端末内フォールバック
 src/lib/grok-mode.ts
+src/lib/motion.ts                   # 動き（カードのフェード・章の絵のひらき・スタンプの押印）。タブの動きは Notebook.tsx。動きを減らす設定を必ず尊重
 src/data/tasks.json / groups.json / sources.json / phase-images.json
 src/data/deadlines.json / exclude.json / home.json / phases.json
 src/data/sugoroku.json              # 未使用（過去のスタンプ版の参考データ。import されていない）

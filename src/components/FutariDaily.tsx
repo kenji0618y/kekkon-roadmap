@@ -1,6 +1,7 @@
 import {useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
 import {ArrowLeft,ArrowUpRight,ChevronRight,Copy,LoaderCircle,Play} from 'lucide-react';
 import {toast} from 'sonner';
+import {createPortal} from 'react-dom';
 import type {Book,FutariAnswer,FutariMode,Profile} from '../lib/model';
 import {pairEventWhoLabels} from '../lib/model';
 import {todayJapan} from '../lib/dates';
@@ -86,7 +87,8 @@ export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean
     {view==='long'&&<LongView today={today} book={book} busy={busy} save={save}/>}
 
     <TroubleSheet open={troubleOpen} onOpenChange={setTroubleOpen} book={book} busy={busy} save={save}/>
-    {active&&<button type="button" className="amity-fab doctor-fab" onClick={()=>setTroubleOpen(true)} aria-label="困ったとき（ゴットマン博士の教え）" hidden={troubleOpen||fabOverVideo} aria-hidden={troubleOpen||fabOverVideo}><img src={DOCTOR_ICON} alt="" width={60} height={60}/></button>}
+    {/* 丸ボタンは body 直下に出す（タブ切り替えの動きで位置がずれないように） */}
+    {active&&typeof document!=='undefined'&&createPortal(<button type="button" className="amity-fab doctor-fab" onClick={()=>setTroubleOpen(true)} aria-label="困ったとき（ゴットマン博士の教え）" hidden={troubleOpen||fabOverVideo} aria-hidden={troubleOpen||fabOverVideo}><img src={DOCTOR_ICON} alt="" width={60} height={60}/></button>,document.body)}
   </div>;
 }
 

@@ -230,7 +230,7 @@ export function StampIllustBoard({
         role="listitem"
         className={`illust-square ${selected ? 'selected' : ''} ${complete ? 'complete' : ''} ${muted ? 'illust-folded' : ''}`}
       >
-        <div className="illust-frame">
+        <div className="illust-frame" data-reveal-key={`${cardKey}|${image}`}>
           <img className="illust-art" src={image} alt="" loading="lazy" decoding="async" />
           <div
             className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`}
