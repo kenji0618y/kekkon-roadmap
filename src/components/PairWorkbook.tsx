@@ -128,14 +128,19 @@ function limitsForScreen(text: string) {
   return text.replace(/(一般向け解説の)?本文確認。/g, '').trim()
 }
 
+/** gottman.com の出典は「ゴットマン博士の教え」と表示する（refs.json の kind は残す）。 */
+function refKindLabel(r: Ref) {
+  return /(^|\.)gottman\.com$/.test((() => { try { return new URL(r.url).hostname } catch { return '' } })()) ? 'ゴットマン博士の教え' : r.kind
+}
+
 function RefChips({ids}: {ids: string[]}) {
   const list = ids.map((id) => refById[id]).filter(Boolean) as Ref[];
   if (!list.length) return null;
   return (
     <span className="pair-refs">
       {list.map((r) => (
-        <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" title={`${r.kind}／${r.by}`}>
-          {r.kind}
+        <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" title={`${refKindLabel(r)}／${r.by}`}>
+          {refKindLabel(r)}
           <ArrowUpRight size={11} aria-hidden />
         </a>
       ))}
@@ -458,7 +463,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
         <ul className="pair-ref-list">
           {Object.values(refById).map((r) => (
             <li key={r.id}>
-              <span className="pair-ref-kind">{r.kind}</span>
+              <span className="pair-ref-kind">{refKindLabel(r)}</span>
               <div>
                 <a href={r.url} target="_blank" rel="noopener noreferrer">{r.title}<ArrowUpRight size={12} aria-hidden /></a>
                 <small>{r.by}</small>

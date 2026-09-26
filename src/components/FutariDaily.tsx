@@ -63,7 +63,6 @@ export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean
         <button type="button" className="fu-mini meet" onClick={()=>go('meeting')}><span className="eyebrow">週1回 ・ ふたり会議</span><strong>{nextMeetingLabel(today)}</strong><small>ありがとうを伝え合う → 気になることを1つ → 「来週なにをしてほしい？」</small></button>
       </div>
       <div className="fu-links">
-        <button type="button" onClick={()=>go('videos')}>動画一覧<ChevronRight size={15}/></button>
         <button type="button" onClick={()=>go('long')}>長く使う仕組み<ChevronRight size={15}/></button>
       </div>
       <p className="fu-foot">内容の出典：The Seven Principles for Making Marriage Work／gottman.com</p>
@@ -281,12 +280,15 @@ function FeedbackBlock({mode,question,answer,who}:{mode:'daily'|'rephrase',quest
   </div>;
 }
 
+/** 動画に焼き込まれた番号（lessonN.mp4 の N ＝ 動画内の「ふたりのレッスン N」）。一覧・今日のカードで同じ番号を使う。 */
+function lessonNo(lesson?:Lesson){return Number(/lesson(\d+)\.mp4/.exec(lesson?.video||'')?.[1]||0);}
+
 function LessonCard({lesson,onList}:{lesson:Lesson,onList:()=>void}){
   return <article className="fu-card" id="futari-lesson">
     <div className="fu-card-h"><span><i className="fu-dot sage"/>今日のレッスン</span><small>{lesson.duration} ・ 字幕つき</small></div>
     <LessonPlayer lesson={lesson}/>
     <div className="fu-lesson">
-      <p className="eyebrow">レッスン ・ 動画一覧のうちの1本</p>
+      <p className="eyebrow">{lessonNo(lesson)?`レッスン ${lessonNo(lesson)}`:'レッスン'} ・ 動画一覧のうちの1本</p>
       <h3>{lesson.title}</h3>
       <p>{lesson.summary}</p>
       <Teach ids={lesson.sourceIds}/>
@@ -356,16 +358,16 @@ function VideosView(){
   return <section className="fu-page">
     <p className="eyebrow">レッスン動画 ・ 約30〜60秒ずつ</p>
     <h1 className="fu-title">動画一覧</h1>
-    <p className="fu-lead">ゴットマン博士の本と gottman.com にもとづくテーマです。できたものから見られます。</p>
+    <p className="fu-lead">ゴットマン博士の本と gottman.com にもとづくテーマです。番号は動画の中の「ふたりのレッスン」の番号と同じです。</p>
     <article className="fu-card">
       <div className="fu-card-h"><span><i className="fu-dot sage"/>テーマ一覧</span><small>「本」＝『The Seven Principles…』改訂版</small></div>
       <ul className="fu-vlist">
-        {lessonTopics.map((t,i)=>{
-          const lesson=lessons.find(l=>l.id===t.lessonId);
+        {lessonTopics.map((t,i)=>({t,i,lesson:lessons.find(l=>l.id===t.lessonId)})).sort((a,b)=>(lessonNo(a.lesson)||999+a.i)-(lessonNo(b.lesson)||999+b.i)).map(({t,lesson})=>{
           const ready=!!lesson?.video;
+          const no=lessonNo(lesson);
           return <li key={t.id} className={ready?'has':''}>
-            <span className="no">{i+1}</span>
-            <span className="tt">{t.title}<small>{[...new Set(t.sourceIds.map(id=>gSourceById[id]?.short).filter(Boolean))].join('／')}</small>
+            <span className="no">{no||'・'}</span>
+            <span className="tt">{lesson?.title||t.title}<small>{lesson&&lesson.title!==t.title?`テーマ：${t.title} ・ `:''}{[...new Set(t.sourceIds.map(id=>gSourceById[id]?.short).filter(Boolean))].join('／')}</small>
               {lesson&&!ready&&<details className="fu-script"><summary>台本を読む</summary><ol>{lesson.lines.map((l,j)=><li key={j}>{l.say}</li>)}</ol><Teach ids={lesson.sourceIds}/></details>}
               {ready&&playing===t.id&&<><LessonPlayer lesson={lesson!}/><Teach ids={lesson!.sourceIds}/></>}
             </span>
@@ -391,11 +393,11 @@ function LongView({today,book,busy,save}:{today:string,book:Book,busy:boolean,sa
     <p className="fu-lead">曜日ごとにテーマを決めて、年ごとに答え方を変えます。同じ問いにもう一度答えることにも意味があります（ラブマップは「定期的に更新する」もの）。</p>
     <article className="fu-card"><div className="fu-card-h"><span><i className="fu-dot"/>曜日ごとのテーマ</span><small>毎週おなじ流れ</small></div><div className="fu-sec">
       <ul className="fu-wk">{weekThemes.map(t=><li key={t.day} className={`${t.day==='sun'?'sun':''}${t.day===key?' now':''}`}><span className="d">{t.label}</span><div>{t.theme}<small>{t.sub}</small></div></li>)}</ul>
-      <Sources ids={[...new Set(weekThemes.flatMap(t=>t.sourceIds))]}/>
+      <Teach ids={[...new Set(weekThemes.flatMap(t=>t.sourceIds))]}/>
     </div></article>
     <article className="fu-card"><div className="fu-card-h"><span><i className="fu-dot"/>年ごとの答え方</span><small>{f.startedAt?`${Number(f.startedAt.slice(0,4))}年${Number(f.startedAt.slice(5,7))}月${Number(f.startedAt.slice(8))}日に始めました・いまは${yi+1}年目`:'答えた日から数えます'}</small></div><div className="fu-sec">
       {yearModes.map(y=><div key={y.label} className={`fu-yr${y.mode===current&&f.modeOverride==='auto'&&yi<3&&['answer','compare','guess'][yi]===y.mode?' now':''}`}><span className="n">{y.label}</span><div><b>{y.title}</b><p>{y.text}</p></div></div>)}
-      <Sources ids={yearsSourceIds}/>
+      <Teach ids={yearsSourceIds}/>
       <label className="fu-lbl" htmlFor="fu-mode">答え方（ふだんは「年に合わせる」のままで大丈夫）</label>
       <select id="fu-mode" className="fu-select" value={f.modeOverride} disabled={busy} onChange={e=>void save.settings({modeOverride:e.target.value as 'auto'|FutariMode})}>
         <option value="auto">年に合わせる（いま：{modeLabel[(['answer','compare','guess'] as const)[yi%3]]}）</option>

@@ -1409,7 +1409,7 @@
 }
 
 /* ===== ふたりタブ：今日の一問（2026-09-25） ===== */
-.fu{max-width:640px;margin:0 auto;padding-bottom:84px;color:#223b48}
+.fu{max-width:640px;margin:0 auto;padding-bottom:0;margin-bottom:18px;color:#223b48}
 .fu .eyebrow{font-size:11px;letter-spacing:.13em;font-weight:700;color:#99773c;margin:0}
 .fu-hello{display:flex;align-items:center;gap:12px}
 .fu-hello-text{min-width:0;flex:1}
@@ -1491,7 +1491,7 @@
 .fu-disc{font-size:9.5px!important;color:#8b927f!important;border-top:1px dashed #d8e0d0;margin-top:8px!important;padding-top:6px;line-height:1.6!important}
 .fu-safety{margin-top:8px}
 .fu-video{padding:12px 15px 4px}
-.fu-video video{display:block;width:100%;max-height:560px;aspect-ratio:9/16;object-fit:contain;background:#ece9df;border-radius:10px}
+.fu-video video{display:block;width:100%;max-width:calc(min(560px,70vh) * 9 / 16);height:auto;margin:0 auto;aspect-ratio:9/16;object-fit:cover;background:#1f2b30;border-radius:10px}
 .fu-script{margin-top:6px;font-size:12px;color:#5b6f66}
 .fu-script summary{cursor:pointer;font-weight:700;color:#1c3c4a;font-size:12px}
 .fu-script ol{margin:4px 0 0;padding-left:18px;line-height:1.7}
