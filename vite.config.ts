@@ -42,6 +42,8 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,json,woff2}"],
         navigateFallback: "index.html",
+        // 見本ページ（/preview-motion/）をアプリ本体の画面に差し替えない
+        navigateFallbackDenylist: [/\/preview-motion\//],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
       devOptions: { enabled: false },
