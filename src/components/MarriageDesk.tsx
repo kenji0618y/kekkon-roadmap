@@ -323,7 +323,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         <article className="desk-metric">
           <span className="desk-metric-label">これまで</span>
           <strong className="desk-metric-value">{actionable.length?`${progressPct}%`:'—'}</strong>
-          <span className="desk-metric-sub">{done.length}/{actionable.length} 完了 · 対象内</span>
+          <span className="desk-metric-sub">{done.length}/{actionable.length} 完了 · 二人の候補</span>
           <div className="desk-metric-bar" aria-hidden><i style={{width:`${progressPct}%`}}/></div>
         </article>
         <article className={`desk-metric ${weddingMetric.tone?`tone-${weddingMetric.tone}`:''}`}>
@@ -335,11 +335,11 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
           type="button"
           className={`desk-metric desk-metric-btn ${soonCount>0?'tone-warn':''}`}
           onClick={()=>onGoDeadlines?.()}
-          aria-label="次の期限。期限タブへ"
+          aria-label="次の期限。カレンダーへ"
         >
           <span className="desk-metric-label">次の期限</span>
           <strong className="desk-metric-value">{soonCount}<small>件</small></strong>
-          <span className="desk-metric-sub">手帳の予定・14日以内 · 期限タブへ</span>
+          <span className="desk-metric-sub">手帳の予定・14日以内 · カレンダーへ</span>
         </button>
       </section>
 
@@ -351,7 +351,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         <p className="amity-brief-cross">
           明日の一手・次にやることは下の
           <a href="#desk-next-actions" className="amity-brief-jump" onClick={(e)=>{e.preventDefault();document.getElementById('desk-next-actions')?.scrollIntoView({behavior:'smooth',block:'start'});}}>次のアクション</a>
-          にまとめてあります。日付つきの予定は上の件数タップで期限タブへ。
+          にまとめてあります。日付つきの予定は、上の「次の期限」から「カレンダー」へ。
         </p>
         <div className="amity-brief-col">
           {amityBrief.half.length?(

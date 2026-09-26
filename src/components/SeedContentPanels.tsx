@@ -384,7 +384,7 @@ export function PhasesPanel({
           action={
             onOpenProfile ? (
               <Action secondary onClick={onOpenProfile}>
-                ふたりの設定を開く
+                設定を開く
               </Action>
             ) : undefined
           }

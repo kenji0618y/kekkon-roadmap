@@ -123,6 +123,11 @@ function themeImage(themeIndex: number) {
   return THEME_ART[themeIndex % THEME_ART.length];
 }
 
+/** refs.json の limits 末尾にある作業メモ「本文確認。」は画面に出さない（データは残す）。 */
+function limitsForScreen(text: string) {
+  return text.replace(/(一般向け解説の)?本文確認。/g, '').trim()
+}
+
 function RefChips({ids}: {ids: string[]}) {
   const list = ids.map((id) => refById[id]).filter(Boolean) as Ref[];
   if (!list.length) return null;
@@ -458,7 +463,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
                 <a href={r.url} target="_blank" rel="noopener noreferrer">{r.title}<ArrowUpRight size={12} aria-hidden /></a>
                 <small>{r.by}</small>
                 <p>{r.summary}</p>
-                <p className="pair-ref-limit">{r.limits}</p>
+                <p className="pair-ref-limit">{limitsForScreen(r.limits)}</p>
               </div>
             </li>
           ))}

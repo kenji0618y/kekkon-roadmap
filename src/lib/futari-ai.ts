@@ -4,7 +4,7 @@
  * - 返ってきたIDが固定リスト（ai_allowed の17件）にないものは捨てる。有効な出典が1つも残らない助言は表示しない。
  * - 数字・URL・なりすまし（博士／研究所／Amity として話す）を含む助言は表示しない。
  */
-import {askGrokWithSystem, isGrokCreditsLimitResult, scrubGrokUserText} from './amity-grok';
+import {askGrokWithSystem, grokErrorJa, isGrokCreditsLimitResult, scrubGrokUserText} from './amity-grok';
 import {AI_ALLOWED_SOURCE_IDS, gSourceById, guide} from './futari';
 
 export type FeedbackItem = {text: string; sourceIds: string[]};
@@ -129,10 +129,10 @@ export async function askFutariFeedback(input: {mode: 'daily' | 'rephrase'; ques
   ].join('\n');
   const r = await askGrokWithSystem(buildSystemPrompt(), user, {signal: input.signal, maxTokens: 600, temperature: 0.2});
   if (!r.ok) {
-    if (r.error === 'no-key') return {kind: 'error', message: 'AIのキーが設定されていないため、いまはみてもらえません（設定タブで入れられます）。'};
+    if (r.error === 'no-key') return {kind: 'error', message: 'AIのキーが設定されていないため、いまはみてもらえません（設定の「詳細設定」で入れられます）。'};
     if (isGrokCreditsLimitResult(r.error)) return {kind: 'error', message: 'AIの利用枠が上限のため、いまはみてもらえません。'};
     if (r.error === 'aborted') return {kind: 'error', message: '中止しました。'};
-    return {kind: 'error', message: `AIにつながりませんでした（${r.error}）。時間をおいてお試しください。`};
+    return {kind: 'error', message: grokErrorJa(r.error)};
   }
   return validateFeedback(r.text, answer);
 }

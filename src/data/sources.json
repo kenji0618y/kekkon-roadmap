@@ -459,9 +459,9 @@
     "id": "furigana",
     "title": "法務省：戸籍にフリガナが記載されます",
     "url": "https://www.moj.go.jp/MINJI/furigana/index.html",
-    "checked": "2026-09-09",
+    "checked": "2026-09-26",
     "kind": "official",
-    "note": "最新の受付・対象条件はリンク先で確認してください。"
+    "note": "氏名の振り仮名の届出期間は2026年5月25日で終わりました（法務省の案内）。最新の受付・対象条件はリンク先で確認してください。"
   },
   "passport": {
     "id": "passport",
