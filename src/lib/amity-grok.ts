@@ -39,6 +39,25 @@ export function isGrokCreditsLimitResult(error: string): boolean {
   return error === GROK_ERROR_CREDITS || error.startsWith('credits-limit');
 }
 
+/** 通信エラーなどを、画面に出せる日本語に置きかえる（英語の生のエラーは出さない）。 */
+export const NETWORK_ERROR_JA = '通信できませんでした。電波を確かめて、もう一度お試しください。';
+export function grokErrorJa(error: string): string {
+  if (!error || error === 'network') return NETWORK_ERROR_JA;
+  if (error === 'aborted') return '中止しました。';
+  if (error === 'no-key') return 'AIのキーが設定されていません。';
+  if (error === 'empty') return 'AIから答えが返ってきませんでした。もう一度お試しください。';
+  if (isGrokCreditsLimitResult(error)) return GROK_CREDITS_LIMIT_JA;
+  const m = /^HTTP (\d{3})/.exec(error);
+  if (m) {
+    const code = Number(m[1]);
+    if (code === 401 || code === 403) return 'AIのキーが使えませんでした。設定の「詳細設定」を確かめてください。';
+    if (code === 429) return 'AIが混み合っています。少し時間をおいて、もう一度お試しください。';
+    if (code >= 500) return 'AIのサービスが一時的に使えません。時間をおいて、もう一度お試しください。';
+    return `AIにつながりませんでした（エラー番号 ${code}）。時間をおいて、もう一度お試しください。`;
+  }
+  return NETWORK_ERROR_JA;
+}
+
 export const AMITY_GROK_SYSTEM = [
   'あなたはAmityちゃん。結婚ロードマップアプリのサメのナビアシスタントだよ。短く、やさしく、日本語で答えてね。',
   '対象ユーザーは広島市・共働きで世帯所得がおおむね800万円超の二人。所得制限のある市・国の支援は当てはまりにくいことが多いので、必要な手続きだけに絞って案内する。',
@@ -158,9 +177,9 @@ export async function askGrokResearch(
     const text = data.choices?.[0]?.message?.content?.trim();
     if (!text) return {ok: false, error: 'empty'};
     return {ok: true, text: scrubGrokUserText(text)};
-  } catch (e) {
+  } catch {
     if (signal?.aborted) return {ok: false, error: 'aborted'};
-    return {ok: false, error: e instanceof Error ? e.message : 'network'};
+    return {ok: false, error: 'network'};
   }
 }
 
@@ -200,8 +219,8 @@ export async function askGrokWithSystem(
     const text = data.choices?.[0]?.message?.content?.trim();
     if (!text) return {ok: false, error: 'empty'};
     return {ok: true, text};
-  } catch (e) {
+  } catch {
     if (opts.signal?.aborted) return {ok: false, error: 'aborted'};
-    return {ok: false, error: e instanceof Error ? e.message : 'network'};
+    return {ok: false, error: 'network'};
   }
 }

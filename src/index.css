@@ -1559,3 +1559,16 @@
 .fu-src-item{display:block;padding-left:.9em;text-indent:-.9em}
 .fu-src-item:before{content:"・"}
 .fu-src svg{display:inline;vertical-align:-1px;margin-left:1px}
+/* 2026-09-26 設定の「詳細設定」たたみ */
+.settings-advanced{grid-column:1/-1}
+.settings-advanced-fold{width:100%}
+.settings-advanced-fold>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:14px}
+.settings-advanced-fold>summary::-webkit-details-marker{display:none}
+.settings-advanced-fold>summary .settings-icon{margin-bottom:0;flex-shrink:0}
+.settings-advanced-fold>summary h2{margin:0 0 2px}
+.settings-advanced-fold>summary .hint{display:block;font-size:12px}
+.settings-advanced-fold>summary::after{content:'＋';margin-left:auto;color:#8ca177;font-size:18px}
+.settings-advanced-fold[open]>summary::after{content:'－'}
+.settings-sub{border-top:1px solid #ececdb;margin-top:20px;padding-top:18px;width:100%}
+.settings-sub h3{display:flex;align-items:center;gap:8px;font-size:16px;margin:0 0 10px;color:#2f4a3c}
+.settings-sub p{margin-bottom:12px}

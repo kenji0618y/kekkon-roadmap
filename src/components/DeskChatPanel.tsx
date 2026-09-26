@@ -10,7 +10,7 @@ import {
   type ChatMessage,
 } from '../lib/desk-chat';
 import type {Profile} from '../lib/model';
-import {askGrokResearch, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, hasBundledGrokKey, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
+import {askGrokResearch, grokErrorJa, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
 import {markGrokLocalOnly} from '../lib/grok-mode';
 
 export type DeskChatPanelProps = {
@@ -31,11 +31,11 @@ function uid() {
 const WELCOME: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
-  text: 'Amityちゃんです。スタンプ・手続き・期限・対象外・フェーズ・会話練習まで横断して探すよ。候補は多めに出す。キーがあれば Grok で深掘りするよ。',
+  text: 'Amityちゃんです。スタンプ・手続き・期限・対象外・フェーズ・会話練習まで横断して探すよ。候補は多めに出すね。AIが使えるときは、もっとくわしく調べるよ。',
   at: 0,
 };
 
-const NO_KEY_TIP = '設定に xAI (Grok) APIキーを入れると深掘りできる（バンドル済みなら不要）';
+const NO_KEY_TIP = '設定の「詳細設定」でAIのキーを入れると、AIでもくわしく調べられるよ';
 
 export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = null, embedded = false}: DeskChatPanelProps) {
   const titleId = useId();
@@ -137,8 +137,8 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
         }
         const chatText = credits
           ? `${GROK_CREDITS_LIMIT_JA}\n\nクレジットを増やす（アプリでは購入不可）→ ${GROK_CREDITS_CONSOLE_URL}`
-          : `Grokに聞けなかったよ（${grok.error}）。上の端末内の答えを見てね。キーや通信を設定で確認して。`;
-        toast.error(credits ? GROK_CREDITS_LIMIT_JA : `Grokに聞けなかったよ（${grok.error}）`, {
+          : `AIには聞けなかったよ。${grokErrorJa(grok.error)} 上の、手帳の中から探した答えを見てね。`;
+        toast.error(credits ? GROK_CREDITS_LIMIT_JA : grokErrorJa(grok.error), {
           duration: 7000,
         });
         const errMsg: ChatMessage = {
@@ -171,10 +171,8 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
   if (!embedded && !open) return null;
 
   const keyHint = loadGrokKey()
-    ? hasBundledGrokKey()
-      ? '端末内検索 · Grok 深掘り（バンドルまたは設定）'
-      : '端末内検索 · Grok 深掘り'
-    : '端末内検索 · 設定で Grok キー可';
+    ? 'この手帳の中から探して、AIでもくわしく調べるよ'
+    : 'この手帳の中から探すよ';
 
   const panel = (
     <div className={`desk-chat-panel${embedded ? ' embedded' : ''}`}>

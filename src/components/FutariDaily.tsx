@@ -130,7 +130,7 @@ function DailyCard({today,book,me,names,busy,save,onChooseMe,onMeeting}:{today:s
       <div className="fu-sec">
         <p className="fu-step-h">この端末で答えるのはどちら？</p>
         <div className="fu-choose">{(['n1','n2'] as Who[]).map(v=><button key={v} type="button" className="fu-btn ghost" onClick={()=>onChooseMe(v)}>{names[v]}</button>)}</div>
-        <p className="fu-note">あとから切り替えられます。答えは、ふたりの手帳（この端末と、設定していればGist同期）に残ります。</p>
+        <p className="fu-note">あとから切り替えられます。答えは、ふたりの手帳（この端末）に残ります。自動同期を使っていれば、相手の端末にも届きます。</p>
       </div>
     </article>;
   }
