@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#183645">
+<title>見本 ・ 動きのあるデザイン（まだアプリには入っていません）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+  // 動きを減らす設定（端末）なら最初から静かな表示にする
+  (function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rm')}catch(e){}})();
+</script>
+<style>
+:root{--bg:#f6f4ee;--ink:#223b48;--primary:#1c3c4a;--paper:#fffefa;--muted:#687774;--border:#dedfd6;--gold:#99773c;--green:#4d7864;--red:#a74435;
+  --ease:cubic-bezier(.2,.7,.2,1)}
+*{box-sizing:border-box}html,body{margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:12px}
+body{font-family:"Zen Kaku Gothic New","Noto Sans CJK JP",system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.75;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;-webkit-tap-highlight-color:transparent}
+img{display:block;max-width:100%}
+.serif{font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif}
+.wrap{max-width:480px;margin:0 auto}
+
+/* ヘッダー（本体と同じ色・印・字） */
+.masthead{background:#183645;color:#fffefa;border-bottom:2px solid #ae9154}
+.mh-in{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+.brand{display:flex;align-items:center;gap:9px}
+.seal{display:grid;place-content:center;border:1px solid #c09c5c;outline:1px solid #c09c5c;outline-offset:-4px;color:#d3b880;width:32px;height:36px;font-family:"Shippori Mincho",serif;font-size:19px;transform:rotate(-3deg)}
+.wordmark{font-family:"Shippori Mincho",serif;font-size:18px;letter-spacing:.08em;font-weight:600}
+.back{font-size:11px;border:1px solid #5c737a;border-radius:6px;padding:5px 9px;color:#f8f6ef;text-decoration:none}
+.sample-bar{background:#faf0dc;border-bottom:1px solid #e4d3a8;color:#7d693f;font-size:12px;padding:9px 16px;line-height:1.6}
+.sample-bar b{color:#986f32}
+.tools{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px 0}
+.chip{font-size:11px;border:1px solid #d4dbd1;background:var(--paper);border-radius:999px;padding:4px 10px;color:var(--primary);text-decoration:none;white-space:nowrap}
+.chip.on{background:var(--primary);color:#fffefa;border-color:var(--primary)}
+.toc{display:flex;gap:6px;overflow-x:auto;padding:10px 16px 4px;scrollbar-width:none}
+.toc::-webkit-scrollbar{display:none}
+
+main{padding:6px 14px 80px}
+.demo{margin:22px 0 30px}
+.demo-h{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.no{flex:none;width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fffefa;font-size:12px;display:grid;place-content:center;font-weight:700}
+.demo-h h2{flex:1;font-family:"Shippori Mincho",serif;font-size:17px;font-weight:600;letter-spacing:.02em;line-height:1.45}
+.again{flex:none;font-size:11px;font-weight:700;color:var(--primary);border:1px solid #d4dbd1;background:var(--paper);border-radius:6px;padding:4px 9px}
+.again:active{transform:scale(.96)}
+.cap{font-size:12px;color:var(--muted);margin:0 0 10px 33px;line-height:1.6}
+.stage{background:var(--paper);border:1px solid #dfe2d9;border-radius:12px;box-shadow:0 4px 14px #1d35270a;overflow:hidden}
+.pad-in{padding:16px}
+.eyebrow{font-size:11px;letter-spacing:.13em;font-weight:700;color:var(--gold)}
+.muted{color:var(--muted)}
+.tag-sample{display:inline-block;font-size:9px;font-weight:700;color:#fffefa;background:#a98a52;border-radius:3px;padding:0 5px;margin-left:5px;vertical-align:1px;letter-spacing:.04em}
+
+/* 1 開くときのあいさつ */
+#opening{position:fixed;inset:0;z-index:200;background:#183645;display:none;align-items:center;justify-content:center;flex-direction:column;gap:18px;cursor:pointer}
+#opening.show{display:flex;animation:opOut .3s ease .9s forwards}
+#opening.skip{animation:opOut .15s ease forwards}
+.op-mark{display:flex;align-items:center;gap:12px}
+.op-seal{display:grid;place-content:center;border:1px solid #c09c5c;outline:1px solid #c09c5c;outline-offset:-5px;color:#d3b880;width:46px;height:52px;font-family:"Shippori Mincho",serif;font-size:27px;opacity:0;animation:sealIn .45s var(--ease) forwards}
+.op-word{font-family:"Shippori Mincho",serif;color:#fffefa;font-size:22px;letter-spacing:.1em;opacity:0;animation:fadeUp .4s var(--ease) .22s forwards}
+.op-art{width:min(62vw,250px);aspect-ratio:1/1;border-radius:12px;overflow:hidden;border:1px solid #ae915466;opacity:0;animation:artIn .6s var(--ease) .18s forwards}
+.op-art img{width:100%;height:100%;object-fit:cover}
+.op-skip{position:absolute;bottom:max(22px,env(safe-area-inset-bottom));font-size:11px;color:#b7c6cb;letter-spacing:.1em}
+@keyframes sealIn{0%{opacity:0;transform:scale(1.35) rotate(-9deg)}60%{opacity:1;transform:scale(.96) rotate(-3deg)}100%{opacity:1;transform:scale(1) rotate(-3deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes artIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+@keyframes opOut{to{opacity:0;visibility:hidden}}
+.op-status{font-size:12px;color:var(--green);background:#eef3ea;border-radius:6px;padding:7px 10px;margin-top:10px}
+.op-mini{display:flex;align-items:center;gap:12px}
+.op-mini .thumb{flex:none;width:64px;height:64px;border-radius:9px;overflow:hidden;background:#183645;display:grid;place-content:center}
+.op-mini .thumb span{color:#d3b880;font-family:"Shippori Mincho",serif;font-size:22px;border:1px solid #c09c5c;outline:1px solid #c09c5c;outline-offset:-4px;width:30px;height:34px;display:grid;place-content:center;transform:rotate(-3deg)}
+.op-mini ul{margin:0;padding-left:1.1em;font-size:12px;color:#475e55;line-height:1.7}
+
+/* 2 見出しの文字あらわれ */
+.tr .eyebrow{display:inline-block;position:relative;padding-bottom:3px}
+.tr .eyebrow::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:#b29258;transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease) .1s}
+.tr .line{display:block;overflow:hidden;padding-bottom:.06em}
+.tr .line>span{display:block;transform:translateY(105%);transition:transform .5s var(--ease)}
+.tr .line:nth-child(2)>span{transition-delay:.08s}
+.tr h3{font-family:"Shippori Mincho",serif;font-size:22px;font-weight:600;letter-spacing:.03em;line-height:1.5;margin:6px 0 6px}
+.tr p{font-size:13px;color:var(--muted);opacity:0;transform:translateY(6px);transition:opacity .4s ease .25s,transform .4s var(--ease) .25s}
+.tr.in .eyebrow::after{transform:scaleX(1)}
+.tr.in .line>span{transform:none}
+.tr.in p{opacity:1;transform:none}
+
+/* 3 カードの順番フェードイン */
+.list{display:grid;gap:10px;padding:14px}
+.task{display:flex;gap:11px;align-items:flex-start;background:#fffefa;border:1px solid #e3e6dc;border-radius:10px;padding:11px 12px}
+.task .n{flex:none;width:22px;height:22px;border-radius:50%;background:#e9eee9;color:var(--green);font-size:11px;font-weight:700;display:grid;place-content:center;margin-top:2px}
+.task b{display:block;font-size:13.5px;line-height:1.5}
+.task small{display:block;font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:2px}
+.fx{opacity:0;transform:translate3d(0,16px,0);transition:opacity .45s ease var(--d,0s),transform .45s var(--ease) var(--d,0s)}
+.fx.in{opacity:1;transform:none}
+
+/* 4 水彩の絵：ひらく＋全体へもどる */
+.chapters{display:grid;gap:14px;padding:14px}
+.illust{border:1px solid #d5ddd0;border-radius:14px;background:#fffdf8;overflow:hidden;box-shadow:0 4px 14px #1d352708}
+.frame{position:relative;aspect-ratio:1/1;overflow:hidden;background:#e8dfd0}
+.frame img{width:100%;height:100%;object-fit:cover;object-position:center}
+.reveal .frame{clip-path:inset(9% 9% 9% 9% round 10px);transition:clip-path .8s var(--ease)}
+.reveal .frame img{transform:scale(1.08);transition:transform 1s var(--ease)}
+.reveal.in .frame{clip-path:inset(0 0 0 0 round 0)}
+.reveal.in .frame img{transform:none}
+.illust-cap{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid #ebe6da;font-size:13px;font-weight:700;color:#2f4a45}
+.illust-cap .i{font-family:Georgia,serif;font-size:12px;color:#8f9988;font-weight:400;min-width:1.5em}
+
+/* 5 絵のゆるい視差 */
+.hero{position:relative;padding:18px 16px 20px;background:linear-gradient(180deg,#fffefa,#f4f1e8)}
+.hero h3{font-family:"Shippori Mincho",serif;font-size:21px;font-weight:600;letter-spacing:.03em;line-height:1.5;margin:4px 0 4px}
+.hero p{font-size:12.5px;color:var(--muted)}
+.hero .ptext{position:relative;z-index:2;will-change:transform}
+.hero .pframe{margin-top:14px;border-radius:14px;overflow:hidden;border:1px solid #d5ddd0;box-shadow:0 8px 22px #1d352714;will-change:transform}
+.hero .pframe img{width:100%;aspect-ratio:1/1;object-fit:cover}
+.meter{font-size:10.5px;color:#8a927c;text-align:right;padding:6px 12px 8px}
+
+/* 6 タブ切り替え */
+.tabs{position:relative;display:flex;background:#183645;padding:0 6px}
+.tabs button{flex:1;color:#b7c6cb;font-size:12px;padding:11px 0 12px;position:relative;z-index:1;transition:color .2s ease}
+.tabs button[aria-selected=true]{color:#fffefa}
+.tabs .ind{position:absolute;bottom:0;left:6px;height:2px;width:calc((100% - 12px)/4);background:#c09c5c;border-radius:2px;transition:transform .25s var(--ease)}
+.panels{position:relative;min-height:212px}
+.panel{padding:14px 16px}
+.panel[hidden]{display:none}
+.panel h4{margin:0 0 8px;font-family:"Shippori Mincho",serif;font-size:16px;font-weight:600}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;border-bottom:1px dashed #e1e4d8;padding:7px 0}
+.row:last-child{border-bottom:0}
+.chgrid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #dfe2d9;border-radius:8px;overflow:hidden}
+.chgrid div{display:flex;align-items:center;gap:6px;padding:10px 8px;font-size:12px;border-right:1px solid #eceee5;border-bottom:1px solid #eceee5}
+.chgrid div:nth-child(3n){border-right:0}.chgrid div:nth-child(n+4){border-bottom:0}
+.chgrid i{font-style:normal;font-family:"Shippori Mincho",serif;width:24px;height:24px;display:grid;place-content:center;background:#eeeee7;border-radius:4px;color:#7a6a45}
+.chgrid div.cur{background:#1c3c4a;color:#fffefa}.chgrid div.cur i{background:#2d5261;color:#d3b880}
+.qbox{background:linear-gradient(135deg,#f3f1e6 0%,#eef2ee 60%,#edf1f5 100%);border-radius:10px;padding:14px}
+.qbox .t{display:inline-block;font-size:10px;color:#4d7864;background:#e3ebe2;border-radius:20px;padding:1px 9px;margin-bottom:6px}
+.qbox h5{margin:0;font-family:"Shippori Mincho",serif;font-size:17px;font-weight:600;line-height:1.6}
+
+/* 7 スタンプを押す */
+.stamp-stage .frame img{transform:none}
+.pads{position:absolute;inset:0}
+.spad{position:absolute;width:56px;height:56px;border-radius:11px;border:2px solid rgba(15,92,84,.45);background:rgba(255,253,248,.8);box-shadow:0 2px 8px rgba(26,46,43,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 3px;color:#1f3833;transition:transform .12s ease,background-color .12s ease}
+.spad .m{font-size:13px;font-weight:900;line-height:1;min-height:14px;font-family:"Shippori Mincho",serif}
+.spad .l{font-size:9px;font-weight:800;line-height:1.15;text-align:center;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.spad:active{transform:scale(.92)}
+.spad.done{border-color:#8f2a1e;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.2),transparent 45%),linear-gradient(145deg,#d64535,#a5281c);color:#fff8f0;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 8px rgba(162,40,28,.32);transform:rotate(-1.5deg)}
+.spad.press{animation:press .34s var(--ease)}
+.spad.press::after{content:"";position:absolute;inset:-2px;border-radius:12px;box-shadow:0 0 0 0 rgba(165,40,28,.35);animation:ink .38s ease-out forwards;pointer-events:none}
+@keyframes press{0%{transform:scale(1.28) rotate(-8deg);opacity:.2}55%{transform:scale(.9) rotate(-2deg);opacity:1}78%{transform:scale(1.03) rotate(-1.5deg)}100%{transform:scale(1) rotate(-1.5deg)}}
+@keyframes ink{from{box-shadow:0 0 0 0 rgba(165,40,28,.3)}to{box-shadow:0 0 0 7px rgba(165,40,28,0)}}
+.thud{animation:thud .2s ease-out .12s}
+@keyframes thud{0%{transform:none}45%{transform:translateY(1.5px)}100%{transform:none}}
+.p0{top:10px;left:10px}.p1{top:10px;right:10px}.p2{bottom:10px;left:10px}.p3{bottom:10px;right:10px}.p4{top:10px;left:0;right:0;margin:0 auto}
+
+/* 8 Amity と 博士 */
+.phone{position:relative;height:250px;background:var(--bg);border-top:1px solid #eceee5}
+.seg{display:flex;gap:6px;padding:10px 12px}
+.ghost-lines{padding:0 14px}.ghost-lines div{height:10px;border-radius:5px;background:#e7e8e0;margin:10px 0}
+.ghost-lines div:nth-child(2){width:80%}.ghost-lines div:nth-child(3){width:60%}.ghost-lines div:nth-child(4){width:72%}
+.fab{position:absolute;right:14px;bottom:14px;width:58px;height:58px;border-radius:999px;overflow:hidden;background:#fffefa;border:2px solid #fffefa;box-shadow:0 8px 20px #0f172a26}
+.fab img{width:100%;height:100%;object-fit:cover;border-radius:999px}
+.fab.amity img{object-position:center 32%}
+.fab.amity{animation:bob 3.2s ease-in-out infinite}
+.fab.doctor{animation:breathe 4s ease-in-out infinite;border-color:#e9eee9}
+.fab.swap{animation:swapIn .22s var(--ease)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 6px 16px #0f172a22}50%{transform:scale(1.035);box-shadow:0 10px 24px #0f172a30}}
+@keyframes swapIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+.fab-note{position:absolute;left:14px;bottom:18px;font-size:11px;color:var(--muted);max-width:62%;line-height:1.55}
+
+.foot{font-size:12px;color:var(--muted);background:#fffefa;border:1px solid #dfe2d9;border-radius:10px;padding:12px 14px;line-height:1.75}
+.foot b{color:var(--ink)}
+
+/* 動きを減らす：すべて最終の形で止める */
+html.rm{scroll-behavior:auto}
+html.rm *,html.rm *::before,html.rm *::after{animation:none!important;transition:none!important}
+html.rm .fx,html.rm .tr p{opacity:1!important;transform:none!important}
+html.rm .tr .line>span,html.rm .reveal .frame img{transform:none!important}
+html.rm .tr .eyebrow::after{transform:scaleX(1)!important}
+html.rm .reveal .frame{clip-path:none!important}
+html.rm .hero .ptext,html.rm .hero .pframe{transform:none!important}
+html.rm #opening{display:none!important}
+</style>
+</head>
+<body>
+<div id="opening" aria-hidden="true">
+  <div class="op-mark"><span class="op-seal">結</span><span class="op-word">結婚ロードマップ</span></div>
+  <div class="op-art"><img src="../phases/gen-filing.png" alt=""></div>
+  <span class="op-skip">タップで飛ばせます</span>
+</div>
+
+<header class="masthead"><div class="wrap mh-in">
+  <div class="brand"><span class="seal">結</span><span class="wordmark">結婚ロードマップ</span></div>
+  <a class="back" href="../">アプリへ戻る</a>
+</div></header>
+<div class="sample-bar"><div class="wrap"><b>見本ページ</b>　動きのアイデアを8つ並べています。アプリ本体はまだ何も変わっていません。</div></div>
+
+<div class="wrap">
+  <div class="tools">
+    <button class="chip" id="rmToggle" type="button">動きを減らした表示で見る</button>
+  </div>
+  <nav class="toc" aria-label="もくじ">
+    <a class="chip" href="#m1">1 開くとき</a><a class="chip" href="#m2">2 見出し</a><a class="chip" href="#m3">3 カード</a><a class="chip" href="#m4">4 水彩の絵</a><a class="chip" href="#m5">5 視差</a><a class="chip" href="#m6">6 タブ</a><a class="chip" href="#m7">7 スタンプ</a><a class="chip" href="#m8">8 丸ボタン</a>
+  </nav>
+
+<main>
+  <section class="demo" id="m1">
+    <div class="demo-h"><span class="no">1</span><h2>開くときの短いあいさつ</h2><button class="again" data-again="opening" type="button">もう一度</button></div>
+    <p class="cap">その日はじめて開いたときだけ、結の印と水彩の絵が1秒ほど出ます。タップですぐ飛ばせます。</p>
+    <div class="stage pad-in">
+      <div class="op-mini">
+        <div class="thumb"><span>結</span></div>
+        <ul><li>1日1回だけ（2回目以降は出ません）</li><li>長さは約1.2秒・待たせない</li><li>タブの移動では出ません</li></ul>
+      </div>
+      <div class="op-status" id="opStatus">…</div>
+    </div>
+  </section>
+
+  <section class="demo" id="m2">
+    <div class="demo-h"><span class="no">2</span><h2>見出しの文字が下からあらわれる</h2><button class="again" data-again="m2" type="button">もう一度</button></div>
+    <p class="cap">画面に入ったとき、見出しが一行ずつすっと上がり、金色の線が引かれます（0.5秒）。</p>
+    <div class="stage pad-in">
+      <div class="tr io">
+        <span class="eyebrow">暮らしの道のり</span>
+        <h3><span class="line"><span>スタンプで進める、</span></span><span class="line"><span>暮らしロードマップ</span></span></h3>
+        <p>章を選んで、絵の縁にあるスタンプを押していきます。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo" id="m3">
+    <div class="demo-h"><span class="no">3</span><h2>カードが順番にふわっと出る</h2><button class="again" data-again="m3" type="button">もう一度</button></div>
+    <p class="cap">スクロールで見えたカードから、少しずつずらして浮かび上がります（1枚0.45秒・一度だけ）。</p>
+    <div class="stage">
+      <div class="list">
+        <div class="task fx io"><span class="n">1</span><div><b>二人の会社の慶弔・就業規則をもらう</b><small>祝金や休暇の起算が入籍か挙式か、期限は何日かを、規程の文で確かめます。</small></div></div>
+        <div class="task fx io"><span class="n">2</span><div><b>これから使う名字を決めて、変える名義を書き出す</b><small>口座・NISA・保険・免許・車。変える側だけでも一覧にしておくと楽です。</small></div></div>
+        <div class="task fx io"><span class="n">3</span><div><b>平日に区役所市民課で婚姻届を見てもらう</b><small>夜間・休日は預かり審査になります。不備があると婚姻日がずれます。</small></div></div>
+        <div class="task fx io"><span class="n">4</span><div><b>保険の受取人を書き出す</b><small>死亡時の受取人が親のまま残っていないかを、契約ごとに確認します。</small></div></div>
+        <div class="task fx io"><span class="n">5</span><div><b>NHKの契約を一つにできるか見る</b><small>同居が始まったら、受信契約が二重になっていないかを確認します。</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo" id="m4">
+    <div class="demo-h"><span class="no">4</span><h2>水彩の絵がひらいて、全体にもどる</h2><button class="again" data-again="m4" type="button">もう一度</button></div>
+    <p class="cap">絵が枠の内側からひらき、少し寄った状態から全体の絵に落ち着きます。最後は必ず絵の全体が見えます。</p>
+    <div class="stage">
+      <div class="chapters">
+        <div class="illust reveal io"><div class="frame"><img src="../phases/gen-filing.png" alt="婚姻届を書くふたり" loading="lazy"></div><div class="illust-cap"><span class="i">01</span>婚姻届</div></div>
+        <div class="illust reveal io"><div class="frame"><img src="../phases/lux-filing.png" alt="窓口で書類を出すふたり" loading="lazy"></div><div class="illust-cap"><span class="i">02</span>証明書</div></div>
+        <div class="illust reveal io"><div class="frame"><img src="../phases/rm-namechange.png" alt="カードを並べるふたり" loading="lazy"></div><div class="illust-cap"><span class="i">03</span>名義変更</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo" id="m5">
+    <div class="demo-h"><span class="no">5</span><h2>上の絵がゆっくり遅れて動く（視差）</h2></div>
+    <p class="cap">スクロールすると、絵の枠が文字より少しゆっくり動きます。絵そのものは拡大せず、顔も切れません。</p>
+    <div class="stage">
+      <div class="hero" id="parallax">
+        <div class="ptext"><span class="eyebrow">ふたりのデスク</span><h3>ふたりの未来に、小さな一歩を。</h3><p>いまの進みぐあいと、次にやることをまとめた画面です。</p></div>
+        <div class="pframe"><img src="../phases/gen-cohabit.png" alt="新しい住まいに荷物を運ぶふたり" loading="lazy"></div>
+      </div>
+      <div class="meter">ずれの幅は最大20pxほど</div>
+    </div>
+  </section>
+
+  <section class="demo" id="m6">
+    <div class="demo-h"><span class="no">6</span><h2>タブを切り替えるときの動き</h2></div>
+    <p class="cap">金色の線が選んだタブへすべり、中身が進む向きから0.2秒で入ります。前の画面が消えるのを待ちません。</p>
+    <div class="stage">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-i="0" type="button">デスク</button>
+        <button role="tab" aria-selected="false" data-i="1" type="button">ロードマップ</button>
+        <button role="tab" aria-selected="false" data-i="2" type="button">カレンダー</button>
+        <button role="tab" aria-selected="false" data-i="3" type="button">ふたり</button>
+        <span class="ind" aria-hidden="true"></span>
+      </div>
+      <div class="panels">
+        <div class="panel" role="tabpanel"><h4>次にやること</h4>
+          <div class="row"><span>二人の会社の慶弔・就業規則をもらう</span></div>
+          <div class="row"><span>これから使う名字を決めて、変える名義を書き出す</span></div>
+          <div class="row"><span>平日に区役所市民課で婚姻届を見てもらう</span></div>
+        </div>
+        <div class="panel" role="tabpanel" hidden><h4>スタンプで進める、暮らしロードマップ</h4>
+          <div class="chgrid"><div class="cur"><i>結</i>結婚準備</div><div><i>暮</i>新生活</div><div><i>実</i>毎年の見直し</div><div><i>育</i>子育て</div><div><i>住</i>住まい</div><div><i>守</i>もしもの備え</div></div>
+        </div>
+        <div class="panel" role="tabpanel" hidden><h4>次の期限</h4>
+          <div class="row"><span>婚姻届を提出する</span><span class="muted">○月○日<span class="tag-sample">見本</span></span></div>
+          <div class="row"><span>本人確認書類をそろえる</span><span class="muted">○月○日<span class="tag-sample">見本</span></span></div>
+          <div class="row"><span>証人二人にお願いする</span><span class="muted">○月○日<span class="tag-sample">見本</span></span></div>
+        </div>
+        <div class="panel" role="tabpanel" hidden><h4>ふたりの、今日の一問。</h4>
+          <div class="qbox"><span class="t">人生の夢</span><h5>今の人生で、やってみたい冒険は？</h5></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo" id="m7">
+    <div class="demo-h"><span class="no">7</span><h2>スタンプを「ぽん」と押す</h2><button class="again" data-again="m7" type="button">元に戻す</button></div>
+    <p class="cap">押すと朱色の印が上から押しつけられ、紙が少し沈みます（0.35秒）。紙吹雪などは出しません。</p>
+    <div class="stage stamp-stage">
+      <div class="frame" id="stampFrame"><img src="../phases/gen-filing.png" alt="婚姻届を書くふたり">
+        <div class="pads">
+          <button class="spad p0" type="button"><span class="m"></span><span class="l">届書の準備</span></button>
+          <button class="spad p4" type="button"><span class="m"></span><span class="l">婚姻届を出す</span></button>
+          <button class="spad p1" type="button"><span class="m"></span><span class="l">本人確認書類</span></button>
+          <button class="spad p2" type="button"><span class="m"></span><span class="l">証人二人</span></button>
+          <button class="spad p3" type="button"><span class="m"></span><span class="l">事前チェック</span></button>
+        </div>
+      </div>
+      <div class="illust-cap"><span class="i">01</span>婚姻届<span style="flex:1"></span><span class="muted" style="font-weight:400;font-size:11px">絵の上のスタンプを押してみてください</span></div>
+    </div>
+  </section>
+
+  <section class="demo" id="m8">
+    <div class="demo-h"><span class="no">8</span><h2>右下の丸ボタンがゆっくり動く</h2></div>
+    <p class="cap">Amity はふわふわ上下に、博士はゆっくり呼吸するように。博士は「ふたり」タブのときだけ出ます。</p>
+    <div class="stage">
+      <div class="seg"><button class="chip on" data-fab="amity" type="button">デスク</button><button class="chip" data-fab="doctor" type="button">ふたり</button></div>
+      <div class="phone">
+        <div class="ghost-lines"><div></div><div></div><div></div><div></div></div>
+        <p class="fab-note" id="fabNote">デスク・ロードマップなど：Amity（押すと相談）</p>
+        <button class="fab amity" id="fab" type="button" aria-label="丸ボタン"><img src="../amity-shark.png" alt="Amity"></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <b>このページについて</b><br>
+    アプリ本体には入っていない見本です。端末で「視差効果を減らす」をオンにしている人には、動きなしで最終の形だけを出します。どれを本体に入れるか決まったら、その分だけ入れます。
+  </div>
+</main>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var reduced=function(){return root.classList.contains('rm')};
+
+  /* 動きを減らした表示の切り替え（確認用） */
+  var rmBtn=document.getElementById('rmToggle');
+  function syncRm(){rmBtn.classList.toggle('on',reduced());rmBtn.textContent=reduced()?'動きを減らした表示：オン':'動きを減らした表示で見る'}
+  rmBtn.addEventListener('click',function(){root.classList.toggle('rm');syncRm();onScroll()});
+  syncRm();
+
+  /* 1 開くときのあいさつ：1日1回だけ・タップで飛ばす */
+  var op=document.getElementById('opening'),opStatus=document.getElementById('opStatus');
+  var KEY='kekkon-preview-motion-opened';
+  function today(){try{return new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'})}catch(e){return new Date().toDateString()}}
+  function hideOp(){op.classList.remove('show','skip');op.style.display=''}
+  function playOp(){
+    if(reduced())return;
+    op.classList.remove('show','skip');void op.offsetWidth;op.classList.add('show');
+    clearTimeout(playOp.t);playOp.t=setTimeout(hideOp,1220);
+  }
+  op.addEventListener('pointerdown',function(){op.classList.add('skip');clearTimeout(playOp.t);playOp.t=setTimeout(hideOp,170)});
+  var seen=null;try{seen=localStorage.getItem(KEY)}catch(e){}
+  if(seen!==today()){try{localStorage.setItem(KEY,today())}catch(e){};playOp()}
+  opStatus.textContent=(seen===today()?'今日はもう出しました。次は明日はじめて開いたときに出ます。':'今日はじめて開いたので、さきほど出しました。')+'（「もう一度」で再生）';
+
+  /* 画面に入ったら .in をつける（一度だけ） */
+  var groups={};
+  document.querySelectorAll('.list').forEach(function(l){l.querySelectorAll('.fx').forEach(function(el,i){el.style.setProperty('--d',Math.min(i*0.06,0.3)+'s')})});
+  var io='IntersectionObserver' in window?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -10% 0px',threshold:0.15}):null;
+  document.querySelectorAll('.io').forEach(function(el){io?io.observe(el):el.classList.add('in')});
+
+  function replay(sec){
+    var els=document.querySelectorAll('#'+sec+' .io');
+    els.forEach(function(el){el.classList.remove('in')});
+    void document.body.offsetWidth;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){els.forEach(function(el){el.classList.add('in')})})});
+  }
+  document.querySelectorAll('[data-again]').forEach(function(b){b.addEventListener('click',function(){
+    var k=b.getAttribute('data-again');
+    if(k==='opening')playOp();else if(k==='m7')resetStamps();else replay(k);
+  })});
+
+  /* 5 視差：絵の枠だけ少し遅らせる（最大±20px・transformのみ） */
+  var hero=document.getElementById('parallax'),ptext=hero.querySelector('.ptext'),pframe=hero.querySelector('.pframe'),ticking=false,heroOn=false;
+  if(io){new IntersectionObserver(function(es){heroOn=es[0].isIntersecting;if(heroOn)onScroll()}).observe(hero)}else heroOn=true;
+  function apply(){
+    ticking=false;
+    if(reduced()){ptext.style.transform=pframe.style.transform='';return}
+    var r=hero.getBoundingClientRect(),vh=window.innerHeight||800;
+    var p=(r.top+r.height/2-vh/2)/vh;p=Math.max(-1,Math.min(1,p));
+    pframe.style.transform='translate3d(0,'+(p*20).toFixed(1)+'px,0)';
+    ptext.style.transform='translate3d(0,'+(p*-8).toFixed(1)+'px,0)';
+  }
+  function onScroll(){if(!heroOn&&!reduced())return;if(!ticking){ticking=true;requestAnimationFrame(apply)}}
+  window.addEventListener('scroll',onScroll,{passive:true});
+
+  /* 6 タブ切り替え：線がすべる・中身は0.2秒で入る（待たない） */
+  var tabs=[].slice.call(document.querySelectorAll('.tabs button')),panels=[].slice.call(document.querySelectorAll('.panel')),ind=document.querySelector('.tabs .ind'),cur=0;
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    var i=+t.getAttribute('data-i');if(i===cur)return;var dir=i>cur?1:-1;
+    tabs.forEach(function(x,j){x.setAttribute('aria-selected',j===i?'true':'false')});
+    ind.style.transform='translateX('+(i*100)+'%)';
+    panels[cur].hidden=true;panels[i].hidden=false;
+    if(!reduced()&&panels[i].animate)panels[i].animate([{opacity:0,transform:'translateX('+(dir*14)+'px)'},{opacity:1,transform:'none'}],{duration:200,easing:'cubic-bezier(.2,.7,.2,1)'});
+    cur=i;
+  })});
+
+  /* 7 スタンプ：押す→朱の印が押しつけられる／もう一度押すと戻る */
+  var frame=document.getElementById('stampFrame');
+  document.querySelectorAll('.spad').forEach(function(p){p.addEventListener('click',function(){
+    var on=!p.classList.contains('done');
+    p.classList.toggle('done',on);p.querySelector('.m').textContent=on?'済':'';
+    p.classList.remove('press');frame.classList.remove('thud');
+    if(on&&!reduced()){void p.offsetWidth;p.classList.add('press');frame.classList.add('thud');try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}
+  });p.addEventListener('animationend',function(e){if(e.animationName==='press')p.classList.remove('press')})});
+  frame.addEventListener('animationend',function(e){if(e.animationName==='thud')frame.classList.remove('thud')});
+  function resetStamps(){document.querySelectorAll('.spad').forEach(function(p){p.classList.remove('done','press');p.querySelector('.m').textContent=''})}
+
+  /* 8 丸ボタン：デスクは Amity、ふたりは博士 */
+  var fab=document.getElementById('fab'),fabImg=fab.querySelector('img'),fabNote=document.getElementById('fabNote');
+  document.querySelectorAll('[data-fab]').forEach(function(b){b.addEventListener('click',function(){
+    var k=b.getAttribute('data-fab');
+    document.querySelectorAll('[data-fab]').forEach(function(x){x.classList.toggle('on',x===b)});
+    fab.className='fab '+k;
+    fabImg.src=k==='doctor'?'../futari/doctor-icon.png':'../amity-shark.png';fabImg.alt=k==='doctor'?'博士':'Amity';
+    fabNote.textContent=k==='doctor'?'ふたりタブ：博士（Amity は出しません）':'デスク・ロードマップなど：Amity（押すと相談）';
+    if(!reduced()&&fab.animate)fab.animate([{opacity:0,transform:'scale(.85)'},{opacity:1,transform:'none'}],{duration:220,easing:'cubic-bezier(.2,.7,.2,1)'});
+  })});
+})();
+</script>
+</body>
+</html>
