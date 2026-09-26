@@ -742,11 +742,11 @@ function AgreeStampBoard({
               <div className="pair-agree-body">
                 <p className="pair-question">{openObj.question}</p>
                 <div className="field">
-                  <Label htmlFor={`mine-${openObj.id}`}>一人目の希望</Label>
+                  <Label htmlFor={`mine-${openObj.id}`}>{`${book.profile.name1.trim()||'ひとりめ'}の希望`}</Label>
                   <Textarea id={`mine-${openObj.id}`} rows={2} maxLength={2000} value={d.mine} onChange={(e) => edit(openObj.id, {mine: e.target.value})} />
                 </div>
                 <div className="field">
-                  <Label htmlFor={`theirs-${openObj.id}`}>二人目の希望</Label>
+                  <Label htmlFor={`theirs-${openObj.id}`}>{`${book.profile.name2.trim()||'ふたりめ'}の希望`}</Label>
                   <Textarea id={`theirs-${openObj.id}`} rows={2} maxLength={2000} value={d.theirs} onChange={(e) => edit(openObj.id, {theirs: e.target.value})} />
                 </div>
                 <div className="field">

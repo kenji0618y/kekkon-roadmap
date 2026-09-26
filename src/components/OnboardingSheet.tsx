@@ -83,9 +83,17 @@ export function OnboardingSheet({
           <fieldset disabled={busy}>
             <div className="condition-note">
               <Heart size={18} />
-              <p>区・働き方・式の有無で、表示する制度の候補が整います。あとから設定で変えられます。</p>
+              <p>呼び名は、スタンプやカレンダーでの表示に使います。区・働き方・式の有無で、表示する制度の候補が整います。あとから設定で変えられます。</p>
             </div>
             <div className="field-grid">
+              <div className="field">
+                <Label htmlFor="onboard-name1">ひとりめの呼び名</Label>
+                <Input id="onboard-name1" value={p.name1} maxLength={20} autoComplete="off" placeholder="呼び名・ニックネーム" onChange={(e) => change('name1', e.target.value)}/>
+              </div>
+              <div className="field">
+                <Label htmlFor="onboard-name2">ふたりめの呼び名</Label>
+                <Input id="onboard-name2" value={p.name2} maxLength={20} autoComplete="off" placeholder="呼び名・ニックネーム" onChange={(e) => change('name2', e.target.value)}/>
+              </div>
               <Choice
                 label="お住まいの区（広島市）"
                 value={p.ward}
@@ -96,10 +104,12 @@ export function OnboardingSheet({
                 <Label htmlFor="onboard-wdate">婚姻日・予定日（任意）</Label>
                 <Input
                   id="onboard-wdate"
+                  className="date-input"
                   type="date"
                   value={p.wdate}
                   onChange={(e) => change('wdate', e.target.value)}
                 />
+                {p.wdate && <button type="button" className="text-button date-clear" onClick={() => change('wdate', '')}>日付を消す</button>}
               </div>
               <Choice
                 label="式・披露宴"
@@ -114,13 +124,13 @@ export function OnboardingSheet({
                 options={{dual: '二人とも働く予定', dependent: '扶養を検討する', unknown: 'これから考える'}}
               />
               <Choice
-                label="一人目の働き方"
+                label={`${p.name1.trim() || 'ひとりめ'}の働き方`}
                 value={p.employment1}
                 onChange={(v) => change('employment1', v)}
                 options={{company: '会社員', public: '公務員', self: '自営業・フリーランス', other: 'その他', unknown: '未設定'}}
               />
               <Choice
-                label="二人目の働き方"
+                label={`${p.name2.trim() || 'ふたりめ'}の働き方`}
                 value={p.employment2}
                 onChange={(v) => change('employment2', v)}
                 options={{company: '会社員', public: '公務員', self: '自営業・フリーランス', other: 'その他', unknown: '未設定'}}
