@@ -13,7 +13,8 @@ import {Switch} from './components/ui/switch';
 import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
-import {branchVisible,chapters,emptyBook,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
+import {deadlineVisible} from './lib/deadline-visibility';
+import {chapters,emptyBook,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -63,9 +64,11 @@ export default function FutureNotebook(){
  const task=taskId?taskById[taskId]:null;
  const dates=useMemo(()=>scoped.filter(t=>!['done','na'].includes(book.records[t.id]?.status||'todo')).flatMap(task=>taskDeadlines(task,p,book.records[task.id]).map(deadline=>({task,deadline}))).sort((a,b)=>(a.deadline.date||'9999').localeCompare(b.deadline.date||'9999')),[scoped,p,book.records]);
  const dated=dates.filter(x=>x.deadline.date&&difference(x.deadline.date,today)>=0),missingDates=dates.filter(x=>!x.deadline.date),soon=dated.filter(x=>difference(x.deadline.date,today)<=14);
- const absExport=useMemo(():CalendarEvent[]=>absoluteDeadlines.filter(d=>branchVisible(d.branch,p.child,p.home)&&validDate(d.date)&&difference(d.date,today)>=0).map(d=>({id:`abs-${d.date}-${d.title}`,title:d.title,deadline:{date:d.date,label:d.title,basis:d.note||'制度・カレンダーの絶対期限です。公式案内で最新条件を確認してください。',kind:'rule' as const,uncertain:true}})),[p.child,p.home,today]);
+ const absExport=useMemo(():CalendarEvent[]=>absoluteDeadlines.filter(d=>deadlineVisible(d,p)&&validDate(d.date)&&difference(d.date,today)>=0).map(d=>({id:`abs-${d.date}-${d.title}`,title:d.title,deadline:{date:d.date,label:d.title,basis:d.note||'制度・カレンダーの絶対期限です。公式案内で最新条件を確認してください。',kind:'rule' as const,uncertain:true}})),[p.child,p.home,today]);
  const pairExport=useMemo(():CalendarEvent[]=>(book.events||[]).filter(e=>e.date&&difference(e.date,today)>=0).map(e=>({id:`pair-${e.id}`,title:e.title,deadline:{date:e.date,label:e.title,basis:e.note||'ふたりのカレンダーに入れた予定です。',kind:'personal' as const,uncertain:false}})),[book.events,today]);
- const calendarEvents=useMemo(():CalendarEvent[]=>[...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline})),...absExport,...pairExport],[dated,absExport,pairExport]);
+ const weddingExport=useMemo(():CalendarEvent[]=>validDate(p.wdate)&&difference(p.wdate,today)>=0?[{id:'wedding-day',title:'婚姻日（予定日）',deadline:{date:p.wdate,label:'婚姻日',basis:'プロフィールに入れた婚姻日・予定日です。',kind:'personal' as const,uncertain:false}}]:[],[p.wdate,today]);
+ const calendarEvents=useMemo(():CalendarEvent[]=>[...weddingExport,...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline})),...absExport,...pairExport],[weddingExport,dated,absExport,pairExport]);
+ const exportSummary=[weddingExport.length?'婚姻日':'',dated.length?`手続きの期限・予定日 ${dated.length}件`:'',absExport.length?`制度の締切 ${absExport.length}件`:'',pairExport.length?`カレンダーの予定 ${pairExport.length}件`:''].filter(Boolean).join('・');
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
   const da=nearestDeadline(a,p,book.records[a.id])?.date||'9999',db=nearestDeadline(b,p,book.records[b.id])?.date||'9999';
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
@@ -98,7 +101,7 @@ export default function FutureNotebook(){
   const whoLabels=pairEventWhoLabels(p); const msg=next.status==='done'?`${whoLabels.male}・${whoLabels.female}どちらもチェック済み。完了にしました。`:undefined;
   await data.mutate({action:'record',id,record:next},msg);
  };
- const quickHits=useMemo(()=>buildQuickSearchHits({query:quickQ,tasks,absoluteDeadlines,relativeDeadlines,practices,talks,includeTask:t=>p.ceremony!=='no'||!isCeremonyTask(t),limit:20}),[quickQ,p.ceremony]);
+ const quickHits=useMemo(()=>buildQuickSearchHits({query:quickQ,tasks,absoluteDeadlines:absoluteDeadlines.filter(d=>deadlineVisible(d,p)),relativeDeadlines,practices,talks,includeTask:t=>p.ceremony!=='no'||!isCeremonyTask(t),limit:20}),[quickQ,p.ceremony,p.child,p.home]);
  const quickGroups=useMemo(()=>groupQuickSearchHits(quickHits),[quickHits]);
  const runQuickHit=(hit:QuickSearchHit)=>{setQuickOpen(false);setQuickQ('');if(hit.tab)setTab(hit.tab);if(hit.taskId){if(hit.tab==='find')setQuery(hit.title);requestAnimationFrame(()=>openTask(hit.taskId!));}else if(hit.kind==='pair'){setPairJump({theme:hit.pairTheme,practiceId:hit.pairPracticeId,talkId:hit.pairTalkId,agreementId:hit.pairAgreementId,scrollId:hit.scrollId});}else if(hit.scrollId){revealAndScroll(hit.scrollId);}else if(hit.tab==='find'&&quickQ.trim()){setQuery(quickQ.trim());}};
  const revealAndScroll=(id:string)=>{const go=(tries=0)=>{const el=document.getElementById(id);if(!el){if(tries<10)requestAnimationFrame(()=>go(tries+1));return;}let n:HTMLElement|null=el;while(n){if(n instanceof HTMLDetailsElement)n.open=true;n=n.parentElement;}el.scrollIntoView({behavior:'smooth',block:'start'});};requestAnimationFrame(()=>go());};
@@ -118,7 +121,7 @@ export default function FutureNotebook(){
  const exportBackup=()=>{if(!data.book){toast.info('手帳を始めてから保存できます');return;}downloadText(`futari-miraicho-${today}.json`,backupText(data.book));toast.success('バックアップを書き出しました');};
  const exportCalendar=()=>{
   if(!calendarEvents.length){
-   toast.info('書き出せる日付がありません。ふたりに合わせるで基準の日付を設定するか、項目の予定日・制度の絶対期限を確認してください。',{action:{label:'ふたりに合わせる',onClick:()=>openProfile()}});
+   toast.info('書き出せる予定はまだありません。婚姻日や引っ越し日などを入れるか、カレンダーに予定を入れると書き出せます。',{action:{label:'ふたりに合わせる',onClick:()=>openProfile()}});
    openProfile();
    return;
   }
@@ -169,7 +172,7 @@ export default function FutureNotebook(){
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や「カレンダー」のタブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">
- <SectionTitle eyebrow="カレンダー" title="カレンダーで、ふたりの予定を。" sub={(()=>{const w=pairEventWhoLabels(p);return `月のカレンダーが中心です。制度の締切は日付に点で出ます。${w.male}・${w.female}・ふたりで予定を残せます。`;})()}><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length?<p className="hint export-cal-hint">基準の日付か予定日を設定すると書き出せます。制度の絶対期限と、カレンダーに入れた予定も対象です。</p>:!dated.length&&!pairExport.length&&absExport.length>0?<p className="hint export-cal-hint">いまは制度の絶対期限（{absExport.length}件）を書き出します。基準の日付・予定日やカレンダー予定を足すとそれも入ります。</p>:null}</div></SectionTitle>
+ <SectionTitle eyebrow="カレンダー" title="カレンダーで、ふたりの予定を。" sub={(()=>{const w=pairEventWhoLabels(p);return `月のカレンダーが中心です。制度の締切は日付に点で出ます。${w.male}・${w.female}・ふたりで予定を残せます。`;})()}><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action><p className="hint export-cal-hint">{calendarEvents.length?`書き出す内容：${exportSummary}。`:'書き出せる予定はまだありません。'}{missingDates.length?'引っ越し日・出生日などを入れると、届出の期限も入ります。':''}</p></div></SectionTitle>
  <nav className="deadlines-mini-nav" aria-label="カレンダータブ内の節">
   <a href="#deadline-block-calendar">カレンダー</a>
   <a href="#deadline-block-hero">数字</a>
@@ -205,8 +208,8 @@ export default function FutureNotebook(){
     <span className="hint">手帳の項目に紐づく日付・未設定</span>
    </summary>
    <p className="deadline-block-intro">二人の手帳に入っている日付つきの予定と、未設定の項目です。</p>
-   <div className="schedule-layout schedule-layout-solo"><section className="schedule-main"><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>基準の日付を整える</button></div>
- {dated.length?<div className="timeline timeline-dense">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={<Action secondary onClick={openProfile}>基準の日付を設定する</Action>}>日付が分かれば期限を確認できます。各項目に、二人で決めた予定日を入れることもできます。</EmptyState>}
+   <div className="schedule-layout schedule-layout-solo"><section className="schedule-main"><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>手続きの日付を入れる</button></div>
+ {dated.length?<div className="timeline timeline-dense">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={validDate(p.wdate)?undefined:<Action secondary onClick={openProfile}>婚姻日を入れる</Action>}>日付が分かれば期限を確認できます。各項目に、二人で決めた予定日を入れることもできます。</EmptyState>}
  {missingDates.length>0&&<details className="missing-dates missing-dates-fold"><summary><strong>日付が分かったら確認</strong><span className="hint">{missingDates.length}件 · 閉じたまま大丈夫</span></summary>{missingDates.map(({task:t,deadline:d})=><button key={t.id} onClick={()=>openTask(t.id)}><span><strong>{t.title}</strong><small>{d.missing}が未設定</small></span><ChevronRight size={16}/></button>)}</details>}
  <details className="paper-card schedule-tips-fold">
   <summary><strong>窓口・カレンダーのメモ</strong><span className="hint">必要なときだけ開く</span></summary>
@@ -314,6 +317,6 @@ export default function FutureNotebook(){
  <DeskChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} profile={p} onOpenTask={(id)=>{setChatOpen(false);openTask(id);}} onGoFind={(kw)=>{setChatOpen(false);if(kw)setQuery(kw);setTab('find');}}/>
  <OnboardingSheet open={onboardOpen&&!modal&&!taskId} profile={p} busy={data.busy} onSave={async(profile)=>{const ok=!!(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'));if(ok)setOnboardOpen(false);return ok;}} onSkip={()=>{markOnboardingDone();setOnboardOpen(false);}}/>
 
- <div className="print-book"><h1>Amityちゃんにきく</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{statusNames[book.records[t.id].status]||book.records[t.id].status}{book.records[t.id].note?` · ${book.records[t.id].note}`:''}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
+ <div className="print-book"><h1>結婚ロードマップ</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{statusNames[book.records[t.id].status]||book.records[t.id].status}{book.records[t.id].note?` · ${book.records[t.id].note}`:''}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
  </>;
 }

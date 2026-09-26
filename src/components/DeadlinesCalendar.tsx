@@ -1,8 +1,8 @@
 import {useMemo, useState} from 'react'
 import {ChevronLeft, ChevronRight, Plus, Pencil, Trash2, CalendarDays} from 'lucide-react'
 import {absoluteDeadlines} from '../data/catalog'
+import {deadlineClosedLabel, deadlineVisible} from '../lib/deadline-visibility'
 import {
-  branchVisible,
   pairEventWhoLabels,
   type PairEvent,
   type Profile,
@@ -38,7 +38,7 @@ function sundayWeekIndex(iso: string) {
   return new Date(iso + 'T00:00:00Z').getUTCDay()
 }
 
-type SeedMark = {kind: 'seed'; date: string; title: string; note?: string | null}
+type SeedMark = {kind: 'seed'; date: string; title: string; note?: string | null; closed?: string | null}
 type DayMark = SeedMark | (PairEvent & {kind: 'custom'})
 
 type Draft = {
@@ -83,11 +83,11 @@ export function DeadlinesCalendar({
     return absoluteDeadlines
       .filter(
         (d) =>
-          branchVisible(d.branch, profile.child, profile.home) &&
+          deadlineVisible(d, profile) &&
           validDate(d.date) &&
           difference(d.date, today) >= 0,
       )
-      .map((d) => ({kind: 'seed' as const, date: d.date, title: d.title, note: d.note}))
+      .map((d) => ({kind: 'seed' as const, date: d.date, title: d.title, note: d.note, closed: deadlineClosedLabel(d)}))
   }, [profile.child, profile.home, today])
 
   const customByDate = useMemo(() => {
@@ -312,6 +312,7 @@ export function DeadlinesCalendar({
                 <span className="cal-item-chip seed">制度</span>
                 <div className="cal-item-body">
                   <strong>{s.title}</strong>
+                  {s.closed ? <span className="cal-closed">{s.closed}</span> : null}
                   {s.note ? <span className="hint">{s.note}</span> : null}
                 </div>
               </li>
@@ -453,6 +454,7 @@ export function DeadlinesCalendar({
                     <span className={`cal-item-chip who-${row.who}`}>{whoLabels[row.who]}</span>
                   )}
                   <strong>{row.title}</strong>
+                  {row.kind === 'seed' && row.closed ? <span className="cal-closed">予約受付は終了</span> : null}
                 </button>
               </li>
             ))}

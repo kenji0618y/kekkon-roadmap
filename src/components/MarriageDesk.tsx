@@ -1,7 +1,7 @@
 import {useMemo,useState} from 'react';
 import {ArrowRight,ExternalLink} from 'lucide-react';
 import {chapters,pairChecks,pairEventWhoLabels,statusNames,type Book,type Profile,type Status,type Task} from '../lib/model';
-import {difference,formatMoney,moneyTotals,validDate} from '../lib/dates';
+import {difference,formatMoney,moneyTotals,shortDate,validDate} from '../lib/dates';
 import {groups,homeContent,sources} from '../data/catalog';
 
 /** Public Pages URL for friend handoff (copy button). */
@@ -329,7 +329,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
         <article className={`desk-metric ${weddingMetric.tone?`tone-${weddingMetric.tone}`:''}`}>
           <span className="desk-metric-label">{weddingMetric.label}</span>
           <strong className="desk-metric-value">{weddingMetric.value}{weddingMetric.sub&&weddingMetric.value!=='—'&&weddingMetric.value!=='今日'&&<small>{weddingMetric.sub}</small>}</strong>
-          <span className="desk-metric-sub">{validDate(p.wdate)?`基準 ${p.wdate}`:'プロフィールで設定'}</span>
+          <span className="desk-metric-sub">{validDate(p.wdate)?`婚姻日 ${shortDate(p.wdate)}`:'プロフィールで設定'}</span>
         </article>
         <button
           type="button"

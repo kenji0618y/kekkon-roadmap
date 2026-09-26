@@ -2,6 +2,7 @@ import {CalendarDays,ExternalLink,MessageCircle,AlertTriangle,Hash,Ban,Layers,Ch
 import {formatMoney,monthDay,shortDate,todayJapan,difference,deadlineText} from '../lib/dates'
 import {absoluteDeadlines,relativeDeadlines,excludeItems,excludeMeta,homeContent,phasesContent} from '../data/catalog'
 import {branchVisible, type Profile} from '../lib/model'
+import {deadlineClosedLabel, deadlineVisible} from '../lib/deadline-visibility'
 import {Action, EmptyState} from './book-controls'
 
 function seedMoneyLine(d: {
@@ -32,10 +33,11 @@ function DeadlineCard({
   d: (typeof absoluteDeadlines)[number]
   today: string
 }) {
-  const money = seedMoneyLine(d)
-  const near = difference(d.date, today) <= 14
+  const closed = deadlineClosedLabel(d)
+  const money = closed ? null : seedMoneyLine(d)
+  const near = !closed && difference(d.date, today) <= 14
   return (
-    <article className={`seed-deadline-card ${near ? 'near' : ''}`}>
+    <article className={`seed-deadline-card ${near ? 'near' : ''} ${closed ? 'closed' : ''}`}>
       <div className="seed-deadline-when">
         <CalendarDays size={15} />
         <strong>{shortDate(d.date)}</strong>
@@ -43,6 +45,7 @@ function DeadlineCard({
         <small>{deadlineText(d.date, today)}</small>
       </div>
       <h4>{d.title}</h4>
+      {closed && <p className="seed-closed">{closed}</p>}
       {d.note && <p className="seed-note">{d.note}</p>}
       {money && <p className="seed-money">{money}</p>}
       {d.urls && d.urls.length > 0 && (
@@ -70,11 +73,11 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
   const today = todayJapan()
   // 絶対日付は Asia/Tokyo の今日より前なら自動で非表示（シードJSONは残す）
   const abs = [...absoluteDeadlines]
-    .filter((d) => branchVisible(d.branch, child, home) && difference(d.date, today) >= 0)
+    .filter((d) => deadlineVisible(d, {child, home}) && difference(d.date, today) >= 0)
     .sort((a, b) => a.date.localeCompare(b.date))
   const rel = relativeDeadlines.filter((d) => branchVisible(d.branch, child, home))
-  const featured = abs.filter((d) => isProminentDeadline(d.date, today))
-  const rest = abs.filter((d) => !isProminentDeadline(d.date, today))
+  const featured = abs.filter((d) => isProminentDeadline(d.date, today) && !deadlineClosedLabel(d))
+  const rest = abs.filter((d) => !featured.includes(d))
 
   return (
     <section id="institutional-deadlines" className="seed-block institutional-deadlines" aria-label="制度・カレンダー締切">
@@ -374,7 +377,7 @@ export function PhasesPanel({
       <div className="seed-block-head">
         <h3>時期の区切りと出来事</h3>
         <p className="hint">
-          婚姻日 = {m0_definition} · 基準日 {as_of} · {visible.length}の区切り / {eventTotal}の出来事
+          婚姻日 = {m0_definition} · 情報の確認日 {as_of} · {visible.length}の区切り / {eventTotal}の出来事
         </p>
       </div>
       {visible.length === 0 ? (
