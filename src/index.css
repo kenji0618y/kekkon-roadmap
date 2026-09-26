@@ -1607,3 +1607,48 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   .site-header .main-nav[data-slot]{height:46px}
   .site-header .main-nav [data-slot=tabs-trigger]{height:42px}
 }
+
+/* ===== 動き（2026-09-26 採用：見本 /preview-motion/ の #3 #4 #6 #7）===== */
+/* #6 タブ：金色の線がすべる・中身は進む向きから0.2秒で入る（前の画面を待たない） */
+.main-nav.has-ind{position:relative}
+.main-nav .nav-ind{--ind-inset:0px;position:absolute;left:0;bottom:0;height:2px;width:0;background:#d3b880;border-radius:2px;pointer-events:none;opacity:0;z-index:2;will-change:transform}
+.main-nav.ind-ready .nav-ind{transition:transform .25s cubic-bezier(.2,.7,.2,1),width .25s cubic-bezier(.2,.7,.2,1)}
+.site-header .main-nav.has-ind [data-slot=tabs-trigger][data-state=active]{border-bottom-color:transparent}
+@media(max-width:700px){.site-header .main-nav .nav-ind{--ind-inset:10px;bottom:3px}}
+.tab-surface{animation:none}
+.notebook-tabs[data-tab-dir=next] .tab-surface{animation:tab-in-next .2s cubic-bezier(.2,.7,.2,1)}
+.notebook-tabs[data-tab-dir=prev] .tab-surface{animation:tab-in-prev .2s cubic-bezier(.2,.7,.2,1)}
+@keyframes tab-in-next{from{opacity:0;transform:translate3d(14px,0,0)}to{opacity:1;transform:none}}
+@keyframes tab-in-prev{from{opacity:0;transform:translate3d(-14px,0,0)}to{opacity:1;transform:none}}
+
+/* #3 カード：画面の下にあったものだけ、見えたら0.45秒・0.06秒ずらしで一度だけ */
+.fx-wait{opacity:0;transform:translate3d(0,16px,0)}
+.fx-wait.fx-in{opacity:1;transform:none;transition:opacity .45s ease var(--fx-d,0s),transform .45s cubic-bezier(.2,.7,.2,1) var(--fx-d,0s)}
+
+/* #4 水彩の絵：枠の内側からひらき、少し寄った状態から全体の絵に落ち着く。
+   最後は clip も拡大もなし＝いままでと同じ「枠いっぱいの絵全体」（正方形の絵を正方形の枠へ）。
+   スタンプは切らない（絵だけを動かす）。 */
+.illust-frame.reveal-wait .illust-art{clip-path:inset(9% 9% 9% 9% round 10px);transform:scale(1.08)}
+.illust-frame.reveal-wait.reveal-in .illust-art{clip-path:inset(0 0 0 0 round 0);transform:none;transition:clip-path .8s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1)}
+
+/* #7 スタンプ：朱の「済」が押しつけられ、紙が少し沈む（0.34秒）。紙吹雪などは出さない */
+.stamp-pad.stamp-press{animation:stamp-press .34s cubic-bezier(.2,.7,.2,1)}
+.stamp-pad.stamp-press::after{content:"";position:absolute;inset:-2px;border-radius:12px;pointer-events:none;animation:stamp-ink .38s ease-out forwards}
+@keyframes stamp-press{0%{transform:scale(1.28) rotate(-8deg);opacity:.2}55%{transform:scale(.9) rotate(-2deg);opacity:1}78%{transform:scale(1.03) rotate(-1.5deg)}100%{transform:scale(1) rotate(-1.5deg)}}
+@keyframes stamp-ink{from{box-shadow:0 0 0 0 rgba(165,40,28,.3)}to{box-shadow:0 0 0 7px rgba(165,40,28,0)}}
+.illust-frame.paper-thud{animation:paper-thud .2s ease-out .12s}
+@keyframes paper-thud{0%{transform:none}45%{transform:translateY(1.5px)}100%{transform:none}}
+
+/* 動きを減らす設定：どれも最終の形だけ */
+@media (prefers-reduced-motion:reduce){
+  .tab-surface,.notebook-tabs[data-tab-dir] .tab-surface{animation:none!important}
+  .main-nav .nav-ind{transition:none!important}
+  .fx-wait,.fx-wait.fx-in{opacity:1!important;transform:none!important;transition:none!important}
+  .illust-frame.reveal-wait .illust-art{clip-path:none!important;transform:none!important;transition:none!important}
+  .stamp-pad.stamp-press,.illust-frame.paper-thud{animation:none!important}
+  .stamp-pad.stamp-press::after{content:none}
+}
+@media print{
+  .fx-wait{opacity:1!important;transform:none!important}
+  .illust-frame.reveal-wait .illust-art{clip-path:none!important;transform:none!important}
+}
