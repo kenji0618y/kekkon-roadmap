@@ -46,7 +46,7 @@ export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean
   useEffect(()=>{
     if(!active)return;
     let raf=0;
-    const check=()=>{raf=0;const h=window.innerHeight,w=window.innerWidth;const zone={top:h-150,left:w-90};const over=[...document.querySelectorAll<HTMLVideoElement>('.fu video')].some(v=>{const r=v.getBoundingClientRect();return r.height>0&&r.bottom>zone.top&&r.top<h&&r.right>zone.left;});setFabOverVideo(over);};
+    const check=()=>{raf=0;const h=window.innerHeight,w=window.innerWidth;const over=[...document.querySelectorAll<HTMLVideoElement>('.fu video')].some(v=>{const r=v.getBoundingClientRect();/* 操作バー（動画の下端から約60px）が丸ボタンの高さ（画面下端から約14〜80px）にかかるときだけ */return r.height>0&&r.right>w-90&&r.bottom>h-90&&r.bottom-64<h-10;});setFabOverVideo(over);};
     const onScroll=()=>{if(!raf)raf=requestAnimationFrame(check);};
     window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll);
     const t=window.setInterval(onScroll,800);
