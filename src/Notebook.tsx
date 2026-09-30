@@ -26,6 +26,7 @@ import {DeskChatPanel} from './components/DeskChatPanel';
 import {PairWorkbook} from './components/PairWorkbook';
 import {FutariDaily,type FutariSave} from './components/FutariDaily';
 import {MarriageDesk} from './components/MarriageDesk';
+import {DeskBoard,type BoardSave} from './components/DeskBoard';
 import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
@@ -126,6 +127,7 @@ export default function FutureNotebook(){
   settings:async(patch)=>!!(await data.mutate({action:'futariSettings',patch},'保存しました')),
  };
  const savePairEvent=async(event:PairEvent)=>{return !!(await data.mutate({action:'event',event},event.id&&book.events?.some(e=>e.id===event.id)?'予定を更新しました':'予定を手帳に残しました'));};
+ const boardSave:BoardSave={put:async(note,message)=>!!(await data.mutate({action:'boardNote',note},message)),remove:async(id)=>!!(await data.mutate({action:'deleteBoardNote',id},'メモを消しました'))};
  const deletePairEvent=async(id:string)=>{return !!(await data.mutate({action:'deleteEvent',id},'予定を削除しました'));};
  const exportBackup=()=>{if(!data.book){toast.info('手帳を始めてから保存できます');return;}downloadText(`futari-miraicho-${today}.json`,backupText(data.book));toast.success('バックアップを書き出しました');};
  const exportCalendar=()=>{
@@ -162,6 +164,7 @@ export default function FutureNotebook(){
  <TabsContent value="desk" className="tab-surface">
  <div className="welcome-line"><div><p className="eyebrow">ふたりのデスク</p><h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、これから。`:'ふたりの未来に、小さな一歩を。'}</h1><p className="muted">いまの進みぐあいと、次にやることをまとめた画面です。項目は「ロードマップ」、締切と時期の流れは「カレンダー」のタブにあります。</p></div></div>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'}));}}/>
+ <DeskBoard book={book} busy={data.busy} syncStatus={data.syncStatus} save={boardSave} onOpenSync={()=>{setTab('settings');revealAndScroll('settings-gist-sync');}}/>
  <HomeInsightPanels
   onOpenTask={openTask}
   profile={p}

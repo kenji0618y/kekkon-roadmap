@@ -109,9 +109,27 @@ export const futariSchema=z.object({
 });
 export type Futari=z.infer<typeof futariSchema>;
 export const emptyFutari:Futari={startedAt:'',modeOverride:'auto',signal:'',settingsAt:'',days:{},meetings:{}};
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari)});
+/** デスクの「ふたりの掲示板」。二人のメモ。既存の手帳を壊さないよう既定値つき。消したメモは deleted に残して、同期で生き返らないようにする。 */
+export const boardNoteSchema=z.object({
+  id:z.string().min(1).max(40),
+  who:z.enum(['n1','n2']),
+  text:z.string().min(1).max(500),
+  pinned:z.boolean().catch(false).default(false),
+  at:z.string().max(40),
+  updatedAt:z.string().max(40).catch(''),
+  editedAt:z.string().max(40).catch('').default(''),
+});
+export type BoardNote=z.infer<typeof boardNoteSchema>;
+export const BOARD_TEXT_MAX=500;
+export const boardSchema=z.object({
+  notes:z.array(z.unknown()).catch([]).transform(list=>list.flatMap(v=>{const r=boardNoteSchema.safeParse(v);return r.success?[r.data]:[];}).slice(0,300)),
+  deleted:z.record(z.string().max(40)).catch({}),
+});
+export type Board=z.infer<typeof boardSchema>;
+export const emptyBoard:Board={notes:[],deleted:{}};
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard)});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};
