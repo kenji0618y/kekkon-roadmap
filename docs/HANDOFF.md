@@ -20,7 +20,7 @@
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 106項目 |
+| verify-seed | 107項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -131,7 +131,7 @@
 ```
 src/Notebook.tsx                    # シェル・タブ
 src/components/DeskBoard.tsx        # デスクの「ふたりの掲示板」（book.board・自分のメモだけ直す/消す・ピン）
-src/lib/board.ts                    # 掲示板のマージ・並び・日本時間の表示
+src/lib/board.ts                    # 掲示板のマージ・並び・日本時間の表示・新着（見た id を端末の localStorage `desk-board-seen-v1` に。同期しない）
 src/components/MarriageDesk.tsx     # デスク上部のパネル（和紙 .desk-washi。Amity吹き出し・友人handoffは削除済み）
 src/components/DeskChatPanel.tsx    # FAB チャット
 src/components/StampIllustBoard.tsx # アート優先・MAX=12・サブマス分割

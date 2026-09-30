@@ -347,6 +347,7 @@ const uiChecks = [
   ['Desk board in book schema (defaulted)', readText('src/lib/model.ts').includes('board:boardSchema.catch(emptyBoard).default(emptyBoard)')],
   ['Desk board synced + merged', (ub => ub.includes("action==='boardNote'") && ub.includes("action==='deleteBoardNote'") && ub.includes('mergeBoard'))(readText('src/lib/use-book.ts')) && readText('src/lib/board.ts').includes('deleted')],
   ['Desk board delete confirm + own-only edit', (db => db.includes('AlertDialog') && db.includes('このメモを消しますか') && db.includes('mine&&'))(readText('src/components/DeskBoard.tsx'))],
+  ['Desk board 新着 (partner unread, per-device)', (db => db.includes('desk-board-new') && db.includes('新着') && db.includes('markSeen'))(readText('src/components/DeskBoard.tsx')) && (b => b.includes('desk-board-seen-v1') && b.includes("n.who!==me"))(readText('src/lib/board.ts'))],
   ['futari answers in book schema', readText('src/lib/model.ts').includes('futari:futariSchema') && readText('src/lib/use-book.ts').includes("action==='futariAnswer'") && readText('src/lib/use-book.ts').includes('mergeFutari')],
 ];
 

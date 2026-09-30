@@ -60,3 +60,28 @@ export function boardTime(iso:string,now=new Date()):string{
   const [y,m,dd]=day.split('-');
   return `${day.slice(0,4)===today.slice(0,4)?'':`${y}/`}${Number(m)}/${Number(dd)} ${t}`;
 }
+
+/**
+ * 新着：この端末でまだ見ていない相手のメモ。端末ごと（localStorage）で、同期はしない。
+ * 見たメモの id を覚えておく（時刻だと、相手の端末で書いてあとから届いたメモを取りこぼすため）。
+ */
+const SEEN_KEY='desk-board-seen-v1';
+const SEEN_MAX=600;
+export function readSeen():Set<string>{
+  try{
+    const raw=localStorage.getItem(SEEN_KEY);
+    const ids=raw?(JSON.parse(raw) as {ids?:unknown}).ids:[];
+    return new Set(Array.isArray(ids)?ids.filter((v):v is string=>typeof v==='string'):[]);
+  }catch{return new Set();}
+}
+export function markSeen(ids:string[]){
+  if(!ids.length)return;
+  try{
+    const cur=[...readSeen()].filter(id=>!ids.includes(id));
+    localStorage.setItem(SEEN_KEY,JSON.stringify({ids:[...cur,...ids].slice(-SEEN_MAX)}));
+  }catch{/* ignore */}
+}
+export function unreadNotes(notes:BoardNote[],me:string,seen:Set<string>){
+  if(!me)return [] as BoardNote[];
+  return notes.filter(n=>n.who!==me&&!seen.has(n.id));
+}

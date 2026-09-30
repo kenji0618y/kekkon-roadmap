@@ -1,13 +1,15 @@
-import {useEffect,useMemo,useState} from 'react';
+import {useEffect,useMemo,useRef,useState} from 'react';
 import {Pencil,Pin,PinOff,Trash2} from 'lucide-react';
 import {AlertDialog,AlertDialogAction,AlertDialogCancel,AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader,AlertDialogTitle} from './ui/alert-dialog';
 import {BOARD_TEXT_MAX,pairEventWhoLabels,type Book,type BoardNote} from '../lib/model';
-import {boardTime,newNoteId,sortBoard} from '../lib/board';
+import {boardTime,markSeen,newNoteId,readSeen,sortBoard,unreadNotes} from '../lib/board';
 import {onMeChange,readMe,writeMe,type Who} from '../lib/futari';
 import type {SyncStatus} from '../lib/gist-sync';
 
 /** デスクで最初に見せる件数。残りは「すべて見る」で開く。 */
 const PREVIEW=3;
+/** 画面に見えてからこの時間たったら、見えている相手のメモを「見た」にする。 */
+const SEEN_AFTER_MS=2000;
 
 export type BoardSave={
   put:(note:BoardNote,message:string)=>Promise<boolean>,
@@ -32,6 +34,33 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync}:{book:Book,busy
   const notes=useMemo(()=>sortBoard(book.board?.notes||[]),[book.board]);
   const shown=expanded?notes:notes.slice(0,PREVIEW);
   const now=new Date();
+  // 新着（この端末でまだ見ていない相手のメモ）。見たあとも、この画面を開いているあいだはバッジを残す。
+  const [seen,setSeen]=useState<Set<string>>(()=>readSeen());
+  const [justRead,setJustRead]=useState<Set<string>>(()=>new Set());
+  const unread=unreadNotes(notes,me,seen);
+  const unreadIds=new Set(unread.map(n=>n.id));
+  const isNew=(n:BoardNote)=>unreadIds.has(n.id)||justRead.has(n.id);
+  const rootRef=useRef<HTMLElement>(null);
+  const [inView,setInView]=useState(false);
+  useEffect(()=>{
+    const el=rootRef.current;
+    if(!el||typeof IntersectionObserver==='undefined')return;
+    const io=new IntersectionObserver(([e])=>setInView(e.isIntersecting),{threshold:0.3});
+    io.observe(el);
+    return()=>io.disconnect();
+  },[]);
+  const shownUnreadKey=shown.filter(n=>unreadIds.has(n.id)).map(n=>n.id).join(',');
+  useEffect(()=>{
+    if(!inView||!shownUnreadKey)return;
+    const t=window.setTimeout(()=>{
+      if(document.visibilityState!=='visible')return;
+      const ids=shownUnreadKey.split(',');
+      markSeen(ids);
+      setJustRead(prev=>new Set([...prev,...ids]));
+      setSeen(readSeen());
+    },SEEN_AFTER_MS);
+    return()=>window.clearTimeout(t);
+  },[inView,shownUnreadKey]);
 
   const add=async()=>{
     const text=draft.trim();
@@ -48,9 +77,9 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync}:{book:Book,busy
   const togglePin=(n:BoardNote)=>void save.put({...n,pinned:!n.pinned},n.pinned?'ピンを外しました':'上にとめました');
   const target=notes.find(n=>n.id===confirmId);
 
-  return <section id="desk-board" className="seed-block desk-board" aria-label="ふたりの掲示板">
+  return <section id="desk-board" ref={rootRef} className="seed-block desk-board" aria-label="ふたりの掲示板">
     <div className="seed-block-head desk-board-head">
-      <h3>ふたりの掲示板</h3>
+      <h3>ふたりの掲示板{unread.length>0&&<span className="desk-board-unread" aria-label={`新着 ${unread.length}件`}><i aria-hidden/>新着 {unread.length}</span>}</h3>
       <p className="hint">買い物・連絡・ひとこと。書いたメモは相手の画面にも出ます。</p>
     </div>
 
@@ -77,11 +106,12 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync}:{book:Book,busy
         {shown.map(n=>{
           const mine=!!me&&n.who===me;
           const editing=editId===n.id;
-          return <li key={n.id} className={`desk-board-note ${n.who}${n.pinned?' pinned':''}`}>
+          return <li key={n.id} className={`desk-board-note ${n.who}${n.pinned?' pinned':''}${isNew(n)?' is-new':''}`}>
             <span className={`desk-board-av ${n.who}`} aria-hidden>{[...names[n.who]][0]||'・'}</span>
             <div className="desk-board-body">
               <div className="desk-board-meta">
                 <strong>{names[n.who]}</strong>
+                {isNew(n)&&<span className="desk-board-new">新着</span>}
                 <time dateTime={n.at}>{boardTime(n.at,now)}</time>
                 {n.editedAt&&<span>（直しました）</span>}
                 {n.pinned&&<span className="desk-board-pin-tag"><Pin size={11} aria-hidden/>とめてあります</span>}
