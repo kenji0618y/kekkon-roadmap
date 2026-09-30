@@ -1,7 +1,16 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {toast} from 'sonner';
-import {bookSchema,emptyBook,emptyFutari,type AgreementRecord,type Book,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
+import {bookSchema,emptyBoard,emptyBook,emptyFutari,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
 import {mergeFutari,sameFutari} from './futari';
+import {mergeBoard,pruneDeleted,sameBoard} from './board';
+
+/** 二人が同時に書き込むもの（今日の一問の答え・掲示板のメモ）は、同期のとき両方を残す。 */
+function mergeShared(local:Book|null|undefined,remote:Book){
+  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board)};
+}
+function sameShared(a:{futari:Book['futari'],board:Book['board']},b:{futari:Book['futari'],board:Book['board']}){
+  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board);
+}
 import {validateCatalogBook} from './backup';
 import {
   buildPayload,
@@ -67,6 +76,7 @@ export function useBook(_paused:boolean){
   syncConfigRef.current=syncConfig;
   type QueuedMutate={payload:Record<string,unknown>,message:string,resolve:(v:Snapshot|null)=>void};
   const pendingQueue=useRef<QueuedMutate[]>([]);
+  const mergeRemoteIntoLocalRef=useRef<(remote:{book:Book,revision:number})=>boolean>(()=>false);
 
   const accept=useCallback((data:Snapshot)=>{
     current.current=data;
@@ -92,7 +102,14 @@ export function useBook(_paused:boolean){
         syncingRef.current=true;
         setSyncStatus('syncing');
         try{
-          const payload=buildPayload(snap.book,snap.revision,savedAtRef.current||undefined);
+          // 送る前に相手の端末の書き込み（一問の答え・掲示板）を取り込む。取れなくても送信は続ける。
+          try{
+            const remote=await pullFromGist(latest);
+            if(remote)mergeRemoteIntoLocalRef.current(remote);
+          }catch{/* ignore */}
+          const s=current.current;
+          if(!s.book)return;
+          const payload=buildPayload(s.book,s.revision,savedAtRef.current||undefined);
           await pushToGist(latest,payload);
           localDirtyRef.current=false;
           const at=new Date().toISOString();
@@ -120,29 +137,34 @@ export function useBook(_paused:boolean){
     });
   },[accept]);
 
-  /** 他の端末の更新を取り込むとき、ふたりの一問の答えだけは両方を残す（同時に答えても消えない）。 */
+  /** 他の端末の更新を取り込むとき、ふたりの一問の答えと掲示板のメモは両方を残す（同時に書いても消えない）。 */
   const applyRemoteMerged=useCallback((remote:{book:Book,revision:number,savedAt:string})=>{
     const local=current.current.book;
-    const merged=mergeFutari(local?.futari,remote.book.futari);
-    if(local&&!sameFutari(merged,remote.book.futari)){
-      applyRemote({book:{...remote.book,futari:merged},revision:remote.revision+1,savedAt:new Date().toISOString()});
+    const merged=mergeShared(local,remote.book);
+    if(local&&!sameShared(merged,remote.book)){
+      applyRemote({book:{...remote.book,...merged},revision:remote.revision+1,savedAt:new Date().toISOString()});
       localDirtyRef.current=true;
       return true;
     }
     applyRemote(remote);
     return false;
   },[applyRemote]);
-  const mergeRemoteIntoLocal=useCallback((remote:{book:Book})=>{
+  /** 手帳はこの端末のまま、相手の端末の答え・メモだけを足す。足したら相手が取り込めるよう revision を相手より上げる。 */
+  const mergeRemoteIntoLocal=useCallback((remote:{book:Book,revision:number}):boolean=>{
     const snap=current.current;
-    if(!snap.book)return;
-    const merged=mergeFutari(snap.book.futari,remote.book.futari);
-    if(sameFutari(merged,snap.book.futari))return;
-    const book={...snap.book,futari:merged};
-    const at=writeStored(book,snap.revision);
+    if(!snap.book)return false;
+    const merged=mergeShared(snap.book,remote.book);
+    if(sameShared(merged,snap.book))return false;
+    const book={...snap.book,...merged};
+    const revision=Math.max(snap.revision,remote.revision)+1;
+    const at=writeStored(book,revision);
     savedAtRef.current=at;
     setSavedAt(at);
-    accept({...snap,book});
+    localDirtyRef.current=true;
+    accept({...snap,book,revision});
+    return true;
   },[accept]);
+  mergeRemoteIntoLocalRef.current=mergeRemoteIntoLocal;
 
   const pullAndReconcile=useCallback(async(opts?:{quiet?:boolean})=>{
     const cfg=syncConfigRef.current;
@@ -166,10 +188,12 @@ export function useBook(_paused:boolean){
           await pushToGist(cfg,buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined));
           localDirtyRef.current=false;
         }
-      }else if(verdict==='local'&&(localDirtyRef.current||current.current.revision>remote.revision)){
-        mergeRemoteIntoLocal(remote);
-        if(current.current.book){
-          const payload=buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined);
+      }else{
+        const changed=mergeRemoteIntoLocal(remote);
+        const snap=current.current;
+        const remoteBehind=!!snap.book&&!sameShared(snap.book,remote.book);
+        if(snap.book&&(changed||remoteBehind||(verdict==='local'&&(localDirtyRef.current||snap.revision>remote.revision)))){
+          const payload=buildPayload(snap.book,snap.revision,savedAtRef.current||undefined);
           await pushToGist(cfg,payload);
           localDirtyRef.current=false;
         }
@@ -244,6 +268,11 @@ export function useBook(_paused:boolean){
     if(action==='futariAnswer')return `futariAnswer:${String(payload.date||'')}:${String(payload.who||'')}`;
     if(action==='futariMeeting')return `futariMeeting:${String(payload.date||'')}`;
     if(action==='futariSettings')return 'futariSettings';
+    if(action==='boardNote'){
+      const n=payload.note as BoardNote|undefined;
+      return n?.id?`boardNote:${n.id}`:'';
+    }
+    if(action==='deleteBoardNote')return `deleteBoardNote:${String(payload.id||'')}`;
     return '';
   };
 
@@ -336,6 +365,23 @@ export function useBook(_paused:boolean){
         ensureBook();
         if(!book!.futari)book!.futari=structuredClone(emptyFutari);
         book!.futari={...book!.futari,...(payload.patch as object),settingsAt:new Date().toISOString()};
+      }else if(action==='boardNote'){
+        ensureBook();
+        if(!book!.board)book!.board=structuredClone(emptyBoard);
+        const note=payload.note as BoardNote;
+        const now=new Date().toISOString();
+        const b=book!.board;
+        const idx=b.notes.findIndex(n=>n.id===note.id);
+        const next={...note,updatedAt:now};
+        if(idx>=0)b.notes[idx]=next;else b.notes.unshift(next);
+        b.notes=b.notes.slice(0,300);
+      }else if(action==='deleteBoardNote'){
+        ensureBook();
+        if(!book!.board)book!.board=structuredClone(emptyBoard);
+        const id=String(payload.id);
+        const b=book!.board;
+        b.notes=b.notes.filter(n=>n.id!==id);
+        b.deleted=pruneDeleted({...b.deleted,[id]:new Date().toISOString()});
       }else if(action==='import'){
         book=structuredClone(payload.book as Book);
         revision=0;

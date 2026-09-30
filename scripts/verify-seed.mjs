@@ -343,6 +343,11 @@ const uiChecks = [
   ['Amity button hidden on ふたり tab', /amity-fab[^\n]*tab==='pair'/.test(notebook)],
   ['FutariDaily labels', (fd => fd.includes('ゴットマン博士の教え') && fd.includes('ゴットマン博士の研究にもとづくアドバイス') && fd.includes('イラストはイメージです') && fd.includes('AIにみてもらう') && fd.includes('playsInline'))(readText('src/components/FutariDaily.tsx'))],
   ['futari AI citations constrained', (ai => ai.includes('AI_ALLOWED_SOURCE_IDS') && ai.includes('cleanIds') && ai.includes('validateFeedback'))(readText('src/lib/futari-ai.ts'))],
+  ['Desk board mounted on desk tab', /value="desk"[\s\S]*<DeskBoard[\s\S]*value="journey"/.test(notebook) && existsSync(join(root, 'src/components/DeskBoard.tsx'))],
+  ['Desk board in book schema (defaulted)', readText('src/lib/model.ts').includes('board:boardSchema.catch(emptyBoard).default(emptyBoard)')],
+  ['Desk board synced + merged', (ub => ub.includes("action==='boardNote'") && ub.includes("action==='deleteBoardNote'") && ub.includes('mergeBoard'))(readText('src/lib/use-book.ts')) && readText('src/lib/board.ts').includes('deleted')],
+  ['Desk board delete confirm + own-only edit', (db => db.includes('AlertDialog') && db.includes('このメモを消しますか') && db.includes('mine&&'))(readText('src/components/DeskBoard.tsx'))],
+  ['Desk board 新着 (partner unread, per-device)', (db => db.includes('desk-board-new') && db.includes('新着') && db.includes('markSeen'))(readText('src/components/DeskBoard.tsx')) && (b => b.includes('desk-board-seen-v1') && b.includes("n.who!==me"))(readText('src/lib/board.ts'))],
   ['futari answers in book schema', readText('src/lib/model.ts').includes('futari:futariSchema') && readText('src/lib/use-book.ts').includes("action==='futariAnswer'") && readText('src/lib/use-book.ts').includes('mergeFutari')],
 ];
 

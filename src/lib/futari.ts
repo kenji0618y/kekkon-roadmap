@@ -94,7 +94,16 @@ export function answered(a:FutariAnswer|null|undefined){return !!a&&!!a.text.tri
 
 const ME_KEY='futari-me-v1';
 export function readMe():Who|''{try{const v=localStorage.getItem(ME_KEY);return v==='n1'||v==='n2'?v:'';}catch{return '';}}
-export function writeMe(w:Who){try{localStorage.setItem(ME_KEY,w);}catch{/* ignore */}}
+/** 「この端末はどちら？」はふたりタブと掲示板で共通。切り替えたら両方に知らせる。 */
+export const ME_EVENT='futari-me-change';
+export function writeMe(w:Who){try{localStorage.setItem(ME_KEY,w);}catch{/* ignore */}try{window.dispatchEvent(new CustomEvent(ME_EVENT,{detail:w}));}catch{/* ignore */}}
+export function onMeChange(cb:(w:Who|'')=>void){
+  const h=()=>cb(readMe());
+  window.addEventListener(ME_EVENT,h);
+  const s=(e:StorageEvent)=>{if(e.key===ME_KEY)h();};
+  window.addEventListener('storage',s);
+  return ()=>{window.removeEventListener(ME_EVENT,h);window.removeEventListener('storage',s);};
+}
 
 /** 2台の端末で同時に答えても消えないよう、ふたりの一問だけは項目ごとに合わせる（新しい方を残す）。 */
 function newer<T extends {at:string}>(a:T|null|undefined,b:T|null|undefined):T|null{

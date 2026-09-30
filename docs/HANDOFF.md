@@ -20,7 +20,7 @@
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 102項目 |
+| verify-seed | 107項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -82,7 +82,7 @@
 
 | id | ラベル（short） | 中身 |
 |----|-----------------|------|
-| `desk` | デスク | `MarriageDesk`（指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ `HomeInsightPanels`（次のアクション SoT）|
+| `desk` | デスク | `MarriageDesk`（指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ **`DeskBoard`（ふたりの掲示板・`#desk-board`・最新3件＋「すべて見る」）** + `HomeInsightPanels`（次のアクション SoT）|
 | `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
 | `deadlines` | **期限と時期**（期限） | **月カレンダー**（`DeadlinesCalendar`・`book.events` 男/女/ふたり）+ 制度締切マーカー + `InstitutionalDeadlines`/項目予定（折りたたみ）/ICS + **`PhasesPanel`** |
 | `pair` | **ふたりの練習帳**（ふたり） | `FutariDaily`（今日の一問・週の帯・レッスン動画・言いかえ練習・ふたり会議・動画一覧・長く使う仕組み・困ったとき）＋折りたたみの `PairWorkbook`（行動52 / 会話16 / 合意18 / 根拠18）。答えは `book.futari` |
@@ -110,6 +110,8 @@
 - コード: `src/lib/gist-sync.ts`、設定 UI で PAT（gist scope）
 - 挙動: 保存後 debounce push / フォーカス・約20s で pull（revision / savedAt）
 - **PAT を Pages やリポに埋め込まない**（端末 localStorage）
+- 二人が同時に書くもの（`book.futari` の答え・`book.board` の掲示板メモ）は、取り込み時に**項目ごとにマージ**（`use-book.ts` の `mergeShared`）。掲示板は id ごとに新しい方を残し、消したメモは `board.deleted`（id→消した時刻）で生き返らせない（`src/lib/board.ts`）。自動送信の前にも一度取り込んでから送る
+- 書いた人＝「この端末はどちら？」（`futari-me-v1`・ふたりタブと共通。名前は `profile.name1/name2`）
 
 ## Amity × Grok
 
@@ -128,6 +130,8 @@
 
 ```
 src/Notebook.tsx                    # シェル・タブ
+src/components/DeskBoard.tsx        # デスクの「ふたりの掲示板」（book.board・自分のメモだけ直す/消す・ピン）
+src/lib/board.ts                    # 掲示板のマージ・並び・日本時間の表示・新着（見た id を端末の localStorage `desk-board-seen-v1` に。同期しない）
 src/components/MarriageDesk.tsx     # デスク上部のパネル（和紙 .desk-washi。Amity吹き出し・友人handoffは削除済み）
 src/components/DeskChatPanel.tsx    # FAB チャット
 src/components/StampIllustBoard.tsx # アート優先・MAX=12・サブマス分割

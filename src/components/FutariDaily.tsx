@@ -8,7 +8,7 @@ import {todayJapan} from '../lib/dates';
 import {refById} from '../data/catalog';
 import {
   answered,cardFor,dayKeyOf,futariHow,gSourceById,guide,lastYearEntry,lessonPace,lessonTopics,lessons,modeFor,modeLabel,
-  other,readMe,weekOf,weekThemes,writeMe,yearIndex,yearModes,yearsSourceIds,type Lesson,type Who,
+  other,readMe,weekOf,weekThemes,writeMe,onMeChange,yearIndex,yearModes,yearsSourceIds,type Lesson,type Who,
 } from '../lib/futari';
 import {askFutariFeedback,type Feedback} from '../lib/futari-ai';
 import {Sheet,SheetContent,SheetDescription,SheetHeader,SheetTitle} from './ui/sheet';
@@ -57,6 +57,7 @@ export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean
   const topRef=useRef<HTMLDivElement>(null);
   const go=(v:View)=>{setView(v);requestAnimationFrame(()=>topRef.current?.scrollIntoView({block:'start'}));};
   const chooseMe=(v:Who)=>{writeMe(v);setMe(v);};
+  useEffect(()=>onMeChange(setMe),[]);
 
   return <div className="fu" ref={topRef}>
     {view==='home'&&<>
