@@ -26,6 +26,7 @@ import {DeskChatPanel} from './components/DeskChatPanel';
 import {PairWorkbook} from './components/PairWorkbook';
 import {FutariDaily,type FutariSave} from './components/FutariDaily';
 import {MarriageDesk} from './components/MarriageDesk';
+import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
@@ -250,8 +251,17 @@ export default function FutureNotebook(){
  <TabsContent value="find" className="tab-surface find-tab"><SectionTitle eyebrow="探す" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。全部で${tasks.length}項目を収録しています。デスクとロードマップに出る数（${actionable.length}項目）は、そのうち、いまの二人の候補（スキップしたものを除く）です。`}/>
  <div className="search-panel find-search-sticky"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters find-filters-compact"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'スキップ'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>いまの二人の候補だけ</span></label></div></div>
   <nav className="find-pin-nav" aria-label="探すタブ内の近道">
+  <a href="#find-where-to-look" onClick={(e)=>{e.preventDefault();const el=document.getElementById('find-where-to-look');if(el instanceof HTMLDetailsElement){el.open=true;}el?.scrollIntoView({behavior:'smooth',block:'start'});}}>どこを見るか</a>
   <a href="#find-exclude-lies" onClick={(e)=>{e.preventDefault();const el=document.getElementById('find-exclude-lies');if(el instanceof HTMLDetailsElement){el.open=true;}el?.scrollIntoView({behavior:'smooth',block:'start'});}}>思い込み・もらえない制度</a>
  </nav>
+ <details id="find-where-to-look" className="find-where-outer paper-card">
+  <summary>
+   <strong>市の窓口と、届出週の手順</strong>
+   <span className="hint">婚姻届の窓口・オンライン手続き · 結婚新生活支援 · 最短パス</span>
+  </summary>
+  <DeskRoleLabels/>
+  <FilingWeekPath onOpenTask={openTask}/>
+ </details>
  <div className="results-label"><strong>{filtered.length}件</strong><span>章ごとにまとめています。表示は対象の確定ではありません。</span></div>
  {filtered.length?<Accordion type="single" collapsible value={findOpenChapter} onValueChange={v=>setFindOpenChapter(v||'')} className="find-by-chapter">
   {(category==='all'?chapters:chapters.filter(c=>c.id===category)).map(c=>{
