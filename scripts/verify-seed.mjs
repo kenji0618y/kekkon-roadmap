@@ -290,12 +290,14 @@ const panels = readText('src/components/SeedContentPanels.tsx');
 const notebook = readText('src/Notebook.tsx');
 const forms = readText('src/components/notebook-forms.tsx');
 const marriageDesk = readText('src/components/MarriageDesk.tsx');
+const whereToLook = readText('src/components/WhereToLook.tsx');
 
 const uiChecks = [
   ['MarriageDesk mounts desk-money before くわしく見る', /desk-money[\s\S]*desk-decor-fold|desk-more-viz/.test(marriageDesk) && marriageDesk.includes('desk-money') && marriageDesk.includes('くわしく見る')],
-  ['MarriageDesk role labels desk-roles', marriageDesk.includes('desk-roles') && marriageDesk.includes('市の窓口・持ち物') && marriageDesk.includes('結婚新生活支援') && marriageDesk.includes('このサイト')],
-  ['MarriageDesk filing week path', marriageDesk.includes('desk-filing-path') && marriageDesk.includes('最短パス：届出週')],
-  ['MarriageDesk filing week default closed', /<details className="desk-filing-path">/.test(marriageDesk) && !/<details className="desk-filing-path"[^>]*open/.test(marriageDesk)],
+  // 2026-09-30「どこを見るか」＋「最短パス：届出週」はデスクから探すタブへ移動（WhereToLook.tsx）。文言・リンクは同一。
+  ['WhereToLook role labels desk-roles (all links/text)', whereToLook.includes('desk-roles') && ['どこを見るか','市の窓口／未導入の支援／このサイト','市の窓口・持ち物','広島市・婚姻届と必要書類','オンライン手続き（Graffer）','結婚新生活支援','広島市は未導入（もらえる前提にしない）','市FAQ：実施について','民間・税・除外・二人の進捗','このサイト','sources.marry','sources.graffer','sources.nogrant'].every(x=>whereToLook.includes(x))],
+  ['WhereToLook filing week path (default closed)', whereToLook.includes('desk-filing-path') && whereToLook.includes('最短パス：届出週') && whereToLook.includes('式なし・広島市 · 届出そのものは0円 · 開くと手順') && whereToLook.includes('filing_week_path') && /<details className="desk-filing-path">/.test(whereToLook) && !/<details className="desk-filing-path"[^>]*open/.test(whereToLook)],
+  ['Find tab mounts どこを見るか (not on desk)', /value="find"[\s\S]*id="find-where-to-look"[\s\S]*<DeskRoleLabels\/>[\s\S]*<FilingWeekPath[\s\S]*value="settings"/.test(notebook) && !/<DeskRoleLabels|<FilingWeekPath/.test(marriageDesk) && !/value="desk"[\s\S]*<DeskRoleLabels[\s\S]*value="journey"/.test(notebook)],
   ['MarriageDesk no duplicate titlebar h1', !marriageDesk.includes('ふたりの手帳') && marriageDesk.includes('desk-meta-bar')],
   ['MarriageDesk no Amity deadline list', !marriageDesk.includes('absoluteDeadlines') && !marriageDesk.includes('直近の絶対期限') && !marriageDesk.includes('amity-brief-grid-2')],
   ['MarriageDesk next-actions SoT pointer', marriageDesk.includes('#desk-next-actions') && marriageDesk.includes('desk-next-actions')],

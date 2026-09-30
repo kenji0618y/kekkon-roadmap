@@ -82,11 +82,11 @@
 
 | id | ラベル（short） | 中身 |
 |----|-----------------|------|
-| `desk` | デスク | `MarriageDesk`（どこを見るか / 最短パス折りたたみ / 指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ `HomeInsightPanels`（次のアクション SoT）|
+| `desk` | デスク | `MarriageDesk`（指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ `HomeInsightPanels`（次のアクション SoT）|
 | `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
 | `deadlines` | **期限と時期**（期限） | **月カレンダー**（`DeadlinesCalendar`・`book.events` 男/女/ふたり）+ 制度締切マーカー + `InstitutionalDeadlines`/項目予定（折りたたみ）/ICS + **`PhasesPanel`** |
 | `pair` | **ふたりの練習帳**（ふたり） | `FutariDaily`（今日の一問・週の帯・レッスン動画・言いかえ練習・ふたり会議・動画一覧・長く使う仕組み・困ったとき）＋折りたたみの `PairWorkbook`（行動52 / 会話16 / 合意18 / 根拠18）。答えは `book.futari` |
-| `find` | 制度を探す（探す） | 検索のみ |
+| `find` | 制度を探す（探す） | 検索 + 折りたたみ「どこを見るか」（市の窓口リンク・結婚新生活支援・最短パス：届出週 / `WhereToLook.tsx`・2026-09-30 にデスクから移動）+ 思い込み・もらえない制度 |
 | `settings` | ふたりの設定（設定） | プロフィール／Gist／Grok／YEARLY_UPDATE／リセット |
 
 **2026-09-10 に削除したもの（戻さない）**: 旧「時期」タブ（期限へ統合）／デスクの Amity 吹き出し／
