@@ -82,7 +82,7 @@
 
 | id | ラベル（short） | 中身 |
 |----|-----------------|------|
-| `desk` | デスク | `MarriageDesk`（指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ **`DeskBoard`（ふたりの掲示板・`#desk-board`・最新3件＋「すべて見る」）** + `HomeInsightPanels`（次のアクション SoT）|
+| `desk` | デスク | **いちばん上に `DeskBoard`（ふたりの掲示板・`#desk-board`・最新3件＋「すべて見る」。金の縁・サメの絵・アイコンつきの見出し・新着の赤い件数。2026-10-02〜あいさつより上）** → あいさつ（`welcome-line`）→ `MarriageDesk`（指標3つ・次の期限は期限タブCTA / ペア確認 / 金額4枚）+ `HomeInsightPanels`（次のアクション SoT）|
 | `journey` | ロードマップ（マップ） | 章ナビ + `StampIllustBoard` + マイルストーンのみ |
 | `deadlines` | **期限と時期**（期限） | **月カレンダー**（`DeadlinesCalendar`・`book.events` 男/女/ふたり）+ 制度締切マーカー + `InstitutionalDeadlines`/項目予定（折りたたみ）/ICS + **`PhasesPanel`** |
 | `pair` | **ふたりの練習帳**（ふたり） | `FutariDaily`（今日の一問・週の帯・レッスン動画・言いかえ練習・ふたり会議・動画一覧・長く使う仕組み・困ったとき）＋折りたたみの `PairWorkbook`（行動52 / 会話16 / 合意18 / 根拠18）。答えは `book.futari` |
