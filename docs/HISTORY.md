@@ -19,7 +19,7 @@ Quotes tagged `t##u` are Kenji user-message ids from the Cursor continuity threa
 
 ### Stamp board + sync + Amity
 - `d13832d` — Restore stamp-on-illustration roadmap UI.
-- `524ab48` / `b828ba6` — Bidirectional progress sync via secret GitHub Gist (`4962ce100b42c446015825282f28b774`); desk navi mascot prefill.
+- `524ab48` / `b828ba6` — Bidirectional progress sync via secret GitHub Gist (old plaintext gist; id removed 2026-10-01 — replaced by an encrypted gist); desk navi mascot prefill.
 - `df03965` / `add17d4` — On-device DESK mascot Q&A; JP query matching.
 - `eaece87` / `e0f2fef` — **Amityちゃん** shark mascot + optional Grok research; rebrand **Amityちゃんにきく**.
 - `3f8a410` — First `HANDOFF.md` for AI/dev continuity.

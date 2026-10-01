@@ -20,7 +20,7 @@
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 107項目 |
+| verify-seed | 112項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -45,7 +45,7 @@
 | 技術 | Vite + React + TS、単一 SPA、`base: './'`（GitHub Pages 向け相対パス）。**HashRouter は使っていない**（`App.tsx` → `Notebook` 一枚） |
 | データ | `src/data/tasks.json` 等（**176** タスク exact。137→2026-09-10 に39件追加）+ `practices/talks/agreements/refs.json`（ふたりタブ）|
 | 保存 | **localStorage**（`futari-miraicho-v1`）。`bookSchema` の `practices`/`agreements` は**既定値つき**（必須にすると既存の手帳が壊れる）|
-| 端末同期 | 秘密 **GitHub Gist**（下記） |
+| 端末同期 | 秘密 **GitHub Gist**・**中身は暗号化**（下記） |
 
 ## ハードルール（必ず守る）
 
@@ -102,16 +102,18 @@
   ラベルは `tasks[].pad` を使用（CSSは2行折り返し）。一覧は「探す」。
 - SeedContentPanels マウント: HomeInsight→デスク、Phases→**期限**、InstitutionalDeadlines→期限。
 
-## 同期（Gist）
+## 同期（Gist・暗号化）
 
-- 既定 Gist ID: `4962ce100b42c446015825282f28b774`  
-  https://gist.github.com/kenji0618y/4962ce100b42c446015825282f28b774
-- ファイル: `futari-miraicho.json`
-- コード: `src/lib/gist-sync.ts`、設定 UI で PAT（gist scope）
-- 挙動: 保存後 debounce push / フォーカス・約20s で pull（revision / savedAt）
-- **PAT を Pages やリポに埋め込まない**（端末 localStorage）
+- **2026-10-01〜 中身は暗号化**（`src/lib/sync-crypto.ts`）。秘密 Gist は URL を知っていればログインなしで読めるため、同期先に置くのは **暗号文だけ**（AES-256-GCM、鍵は二人の端末に入れた同じ「アクセス用のキー（GitHub）」から HKDF-SHA256 で作る。salt・iv は保存のたびに新しく、封筒に入れる。鍵はどこにも保存しない）
+- 同期先の **ID はコード・ビルド・ドキュメントに書かない**。キーで自分の Gist 一覧を見て、ファイル `futari-sync.enc.json` を持つもの（いちばん古いもの）を使う。設定の「同期先を手で指定する」でも入れられる。`verify-seed` が古い同期先の ID の混入をハッシュで検査する
+- 古い同期先（平文の `futari-miraicho.json`）からの移行は自動：古い内容をこの端末の手帳に **合流**（`src/lib/book-merge.ts` の `mergeBooks`。片方にしか無いものは必ず残す・時刻があるものは新しい方）→ 暗号化した同期先を新しく作る。**古い同期先には二度と書かない**。移行中は古い同期先を読むだけして、古い版のスマホの書き込みも取り込む
+- 二人のスマホが新しい版になったら、設定 → 詳細設定 → 自動同期 →「古い同期先を削除する」（Gist の履歴に平文が残るので、削除しないと読めるまま）。削除されたら旧設定（`futari-gist-sync-v1`）も消す
+- 設定は端末の localStorage `futari-gist-sync-v2`（キー・同期先・移行元・前のキー・端末の印）。**キーを Pages やリポに埋め込まない**
+- キーが相手の端末と違うと「読めない」と表示して **送らない**（平文や別の鍵で上書きしない）。キーを変えた直後は前のキーでも開け、合流してから新しいキーで送り直す
+- 挙動: 保存後 debounce push / フォーカス・約20s で pull（revision / savedAt）。読めなかったときは送らない
 - 二人が同時に書くもの（`book.futari` の答え・`book.board` の掲示板メモ）は、取り込み時に**項目ごとにマージ**（`use-book.ts` の `mergeShared`）。掲示板は id ごとに新しい方を残し、消したメモは `board.deleted`（id→消した時刻）で生き返らせない（`src/lib/board.ts`）。自動送信の前にも一度取り込んでから送る
 - 書いた人＝「この端末はどちら？」（`futari-me-v1`・ふたりタブと共通。名前は `profile.name1/name2`）
+- テスト: `npm run test:sync`（`prebuild` でも走る。まねの Gist API・本物の GitHub にはつながない）。ブラウザ2台＋古い版からの移行は `node scripts/test-sync-browser.mjs <新dist> <古いdist>`（手動・playwright 必要）
 
 ## Amity × Grok
 
@@ -146,7 +148,10 @@ src/components/OnboardingSheet.tsx
 src/components/PwaUpdateBanner.tsx
 src/lib/model.ts                    # inScope / isCeremonyTask（式なしのとき非表示）+ practice/agreement スキーマ（既定値つき）
 src/lib/use-book.ts                 # localStorage futari-miraicho-v1
-src/lib/gist-sync.ts                # DEFAULT_GIST_ID
+src/lib/gist-sync.ts                # 同期先を探す・暗号化して読み書き（ID は書かない）
+src/lib/sync-crypto.ts              # AES-256-GCM + HKDF（鍵は端末内で作る）
+src/lib/book-merge.ts               # 移行・キー変更時の合流（消さない）
+src/components/SyncSettings.tsx     # 設定の自動同期（暗号化の表示・古い同期先の片づけ）
 src/lib/amity-grok.ts               # grok-3 · credits → console.x.ai
 src/lib/amity-grok-bundle.ts        # ciphertext only（連続 "xai-" 禁止）
 src/lib/desk-chat.ts                # 端末内フォールバック

@@ -14,7 +14,7 @@ Do **not** rediscover product history by chatting with Kenji.
 | Docs tip (main) | 下の「いまの状態」を見てください |
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-186項目 · 33まとまり · FAQ 2074組 · 出典 136件 · 6タブ · 検査 107項目
+186項目 · 33まとまり · FAQ 2074組 · 出典 136件 · 6タブ · 検査 112項目
 <!-- /STATE -->
 | Live app | Pages `gh-pages` = shipped app。`main` push で Actions が検査→公開。結果は Actions タブ／URL で確認 |
 | Truth for every AI | **GitHub `main`** in this repo. Do not chase Kenji-local paths, Claude remotes, or `box-secrets`. |
@@ -147,7 +147,7 @@ git push origin main         # Actions が公開まで実行。結果は Actions
 
 | Item | Where |
 |------|--------|
-| Sync Gist ID | `4962ce100b42c446015825282f28b774` (`futari-miraicho.json`) — PAT stays in device localStorage |
+| Sync | Encrypted secret Gist (`futari-sync.enc.json`, AES-GCM, key derived on device from the shared GitHub key). Gist id is discovered by the key — never hard-code it. PAT stays in device localStorage |
 | Grok credits / spend limits | **https://console.x.ai/** — app cannot buy credits; show JP message + link |
 | Grok key | settings **localStorage** override, else obfuscated `amity-grok-bundle.ts` decode at runtime — **never** Vite `VITE_*` env, never plaintext `xai-` in git/Pages |
 | Historical research archive | Kenji-local `marriage-research/app-seed` (Grok Bot machine only). **Not cloneable from this repo.** Shipped SoT is `src/data`. |
