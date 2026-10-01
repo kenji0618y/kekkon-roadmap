@@ -348,9 +348,32 @@ const uiChecks = [
   ['Desk board synced + merged', (ub => ub.includes("action==='boardNote'") && ub.includes("action==='deleteBoardNote'") && ub.includes('mergeBoard'))(readText('src/lib/use-book.ts')) && readText('src/lib/board.ts').includes('deleted')],
   ['Desk board delete confirm + own-only edit', (db => db.includes('AlertDialog') && db.includes('このメモを消しますか') && db.includes('mine&&'))(readText('src/components/DeskBoard.tsx'))],
   ['Desk board 新着 (partner unread, per-device)', (db => db.includes('desk-board-new') && db.includes('新着') && db.includes('markSeen'))(readText('src/components/DeskBoard.tsx')) && (b => b.includes('desk-board-seen-v1') && b.includes("n.who!==me"))(readText('src/lib/board.ts'))],
+  // 2026-10-01 同期の暗号化。同期先には暗号文だけ・同期先の ID を公開の JS / ドキュメントに置かない・古い同期先には書かない。
+  ['Sync encrypted: AES-GCM + HKDF, push seals before PATCH, no plaintext writer', (c => c.includes("name:'AES-GCM'") && c.includes("name:'HKDF'") && c.includes('KeyMismatchError') && c.includes('getRandomValues'))(readText('src/lib/sync-crypto.ts')) && (g => g.includes('encryptJson(') && g.includes('decryptJson(') && /files:\{\[ENC_FILENAME\]:\{content:await sealed\(/.test(g) && !/\[LEGACY_FILENAME\]:\{content/.test(g) && !/JSON\.stringify\(payload\)/.test(g))(readText('src/lib/gist-sync.ts'))],
+  ['Sync: no gist id literal in src (found by key / entered in settings)', !/DEFAULT_GIST_ID|['"`][0-9a-f]{32}['"`]/.test(readText('src/lib/gist-sync.ts') + readText('src/Notebook.tsx') + readText('src/components/SyncSettings.tsx') + readText('src/lib/use-book.ts'))],
+  ['Sync migration: join merge (never drops board memos / futari answers), never pushes after a failed read', (ub => ub.includes('mergeBooks(') && ub.includes('pullLegacy(') && ub.includes('instanceof KeyMismatchError') && !ub.includes('pushToGist') && !ub.includes('pullFromGist'))(readText('src/lib/use-book.ts')) && (bm => bm.includes('mergeFutari(') && bm.includes('mergeBoard('))(readText('src/lib/book-merge.ts')) && existsSync(join(root, 'scripts/test-sync-crypt.mjs'))],
+  ['Sync settings mounted (encryption status + old-gist cleanup)', notebook.includes('<SyncSettings') && (ss => ss.includes('id="settings-gist-sync"') && ss.includes('sync-crypt-status') && ss.includes('古い同期先を削除する') && ss.includes('AlertDialog'))(readText('src/components/SyncSettings.tsx'))],
   ['futari answers in book schema', readText('src/lib/model.ts').includes('futari:futariSchema') && readText('src/lib/use-book.ts').includes("action==='futariAnswer'") && readText('src/lib/use-book.ts').includes('mergeFutari')],
 ];
 
+{
+  // 古い同期先（暗号化前・2026-10 に削除予定）の ID は、リポジトリのどこにも書かない（ハッシュで照合）。
+  const OLD_SYNC_ID_SHA256 = '0a32f2462a54586f6e93737331fd8a02c56edb0f4d750c8a3a154c85cf54ad74';
+  const { createHash } = await import('node:crypto');
+  const hits = [];
+  const scan = (dir) => {
+    for (const name of readdirSync(join(root, dir))) {
+      if (['node_modules', 'dist', '.git'].includes(name)) continue;
+      const rel = join(dir, name), abs = join(root, rel);
+      if (statSync(abs).isDirectory()) { scan(rel); continue; }
+      if (!/\.(md|ts|tsx|mjs|js|json|html|yml|txt|mdc)$/.test(name)) continue;
+      for (const m of readFileSync(abs, 'utf8').matchAll(/[0-9a-f]{32}/g)) if (createHash('sha256').update(m[0]).digest('hex') === OLD_SYNC_ID_SHA256) hits.push(rel);
+    }
+  };
+  scan('.');
+  if (hits.length) fail.push(`古い同期先の ID が書かれています（${[...new Set(hits)].join(', ')}）`);
+  else ok.push('old sync gist id absent from repo files');
+}
 const yearlyDocs = readText('docs/YEARLY_UPDATE.md');
 const yearlyData = readText('src/data/YEARLY_UPDATE.md');
 if (yearlyDocs && yearlyData && yearlyDocs !== yearlyData) {

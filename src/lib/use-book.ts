@@ -15,15 +15,34 @@ import {validateCatalogBook} from './backup';
 import {
   buildPayload,
   compareRemote,
-  createSecretGist,
-  pullFromGist,
-  pushToGist,
+  createEncryptedGist,
+  deleteLegacyGist,
+  deleteOwnDuplicate,
+  discoverGists,
+  forgetLegacyConfig,
+  GistHttpError,
+  KeyMismatchError,
+  pullEncrypted,
+  pullLegacy,
+  pushEncrypted,
   readSyncConfig,
+  seenDevices,
   testGistConnection,
   writeSyncConfig,
+  type DeviceSeen,
   type GistSyncConfig,
   type SyncStatus,
 } from './gist-sync';
+import {mergeBooks,newerFirst} from './book-merge';
+
+/** 同期の困りごと（画面に出す）：key=キーが相手と違う / auth=キーが使えない / target=同期先がまだない */
+export type SyncProblem=''|'key'|'auth'|'target';
+export const KEY_MISMATCH_JA='相手の端末と「アクセス用のキー」が違うため、同期の中身を読めませんでした。二人とも同じキーを入れてください（この端末の内容は送っていません）。';
+function stableJson(v:unknown):string{
+  if(Array.isArray(v))return `[${v.map(stableJson).join(',')}]`;
+  if(v&&typeof v==='object')return `{${Object.keys(v as object).sort().map(k=>`${JSON.stringify(k)}:${stableJson((v as Record<string,unknown>)[k])}`).join(',')}}`;
+  return JSON.stringify(v)??'null';
+}
 
 const STORAGE_KEY='futari-miraicho-v1';
 const PUSH_DEBOUNCE_MS=800;
@@ -67,6 +86,13 @@ export function useBook(_paused:boolean){
   const [syncStatus,setSyncStatus]=useState<SyncStatus>(()=>readSyncConfig().enabled?'ok':'off');
   const [lastSyncAt,setLastSyncAt]=useState('');
   const [syncConfig,setSyncConfig]=useState<GistSyncConfig>(()=>readSyncConfig());
+  const [syncProblem,setSyncProblemState]=useState<SyncProblem>('');
+  const syncProblemRef=useRef<SyncProblem>('');
+  const setSyncProblem=useCallback((v:SyncProblem)=>{syncProblemRef.current=v;setSyncProblemState(v);},[]);
+  const [devices,setDevices]=useState<Record<string,DeviceSeen>>({});
+  /** 次に読めたときは「合流」（mergeBooks）にする。キーを変えた・読めなかった・前のキーで開いたとき。 */
+  const joinNextRef=useRef(Boolean(readSyncConfig().prevToken));
+  const runSyncRef=useRef<(mode:'pull'|'push'|'manual')=>Promise<string>>(async()=>'');
   const current=useRef(snapshot),working=useRef(false);
   const savedAtRef=useRef('');
   const pushTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -86,41 +112,11 @@ export function useBook(_paused:boolean){
 
   const schedulePush=useCallback(()=>{
     const cfg=syncConfigRef.current;
-    if(!cfg.enabled||!cfg.token||!cfg.gistId)return;
+    if(!cfg.enabled||!cfg.token)return;
     if(pushTimer.current)clearTimeout(pushTimer.current);
     pushTimer.current=setTimeout(()=>{
       pushTimer.current=null;
-      void (async()=>{
-        const latest=syncConfigRef.current;
-        if(!latest.enabled||!latest.token||!latest.gistId)return;
-        const snap=current.current;
-        if(!snap.book)return;
-        if(syncingRef.current){
-          localDirtyRef.current=true;
-          return;
-        }
-        syncingRef.current=true;
-        setSyncStatus('syncing');
-        try{
-          // 送る前に相手の端末の書き込み（一問の答え・掲示板）を取り込む。取れなくても送信は続ける。
-          try{
-            const remote=await pullFromGist(latest);
-            if(remote)mergeRemoteIntoLocalRef.current(remote);
-          }catch{/* ignore */}
-          const s=current.current;
-          if(!s.book)return;
-          const payload=buildPayload(s.book,s.revision,savedAtRef.current||undefined);
-          await pushToGist(latest,payload);
-          localDirtyRef.current=false;
-          const at=new Date().toISOString();
-          setLastSyncAt(at);
-          setSyncStatus('ok');
-        }catch{
-          setSyncStatus('error');
-        }finally{
-          syncingRef.current=false;
-        }
-      })();
+      void runSyncRef.current('push');
     },PUSH_DEBOUNCE_MS);
   },[]);
 
@@ -166,47 +162,197 @@ export function useBook(_paused:boolean){
   },[accept]);
   mergeRemoteIntoLocalRef.current=mergeRemoteIntoLocal;
 
-  const pullAndReconcile=useCallback(async(opts?:{quiet?:boolean})=>{
-    const cfg=syncConfigRef.current;
-    if(!cfg.enabled||!cfg.token||!cfg.gistId)return;
-    if(syncingRef.current)return;
+  const saveCfg=useCallback((partial:Partial<GistSyncConfig>)=>{
+    const next=writeSyncConfig({...syncConfigRef.current,...partial});
+    syncConfigRef.current=next;
+    setSyncConfig(next);
+    return next;
+  },[]);
+
+  /**
+   * 合流：other（古い同期先・キーが合わなかった間の相手・移行先）を、この端末の手帳に「消さずに」足す。
+   * ふだんの同期（revision の新しい方を採る）ではなく、mergeBooks で両方を残す。変わったら true。
+   */
+  const joinInto=useCallback((other:{book:Book,revision:number,savedAt:string}):boolean=>{
+    const snap=current.current;
+    if(!snap.book){
+      applyRemote(other);
+      localDirtyRef.current=true;
+      return true;
+    }
+    const [p,s]=newerFirst({book:snap.book,revision:snap.revision,savedAt:savedAtRef.current},{book:other.book,revision:other.revision,savedAt:other.savedAt});
+    const merged=mergeBooks(p.book,s.book);
+    const changed=stableJson(merged)!==stableJson(snap.book);
+    if(!changed&&snap.revision>=other.revision)return false;
+    const revision=Math.max(snap.revision,other.revision)+(changed?1:0);
+    const at=changed?writeStored(merged,revision):writeStored(snap.book,revision,savedAtRef.current||undefined);
+    savedAtRef.current=at;
+    setSavedAt(at);
+    if(changed)localDirtyRef.current=true;
+    accept({...snap,book:changed?merged:snap.book,revision,members:localMember(changed?merged:snap.book),slot:1});
+    return changed;
+  },[accept,applyRemote]);
+
+  /** 暗号化して送る（平文は送らない）。 */
+  const pushNow=useCallback(async(cfg:GistSyncConfig,opts:{dropStrayPlain?:boolean}={})=>{
+    const s=current.current;
+    if(!s.book)return false;
+    await pushEncrypted(cfg,buildPayload(s.book,s.revision,savedAtRef.current||undefined),opts);
+    localDirtyRef.current=false;
+    setDevices(seenDevices());
+    return true;
+  },[]);
+
+  /**
+   * 暗号化した同期先を決める。
+   *   1) 設定にあればそれ
+   *   2) なければ自分の Gist 一覧から探す（いちばん古いもの）→ 見つかったら合流
+   *   3) なくて、古い（平文の）同期先があれば → 古い内容をこの端末に合流して、暗号化した同期先を新しく作る
+   * 古い同期先には書かない。二台が同時に作ったら、古い方にそろえて自分の作った重複を消す。
+   */
+  const ensureTarget=useCallback(async(create:boolean):Promise<GistSyncConfig|null>=>{
+    let cfg=syncConfigRef.current;
+    if(!cfg.token)return null;
+    if(cfg.gistId)return cfg;
+    if(!cfg.deviceId)cfg=saveCfg({});
+    const found=await discoverGists(cfg.token);
+    // 自分の一覧にある古い同期先だけを使う（他人の Gist は取り込まない）。
+    const legacyId=(found.legacy.find(g=>g.id===cfg.legacyGistId)||found.legacy[0])?.id||'';
+    let legacySeen='';
+    if(legacyId){
+      const leg=await pullLegacy(cfg.token,legacyId);
+      if(leg.payload)joinInto(leg.payload);
+      legacySeen=leg.updatedAt;
+    }
+    const join=async(id:string)=>{
+      cfg=saveCfg({gistId:id,legacyGistId:legacyId,legacySeen});
+      const pulled=await pullEncrypted(cfg);
+      if(pulled.strayPlain)joinInto(pulled.strayPlain);
+      if(pulled.payload)joinInto(pulled.payload);
+      await pushNow(cfg,{dropStrayPlain:!!pulled.strayPlain});
+    };
+    if(found.encrypted.length){
+      await join(found.encrypted[0].id);
+      return cfg;
+    }
+    if(!legacyId&&!create){
+      if(!cfg.legacyGistId)return null;
+      saveCfg({legacyGistId:''});
+      return null;
+    }
+    const snap=current.current;
+    const book=snap.book||structuredClone(emptyBook);
+    const id=await createEncryptedGist(cfg,buildPayload(book,snap.book?snap.revision:0,savedAtRef.current||undefined));
+    cfg=saveCfg({gistId:id,legacyGistId:legacyId,legacySeen,enabled:true});
+    localDirtyRef.current=false;
+    try{
+      const again=await discoverGists(cfg.token);
+      const winner=again.encrypted[0]?.id;
+      if(winner&&winner!==id){
+        await join(winner);
+        await deleteOwnDuplicate(cfg,id,winner).catch(()=>undefined);
+      }
+    }catch{/* 確認できなくても、作った同期先で続ける */}
+    return cfg;
+  },[joinInto,pushNow,saveCfg]);
+
+  /**
+   * 同期の本体。mode:
+   *   pull …… 定期・画面に戻ったとき（取り込み、必要なら送る）
+   *   push …… この端末で書いた直後（先に相手の答え・メモを取り込んでから送る）
+   *   manual …「今すぐ同期」（同期先がなければ作る。結果の文を返す）
+   * 読めない（キーが違う・壊れている・つながらない）ときは、決して送らない。
+   */
+  const runSync=useCallback(async(mode:'pull'|'push'|'manual',opts:{quiet?:boolean}={}):Promise<string>=>{
+    const cfg0=syncConfigRef.current;
+    if(!cfg0.token){
+      if(mode==='manual')throw new Error('アクセス用のキー（GitHub）を入力してください。');
+      return '';
+    }
+    if(!cfg0.enabled&&mode!=='manual')return '';
+    if(syncingRef.current){
+      if(mode==='push')localDirtyRef.current=true;
+      return mode==='manual'?'いま同期しています。少し待ってからもう一度押してください。':'';
+    }
     syncingRef.current=true;
     setSyncStatus('syncing');
     try{
-      const remote=await pullFromGist(cfg);
+      const cfg=await ensureTarget(mode==='manual');
+      if(!cfg){
+        setSyncProblem('target');
+        setSyncStatus('error');
+        return '';
+      }
+      const pulled=await pullEncrypted(cfg);
+      setSyncProblem('');
+      let needPush=false,msg='すでに最新です';
+      if(pulled.strayPlain){joinInto(pulled.strayPlain);needPush=true;}
+      // 前のキーで開けた＝相手がまだ前のキー。合流して、いまのキーで送り直す。
+      if(pulled.usedPrevKey){joinNextRef.current=true;needPush=true;}
+      const remote=pulled.payload;
       if(!remote){
-        setSyncStatus('ok');
-        return;
-      }
-      const local={revision:current.current.revision,savedAt:savedAtRef.current};
-      const verdict=compareRemote(local,remote);
-      // Concurrent conflict: prefer higher revision; if equal, prefer higher savedAt (see compareRemote).
-      if(verdict==='remote'){
-        const needsPush=applyRemoteMerged(remote);
-        if(!opts?.quiet)toast.message('他の端末の更新を取り込みました');
-        if(needsPush&&current.current.book){
-          await pushToGist(cfg,buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined));
-          localDirtyRef.current=false;
-        }
+        needPush=needPush||!!current.current.book;
+      }else if(joinNextRef.current){
+        joinInto(remote);
+        joinNextRef.current=false;
+        needPush=true;
+        msg='相手の端末の内容と合わせました';
+      }else if(mode==='push'){
+        mergeRemoteIntoLocal(remote);
+        needPush=true;
       }else{
-        const changed=mergeRemoteIntoLocal(remote);
-        const snap=current.current;
-        const remoteBehind=!!snap.book&&!sameShared(snap.book,remote.book);
-        if(snap.book&&(changed||remoteBehind||(verdict==='local'&&(localDirtyRef.current||snap.revision>remote.revision)))){
-          const payload=buildPayload(snap.book,snap.revision,savedAtRef.current||undefined);
-          await pushToGist(cfg,payload);
-          localDirtyRef.current=false;
+        const verdict=compareRemote({revision:current.current.revision,savedAt:savedAtRef.current},remote);
+        if(verdict==='remote'){
+          if(applyRemoteMerged(remote))needPush=true;
+          if(!opts.quiet&&mode==='pull')toast.message('他の端末の更新を取り込みました');
+          msg='相手の端末の内容を取り込みました';
+        }else{
+          const changed=mergeRemoteIntoLocal(remote);
+          const snap=current.current;
+          const remoteBehind=!!snap.book&&!sameShared(snap.book,remote.book);
+          if(snap.book&&(changed||remoteBehind||(verdict==='local'&&(localDirtyRef.current||snap.revision>remote.revision))))needPush=true;
+          if(mode==='manual'&&localDirtyRef.current)needPush=true;
+          if(needPush)msg='この端末の内容を送りました';
         }
       }
-      const at=new Date().toISOString();
-      setLastSyncAt(at);
+      // 移行中だけ：古い（平文の）同期先を読むだけ。古い版のスマホが書いた分を消さずに取り込む。
+      const live=syncConfigRef.current;
+      if(live.legacyGistId){
+        try{
+          const leg=await pullLegacy(live.token,live.legacyGistId);
+          if(leg.missing){
+            saveCfg({legacyGistId:'',legacySeen:''});
+            forgetLegacyConfig();
+          }else if(leg.payload&&leg.updatedAt!==live.legacySeen){
+            if(joinInto(leg.payload))needPush=true;
+            saveCfg({legacySeen:leg.updatedAt});
+          }
+        }catch{/* 古い同期先が読めなくても、暗号化の同期は続ける */}
+      }
+      if(needPush)await pushNow(syncConfigRef.current,{dropStrayPlain:!!pulled.strayPlain});
+      setDevices(seenDevices());
+      setLastSyncAt(new Date().toISOString());
       setSyncStatus('ok');
-    }catch{
+      if(mode==='manual'&&!syncConfigRef.current.enabled)saveCfg({enabled:true});
+      return msg;
+    }catch(e){
       setSyncStatus('error');
+      if(e instanceof KeyMismatchError){
+        setSyncProblem('key');
+        joinNextRef.current=true;
+        if(mode==='manual')throw new Error(KEY_MISMATCH_JA);
+        return '';
+      }
+      if(e instanceof GistHttpError&&e.status===401)setSyncProblem('auth');
+      if(mode==='manual')throw e;
+      return '';
     }finally{
       syncingRef.current=false;
     }
-  },[applyRemoteMerged,mergeRemoteIntoLocal]);
+  },[applyRemoteMerged,ensureTarget,joinInto,mergeRemoteIntoLocal,pushNow,saveCfg]);
+  runSyncRef.current=runSync;
+
+  const pullAndReconcile=useCallback(async(opts?:{quiet?:boolean})=>{await runSync('pull',opts);},[runSync]);
 
   const refresh=useCallback(async(_quiet=false)=>{
     try{
@@ -221,9 +367,10 @@ export function useBook(_paused:boolean){
       });
       setError('');
       const cfg=readSyncConfig();
+      syncConfigRef.current=cfg;
       setSyncConfig(cfg);
-      setSyncStatus(cfg.enabled?(cfg.token&&cfg.gistId?'ok':'error'):'off');
-      if(cfg.enabled&&cfg.token&&cfg.gistId)void pullAndReconcile({quiet:true});
+      setSyncStatus(cfg.enabled?(cfg.token?'ok':'error'):'off');
+      if(cfg.enabled&&cfg.token)void pullAndReconcile({quiet:true});
     }catch{
       setPhase('error');
       setError('この端末の保存データを読み込めませんでした。');
@@ -419,107 +566,68 @@ export function useBook(_paused:boolean){
   },[accept,schedulePush]);
 
   const saveSyncSettings=useCallback((partial:Partial<GistSyncConfig>)=>{
-    const next=writeSyncConfig({...syncConfigRef.current,...partial});
-    setSyncConfig(next);
-    syncConfigRef.current=next;
+    const before=syncConfigRef.current;
+    const next=saveCfg(partial);
+    // キーを変えたら、次に読めたときは「合流」（どちらの書き込みも消さない）。
+    if(before.token&&next.token!==before.token)joinNextRef.current=true;
+    if(next.gistId!==before.gistId)joinNextRef.current=true;
     if(!next.enabled){
       setSyncStatus('off');
       return next;
     }
-    if(!next.token||!next.gistId){
+    if(!next.token){
       setSyncStatus('error');
       return next;
     }
     setSyncStatus('ok');
     void pullAndReconcile({quiet:true});
     return next;
-  },[pullAndReconcile]);
+  },[pullAndReconcile,saveCfg]);
 
-  const createGistNow=useCallback(async()=>{
-    const cfg=syncConfigRef.current;
-    if(!cfg.token)throw new Error('GitHub PATを入力してください。');
-    const snap=current.current;
-    const book=snap.book||structuredClone(emptyBook);
-    const revision=snap.book?snap.revision:0;
-    const payload=buildPayload(book,revision,savedAtRef.current||undefined);
-    setSyncStatus('syncing');
-    try{
-      const id=await createSecretGist(cfg.token,payload);
-      const next=writeSyncConfig({...cfg,gistId:id,enabled:true});
-      setSyncConfig(next);
-      syncConfigRef.current=next;
-      localDirtyRef.current=false;
-      const at=new Date().toISOString();
-      setLastSyncAt(at);
-      setSyncStatus('ok');
-      return id;
-    }catch(e){
-      setSyncStatus('error');
-      throw e;
-    }
-  },[]);
+  /** 「今すぐ同期」：同期先がなければ探す・作る（古い同期先があれば移す）。 */
+  const syncNow=useCallback(async()=>runSync('manual'),[runSync]);
+  /** 互換のため残す（「今すぐ同期」と同じ。もう新しい同期先を別に作ることはしない）。 */
+  const createGistNow=syncNow;
 
-  const syncNow=useCallback(async()=>{
+  /** キーが合わず読めないとき：この端末の内容で同期先を上書きする（相手の端末は、新しいキーを入れたときに合流する）。 */
+  const overwriteRemote=useCallback(async()=>{
     const cfg=syncConfigRef.current;
-    if(!cfg.token)throw new Error('GitHub PATを入力してください。');
-    if(!cfg.gistId)throw new Error('Gist IDが未設定です。');
-    if(syncingRef.current)return;
-    syncingRef.current=true;
-    setSyncStatus('syncing');
-    try{
-      const remote=await pullFromGist(cfg);
-      if(remote){
-        const local={revision:current.current.revision,savedAt:savedAtRef.current};
-        const verdict=compareRemote(local,remote);
-        if(verdict==='remote'){
-          const needsPush=applyRemoteMerged(remote);
-          if(needsPush&&current.current.book){
-            await pushToGist(cfg,buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined));
-            localDirtyRef.current=false;
-          }
-          toast.success('リモートの内容を取り込みました');
-        }else if(verdict==='local'||localDirtyRef.current){
-          if(!current.current.book)throw new Error('まだ手帳がありません。');
-          mergeRemoteIntoLocal(remote);
-          const payload=buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined);
-          await pushToGist(cfg,payload);
-          localDirtyRef.current=false;
-          toast.success('この端末の内容をGistへ送りました');
-        }else{
-          toast.message('すでに最新です');
-        }
-      }else if(current.current.book){
-        const payload=buildPayload(current.current.book,current.current.revision,savedAtRef.current||undefined);
-        await pushToGist(cfg,payload);
-        localDirtyRef.current=false;
-        toast.success('この端末の内容をGistへ送りました');
-      }
-      const at=new Date().toISOString();
-      setLastSyncAt(at);
-      setSyncStatus('ok');
-      if(!cfg.enabled){
-        const next=writeSyncConfig({...cfg,enabled:true});
-        setSyncConfig(next);
-        syncConfigRef.current=next;
-      }
-    }catch(e){
-      setSyncStatus('error');
-      throw e;
-    }finally{
-      syncingRef.current=false;
-    }
-  },[applyRemoteMerged,mergeRemoteIntoLocal]);
+    if(!cfg.token||!cfg.gistId)throw new Error('同期先がまだありません。');
+    if(!current.current.book)throw new Error('まだ手帳がありません。');
+    await pushNow(cfg);
+    joinNextRef.current=false;
+    setSyncProblem('');
+    setSyncStatus('ok');
+    setLastSyncAt(new Date().toISOString());
+    return 'この端末の内容を、いまのキーで暗号化して送りました';
+  },[pushNow]);
+
+  /** 移行の最後：古い（暗号化されていない）同期先を削除する。直前にもう一度取り込んでから消す。 */
+  const deleteLegacy=useCallback(async()=>{
+    const cfg=syncConfigRef.current;
+    if(!cfg.legacyGistId)return '古い同期先はもうありません';
+    if(!cfg.gistId)throw new Error('先に「今すぐ同期」で暗号化した同期先に移してください。');
+    await runSync('manual');
+    const live=syncConfigRef.current;
+    if(syncProblemRef.current)throw new Error('同期がうまくいっていないため、削除しませんでした。');
+    await deleteLegacyGist(live);
+    saveCfg({legacyGistId:'',legacySeen:''});
+    forgetLegacyConfig();
+    return '古い同期先を削除しました';
+  },[runSync,saveCfg]);
 
   const testSync=useCallback(async()=>{
     const cfg=syncConfigRef.current;
     setSyncStatus(cfg.enabled?'syncing':syncStatus==='off'?'off':'syncing');
     try{
       const msg=await testGistConnection(cfg);
-      if(cfg.enabled&&cfg.token&&cfg.gistId)setSyncStatus('ok');
+      if(cfg.enabled&&cfg.token)setSyncStatus('ok');
       else if(cfg.enabled)setSyncStatus('error');
+      setSyncProblem('');
       return msg;
     }catch(e){
       if(cfg.enabled)setSyncStatus('error');
+      if(e instanceof KeyMismatchError){setSyncProblem('key');throw new Error(KEY_MISMATCH_JA);}
       throw e;
     }
   },[syncStatus]);
@@ -533,11 +641,15 @@ export function useBook(_paused:boolean){
     refresh,
     mutate,
     syncStatus,
+    syncProblem,
+    syncDevices:devices,
     lastSyncAt,
     syncConfig,
     saveSyncSettings,
     createGistNow,
     syncNow,
     testSync,
+    overwriteRemote,
+    deleteLegacy,
   };
 }
