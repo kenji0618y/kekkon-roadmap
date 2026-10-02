@@ -7,7 +7,7 @@
  * - 本文は AES-256-GCM（改ざんも検出）。iv は毎回ランダム 12 バイト。AAD に形式名を入れる。
  * - kid は同じ salt から別の info で作った確認用の値。違うキーで開こうとしたことを、
  *   復号エラーと区別して知らせるために使う（kid からキーは戻せない）。
- * - LINE 通知の合言葉（feat/board-line-notify の SHA-256("kekkon-board-line-v1\n"+キー)）とは
+ * - LINE 通知の合言葉（src/lib/line-notify.ts の SHA-256("kekkon-board-line-v1\n"+キー)）とは
  *   作り方（HKDF・info・salt）が別なので、合言葉からこの鍵は作れない。
  */
 export const ENC_FORMAT='futari-sync-enc';

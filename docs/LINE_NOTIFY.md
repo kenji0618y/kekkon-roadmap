@@ -1,0 +1,61 @@
+# 掲示板の LINE 通知（2026-10-03）
+
+ふたりの掲示板にメモを書くと、相手の LINE に「名前：メモ」とアプリの URL が届く（アプリを閉じていても届く）。
+LINE Notify は終了済みなので、**無料の LINE 公式アカウント + Messaging API** を **Google Apps Script（中継先）** 経由で使う。
+
+```
+アプリ（GitHub Pages・静的）
+  └─ POST text/plain;charset=utf-8（本文は JSON）→ Apps Script ウェブアプリ（/exec）
+        ├─ 合言葉（スクリプト プロパティ BOARD_SECRET）を確かめる
+        ├─ 同じ人は60秒に1通（まとめる）・今月180通で止める
+        └─ LINE Messaging API push → 相手の LINE
+```
+
+- **Content-Type は必ず `text/plain;charset=utf-8`**。`application/json` や独自ヘッダーは CORS の事前確認（OPTIONS）が走り、Apps Script は答えないので失敗する。
+- Apps Script のコードはこのリポジトリに入れていない（Kenji の Google アカウントにある）。
+- **中継先の URL と合言葉はリポジトリにも `VITE_` にも書かない。** URL とオン/オフは手帳（`book.lineNotify`・同期）に入れる。
+
+## 送るもの
+
+| 場面 | 本文 |
+|---|---|
+| 掲示板に書いた | `{"kind":"board","secret":…,"from":1か2,"name":"プロフィールの名前（20文字まで）","text":"本文（500文字まで）"}` |
+| つながるか試す | `{"kind":"status","secret":…}`（LINE には何も送らない） |
+
+`from` は「この端末はどちら？」（1＝プロフィールの一人目・2＝二人目）。
+
+## 合言葉
+
+- `小文字16進( SHA-256( "kekkon-board-line-v1\n" + 端末どうしの自動同期のキー ) )`（64文字・WebCrypto）。
+- 同じキーの2台では同じ値。`src/lib/sync-crypto.ts` の同期鍵（HKDF・別の info・salt）とは作り方が別で、合言葉から同期鍵は戻せない。**この分離を崩さない。**
+- 手帳にも同期先にも保存しない。使うたびに端末の中で作る。
+- 自動同期がオフの端末では作れない → 画面は「準備中」。
+- ふたりの端末でキーが違うときだけ「合言葉を手で入れる」（localStorage `board-line-secret-v1`・この端末だけ・同期しない）。
+
+## 二重に送らない
+
+通知を送るのは **メモを書いた本人の端末が、書いた瞬間だけ**（`DeskBoard.tsx` の `add` → 保存できたら `notifyLine`、`shouldNotifyBoard('compose',…)`）。
+同期で入ってきたメモ（`use-book.ts` の `mergeShared` / `book-merge.ts`）・直す・ピンでは送らない。
+
+## 失敗してもメモは止めない
+
+`postRelay` は例外を投げず `{ok:false}` を返す。`notifyLine` は保存のあとに `try/catch` の中で動く。結果は掲示板の下の一行だけ。
+
+| 返り | 掲示板の一行（「LINE通知：オン — 」に続く） |
+|---|---|
+| `status:"sent"` | ◯◯さんのLINEにお知らせしました |
+| `status:"queued"` | 1分後にまとめてお知らせします |
+| `status:"capped"` | 今月の上限（180通）に達したので止めています。来月1日に再開します |
+| `partner-not-registered` | 相手のLINEがまだ登録されていません |
+| `bad-secret` / `no-secret` | 合言葉が合っていません |
+| それ以外・電波なし | お知らせを送れませんでした |
+
+## ファイル
+
+| ファイル | 役目 |
+|---|---|
+| `src/lib/line-notify.ts` | URL 検査（Apps Script の `/exec` だけ）・合言葉・POST・画面の文・`shouldNotifyBoard` |
+| `src/lib/use-line-notify.ts` | 状態（off / preparing / on）・送信・つながるか試す・コピー |
+| `src/components/LineNotifySettings.tsx` | 設定 → 詳細設定 →「LINE通知」`#settings-line-notify` |
+| `src/components/DeskBoard.tsx` | 書いたあとの一行 |
+| `scripts/tests/line-notify.test.ts` | `npm run test:line`（`npm run build` の前にも走る） |

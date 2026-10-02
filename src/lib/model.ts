@@ -127,9 +127,17 @@ export const boardSchema=z.object({
 });
 export type Board=z.infer<typeof boardSchema>;
 export const emptyBoard:Board={notes:[],deleted:{}};
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard)});
+/** 掲示板の LINE 通知（ふたりで共通・同期する）。中継先の URL とオン/オフだけ。合言葉はここに置かない（端末の中で作る）。 */
+export const lineNotifySchema=z.object({
+  url:z.string().max(300).catch(''),
+  on:z.boolean().catch(false),
+  updatedAt:z.string().max(40).catch(''),
+});
+export type LineNotifySettings=z.infer<typeof lineNotifySchema>;
+export const emptyLineNotify:LineNotifySettings={url:'',on:false,updatedAt:''};
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify)});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};

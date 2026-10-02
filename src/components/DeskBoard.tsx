@@ -5,6 +5,8 @@ import {BOARD_TEXT_MAX,pairEventWhoLabels,type Book,type BoardNote} from '../lib
 import {boardTime,markSeen,newNoteId,readSeen,sortBoard,unreadNotes} from '../lib/board';
 import {onMeChange,readMe,writeMe,type Who} from '../lib/futari';
 import type {SyncStatus} from '../lib/gist-sync';
+import {boardResultText,shouldNotifyBoard} from '../lib/line-notify';
+import type {LineNotify} from '../lib/use-line-notify';
 
 /** デスクで最初に見せる件数。残りは「すべて見る」で開く。 */
 const PREVIEW=3;
@@ -21,7 +23,7 @@ export type BoardSave={
  * メモは手帳（book.board）に入るので、保存と同期は手帳と同じ（自動同期がオンなら相手の端末へ届く）。
  * 書いた人は「この端末はどちら？」（ふたりタブと共通）で決める。
  */
-export function DeskBoard({book,busy,syncStatus,save,onOpenSync}:{book:Book,busy:boolean,syncStatus:SyncStatus,save:BoardSave,onOpenSync:()=>void}){
+export function DeskBoard({book,busy,syncStatus,save,onOpenSync,line,onOpenLine}:{book:Book,busy:boolean,syncStatus:SyncStatus,save:BoardSave,onOpenSync:()=>void,line?:LineNotify,onOpenLine?:()=>void}){
   const w=pairEventWhoLabels(book.profile);
   const names:Record<Who,string>={n1:w.male,n2:w.female};
   const [me,setMe]=useState<Who|''>(()=>readMe());
@@ -31,6 +33,8 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync}:{book:Book,busy
   const [editId,setEditId]=useState('');
   const [editText,setEditText]=useState('');
   const [confirmId,setConfirmId]=useState('');
+  /** メモを書いたあとの LINE 通知の一行（この端末で書いたときだけ）。 */
+  const [lineMsg,setLineMsg]=useState<{label:string,text:string,warn:boolean}|null>(null);
   const notes=useMemo(()=>sortBoard(book.board?.notes||[]),[book.board]);
   const shown=expanded?notes:notes.slice(0,PREVIEW);
   const now=new Date();
@@ -66,7 +70,30 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync}:{book:Book,busy
     const text=draft.trim();
     if(!text||!me)return;
     const at=new Date().toISOString();
-    if(await save.put({id:newNoteId(),who:me,text:text.slice(0,BOARD_TEXT_MAX),pinned:false,at,updatedAt:at,editedAt:''},'掲示板に書きました'))setDraft('');
+    const note:BoardNote={id:newNoteId(),who:me,text:text.slice(0,BOARD_TEXT_MAX),pinned:false,at,updatedAt:at,editedAt:''};
+    if(await save.put(note,'掲示板に書きました')){
+      setDraft('');
+      void notifyLine(note);
+    }
+  };
+  /**
+   * 保存できたあとに LINE へ知らせる（書いた本人の端末で、書いた瞬間だけ）。
+   * 同期で入ってきたメモではここを通らないので送らない。失敗しても掲示板の保存には影響しない。
+   */
+  const notifyLine=async(note:BoardNote)=>{
+    try{
+      if(!line||line.state==='off'||!shouldNotifyBoard('compose',note,me))return;
+      const partner:Who=note.who==='n1'?'n2':'n1';
+      if(line.state==='preparing'){
+        setLineMsg({label:'準備中',text:line.missing==='sync'?'この端末は自動同期がオフなので、LINEには送っていません':'中継先のURLがまだ入っていないので、LINEには送っていません',warn:true});
+        return;
+      }
+      setLineMsg({label:'オン',text:'お知らせしています…',warn:false});
+      const r=await line.send(note.who,names[note.who],note.text);
+      setLineMsg({label:'オン',...boardResultText(r,names[partner])});
+    }catch{
+      setLineMsg({label:'オン',text:'お知らせを送れませんでした',warn:true});
+    }
   };
   const saveEdit=async(n:BoardNote)=>{
     const text=editText.trim();
@@ -139,6 +166,11 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync}:{book:Book,busy
       </ul>
     )}
     {notes.length>PREVIEW&&<button type="button" className="desk-board-more" onClick={()=>setExpanded(v=>!v)} aria-expanded={expanded}>{expanded?'たたむ':`すべて見る（${notes.length}件）`}</button>}
+
+    {lineMsg&&<p className={`desk-board-line${lineMsg.warn?' warn':''}`} role="status" aria-live="polite">
+      <strong>LINE通知：{lineMsg.label}</strong> — <span>{lineMsg.text}</span>
+      {lineMsg.warn&&onOpenLine&&<> <button type="button" className="desk-board-link" onClick={onOpenLine}>設定を見る</button></>}
+    </p>}
 
     {syncStatus==='off'&&<p className="desk-board-sync">いまはこの端末だけに残ります。相手のスマホにも出すには <button type="button" className="desk-board-link" onClick={onOpenSync}>端末どうしの自動同期</button> をオンにしてください。</p>}
     {syncStatus==='error'&&<p className="desk-board-sync warn">相手の端末とそろえられていません。電波か <button type="button" className="desk-board-link" onClick={onOpenSync}>自動同期の設定</button> を確かめてください。</p>}

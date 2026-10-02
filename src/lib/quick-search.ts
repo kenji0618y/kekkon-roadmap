@@ -85,6 +85,7 @@ const TAB_ALIASES: Record<string, string[]> = {
 export const SETTING_HITS: Omit<QuickSearchHit, 'score'>[] = [
   { id: 'set-profile', kind: 'setting', title: 'プロフィール', hint: '呼び名・婚姻日・区', tab: 'settings', scrollId: 'settings-profile' },
   { id: 'set-gist', kind: 'setting', title: '端末どうしの自動同期', hint: '詳細設定', tab: 'settings', scrollId: 'settings-gist-sync' },
+  { id: 'set-line', kind: 'setting', title: 'LINE通知（掲示板）', hint: '詳細設定', tab: 'settings', scrollId: 'settings-line-notify' },
   { id: 'set-grok', kind: 'setting', title: 'AIのキー', hint: '詳細設定', tab: 'settings', scrollId: 'settings-grok' },
   { id: 'set-backup', kind: 'setting', title: 'バックアップ', hint: '書き出し・読み込み', tab: 'settings', scrollId: 'settings-backup' },
   { id: 'set-research', kind: 'setting', title: '制度を調べる', hint: 'Amityに質問', tab: 'settings', scrollId: 'settings-research' },
@@ -93,6 +94,7 @@ export const SETTING_HITS: Omit<QuickSearchHit, 'score'>[] = [
 const SETTING_ALIASES: Record<string, string[]> = {
   'set-profile': ['プロフィール', '名前', '婚姻日', '区', 'ふたりに合わせ'],
   'set-gist': ['gist', '同期', 'pat', 'github'],
+  'set-line': ['line', 'ライン', '通知', 'お知らせ', '合言葉'],
   'set-grok': ['grok', 'キー', 'xai', 'api', 'アリティ'],
   'set-backup': ['バックアップ', '書き出し', '読み込み', 'json', '印刷'],
   'set-research': ['調べる', '研究', 'リサーチ'],
