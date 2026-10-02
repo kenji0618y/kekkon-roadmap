@@ -235,7 +235,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
 
   return (
     <div className="desk-root desk-washi">
-      {/* 見出しは Notebook の welcome-line。ここは同期と日付のみ。 */}
+      {/* デスクのあいさつ文は 2026-10-02 に削除。ここは同期と日付のみ。 */}
       <div className="desk-meta-bar" aria-label="デスクの状態">
         {syncStatus!=='off'&&(
           <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
