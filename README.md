@@ -54,7 +54,8 @@
 npm ci
 npm run verify:seed   # 必須：完了報告前にカウントを貼る（prebuild でも実行・47項目）
 npm run build
-npx gh-pages -d dist  # dist 直下に .nojekyll
+# 公開は main への push で CI が行う（ビルド → 合言葉で暗号化 → 平文検査 → gh-pages）。
+# 手で npx gh-pages -d dist しない（平文が出る）。docs/HANDOFF.md「公開ページの合言葉」
 ```
 
 - 継続ドキュメント（`docs/*`）は **`main` に置く**。docs のみの更新は Pages 再デプロイ不要。
@@ -92,6 +93,6 @@ npx gh-pages -d dist  # dist 直下に .nojekyll
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 119項目 |
+| verify-seed | 123項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->

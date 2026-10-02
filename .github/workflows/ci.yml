@@ -52,6 +52,19 @@ jobs:
       - name: .nojekyll を置く
         run: touch dist/.nojekyll
 
+      # 公開するものを合言葉で暗号化する（Secrets の SITE_PASSPHRASE）。
+      # 合言葉が無いときはここで失敗し、平文のまま公開しない。
+      - name: 合言葉で暗号化
+        env:
+          SITE_PASSPHRASE: ${{ secrets.SITE_PASSPHRASE }}
+        run: node scripts/site-lock/encrypt-dist.mjs dist
+
+      # 平文が残っていないか（アプリの文言・絵・動画・JS）を確かめる。残っていれば失敗して公開しない。
+      - name: 平文が残っていないか
+        env:
+          SITE_PASSPHRASE: ${{ secrets.SITE_PASSPHRASE }}
+        run: node scripts/site-lock/verify-dist.mjs dist
+
       - name: 公開（main への push のときだけ）
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v4

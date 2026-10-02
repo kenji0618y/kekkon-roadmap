@@ -6,7 +6,7 @@ Follow **`AGENTS.md`**, then read **`docs/AI_START_HERE.md`** completely before 
 
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->
-192項目 · 34まとまり · FAQ 2140組 · 出典 138件 · 6タブ · 検査 119項目
+192項目 · 34まとまり · FAQ 2140組 · 出典 138件 · 6タブ · 検査 123項目
 <!-- /STATE -->
 
 Critical (do not skip):

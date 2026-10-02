@@ -19,7 +19,7 @@ You are in **kenji0618y/kekkon-roadmap**（Amityちゃんにきく / 結婚ロ�
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 119項目 |
+| verify-seed | 123項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 
@@ -40,7 +40,8 @@ You are in **kenji0618y/kekkon-roadmap**（Amityちゃんにきく / 結婚ロ�
 9. 完了前に **`npm run handoff`**（= sync:docs + verify:seed）。緑にならなければ終わりではない。
    ビルドは **`npm run build`**（`vite build` 単体は不可）。
 10. 公開は **自動**。`main` に push すれば GitHub Actions（`.github/workflows/ci.yml`）が
-    検査→ビルド→`gh-pages` まで行う。手でデプロイしない。結果は Actions タブで確認。
+    検査→ビルド→**合言葉で暗号化**→平文検査→`gh-pages` まで行う。手でデプロイしない（平文が出る）。結果は Actions タブで確認。
+    公開ページの合言葉（Secrets `SITE_PASSPHRASE`）は**どこにも書かない・表示しない**。詳細は `docs/HANDOFF.md`「公開ページの合言葉」。
 11. Grok キーは localStorage か `amity-grok-bundle.ts` のみ。**`VITE_*` は使わない**。残高: https://console.x.ai/
 
 ## 終わる前に（全AI共通・コマンドは1つ）
