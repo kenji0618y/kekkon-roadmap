@@ -29,6 +29,9 @@ import {MarriageDesk} from './components/MarriageDesk';
 import {DeskBoard,type BoardSave} from './components/DeskBoard';
 import {LineNotifySettings} from './components/LineNotifySettings';
 import {useLineNotify} from './lib/use-line-notify';
+import {boardResultText} from './lib/line-notify';
+import {becameDone,createStampNotifier,stampDoneText} from './lib/stamp-notify';
+import {readMe} from './lib/futari';
 import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
@@ -110,7 +113,7 @@ export default function FutureNotebook(){
   const on=who==='male'?!pair.male:!pair.female;
   const next=applyPairCheck(cur,who,on);
   const whoLabels=pairEventWhoLabels(p); const msg=next.status==='done'?`${whoLabels.male}・${whoLabels.female}どちらもチェック済み。完了にしました。`:undefined;
-  await data.mutate({action:'record',id,record:next},msg);
+  if(await data.mutate({action:'record',id,record:next},msg))noteStampChange(id,cur.status,next.status);
  };
  const quickHits=useMemo(()=>buildQuickSearchHits({query:quickQ,tasks,absoluteDeadlines:absoluteDeadlines.filter(d=>deadlineVisible(d,p)),relativeDeadlines,practices,talks,excludeItems,includeTask:t=>p.ceremony!=='no'||!isCeremonyTask(t),limit:20}),[quickQ,p.ceremony,p.child,p.home]);
  const quickGroups=useMemo(()=>groupQuickSearchHits(quickHits),[quickHits]);
@@ -118,7 +121,7 @@ export default function FutureNotebook(){
  const revealAndScroll=(id:string)=>{const go=(tries=0)=>{const el=document.getElementById(id);if(!el){if(tries<40)requestAnimationFrame(()=>go(tries+1));return;}let n:HTMLElement|null=el;while(n){if(n instanceof HTMLDetailsElement)n.open=true;n=n.parentElement;}el.scrollIntoView({behavior:'smooth',block:'start'});};requestAnimationFrame(()=>go());};
  const openProfile=()=>{callClose(()=>{setTaskId(null);setDirty(false);setModal('profile');});};
  const selectChapter=(id:string)=>{setChapter(id);setGroupId(groups.find(g=>g.chapter===id&&scoped.some(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na'))?.id||groups.find(g=>g.chapter===id)?.id||'');};
- const saveRecord=async(r:TaskRecord,mode:'quiet'|'status'='status')=>{if(!task)return false;const msg=mode==='quiet'?'':r.status==='done'?'記録を保存しました':r.status==='na'?'スキップとして保存しました':'ふたりの記録を保存しました';const result=await data.mutate({action:'record',id:task.id,record:r},msg);if(result){setDirty(false);if(mode==='status'&&(r.status==='done'||r.status==='na'))forceClose();}return !!result;};
+ const saveRecord=async(r:TaskRecord,mode:'quiet'|'status'='status')=>{if(!task)return false;const msg=mode==='quiet'?'':r.status==='done'?'記録を保存しました':r.status==='na'?'スキップとして保存しました':'ふたりの記録を保存しました';const prevStatus=book.records[task.id]?.status;const result=await data.mutate({action:'record',id:task.id,record:r},msg);if(result){noteStampChange(task.id,prevStatus,r.status);setDirty(false);if(mode==='status'&&(r.status==='done'||r.status==='na'))forceClose();}return !!result;};
  const saveProfile=async(profile:Profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'))forceClose();};
  const savePractice=async(id:string,record:PracticeRecord)=>{return !!(await data.mutate({action:'practice',id,record},''));};
  const saveAgreement=async(id:string,record:AgreementRecord)=>{return !!(await data.mutate({action:'agreement',id,record},'この話題を保存しました'));};
@@ -130,6 +133,28 @@ export default function FutureNotebook(){
  const savePairEvent=async(event:PairEvent)=>{return !!(await data.mutate({action:'event',event},event.id&&book.events?.some(e=>e.id===event.id)?'予定を更新しました':'予定を手帳に残しました'));};
  const boardSave:BoardSave={put:async(note,message)=>!!(await data.mutate({action:'boardNote',note},message)),remove:async(id)=>!!(await data.mutate({action:'deleteBoardNote',id},'メモを消しました'))};
  const line=useLineNotify(book,{enabled:data.syncConfig.enabled,token:data.syncConfig.token});
+ // ロードマップのスタンプを済にしたら相手の LINE へ（この端末で押したときだけ・5秒待って取り消しがなければ・同じ項目は30分に1回）。
+ const lineRef=useRef(line);lineRef.current=line;
+ const bookRef=useRef(book);bookRef.current=book;
+ const stampNotifier=useMemo(()=>createStampNotifier({
+  isStillDone:id=>bookRef.current.records[id]?.status==='done',
+  send:async id=>{
+   const l=lineRef.current,me=readMe(),t=taskById[id];
+   if(l.state!=='on'||!me||!t)return;
+   const w=pairEventWhoLabels(bookRef.current.profile),names={n1:w.male,n2:w.female};
+   const r=await l.send(me,names[me],stampDoneText(names[me],t.title));
+   const res=boardResultText(r,names[me==='n1'?'n2':'n1']);
+   if(res.warn)toast.message(`LINE通知 — ${res.text}`);
+  },
+ }),[]);
+ useEffect(()=>()=>stampNotifier.dispose(),[stampNotifier]);
+ /** この端末で押してスタンプの状態が変わったときだけ呼ぶ（同期・読み込みでは呼ばない）。待たせない。 */
+ const noteStampChange=(id:string,prev:string|undefined,next:string|undefined)=>{
+  try{
+   if(becameDone(prev,next)){if(lineRef.current.state==='on'&&readMe())stampNotifier.stamped(id);}
+   else if(prev==='done'&&next!=='done')stampNotifier.unstamped(id);
+  }catch{/* 通知はおまけ */}
+ };
  const saveLineNotify=async(patch:Partial<Book['lineNotify']>,message:string)=>!!(await data.mutate({action:'lineNotify',patch},message));
  const deletePairEvent=async(id:string)=>{return !!(await data.mutate({action:'deleteEvent',id},'予定を削除しました'));};
  const exportBackup=()=>{if(!data.book){toast.info('手帳を始めてから保存できます');return;}downloadText(`futari-miraicho-${today}.json`,backupText(data.book));toast.success('バックアップを書き出しました');};
