@@ -343,7 +343,8 @@ const uiChecks = [
   ['Amity button hidden on ふたり tab', /amity-fab[^\n]*tab==='pair'/.test(notebook)],
   ['FutariDaily labels', (fd => fd.includes('ゴットマン博士の教え') && fd.includes('ゴットマン博士の研究にもとづくアドバイス') && fd.includes('イラストはイメージです') && fd.includes('AIにみてもらう') && fd.includes('playsInline'))(readText('src/components/FutariDaily.tsx'))],
   ['futari AI citations constrained', (ai => ai.includes('AI_ALLOWED_SOURCE_IDS') && ai.includes('cleanIds') && ai.includes('validateFeedback'))(readText('src/lib/futari-ai.ts'))],
-  ['Desk board mounted on desk tab', /value="desk"[\s\S]*<DeskBoard[\s\S]*value="journey"/.test(notebook) && existsSync(join(root, 'src/components/DeskBoard.tsx'))],
+  // 2026-10-02 掲示板はデスクのいちばん上（あいさつ・MarriageDesk より前）。見つけやすいようサメの絵・アイコンつきの見出し。
+  ['Desk board mounted FIRST on desk tab (before welcome + MarriageDesk), with mascot + icon', /<TabsContent value="desk"[^>]*>\s*<DeskBoard[^\n]*\n\s*<div className="welcome-line">[^\n]*\n\s*<MarriageDesk[\s\S]*value="journey"/.test(notebook) && existsSync(join(root, 'src/components/DeskBoard.tsx')) && (db => db.includes('desk-board-top') && db.includes('amity-shark.png') && db.includes('MessageSquareHeart'))(readText('src/components/DeskBoard.tsx'))],
   ['Desk board in book schema (defaulted)', readText('src/lib/model.ts').includes('board:boardSchema.catch(emptyBoard).default(emptyBoard)')],
   ['Desk board synced + merged', (ub => ub.includes("action==='boardNote'") && ub.includes("action==='deleteBoardNote'") && ub.includes('mergeBoard'))(readText('src/lib/use-book.ts')) && readText('src/lib/board.ts').includes('deleted')],
   ['Desk board delete confirm + own-only edit', (db => db.includes('AlertDialog') && db.includes('このメモを消しますか') && db.includes('mine&&'))(readText('src/components/DeskBoard.tsx'))],

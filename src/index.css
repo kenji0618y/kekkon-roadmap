@@ -1698,6 +1698,20 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .desk-board-sync{margin-top:10px;font-size:12px;line-height:1.7;color:#6a7973}
 .desk-board-sync.warn{color:#8a4a30}
 @media (max-width:640px){.desk-board{margin-top:14px;padding:14px 12px 12px}}
+/* 掲示板：デスクのいちばん上（2026-10-02）。見つけやすいよう、金の縁・淡い生成りの地・サメの絵・大きめの見出し */
+.desk-board.desk-board-top{position:relative;margin:0 0 24px;padding:16px 18px 14px;border:1.5px solid #d8c393;border-top:4px solid var(--gold);background:linear-gradient(180deg,#fdf6e6 0,#fffefa 92px);box-shadow:0 6px 18px #6b532514}
+.desk-board-top .desk-board-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.desk-board-mascot{flex:none;width:56px;height:56px;border-radius:50%;background:#e9f1ec;border:2px solid #fffefa;box-shadow:0 0 0 1px #d8c393;object-fit:contain;padding:3px}
+.desk-board-title{min-width:0;flex:1}
+.desk-board-top .desk-board-head h3{font-size:23px;font-weight:600;color:var(--primary);margin:0 0 2px;line-height:1.4}
+.desk-board-icon{color:var(--gold)}
+.desk-board-top .desk-board-head .hint{font-size:12.5px;line-height:1.6}
+.desk-board-top .desk-board-unread{padding:4px 10px 4px 8px;border-radius:999px;background:var(--red);color:#fffefa;font-size:13px;letter-spacing:.02em;box-shadow:0 2px 6px #a7443533}
+.desk-board-top .desk-board-unread i{background:#fffefa;animation:desk-board-blink 1.6s ease-in-out infinite}
+@keyframes desk-board-blink{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.desk-board-top .desk-board-unread i{animation:none}}
+.desk-board-top.has-unread{border-color:#e2b9ae;border-top-color:var(--red)}
+@media (max-width:640px){.desk-board.desk-board-top{margin:0 0 18px;padding:12px 12px 11px}.desk-board-top .desk-board-head{gap:10px;margin-bottom:10px}.desk-board-mascot{width:44px;height:44px}.desk-board-top .desk-board-head h3{font-size:20px;gap:6px 8px}.desk-board-icon{width:19px;height:19px}.desk-board-top .desk-board-head .hint{font-size:12px}.desk-board-top .desk-board-compose textarea{min-height:44px}}
 .desk-board-head h3{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .desk-board-unread{display:inline-flex;align-items:center;gap:5px;font-family:"Zen Kaku Gothic New",system-ui,sans-serif;font-size:12px;font-weight:700;color:var(--red);line-height:1}
 .desk-board-unread i{width:8px;height:8px;border-radius:50%;background:var(--red)}

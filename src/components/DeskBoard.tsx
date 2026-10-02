@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {Pencil,Pin,PinOff,Trash2} from 'lucide-react';
+import {MessageSquareHeart,Pencil,Pin,PinOff,Trash2} from 'lucide-react';
 import {AlertDialog,AlertDialogAction,AlertDialogCancel,AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader,AlertDialogTitle} from './ui/alert-dialog';
 import {BOARD_TEXT_MAX,pairEventWhoLabels,type Book,type BoardNote} from '../lib/model';
 import {boardTime,markSeen,newNoteId,readSeen,sortBoard,unreadNotes} from '../lib/board';
@@ -77,10 +77,13 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync}:{book:Book,busy
   const togglePin=(n:BoardNote)=>void save.put({...n,pinned:!n.pinned},n.pinned?'ピンを外しました':'上にとめました');
   const target=notes.find(n=>n.id===confirmId);
 
-  return <section id="desk-board" ref={rootRef} className="seed-block desk-board" aria-label="ふたりの掲示板">
+  return <section id="desk-board" ref={rootRef} className={`seed-block desk-board desk-board-top${unread.length>0?' has-unread':''}`} aria-label="ふたりの掲示板">
     <div className="seed-block-head desk-board-head">
-      <h3>ふたりの掲示板{unread.length>0&&<span className="desk-board-unread" aria-label={`新着 ${unread.length}件`}><i aria-hidden/>新着 {unread.length}</span>}</h3>
-      <p className="hint">買い物・連絡・ひとこと。書いたメモは相手の画面にも出ます。</p>
+      <img className="desk-board-mascot" src="./amity-shark.png" alt="" width={56} height={56} decoding="async"/>
+      <div className="desk-board-title">
+        <h3><MessageSquareHeart className="desk-board-icon" size={22} aria-hidden/>ふたりの掲示板{unread.length>0&&<span className="desk-board-unread" aria-label={`新着 ${unread.length}件`}><i aria-hidden/>新着 {unread.length}</span>}</h3>
+        <p className="hint">買い物・連絡・ひとこと。書いたメモは相手の画面にも出ます。</p>
+      </div>
     </div>
 
     {!me?(
