@@ -87,19 +87,31 @@ const events = (phases.phases || []).reduce((n, p) => n + ((p.events || []).leng
 const subtitles = groups.filter((g) => g.subtitle && String(g.subtitle).trim()).length;
 const chipSets = groups.filter((g) => Array.isArray(g.chips) && g.chips.length > 0).length;
 
-check('tasks.count', tasks.length, 186, true);
-check('tasks.why', why, 186);
-check('tasks.miss', miss, 186);
-check('tasks.window', window, 186);
+check('tasks.count', tasks.length, 192, true);
+check('tasks.why', why, 192);
+check('tasks.miss', miss, 192);
+check('tasks.window', window, 192);
 check('tasks.faq_pairs', faqPairs, 2000);
 check('tasks.money_in', moneyIn, 90);
 check('tasks.money_out', moneyOut, 50);
-check('tasks.track', track, 186);
+check('tasks.track', track, 192);
 const pads = tasks.filter((t) => {
   const n = [...String(t.pad || '').trim()].length;
   return n >= 2 && n <= 8;
 }).length;
-check('tasks.pad(2-8字)', pads, 186, true);
+check('tasks.pad(2-8字)', pads, 192, true);
+// 2026-10-02 ハネムーン（新生活の章 sq-honeymoon）。式なしでも出るよう W* / ceremony にしない。
+const HONEY_IDS = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P6', 'E11'];
+const honey = groups.find((g) => g.id === 'sq-honeymoon');
+const honeyOk = honey && honey.chapter === 'life' && HONEY_IDS.every((id) => honey.ids.includes(id) && tasks.some((t) => t.id === id && t.group === 'sq-honeymoon' && t.chapter === 'life' && t.eligibility === 'always' && !(t.need || []).includes('ceremony')));
+if (!honeyOk) fail.push(`groups.sq-honeymoon: ハネムーンのマス（${HONEY_IDS.join(' / ')}）が欠けています`);
+else ok.push(`groups.sq-honeymoon: ${HONEY_IDS.length}項目`);
+// どのタスクも、ちょうど1つのまとまり（groups[].ids）に入っている（入っていないと画面に出ない）
+const groupCount = new Map();
+for (const g of groups) for (const id of g.ids || []) groupCount.set(id, (groupCount.get(id) || 0) + 1);
+const notOnce = tasks.filter((t) => groupCount.get(t.id) !== 1).map((t) => t.id);
+if (notOnce.length) fail.push(`groups.ids: まとまりに0回または2回以上入っている項目 — ${notOnce.slice(0, 8).join(', ')}`);
+else ok.push('groups.ids: 全項目がちょうど1つのまとまりに入っている');
 check('deadlines.next_absolute', abs, 11, true);
 check('deadlines.relative_always', rel, 6, true);
 check('exclude.items', excl, 36, true);

@@ -1086,5 +1086,21 @@
     "checked": "2026-09-12",
     "kind": "provider",
     "note": ""
+  },
+  "tabireg": {
+    "id": "tabireg",
+    "title": "外務省：たびレジ（海外安全情報配信サービス）",
+    "url": "https://www.ezairyu.mofa.go.jp/tabireg/",
+    "checked": "2026-10-02",
+    "kind": "official",
+    "note": "登録は無料。渡航先の安全情報や緊急時の連絡が届きます。"
+  },
+  "anzen": {
+    "id": "anzen",
+    "title": "外務省：海外安全ホームページ",
+    "url": "https://www.anzen.mofa.go.jp/",
+    "checked": "2026-10-02",
+    "kind": "official",
+    "note": "国・地域ごとの危険情報。入国の条件は渡航先の大使館・総領事館で確認してください。"
   }
 }

@@ -11,16 +11,16 @@
 <!-- STATE:TABLE -->
 | いまの状態 | 数 |
 |---|---|
-| 項目（tasks） | **186** |
-| まとまり（groups） | 33 |
-| FAQ | 2074組 |
-| 出典（sources） | 136件 |
+| 項目（tasks） | **192** |
+| まとまり（groups） | 34 |
+| FAQ | 2140組 |
+| 出典（sources） | 138件 |
 | ふたりの練習帳 | 行動52 / 会話16 / 合意18 / 根拠18 |
 | ふたりの今日の一問 | 問い180 / レッスン台本25 / 動画テーマ25 / 出典44 |
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 112項目 |
+| verify-seed | 114項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -56,9 +56,10 @@
 4. Secrets（xAI / GitHub PAT）を **リポジトリにコミットしない**
 5. **NEVER drop or thin app-seed content when changing UI/framework.** **Source of truth in this repo = `src/data/`.** (`marriage-research/app-seed` is Kenji-local only, not on GitHub.) ChatGPT notebook merge must **ABSORB** rich fields, never replace/thin.
 6. **Required inventory (data in `src/data` AND mounted in UI)** — minima enforced by `npm run verify:seed` (`prebuild`):
-   - tasks 件数 = **176**（exact）; `why`/`miss`/`window`/`track` ≥ **176** each; FAQ pairs ≥ **820**
-   - tasks `pad`（絵の上の短縮名・2〜8字）= **176**（exact・検査あり）
-   - `deadlines.next_absolute` = **10**; `relative_always` = **6**
+   - tasks 件数 = **192**（exact）; `why`/`miss`/`window`/`track` ≥ **192** each; FAQ pairs ≥ **2000**
+   - tasks `pad`（絵の上の短縮名・2〜8字）= **192**（exact・検査あり）
+   - 新生活の章の **ハネムーン**（`sq-honeymoon`）= H1〜H6 + P6 + E11 の8項目（欠けると fail・式なしでも出す）。全項目がちょうど1つのまとまりに入っていること（検査あり）
+   - `deadlines.next_absolute` = **11**; `relative_always` = **6**
    - `exclude.items` = **36**
    - home: hero=**3**, lies=**4**, talk=**10**, `tomorrow_3_actions`=**3**, `anti_lie_banner` present
      （`headline` は 2026-09-10 に廃止）
