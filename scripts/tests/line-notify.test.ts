@@ -87,6 +87,14 @@ async function main(){
   const st=L.statusResultText({ok:true,registered:{1:true,2:true},month:{count:3,cap:180,capped:false},token:true},{n1:'けんじ',n2:'はるか'});
   ok('status sentence',st.text.startsWith('つながりました。LINEの登録 1（けんじ）：登録ずみ / 2（はるか）：登録ずみ')&&!st.warn);
 
+  // --- 準備中の理由 ---
+  ok('missing: auto-sync off → sync-off',L.lineMissing({syncEnabled:false,hasSecret:false,url:URL_OK})==='sync-off');
+  ok('missing: auto-sync on but no key → no-key (not "sync off")',L.lineMissing({syncEnabled:true,hasSecret:false,url:URL_OK})==='no-key');
+  ok('missing: ready but no URL → url',L.lineMissing({syncEnabled:true,hasSecret:true,url:''})==='url');
+  ok('missing: ready → ""',L.lineMissing({syncEnabled:true,hasSecret:true,url:URL_OK})==='');
+  ok('auto-sync on + empty key → no secret',(await L.resolveBoardSecret({enabled:true,token:''}))==='');
+  ok('prep text: no-key says the key is missing, not that sync is off',L.linePrepText('no-key').state.includes('キー（GitHub）がまだ入っていません')&&!L.linePrepText('no-key').state.includes('オフ')&&L.linePrepText('sync-off').state.includes('自動同期がオフ'));
+  ok('prep text: board lines',L.linePrepText('no-key').board==='自動同期のキー（GitHub）がまだ入っていないので、LINEには送っていません'&&L.linePrepText('sync-off').board==='この端末は自動同期がオフなので、LINEには送っていません');
   ok('real fetch never called',realFetchCalls===0);
   console.log(`\nline-notify: ${pass} passed, ${fail} failed`);
   process.exitCode=fail?1:0;

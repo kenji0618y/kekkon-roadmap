@@ -1,7 +1,7 @@
 import {useCallback,useEffect,useState} from 'react';
 import type {Book} from './model';
 import type {Who} from './futari';
-import {LINE_SECRET_OVERRIDE_KEY,boardPayload,cleanRelayUrl,postRelay,resolveBoardSecret,statusPayload,type RelayResult} from './line-notify';
+import {LINE_SECRET_OVERRIDE_KEY,lineMissing,type LineMissing,boardPayload,cleanRelayUrl,postRelay,resolveBoardSecret,statusPayload,type RelayResult} from './line-notify';
 
 /**
  * off       … 「LINE通知を使う」がオフ
@@ -12,7 +12,7 @@ export type LineState='off'|'preparing'|'on';
 export type LineNotify={
   state:LineState,
   /** preparing のわけ */
-  missing:''|'sync'|'url',
+  missing:LineMissing,
   url:string,
   hasSecret:boolean,
   send:(who:Who,name:string,text:string)=>Promise<RelayResult>,
@@ -25,7 +25,7 @@ export type LineNotify={
 export function useLineNotify(book:Book,sync:{enabled:boolean,token:string}):LineNotify{
   const url=cleanRelayUrl(book.lineNotify?.url);
   const on=!!book.lineNotify?.on;
-  const syncOn=!!sync.enabled&&!!sync.token.trim();
+  const syncOn=!!sync.enabled;
   const token=sync.token;
   const [hasSecret,setHasSecret]=useState(false);
   const [tick,setTick]=useState(0);
@@ -39,7 +39,7 @@ export function useLineNotify(book:Book,sync:{enabled:boolean,token:string}):Lin
     window.addEventListener('storage',h);
     return()=>window.removeEventListener('storage',h);
   },[]);
-  const missing:LineNotify['missing']=!syncOn||!hasSecret?'sync':!url?'url':'';
+  const missing=lineMissing({syncEnabled:syncOn,hasSecret,url});
   const state:LineState=!on?'off':missing?'preparing':'on';
   const send=useCallback(async(who:Who,name:string,text:string):Promise<RelayResult>=>{
     try{

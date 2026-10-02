@@ -142,3 +142,24 @@ export function newerLineNotify<T extends {updatedAt:string}>(a:T|undefined,b:T|
 export function sameLineNotify(a:{url:string,on:boolean,updatedAt:string}|undefined,b:{url:string,on:boolean,updatedAt:string}|undefined){
   return (a?.url||'')===(b?.url||'')&&!!a?.on===!!b?.on&&(a?.updatedAt||'')===(b?.updatedAt||'');
 }
+
+/**
+ * この端末で LINE 通知を送れない理由（「準備中」の中身）。合言葉は自動同期のキーから作るので、
+ * 自動同期がオフ／キーが空のときは作れない。同期の通信エラーは送れるかどうかに関係しない（理由にしない）。
+ */
+export type LineMissing=''|'sync-off'|'no-key'|'url';
+export function lineMissing(o:{syncEnabled:boolean,hasSecret:boolean,url:string}):LineMissing{
+  if(!o.syncEnabled)return 'sync-off';
+  if(!o.hasSecret)return 'no-key';
+  if(!o.url)return 'url';
+  return '';
+}
+/** 準備中の文。state＝設定の「いまの状態」、board＝掲示板の一行、fix＝設定での案内。 */
+export function linePrepText(m:LineMissing):{state:string,board:string,fix:string}{
+  switch(m){
+    case 'sync-off':return {state:'準備中（この端末は自動同期がオフです）',board:'この端末は自動同期がオフなので、LINEには送っていません',fix:'この端末は自動同期がオフなので、合言葉を作れません。先に自動同期をオンにしてください。'};
+    case 'no-key':return {state:'準備中（自動同期のキー（GitHub）がまだ入っていません）',board:'自動同期のキー（GitHub）がまだ入っていないので、LINEには送っていません',fix:'自動同期のキー（GitHub）がまだ入っていないので、合言葉を作れません。先にキーを入れてください。'};
+    case 'url':return {state:'準備中（中継先のURLがまだ入っていません）',board:'中継先のURLがまだ入っていないので、LINEには送っていません',fix:'中継先のURLを先に入れてください（/exec で終わるURLです）。'};
+    default:return {state:'',board:'',fix:''};
+  }
+}
