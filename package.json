@@ -8,13 +8,14 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "verify:seed": "node scripts/verify-seed.mjs",
-    "prebuild": "npm run verify:seed && npm run test:sync",
+    "prebuild": "npm run verify:seed && npm run test:sync && npm run test:line",
     "predev": "npm run verify:seed",
     "prepreview": "npm run verify:seed",
     "sync:docs": "node scripts/sync-docs.mjs",
     "screen": "node scripts/screen-language.mjs",
     "handoff": "npm run sync:docs && npm run verify:seed",
-    "test:sync": "node scripts/test-sync-crypt.mjs"
+    "test:sync": "node scripts/test-sync-crypt.mjs",
+    "test:line": "node scripts/test-line-notify.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

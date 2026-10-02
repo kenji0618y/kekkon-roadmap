@@ -1,4 +1,5 @@
-import {bookSchema,type Book,type Profile} from './model';
+import {bookSchema,emptyLineNotify,type Book,type Profile} from './model';
+import {newerLineNotify} from './line-notify';
 import {mergeFutari} from './futari';
 import {mergeBoard} from './board';
 import {validateCatalogBook} from './backup';
@@ -51,6 +52,7 @@ export function mergeBooks(primary:Book,secondary:Book):Book{
     profile,records,memories,practices,agreements,events,
     futari:mergeFutari(p.futari,s.futari),
     board:mergeBoard(p.board,s.board),
+    lineNotify:newerLineNotify(p.lineNotify,s.lineNotify,emptyLineNotify),
   };
   return validateCatalogBook(bookSchema.parse(merged));
 }

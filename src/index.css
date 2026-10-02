@@ -1733,3 +1733,20 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .sync-legacy-box h4{margin:0 0 8px;font-size:15px;color:#6b4f1d}
 .sync-legacy-box p{font-size:14px;line-height:1.7}
 .sync-legacy-ack{display:flex;gap:8px;align-items:center;margin:0 0 12px;font-size:14px}
+/* 掲示板：LINE通知の一行（メモを書いたあとだけ出る） */
+.desk-board-line{margin-top:10px;padding:8px 11px;border:1px solid #d7e3d3;border-radius:7px;background:#f3f8f0;font-size:12.5px;line-height:1.7;color:#4f6b58}
+.desk-board-line strong{font-weight:600;color:#2f6a45;white-space:nowrap}
+.desk-board-line strong::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#06c755;margin-right:6px;vertical-align:1px}
+.desk-board-line.warn{border-color:#ead7c4;background:#fbf4ea;color:#7a5236}
+.desk-board-line.warn strong{color:#8a4a30}
+.desk-board-line.warn strong::before{background:#d09a5b}
+/* 設定：LINE通知 */
+.line-state{font-size:13px;margin:4px 0 12px;padding:6px 10px;border-radius:6px;background:#f2f0ea;color:#5a5a50}
+.line-state.is-on{background:#eef6ea;color:#2f6a45}
+.line-state.is-wait{background:#fbf4ea;color:#7a5236}
+.line-secret-actions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+.line-secret-manual{margin-top:10px;font-size:13px}
+.line-secret-manual summary{cursor:pointer;color:#5f7560}
+.line-test-result{font-size:13px;line-height:1.8;padding:8px 11px;border-radius:6px;background:#f3f6ee;color:#3f5a47;margin:8px 0}
+.line-test-result.warn{background:#fbf1e6;color:#7a4a2c}
+.hint.warn{color:#8a4a30}
