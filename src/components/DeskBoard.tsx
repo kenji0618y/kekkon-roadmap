@@ -5,7 +5,7 @@ import {BOARD_TEXT_MAX,pairEventWhoLabels,type Book,type BoardNote} from '../lib
 import {boardTime,markSeen,newNoteId,readSeen,sortBoard,unreadNotes} from '../lib/board';
 import {onMeChange,readMe,writeMe,type Who} from '../lib/futari';
 import type {SyncStatus} from '../lib/gist-sync';
-import {boardResultText,shouldNotifyBoard} from '../lib/line-notify';
+import {boardResultText,linePrepText,shouldNotifyBoard} from '../lib/line-notify';
 import type {LineNotify} from '../lib/use-line-notify';
 
 /** デスクで最初に見せる件数。残りは「すべて見る」で開く。 */
@@ -85,7 +85,7 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync,line,onOpenLine}
       if(!line||line.state==='off'||!shouldNotifyBoard('compose',note,me))return;
       const partner:Who=note.who==='n1'?'n2':'n1';
       if(line.state==='preparing'){
-        setLineMsg({label:'準備中',text:line.missing==='sync'?'この端末は自動同期がオフなので、LINEには送っていません':'中継先のURLがまだ入っていないので、LINEには送っていません',warn:true});
+        setLineMsg({label:'準備中',text:linePrepText(line.missing).board,warn:true});
         return;
       }
       setLineMsg({label:'オン',text:'お知らせしています…',warn:false});

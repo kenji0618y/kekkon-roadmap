@@ -118,6 +118,20 @@ async function main(){
   gs.forgetLegacyConfig();
   ok('old settings (with the old id) forgotten',!store.has(gs.GIST_SYNC_KEY_V1));
 
+  // 古い同期先が「空の置き場所」（book:null・revision 0）でも、エラーにせず空として扱う。中身が壊れた手帳はエラーのまま。
+  const EMPTY='f'.repeat(32),BROKEN='d'.repeat(32);
+  gh.seed({id:EMPTY,owner:'kenji',files:{[gs.LEGACY_FILENAME]:JSON.stringify({format:'futari-miraicho',version:1,revision:0,book:null,savedAt:'2026-09-01T00:00:00.000Z'})}});
+  gh.seed({id:BROKEN,owner:'kenji',files:{[gs.LEGACY_FILENAME]:JSON.stringify({format:'futari-miraicho',version:1,revision:0,book:{profile:'壊れた'},savedAt:'2026-09-01T00:00:00.000Z'})}});
+  let emptyErr='';let emptyLeg:Awaited<ReturnType<typeof gs.pullLegacy>>|null=null;
+  try{emptyLeg=await gs.pullLegacy(T1,EMPTY);}catch(e){emptyErr=String(e);}
+  ok('empty legacy placeholder (book null, revision 0) → payload null, no error',!emptyErr&&!!emptyLeg&&emptyLeg.payload===null&&!emptyLeg.missing);
+  ok('isEmptyLegacyPayload: missing book + revision 0 → empty; revision>0 or a book → not',gs.isEmptyLegacyPayload({format:'futari-miraicho',version:1,revision:0})&&!gs.isEmptyLegacyPayload({format:'futari-miraicho',revision:3,book:null})&&!gs.isEmptyLegacyPayload({format:'futari-miraicho',revision:0,book:{}})&&!gs.isEmptyLegacyPayload(null));
+  let brokenErr='';try{await gs.pullLegacy(T1,BROKEN);}catch(e){brokenErr=String(e);}
+  ok('malformed non-empty legacy book still errors',brokenErr.includes('同期先の手帳データが正しくありません'));
+  let nullRevErr='';gh.seed({id:'c'.repeat(32),owner:'kenji',files:{[gs.LEGACY_FILENAME]:JSON.stringify({format:'futari-miraicho',version:1,revision:5,book:null})}});
+  try{await gs.pullLegacy(T1,'c'.repeat(32));}catch(e){nullRevErr=String(e);}
+  ok('book null with revision>0 still errors (not a fresh placeholder)',nullRevErr.includes('同期先の手帳データが正しくありません'));
+
   console.log(`\nsync-crypt tests: ${pass} passed, ${fail} failed`);
   if(fail)process.exit(1);
 }

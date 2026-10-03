@@ -106,6 +106,13 @@ export function buildPayload(book:Book,revision:number,savedAt?:string):GistPayl
   return {format:'futari-miraicho',version:1,revision,book,savedAt:savedAt||now,updatedAt:now};
 }
 
+/** 古い同期先に残っていた「空の置き場所」（手帳なし・revision 0）。中身がないだけなので、読めないのではなく空として扱う。 */
+export function isEmptyLegacyPayload(raw:unknown){
+  if(!raw||typeof raw!=='object')return false;
+  const d=raw as Record<string,unknown>;
+  return d.format==='futari-miraicho'&&(d.book===null||d.book===undefined)&&(Number(d.revision)||0)===0;
+}
+
 function parsePayload(raw:unknown):GistPayload{
   if(!raw||typeof raw!=='object')throw new Error('同期先の内容が空です。');
   const data=raw as Record<string,unknown>;
@@ -270,6 +277,7 @@ export async function pullLegacy(token:string,id:string):Promise<LegacyPull>{
     if(!text)return {payload:null,updatedAt:data.updated_at||'',missing:false};
     const parsed=JSON.parse(text) as unknown;
     if(isEnvelope(parsed))return {payload:null,updatedAt:data.updated_at||'',missing:false};
+    if(isEmptyLegacyPayload(parsed))return {payload:null,updatedAt:data.updated_at||'',missing:false};
     return {payload:parsePayload(parsed),updatedAt:data.updated_at||'',missing:false};
   }catch(e){
     if(e instanceof GistHttpError&&e.status===404)return {payload:null,updatedAt:'',missing:true};

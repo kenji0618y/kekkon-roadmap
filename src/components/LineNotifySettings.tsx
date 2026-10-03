@@ -6,7 +6,7 @@ import {Label} from './ui/label';
 import {Switch} from './ui/switch';
 import {Action} from './book-controls';
 import {pairEventWhoLabels,type Book,type LineNotifySettings as LineNotifyPrefs} from '../lib/model';
-import {LINE_SECRET_MIN,isRelayUrl,readSecretOverride,statusResultText,writeSecretOverride} from '../lib/line-notify';
+import {LINE_SECRET_MIN,isRelayUrl,linePrepText,readSecretOverride,statusResultText,writeSecretOverride} from '../lib/line-notify';
 import type {LineNotify} from '../lib/use-line-notify';
 
 /**
@@ -38,7 +38,7 @@ export function LineNotifySettings({book,line,save,onOpenSync}:{book:Book,line:L
   const test=async()=>{
     setTesting(true);setResult(null);
     try{
-      if(line.missing==='sync'){setResult({text:'準備中：この端末は端末どうしの自動同期がオフなので、合言葉を作れません。先に自動同期をオンにしてください。',warn:true});return;}
+      if(line.missing==='sync-off'||line.missing==='no-key'){setResult({text:'準備中：'+linePrepText(line.missing).fix,warn:true});return;}
       setResult(statusResultText(await line.status(),names));
     }catch{setResult(statusResultText({ok:false,error:'network'},names));}
     finally{setTesting(false);}
@@ -53,8 +53,7 @@ export function LineNotifySettings({book,line,save,onOpenSync}:{book:Book,line:L
 
   const stateText=line.state==='on'?'オン（この端末から送れます）'
     :line.state==='off'?'オフ'
-    :line.missing==='sync'?'準備中（この端末は自動同期がオフです）'
-    :'準備中（中継先のURLがまだ入っていません）';
+    :linePrepText(line.missing).state;
 
   return <div id="settings-line-notify" className="settings-sub">
     <h3><MessageCircle size={17}/>LINE通知</h3>
@@ -71,7 +70,7 @@ export function LineNotifySettings({book,line,save,onOpenSync}:{book:Book,line:L
     <label className="scope-toggle" style={{marginBottom:14}}><Switch checked={!!book.lineNotify?.on} onCheckedChange={v=>void save({on:v},v?'LINE通知をオンにしました':'LINE通知をオフにしました')}/><span>LINE通知を使う（ふたりの端末で共通）</span></label>
 
     <p className="hint">合言葉は、端末どうしの自動同期のキーから、この端末の中で作ります。同じキーを入れたふたりの端末では、同じ合言葉になります。合言葉は手帳には保存されず、同期もされません。</p>
-    {line.missing==='sync'&&<p className="hint warn">準備中：この端末は自動同期がオフなので、合言葉を作れません。<button type="button" className="desk-board-link" onClick={onOpenSync}>端末どうしの自動同期</button>をオンにしてください。</p>}
+    {(line.missing==='sync-off'||line.missing==='no-key')&&<p className="hint warn">準備中：{linePrepText(line.missing).fix} <button type="button" className="desk-board-link" onClick={onOpenSync}>端末どうしの自動同期を開く</button></p>}
     <div className="line-secret-actions">
       <Action secondary disabled={!line.hasSecret} onClick={()=>void copy()}>合言葉をコピー</Action>
       <Action secondary disabled={testing} onClick={()=>void test()}>{testing?'確かめています…':'つながるか試す'}</Action>
