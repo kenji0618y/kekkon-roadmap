@@ -322,7 +322,7 @@ export default function FutureNotebook(){
  <div className="settings-sub"><h3><RefreshCw size={17}/>毎年の見直しメモ</h3><p className="hint">年に一度、締切や対象条件を見直すときの手順です。</p><details className="yearly-fold"><summary>メモを開く</summary><pre className="yearly-update-pre">{yearlyUpdateMd}</pre></details></div>
  </details></section>
 </div>
- <section className="source-policy paper-card"><div><ShieldCheck size={25}/><h2>安心して確かめるために。</h2><p>この手帳は、制度を調べて手続きを進めるための案内です。給付や税の適用は、二人の条件と申請先の判断で決まります。</p><p>内容を確認した日を参照先ごとに表示しています。未確認の案内はその旨を表示し、勤務先・契約ごとの条件は窓口への質問としてまとめています。</p><p>制度の更新は自動配信されません。申請・契約の前には、公式案内と予算・受付状況を再確認してください。</p></div><div><h3>使い続けるためのメモ</h3><ul><li>記録はこの端末のブラウザの中に保存されます。</li><li>端末を変えるときや二人で受け渡すときは、バックアップのファイルを使います。</li><li>端末どうしの自動同期と、AIのキーは「詳細設定」にあります。</li><li>スマートフォンのブラウザーの「ホーム画面に追加」から、すぐ開けるようにできます。</li></ul><button className="text-button" onClick={()=>void data.refresh()}><RefreshCw size={15}/>最新の保存内容を読み込む</button></div></section>
+ <section className="source-policy paper-card"><div><ShieldCheck size={25}/><h2>安心して確かめるために。</h2><p>この手帳は、制度を調べて手続きを進めるための案内です。給付や税の適用は、二人の条件と申請先の判断で決まります。</p><p>内容を確認した日を参照先ごとに表示しています。未確認の案内はその旨を表示し、勤務先・契約ごとの条件は窓口への質問としてまとめています。</p><p>制度の更新は自動配信されません。申請・契約の前には、公式案内と予算・受付状況を再確認してください。</p></div><div><h3>使い続けるためのメモ</h3><ul><li>記録はこの端末のブラウザの中に保存されます。</li><li>端末を変えるときや二人で受け渡すときは、バックアップのファイルを使います。</li><li>端末どうしの自動同期と、AIのキーは「詳細設定」にあります。</li><li>スマートフォンのブラウザーの「ホーム画面に追加」から、すぐ開けるようにできます（名前は「結婚ロードマップ」）。合言葉を入れて開いたあとで追加してください。前に追加したものは、いったん消して追加し直すと新しい名前になります。</li></ul><button className="text-button" onClick={()=>void data.refresh()}><RefreshCw size={15}/>最新の保存内容を読み込む</button></div></section>
  </TabsContent>
  <footer className="book-footer"><span>結婚ロードマップ · 広島市 · 情報の確認日 {reviewedOn}</span></footer>
  </main></Tabs>
