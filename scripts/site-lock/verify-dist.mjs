@@ -105,7 +105,7 @@ if (pass) {
       else opened++;
       if (path === 'index.html' && !Buffer.from(plain).includes('<div id="root">')) fail.push('復号した index.html がアプリ本体ではない');
     }
-    const need = ['index.html', 'manifest.webmanifest', 'preview-motion/index.html'];
+    const need = ['index.html', 'manifest.webmanifest'];
     for (const n of need) if (!manifest.files[n]) fail.push(`暗号文の一覧に ${n} がない`);
     if (!entries.some(([p]) => /^assets\/index-.*\.js$/.test(p))) fail.push('暗号文の一覧にアプリの JS がない');
     if (!entries.some(([p]) => p.endsWith('.mp4'))) fail.push('暗号文の一覧に動画がない');

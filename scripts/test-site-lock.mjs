@@ -4,7 +4,7 @@
  *   - 合言葉が無いと暗号化が失敗する（平文で公開しない）
  *   - 暗号化 → 検査が通る・平文が残ると検査が落ちる
  *   - 正しい合言葉で開ける／違う合言葉では開けない
- *   - service worker（sw.js）を Node で動かし、ページ・見本ページ・画像・動画の一部（Range）が元どおりに返る／鍵が無いと解錠ページだけ
+ *   - service worker（sw.js）を Node で動かし、ページ・フォルダのページ・画像・動画の一部（Range）が元どおりに返る／鍵が無いと解錠ページだけ
  */
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -30,7 +30,7 @@ function makeDist() {
   w('assets/index-abc.js', 'console.log("ふたりの手帳 ゴットマン 婚姻届");'.repeat(50));
   w('assets/index-abc.css', 'body{color:red}');
   w('manifest.webmanifest', '{"name":"Amityちゃんにきく"}');
-  w('preview-motion/index.html', '<!doctype html><title>見本 結婚</title><img src="../phases/a.png">');
+  w('sub/index.html', '<!doctype html><title>別のページ 結婚</title><img src="../phases/a.png">');
   const png = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.from(webcrypto.getRandomValues(new Uint8Array(30000)))]);
   w('phases/a.png', png);
   const video = Buffer.alloc(CHUNK * 2 + 12345);
@@ -65,14 +65,14 @@ const { d, png, video } = makeDist();
   if (v.status !== 0) console.error(v.stdout, v.stderr);
   t('二重の暗号化は断る', run(ENC, d, { SITE_PASSPHRASE: PASS }).status !== 0);
   const plain = readdirSync(d).sort().join(',');
-  t('平文はトップに解錠ページ・sw.js・site.json だけ', plain === '.nojekyll,enc,index.html,preview-motion,site.json,sw.js');
-  t('見本ページの場所にも解錠ページ', readFileSync(join(d, 'preview-motion/index.html'), 'utf8').includes('<title>合言葉を入れてください</title>'));
+  t('平文はトップに解錠ページ・sw.js・site.json だけ', plain === '.nojekyll,enc,index.html,site.json,sub,sw.js');
+  t('フォルダのページの場所にも解錠ページ', readFileSync(join(d, 'sub/index.html'), 'utf8').includes('<title>合言葉を入れてください</title>'));
   const site = JSON.parse(readFileSync(join(d, 'site.json'), 'utf8'));
   let bad = false;
   try { await unlockSiteJson(site, PASS + 'x'); } catch { bad = true; }
   t('違う合言葉では開けない', bad);
   const { manifest } = await unlockSiteJson(site, PASS);
-  t('一覧にページ・見本・画像・動画', ['index.html', 'preview-motion/index.html', 'phases/a.png', 'futari/lesson1.mp4', 'assets/index-abc.js'].every((p) => manifest.files[p]));
+  t('一覧にページ・フォルダのページ・画像・動画', ['index.html', 'sub/index.html', 'phases/a.png', 'futari/lesson1.mp4', 'assets/index-abc.js'].every((p) => manifest.files[p]));
   t('workbox の sw.js は一覧に入れない', !manifest.files['workbox-123abc.js'] && !manifest.files['sw.js']);
 }
 
@@ -155,8 +155,8 @@ async function makeSw(withKey) {
   const r = await locked.get('', { mode: 'navigate' });
   const html = await r.text();
   t('鍵がない端末: どのページも解錠ページ', html.includes('<title>合言葉を入れてください</title>') && html.includes('content="https://example.test/kekkon-roadmap/"'));
-  const r2 = await locked.get('preview-motion/', { mode: 'navigate' });
-  t('鍵がない端末: 見本ページも解錠ページ', (await r2.text()).includes('合言葉を入れてください'));
+  const r2 = await locked.get('sub/', { mode: 'navigate' });
+  t('鍵がない端末: フォルダのページも解錠ページ', (await r2.text()).includes('合言葉を入れてください'));
   const r3 = await locked.get('phases/a.png');
   t('鍵がない端末: 絵は返らない', r3.status === 404);
 
@@ -165,10 +165,10 @@ async function makeSw(withKey) {
   t('鍵のある端末: アプリの index.html を返す', (await app.text()).includes('<div id="root">'));
   const deep = await sw.get('some/route', { mode: 'navigate' });
   t('鍵のある端末: 知らない場所はアプリへ', (await deep.text()).includes('<div id="root">'));
-  const pv = await sw.get('preview-motion/', { mode: 'navigate' });
-  t('鍵のある端末: 見本ページはアプリに差し替わらない', (await pv.text()).includes('見本 結婚'));
-  const pv2 = await sw.get('preview-motion', { mode: 'navigate' });
-  t('見本ページ（/なし）は / つきへ', pv2.status === 301);
+  const pv = await sw.get('sub/', { mode: 'navigate' });
+  t('鍵のある端末: フォルダのページはアプリに差し替わらない', (await pv.text()).includes('別のページ 結婚'));
+  const pv2 = await sw.get('sub', { mode: 'navigate' });
+  t('フォルダのページ（/なし）は / つきへ', pv2.status === 301);
   const img = await sw.get('phases/a.png');
   t('絵が元どおり', Buffer.from(await img.arrayBuffer()).equals(png) && img.headers.get('content-type') === 'image/png');
   const js = await sw.get('assets/index-abc.js');

@@ -121,7 +121,7 @@
 ## 公開ページの合言葉（2026-10-03〜）
 
 - URL は https://kenji0618y.github.io/kekkon-roadmap/ のまま。**公開されるのは暗号文だけ**。CI（`.github/workflows/ci.yml`）が `npm run build` → `.nojekyll` → **合言葉で暗号化**（`node scripts/site-lock/encrypt-dist.mjs dist`）→ **平文が残っていないか**（`node scripts/site-lock/verify-dist.mjs dist`）→ gh-pages の順。合言葉は GitHub の Secrets `SITE_PASSPHRASE`。**無ければ CI は失敗して公開しない**（平文で出さない）
-- 暗号化するもの: dist の全部（JS/CSS・データ入りの bundle・manifest・アイコン・見本ページ `/preview-motion/`・水彩の絵・レッスン動画とポスター・博士の絵）。vite-plugin-pwa の workbox の `sw.js` は捨て、解錠つきの `sw.js` に置き換える
+- 暗号化するもの: dist の全部（JS/CSS・データ入りの bundle・manifest・アイコン・水彩の絵・レッスン動画とポスター・博士の絵）。vite-plugin-pwa の workbox の `sw.js` は捨て、解錠つきの `sw.js` に置き換える
 - 平文で残るのは: 解錠ページ（`index.html` と各フォルダの `index.html`・題は「合言葉を入れてください」だけ・og/description なし）・`sw.js`・`site.json`（salt・包んだ鍵・暗号化した一覧）・`enc/*.bin`・`.nojekyll`。`verify-dist.mjs` がアプリの言葉（結婚・ロードマップ・Amity・婚姻・ゴットマン など）・平文の絵/動画/JS・og タグの混入で落ちる
 - 鍵: `siteKey = PBKDF2-SHA256(合言葉, 固定の salt, 60万回)`。ビルドごとに `kek = PBKDF2-SHA256(合言葉, ランダム salt, 60万回)` で siteKey を包んで `site.json` に置く。中身は siteKey から HKDF で作った鍵で AES-256-GCM（512KB ごと・動画は必要な部分だけ取る Range 対応）。同じ合言葉・同じ中身なら暗号文の名前も同じなので、更新のたびに絵や動画を取り直さない
 - 端末: 解錠ページで一度入れると、**鍵（合言葉そのものではない）** を IndexedDB `site-lock` に保存。service worker が暗号文を取って復号して返す（オフライン用に先読みもする）。手帳（localStorage `futari-miraicho-v1` ほか）は同じオリジン・同じキーのまま、**一切触らない**。以前の平文のオフラインキャッシュ（workbox-*）は新しい sw.js が消す
