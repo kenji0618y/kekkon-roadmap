@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#f6f4ee">
+<meta name="site-root" content="__ROOT__">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='7' y='14' width='18' height='14' rx='3' fill='%23555'/%3E%3Cpath d='M11 14v-4a5 5 0 0 1 10 0v4' fill='none' stroke='%23555' stroke-width='3'/%3E%3C/svg%3E">
+<title>合言葉を入れてください</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#f6f4ee;color:#222;display:flex;align-items:center;justify-content:center;padding:24px}
+main{width:100%;max-width:360px;background:#fff;border:1px solid #ddd8cc;border-radius:16px;padding:28px 22px;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+h1{font-size:19px;margin:0 0 18px;text-align:center;font-weight:600}
+label{display:block;font-size:13px;margin-bottom:6px;color:#555}
+input{width:100%;font-size:17px;padding:12px;border:1px solid #bbb;border-radius:10px;background:#fff;color:#222}
+input:focus{outline:2px solid #557;outline-offset:1px}
+button{margin-top:14px;width:100%;font-size:16px;padding:12px;border:0;border-radius:10px;background:#333;color:#fff;font-weight:600}
+button:disabled{opacity:.6}
+#msg{min-height:1.4em;margin:12px 0 0;font-size:14px;line-height:1.5}
+#msg.err{color:#b3261e}
+p.note{font-size:12px;color:#666;line-height:1.6;margin:14px 0 0}
+</style>
+</head>
+<body>
+<main>
+<h1>合言葉を入れてください</h1>
+<form id="f" autocomplete="off">
+<label for="p">合言葉</label>
+<input id="p" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+<button id="b" type="submit">開く</button>
+</form>
+<p id="msg" role="status" aria-live="polite"></p>
+<p class="note">一度入れると、この端末では次から入れなくて大丈夫です（合言葉そのものは保存しません）。</p>
+</main>
+<script>
+(function(){
+'use strict';
+var ROOT=new URL(document.querySelector('meta[name="site-root"]').content,location.href);
+var $=function(id){return document.getElementById(id)};
+var msg=function(t,err){var m=$('msg');m.textContent=t||'';m.className=err?'err':''};
+var busy=function(on){$('b').disabled=on;$('p').disabled=on};
+var te=new TextEncoder(),S=crypto&&crypto.subtle;
+var u8=function(s){var b=atob(s),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a};
+function db(){return new Promise(function(ok,ng){var r=indexedDB.open('site-lock',1);r.onupgradeneeded=function(){r.result.createObjectStore('k')};r.onsuccess=function(){ok(r.result)};r.onerror=function(){ng(r.error)}})}
+function tx(mode,fn){return db().then(function(d){return new Promise(function(ok,ng){var t=d.transaction('k',mode),s=t.objectStore('k'),q=fn(s);t.oncomplete=function(){ok(q&&q.result)};t.onerror=t.onabort=function(){ng(t.error)}})})}
+var getKey=function(){return tx('readonly',function(s){return s.get('site')})};
+var putKey=function(v){return tx('readwrite',function(s){return s.put(v,'site')})};
+var delKey=function(){return tx('readwrite',function(s){return s.delete('site')})};
+function site(){return fetch(new URL('site.json',ROOT),{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error('net');return r.json()})}
+function open(key,box,aad){return S.decrypt({name:'AES-GCM',iv:u8(box.iv),additionalData:te.encode(aad)},key,u8(box.ct))}
+function baseKey(v){return v instanceof CryptoKey?Promise.resolve(v):S.importKey('raw',v,'HKDF',false,['deriveKey'])}
+function check(stored,s){return baseKey(stored).then(function(b){return S.deriveKey({name:'HKDF',hash:'SHA-256',salt:new Uint8Array(0),info:te.encode('site-lock/v1/content')},b,{name:'AES-GCM',length:256},false,['decrypt'])}).then(function(ck){return open(ck,s.manifest,'site-lock/v1/manifest')})}
+var reg=null;
+function sw(){if(!('serviceWorker' in navigator))return Promise.reject(new Error('nosw'));return navigator.serviceWorker.register(new URL('sw.js',ROOT).href,{scope:ROOT.href}).then(function(r){reg=r;return r})}
+function go(){
+  var n=+(sessionStorage.getItem('site-lock-tries')||0);
+  if(n>=3){sessionStorage.removeItem('site-lock-tries');busy(false);msg('開けませんでした。いったんページを閉じて、もう一度開いてください。',true);return}
+  sessionStorage.setItem('site-lock-tries',String(n+1));
+  msg('ひらいています…');
+  var sc=navigator.serviceWorker;
+  sc.ready.then(function(){
+    if(sc.controller)return;
+    return new Promise(function(ok){sc.addEventListener('controllerchange',ok);setTimeout(ok,4000)});
+  }).then(function(){
+    if(sc.controller)sc.controller.postMessage({type:'SITE_LOCK_KEY_CHANGED'});
+    setTimeout(function(){location.reload()},150);
+  });
+}
+function start(){
+  if(!S||!window.indexedDB){msg('このブラウザーでは開けません。Safari か Chrome の新しい版で開いてください。',true);busy(true);return}
+  sw().catch(function(){msg('このブラウザーでは開けません。プライベートブラウズをやめて、Safari か Chrome で開いてください。',true);busy(true)});
+  getKey().then(function(stored){
+    if(!stored){sessionStorage.removeItem('site-lock-tries');$('p').focus();return}
+    return site().then(function(s){return check(stored,s).then(go,function(){return delKey().then(function(){sessionStorage.removeItem('site-lock-tries');msg('合言葉が変わりました。新しい合言葉を入れてください。',true)})})});
+  }).catch(function(){});
+}
+$('f').addEventListener('submit',function(e){
+  e.preventDefault();
+  var pass=$('p').value;if(!pass)return;
+  busy(true);msg('たしかめています…');
+  var s;
+  site().then(function(x){
+    s=x;if(!(s.kdf&&s.kdf.iter>=600000))throw new Error('net');
+    return S.importKey('raw',te.encode(pass),'PBKDF2',false,['deriveKey']);
+  }).then(function(pk){
+    return S.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:u8(s.kdf.salt),iterations:s.kdf.iter},pk,{name:'AES-GCM',length:256},false,['decrypt']);
+  }).then(function(kek){
+    return open(kek,s.wrap,'site-lock/v1/wrap').then(null,function(){var e=new Error('bad');e.bad=1;throw e});
+  }).then(function(raw){
+    return S.importKey('raw',raw,'HKDF',false,['deriveKey']).then(function(k){
+      return check(k,s).then(function(){return putKey(k).then(null,function(){return putKey(new Uint8Array(raw))})});
+    });
+  }).then(function(){
+    $('p').value='';sessionStorage.removeItem('site-lock-tries');go();
+  }).catch(function(e){
+    busy(false);
+    if(e&&e.bad){msg('合言葉がちがいます。もう一度入れてください。',true);$('p').select()}
+    else msg('うまく確かめられませんでした。電波のよいところで、もう一度お試しください。',true);
+  });
+});
+start();
+})();
+</script>
+</body>
+</html>

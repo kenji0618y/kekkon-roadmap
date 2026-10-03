@@ -20,7 +20,7 @@
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 119項目 |
+| verify-seed | 123項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -30,7 +30,8 @@
 - **GitHub Pages:** https://kenji0618y.github.io/kekkon-roadmap/
 - **Repo:** https://github.com/kenji0618y/kekkon-roadmap
 - デプロイ: `main` をビルドした `dist` を **`gh-pages` ブランチ**へ（`.nojekyll` 必須）
-- Actions の workflow ファイル push は OAuth に `workflow` scope が無く失敗しやすい → **手動 / `npx gh-pages -d dist` 系で十分**
+- **2026-10-03〜 公開ページは合言葉で暗号化**（下の「公開ページの合言葉」）。**手で `npx gh-pages -d dist` しない**（平文のアプリ・絵・動画がそのまま出てしまう）。公開は CI だけ
+- Actions の workflow ファイル push は OAuth に `workflow` scope が無く失敗しやすい（そのときは Kenji に workflow の変更を入れてもらう）
 
 ## プロダクト概要
 
@@ -117,6 +118,19 @@
 - 書いた人＝「この端末はどちら？」（`futari-me-v1`・ふたりタブと共通。名前は `profile.name1/name2`）
 - テスト: `npm run test:sync`（`prebuild` でも走る。まねの Gist API・本物の GitHub にはつながない）。ブラウザ2台＋古い版からの移行は `node scripts/test-sync-browser.mjs <新dist> <古いdist>`（手動・playwright 必要）
 
+## 公開ページの合言葉（2026-10-03〜）
+
+- URL は https://kenji0618y.github.io/kekkon-roadmap/ のまま。**公開されるのは暗号文だけ**。CI（`.github/workflows/ci.yml`）が `npm run build` → `.nojekyll` → **合言葉で暗号化**（`node scripts/site-lock/encrypt-dist.mjs dist`）→ **平文が残っていないか**（`node scripts/site-lock/verify-dist.mjs dist`）→ gh-pages の順。合言葉は GitHub の Secrets `SITE_PASSPHRASE`。**無ければ CI は失敗して公開しない**（平文で出さない）
+- 暗号化するもの: dist の全部（JS/CSS・データ入りの bundle・manifest・アイコン・見本ページ `/preview-motion/`・水彩の絵・レッスン動画とポスター・博士の絵）。vite-plugin-pwa の workbox の `sw.js` は捨て、解錠つきの `sw.js` に置き換える
+- 平文で残るのは: 解錠ページ（`index.html` と各フォルダの `index.html`・題は「合言葉を入れてください」だけ・og/description なし）・`sw.js`・`site.json`（salt・包んだ鍵・暗号化した一覧）・`enc/*.bin`・`.nojekyll`。`verify-dist.mjs` がアプリの言葉（結婚・ロードマップ・Amity・婚姻・ゴットマン など）・平文の絵/動画/JS・og タグの混入で落ちる
+- 鍵: `siteKey = PBKDF2-SHA256(合言葉, 固定の salt, 60万回)`。ビルドごとに `kek = PBKDF2-SHA256(合言葉, ランダム salt, 60万回)` で siteKey を包んで `site.json` に置く。中身は siteKey から HKDF で作った鍵で AES-256-GCM（512KB ごと・動画は必要な部分だけ取る Range 対応）。同じ合言葉・同じ中身なら暗号文の名前も同じなので、更新のたびに絵や動画を取り直さない
+- 端末: 解錠ページで一度入れると、**鍵（合言葉そのものではない）** を IndexedDB `site-lock` に保存。service worker が暗号文を取って復号して返す（オフライン用に先読みもする）。手帳（localStorage `futari-miraicho-v1` ほか）は同じオリジン・同じキーのまま、**一切触らない**。以前の平文のオフラインキャッシュ（workbox-*）は新しい sw.js が消す
+- 設定 → 詳細設定 →「この端末の合言葉」で **「この端末の合言葉を消す」**（`src/components/SiteLockSettings.tsx`・`src/lib/site-lock.ts`）。消しても手帳は消えない
+- **合言葉の変え方**: `printf %s '新しい合言葉' | gh secret set SITE_PASSPHRASE -R kenji0618y/kekkon-roadmap`（シェルの履歴に残さないよう、環境変数などから流す）→ Actions で「verify and deploy」を **Run workflow**（main）。公開が終わると、どの端末も次に開いたとき「合言葉が変わりました」と出るので新しい合言葉を入れ直す。手帳のデータはそのまま
+- 合言葉を忘れたら公開ページは開けない（手帳は各端末に残っている）。Secrets の値は GitHub からも読み出せないので、新しい合言葉を入れて上の手順で公開し直す
+- テスト: `npm run test:sitelock`（prebuild でも走る・テスト用の合言葉で小さな dist を作り、検査が平文で落ちること・sw.js の復号/Range/鍵なしの挙動を確かめる）。手元で本物を試すときは `npm run build && touch dist/.nojekyll && SITE_PASSPHRASE=… npm run sitelock`（合言葉は環境変数から。表示しない）
+- **ソースは公開リポジトリなので誰でも読める**（Kenji 了承済み）。隠しているのは公開ページの中身。二人の記録は端末と暗号化した同期先にあり、リポには無い
+
 ## Amity × Grok
 
 - `src/lib/amity-grok.ts` — xAI `https://api.x.ai/v1`、モデル `grok-3`
@@ -137,6 +151,8 @@ src/Notebook.tsx                    # シェル・タブ
 src/components/DeskBoard.tsx        # デスクの「ふたりの掲示板」（book.board・自分のメモだけ直す/消す・ピン）
 src/lib/board.ts                    # 掲示板のマージ・並び・日本時間の表示・新着（見た id を端末の localStorage `desk-board-seen-v1` に。同期しない）
 src/lib/line-notify.ts              # 掲示板の LINE 通知（text/plain の POST・合言葉は同期のキーから端末内で SHA-256・同期で入ったメモでは送らない）。docs/LINE_NOTIFY.md
+src/components/SiteLockSettings.tsx  # 設定 → 詳細設定 →「この端末の合言葉」（端末に覚えた鍵を消す・手帳は消さない）
+scripts/site-lock/                  # 公開ページの合言葉暗号化（encrypt-dist / verify-dist / sw.js / unlock.html / core）
 src/components/LineNotifySettings.tsx # 設定 → 詳細設定 →「LINE通知」（#settings-line-notify・中継先 URL / オン・オフは手帳で同期）
 src/components/MarriageDesk.tsx     # デスク上部のパネル（和紙 .desk-washi。Amity吹き出し・友人handoffは削除済み）
 src/components/DeskChatPanel.tsx    # FAB チャット
@@ -183,9 +199,9 @@ scripts/verify-seed.mjs
 cd /path/to/kekkon-roadmap
 npm ci
 npm run build                # prebuild → verify:seed
-# dist を gh-pages へ（例）
-npx gh-pages -d dist
-# dist 直下に .nojekyll を置くこと
+# 公開は main に push するだけ（CI がビルド → 合言葉で暗号化 → 平文検査 → gh-pages）。
+# 手で npx gh-pages -d dist はしない（2026-10-03〜 平文のまま出てしまう）。
+# どうしても手で出すときは: touch dist/.nojekyll && SITE_PASSPHRASE=… npm run sitelock のあとで。
 # Grok キーは Vite env では読まない。設定 UI の localStorage、または amity-grok-bundle.ts
 # 公開後: Pages の index.html が指す assets/index-*.js が 200 か確認（CDNが古いHTMLのまま新JS未配置だと壊れる）
 # スマホはハードリロード or PWA「更新があります」
