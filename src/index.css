@@ -1293,6 +1293,20 @@
 .illust-pads.pads-dense .stamp-pad .stamp-half-row{height:14px}
 .illust-pads.pads-dense .stamp-pad .stamp-pad-body{padding-top:12px}
 .illust-pads.pads-dense .stamp-pad .stamp-half{font-size:7px}
+/* ロードマップのスタンプ：短縮名（pad・最大8字）を2行で全部読めるように（2026-10-03）
+   以前は「済・準」の印が名前の上に高さを取り、名前が1行ぶん（密なときは1行未満）しか残らず切れていた。
+   印は名前の後ろに大きく薄く押す（はんこの見た目）。マスの大きさ・位置は変えない（12マスの絵でも重ならない）。 */
+.stamp-pad .stamp-pad-body{padding:15px 2px 2px;gap:0}
+.stamp-pad .stamp-pad-body .stamp-pad-mark{position:absolute;inset:14px 0 0;z-index:0;margin:auto;min-height:0;font-size:22px;opacity:.3;pointer-events:none}
+.stamp-pad .stamp-pad-body .stamp-pad-mark:empty{display:none}
+.stamp-pad .stamp-pad-body .stamp-pad-mark .check-blue{width:20px;height:20px}
+.stamp-pad .stamp-pad-body .stamp-pad-mark .check-blue::after{left:7px;top:3.5px;width:5px;height:10px;border-width:0 2.5px 2.5px 0}
+.stamp-pad.st-done .stamp-pad-body .stamp-pad-mark,.stamp-pad.st-na .stamp-pad-body .stamp-pad-mark{font-size:22px;opacity:.38}
+.stamp-pad .stamp-pad-body .stamp-pad-label{position:relative;z-index:1;font-size:10px;line-height:1.2;letter-spacing:-.02em;display:block;text-wrap:balance;-webkit-line-clamp:unset;line-clamp:none;overflow:visible;overflow-wrap:anywhere;word-break:normal;line-break:strict}
+.illust-pads.pads-dense .stamp-pad .stamp-pad-body{padding:13px 1px 1px}
+.illust-pads.pads-dense .stamp-pad .stamp-pad-body .stamp-pad-label{font-size:9px;line-height:1.2;letter-spacing:-.03em}
+.illust-pads.pads-dense .stamp-pad .stamp-pad-body .stamp-pad-mark{inset:12px 0 0;font-size:19px}
+.stamp-pad .stamp-half{white-space:nowrap;overflow:hidden;letter-spacing:0}
 .pair-check-row{display:grid;gap:8px;margin:8px 0 12px;padding:12px;border-radius:12px;background:rgba(255,253,248,.9);border:1px solid rgba(15,92,84,.14)}
 .pair-check-row .hint{margin:0;font-size:12px;color:#4a5c56}
 .pair-check-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
