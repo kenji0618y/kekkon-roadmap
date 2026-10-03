@@ -10,7 +10,7 @@ import {
   type ChatMessage,
 } from '../lib/desk-chat';
 import type {Profile} from '../lib/model';
-import {askGrokResearch, grokErrorJa, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
+import {askGrokResearch, grokErrorJa, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, GROK_NO_KEY_JA, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
 import {markGrokLocalOnly} from '../lib/grok-mode';
 
 export type DeskChatPanelProps = {
@@ -35,7 +35,7 @@ const WELCOME: ChatMessage = {
   at: 0,
 };
 
-const NO_KEY_TIP = '設定の「詳細設定」でAIのキーを入れると、AIでもくわしく調べられるよ';
+const NO_KEY_TIP = `いまは手帳の中から探した答えだけです。${GROK_NO_KEY_JA}`;
 
 export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = null, embedded = false}: DeskChatPanelProps) {
   const titleId = useId();
@@ -172,7 +172,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
 
   const keyHint = loadGrokKey()
     ? 'この手帳の中から探して、AIでもくわしく調べるよ'
-    : 'この手帳の中から探すよ';
+    : 'この手帳の中から探すよ（AIのキーは 設定 → 詳細設定 で入れられます）';
 
   const panel = (
     <div className={`desk-chat-panel${embedded ? ' embedded' : ''}`}>
