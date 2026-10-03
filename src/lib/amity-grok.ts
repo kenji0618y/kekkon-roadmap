@@ -1,9 +1,8 @@
 /** Amityちゃん × Grok (xAI) research helper.
- * Key priority: localStorage override → runtime-decoded bundle (ciphertext in amity-grok-bundle.ts).
- * Never commit plaintext keys. Ciphertext may be committed; decode only at runtime.
+ * The key comes ONLY from what the user typed in 設定 → 詳細設定 →「AIのキー」
+ * (localStorage `amity-grok-key`, this device only — not in the book, not synced, not in backups).
+ * No key is bundled in the app (2026-10-03: the old obfuscated bundle was removed). Never use VITE_*.
  */
-
-import {hasBundledGrokCipher, loadBundledGrokKey} from './amity-grok-bundle';
 
 export const GROK_KEY_LS = 'amity-grok-key';
 export const GROK_BASE_LS = 'amity-grok-base';
@@ -39,12 +38,16 @@ export function isGrokCreditsLimitResult(error: string): boolean {
   return error === GROK_ERROR_CREDITS || error.startsWith('credits-limit');
 }
 
+/** キーが無いときの案内（チャット・調べもの・ふたりタブで共通）。 */
+export const GROK_NO_KEY_JA =
+  'AIのキーがまだ入っていません。設定 → 詳細設定 →「AIのキー」に xAI のキーを入れると、AIでもくわしく調べられます（キーはこの端末の中だけに保存されます）。';
+
 /** 通信エラーなどを、画面に出せる日本語に置きかえる（英語の生のエラーは出さない）。 */
 export const NETWORK_ERROR_JA = '通信できませんでした。電波を確かめて、もう一度お試しください。';
 export function grokErrorJa(error: string): string {
   if (!error || error === 'network') return NETWORK_ERROR_JA;
   if (error === 'aborted') return '中止しました。';
-  if (error === 'no-key') return 'AIのキーが設定されていません。';
+  if (error === 'no-key') return GROK_NO_KEY_JA;
   if (error === 'empty') return 'AIから答えが返ってきませんでした。もう一度お試しください。';
   if (isGrokCreditsLimitResult(error)) return GROK_CREDITS_LIMIT_JA;
   const m = /^HTTP (\d{3})/.exec(error);
@@ -77,26 +80,13 @@ export function scrubGrokUserText(text: string): string {
     .trim();
 }
 
-function bundledGrokKey(): string {
+/** この端末に入れたキーだけを返す（無ければ空）。アプリにキーは同梱しない。 */
+export function loadGrokKey(): string {
   try {
-    return loadBundledGrokKey() || '';
+    return localStorage.getItem(GROK_KEY_LS)?.trim() || '';
   } catch {
     return '';
   }
-}
-
-export function hasBundledGrokKey(): boolean {
-  return hasBundledGrokCipher() && !!bundledGrokKey();
-}
-
-export function loadGrokKey(): string {
-  try {
-    const fromLs = localStorage.getItem(GROK_KEY_LS)?.trim() || '';
-    if (fromLs) return fromLs;
-  } catch {
-    /* ignore */
-  }
-  return bundledGrokKey();
 }
 
 export function saveGrokKey(key: string) {

@@ -20,7 +20,7 @@
 | 時期・出来事 | 9区切り / 48件 |
 | 毎年見直す項目 | 15件 |
 | タブ | 6（デスク / ロードマップ / カレンダー / ふたり / 探す / 設定） |
-| verify-seed | 123項目 |
+| verify-seed | 124項目 |
 | データ確認日 | 2026-09-10 |
 <!-- /STATE -->
 · Claude/Grok/ChatGPT 自動導線（AGENTS/CLAUDE/CHATGPT + predev verify）
@@ -134,8 +134,8 @@
 ## Amity × Grok
 
 - `src/lib/amity-grok.ts` — xAI `https://api.x.ai/v1`、モデル `grok-3`
-- キー優先順位: **localStorage `amity-grok-key`（設定オーバーライド）** → なければ **`amity-grok-bundle.ts` の難読化シファーを実行時デコード**
-- シファーは commit 可。ソース/dist に連続部分文字列 `xai-` を置かない（文字コード比較で prefix 検証）
+- キー: **利用者が 設定 → 詳細設定 →「AIのキー」で入れた localStorage `amity-grok-key` だけ**（この端末だけ・手帳／同期／バックアップに入らない）。**アプリにキーを同梱しない**（2026-10-03 に難読化バンドル `amity-grok-bundle.ts` を削除。キーは git の履歴に残るため失効させること）
+- キーが無いとき: チャットは手帳の中の答えだけを出し、「設定 → 詳細設定 →『AIのキー』」を日本語で案内（`GROK_NO_KEY_JA`）。verify-seed が同梱の復活を検査
 - チャット: FAB → `DeskChatPanel`。キーありなら必ず `askGrokResearch`。loading「AmityがGrokで調べてる…」、失敗時は toast + 理由
 - 生キーを `docs/` / git / Pages に平文で書かない。**`VITE_AMITY_GROK_KEY` 等の Vite env はコードが読まない**（入れても無効）。GitHub secret scanning 回避のため Vite env 埋め込みも使わない
 
@@ -173,7 +173,6 @@ src/lib/sync-crypto.ts              # AES-256-GCM + HKDF（鍵は端末内で作
 src/lib/book-merge.ts               # 移行・キー変更時の合流（消さない）
 src/components/SyncSettings.tsx     # 設定の自動同期（暗号化の表示・古い同期先の片づけ）
 src/lib/amity-grok.ts               # grok-3 · credits → console.x.ai
-src/lib/amity-grok-bundle.ts        # ciphertext only（連続 "xai-" 禁止）
 src/lib/desk-chat.ts                # 端末内フォールバック
 src/lib/grok-mode.ts
 src/lib/motion.ts                   # 動き（カードのフェード・章の絵のひらき・スタンプの押印）。タブの動きは Notebook.tsx。動きを減らす設定を必ず尊重
@@ -202,7 +201,7 @@ npm run build                # prebuild → verify:seed
 # 公開は main に push するだけ（CI がビルド → 合言葉で暗号化 → 平文検査 → gh-pages）。
 # 手で npx gh-pages -d dist はしない（2026-10-03〜 平文のまま出てしまう）。
 # どうしても手で出すときは: touch dist/.nojekyll && SITE_PASSPHRASE=… npm run sitelock のあとで。
-# Grok キーは Vite env では読まない。設定 UI の localStorage、または amity-grok-bundle.ts
+# Grok キーは Vite env では読まない。設定 UI（詳細設定）で入れた端末内の localStorage だけ
 # 公開後: Pages の index.html が指す assets/index-*.js が 200 か確認（CDNが古いHTMLのまま新JS未配置だと壊れる）
 # スマホはハードリロード or PWA「更新があります」
 ```
@@ -247,7 +246,7 @@ npm run build                # prebuild → verify:seed
 ### 完了済み
 1. Amity は全タブ右下 **固定丸 FAB**（サメアイコン・円クリップ）。「聞く」タブ削除。既定タブ＝**デスク**（左端）
 2. タブナビは **ヘッダー sticky**（フッタ固定ナビではない）
-3. Grok: `amity-grok-bundle.ts` 難読化デコード（平文 `xai-` を git/Pages に置かない）。設定のキー欄は上書き用
+3. Grok: キーは設定（詳細設定）の欄で入れたものだけ（2026-10-03〜 同梱なし）
 4. スタンプ帳を一度「イラスト主役」に作り直し（commit `fc54aac` 付近）: 1マス＝1絵、四隅小パッド
 
 ### 完了（前回）
@@ -399,6 +398,6 @@ npm run build                # prebuild → verify:seed
 
 平文の xAI キーを Pages に焼くと **GitHub secret scanning が push を拒否**する。
 
-**現行:** `src/lib/amity-grok-bundle.ts` に XOR+分割 Base64 のシファーのみコミット。実行時デコード。設定欄（localStorage）はオーバーライド用。**`VITE_*` は読まない。**
+**現行（2026-10-03〜）:** アプリにキーを同梱しない。難読化した同梱キー（`amity-grok-bundle.ts`）は削除した — 難読化はブラウザで誰でも元に戻せるので、公開ページに置いた時点で漏れたのと同じ。キーは利用者が 設定 → 詳細設定 →「AIのキー」で入れ、その端末の localStorage にだけ置く（同期・バックアップに入らない）。**`VITE_*` は読まない。**
 
-**バンドル再生成:** Kenji／運用者のみ。平文キーを git / Pages / チャット / ログに出さない。クローンした AI は **再生成を必須にしない**（キーが無いときは設定 UI のオーバーライドか端末内フォールバックでよい）。「box-secrets」等のローカル秘密ストアは **この GitHub リポに含まれない**。
+**古いキー:** git の履歴に残っているので、xAI コンソールで失効させる（Kenji）。新しいキーは各端末の設定に貼るだけで、リポジトリ・ドキュメント・チャットには書かない。
