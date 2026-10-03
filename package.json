@@ -14,6 +14,7 @@
     "sync:docs": "node scripts/sync-docs.mjs",
     "screen": "node scripts/screen-language.mjs",
     "audit:faq": "node scripts/faq-audit.mjs",
+    "audit:fields": "node scripts/field-audit.mjs",
     "handoff": "npm run sync:docs && npm run verify:seed",
     "test:sync": "node scripts/test-sync-crypt.mjs",
     "test:line": "node scripts/test-line-notify.mjs",
