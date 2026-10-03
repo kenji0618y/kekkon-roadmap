@@ -12,7 +12,7 @@
   "sq-prep-health": "phases/rm-prenatal.png",
   "sq-prep-consult": "phases/phase1-prep.png",
   "sq-prep-money-1": "phases/lux-money.png",
-  "sq-prep-money-2": "phases/gen-money-family.png",
+  "sq-prep-money-2": "phases/gen-money-iDeCo.png",
   "sq-pregnant": "phases/gen-pregnant.png",
   "sq-birth-money": "phases/gen-birth.png",
   "sq-allowance": "phases/rm-allowance.png",
@@ -23,7 +23,7 @@
   "sq-home-2": "phases/rm-mortgage.png",
   "sq-home-3": "phases/phase6-home.png",
   "sq-hedge-med": "phases/phase7-hedge.png",
-  "sq-hedge-legal": "phases/phase8-divorce-hedge.png",
+  "sq-hedge-legal": "phases/phase8-hedge-legal.png",
   "sq-hedge-company-1": "phases/phase7-hedge.png",
   "sq-hedge-company-2": "phases/gen-stamp-board.png",
   "sq-divorce": "phases/phase8-divorce-hedge.png",
@@ -31,6 +31,6 @@
   "sq-selfemployed": "phases/gen-stamp-grid.png",
   "sq-partners": "phases/gen-stamp-board.png",
   "sq-childleave": "phases/rm-birth-money.png",
-  "sq-yearly-perks": "phases/gen-money-family.png",
+  "sq-yearly-perks": "phases/gen-money-perks.png",
   "sq-honeymoon": "phases/gen-honeymoon.png"
 }
