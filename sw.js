@@ -1,9 +1,9 @@
 /* 合言葉で暗号化した公開サイトを、この端末の中だけで開くための service worker。
  * 暗号文（enc/*.bin）を取ってきて、解錠ページで保存した鍵（IndexedDB・合言葉そのものではない）で復号して返す。
  * 鍵がない／合わないときは、どのページを開いても解錠ページだけを返す。
- * 生成元: scripts/site-lock/sw.js（encrypt-dist.mjs が 234375a411a79d26 を埋める） */
+ * 生成元: scripts/site-lock/sw.js（encrypt-dist.mjs が 80baed74e09a8d28 を埋める） */
 'use strict';
-const BUILD = '234375a411a79d26';
+const BUILD = '80baed74e09a8d28';
 const CACHE = 'site-lock-' + BUILD;
 const SCOPE = new URL(self.registration.scope);
 const MAX_RANGE = 2 * 1024 * 1024;
