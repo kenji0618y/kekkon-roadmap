@@ -38,6 +38,27 @@ const THEME_ART = [
 
 const TALK_ART = 'phases/gen-stamp-grid.png';
 const AGREE_ART = 'phases/lux-filing.png';
+/** 合意カードは話題ごとに別の絵（2026-10-03）。ここに無い id は最後に AGREE_ART のカードへまとめる。 */
+const AGREE_GROUPS: {label: string; art: string; ids: string[]}[] = [
+  {label: '暮らし・会話・楽しみ', art: 'phases/agree-life.png', ids: ['G01', 'G02', 'G03', 'G04']},
+  {label: '家事・予定・忙しい日', art: 'phases/agree-chores.png', ids: ['G05', 'G06', 'G07', 'G08']},
+  {label: 'お金・働き方', art: 'phases/agree-money.png', ids: ['G09', 'G10']},
+  {label: 'けんか・仲直り', art: 'phases/agree-repair.png', ids: ['G11', 'G12']},
+  {label: '親族・共有する情報', art: 'phases/agree-family.png', ids: ['G13', 'G14']},
+  {label: '親密さ・子育て・頼る先', art: 'phases/agree-care.png', ids: ['G15', 'G16', 'G17', 'G18']},
+];
+
+function agreeCards(items: Agreement[]): {label: string; art: string; items: Agreement[]}[] {
+  const used = new Set<string>();
+  const cards = AGREE_GROUPS.map((g) => {
+    const its = items.filter((a) => g.ids.includes(a.id));
+    its.forEach((a) => used.add(a.id));
+    return {label: g.label, art: g.art, items: its};
+  }).filter((c) => c.items.length);
+  const rest = items.filter((a) => !used.has(a.id));
+  chunkPads(rest).forEach((chunk, i, all) => cards.push({label: all.length > 1 ? `二人の合意 ${i + 1}/${all.length}` : '二人の合意', art: AGREE_ART, items: chunk}));
+  return cards;
+}
 
 const FILL_ORDER = [3, 2, 0, 1, 4, 5, 6, 7, 8, 9, 10, 11];
 const MAX_PADS = 12;
@@ -688,18 +709,17 @@ function AgreeStampBoard({
   onSaveAgreement: (id: string, record: AgreementRecord) => boolean | Promise<boolean>;
   setDraft: Dispatch<SetStateAction<Record<string, AgreementRecord>>>;
 }) {
-  const chunks = chunkPads(items);
+  const cards = agreeCards(items);
   return (
     <div className="pair-stamp stamp-rally" role="list">
-      {chunks.map((chunk, partIdx) => {
-        const partTotal = chunks.length;
-        const caption = partTotal > 1 ? `合意 ${partIdx + 1}/${partTotal}` : '二人の合意';
+      {cards.map(({label, art, items: chunk}, partIdx) => {
+        const caption = label;
         const doneCount = chunk.filter((a) => (book.agreements[a.id]?.agreed || '').trim()).length;
         const allDone = chunk.length > 0 && doneCount === chunk.length;
         return (
           <article key={`agree-${partIdx}`} role="listitem" className={`illust-square pair-stamp-card${chunk.some((a) => a.id === openId) ? ' selected' : ''}${allDone ? ' complete' : ''}`}>
             <div className="illust-frame">
-              <img className="illust-art" src={AGREE_ART} alt="" loading="lazy" decoding="async" />
+              <img className="illust-art" src={art} alt="" loading="lazy" decoding="async" />
               <div className={`illust-pads${chunk.length > 6 ? ' pads-dense' : ''}`} role="group" aria-label={`${caption}のスタンプ台`}>
                 {chunk.map((a, idx) => {
                   const done = !!(book.agreements[a.id]?.agreed || '').trim();
