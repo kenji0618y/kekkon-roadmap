@@ -10,7 +10,7 @@ import {
   type ChatMessage,
 } from '../lib/desk-chat';
 import type {Profile} from '../lib/model';
-import {askGrokResearch, grokErrorJa, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, GROK_NO_KEY_JA, isGrokCreditsLimitResult, loadGrokKey} from '../lib/amity-grok';
+import {askGrokResearch, grokErrorJa, GROK_AI_OFF_JA, GROK_CREDITS_CONSOLE_URL, GROK_CREDITS_LIMIT_JA, GROK_NO_KEY_JA, isGrokCreditsLimitResult, isGrokEnabled, loadGrokKey} from '../lib/amity-grok';
 import {markGrokLocalOnly} from '../lib/grok-mode';
 
 export type DeskChatPanelProps = {
@@ -94,14 +94,14 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
     const userMsg: ChatMessage = {id: uid(), role: 'user', text: q, at: Date.now()};
     const ans = answerDeskQuery(q, 12, profile);
     const localText = ans.text;
+    const aiOn = isGrokEnabled();
     const hasKey = !!loadGrokKey();
 
+    const tip = !aiOn ? GROK_AI_OFF_JA : !hasKey ? NO_KEY_TIP : '';
     const localMsg: ChatMessage = {
       id: uid(),
       role: 'assistant',
-      text: hasKey
-        ? localText
-        : `${localText}\n\n💡 ${NO_KEY_TIP}`,
+      text: tip ? `${localText}\n\n💡 ${tip}` : localText,
       matches: ans.matches,
       suggestedKeywords: ans.suggestedKeywords,
       at: Date.now(),
@@ -109,6 +109,9 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
     setMsgs((prev) => [...prev, userMsg, localMsg]);
     setInput('');
 
+    if (!aiOn) {
+      return;
+    }
     if (!hasKey) {
       markGrokLocalOnly('no-key');
       return;
@@ -130,7 +133,7 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
           at: Date.now(),
         };
         setMsgs((prev) => [...prev, grokMsg]);
-      } else if (grok.error !== 'aborted' && grok.error !== 'no-key') {
+      } else if (grok.error !== 'aborted' && grok.error !== 'no-key' && grok.error !== 'ai-off') {
         const credits = isGrokCreditsLimitResult(grok.error);
         if (credits) {
           markGrokLocalOnly('credits-limit');
@@ -170,9 +173,11 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
 
   if (!embedded && !open) return null;
 
-  const keyHint = loadGrokKey()
-    ? 'この手帳の中から探して、AIでもくわしく調べるよ'
-    : 'この手帳の中から探すよ（AIのキーは 設定 → 詳細設定 で入れられます）';
+  const keyHint = !isGrokEnabled()
+    ? 'この手帳の中から探すよ（AIはオフ。設定 → 詳細設定でオンにできます）'
+    : loadGrokKey()
+      ? 'この手帳の中から探して、AIでもくわしく調べるよ'
+      : 'この手帳の中から探すよ（AIのキーは 設定 → 詳細設定 で入れられます）';
 
   const panel = (
     <div className={`desk-chat-panel${embedded ? ' embedded' : ''}`}>
