@@ -68,6 +68,7 @@ export function LineNotifySettings({book,line,save,onOpenSync}:{book:Book,line:L
     </div>
 
     <label className="scope-toggle" style={{marginBottom:14}}><Switch checked={!!book.lineNotify?.on} onCheckedChange={v=>void save({on:v},v?'LINE通知をオンにしました':'LINE通知をオフにしました')}/><span>LINE通知を使う（ふたりの端末で共通）</span></label>
+    <p className="hint" style={{marginTop:8}}>オンのとき、掲示板・スタンプの済に加え、合言葉で開いたあとも相手のLINEに「開きました」が届きます（同じ端末では6時間に1回まで）。</p>
 
     <p className="hint">合言葉は、端末どうしの自動同期のキーから、この端末の中で作ります。同じキーを入れたふたりの端末では、同じ合言葉になります。合言葉は手帳には保存されず、同期もされません。</p>
     {(line.missing==='sync-off'||line.missing==='no-key')&&<p className="hint warn">準備中：{linePrepText(line.missing).fix} <button type="button" className="desk-board-link" onClick={onOpenSync}>端末どうしの自動同期を開く</button></p>}
