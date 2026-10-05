@@ -11,7 +11,9 @@ export type DayKey='mon'|'tue'|'wed'|'thu'|'fri'|'sat'|'sun';
 export type FutariCard={id:string,question:string,hint:string,concept:string,point:string,sourceIds:string[],days:DayKey[]};
 export type WeekTheme={day:DayKey,label:string,theme:string,sub:string,sourceIds:string[]};
 export type LessonLine={say:string,caption:string};
-export type Lesson={id:string,title:string,duration:string,topic:string,summary:string,lines:LessonLine[],sourceIds:string[],video?:string,poster?:string};
+export type Lesson={id:string,title:string,duration:string,topic:string,summary:string,lines:LessonLine[],sourceIds:string[],video?:string,poster?:string,tryToday?:string};
+export type CalendarEntry={day:number,kind:'lesson'|'practice'|'review',lessonId?:string,concept?:string};
+export type LessonCalendar={about:string,days:CalendarEntry[]};
 export type LessonTopic={id:string,title:string,point:string,sourceIds:string[],lessonId?:string};
 
 export const gSources=(sourceData as {sources:GSource[]}).sources;
@@ -27,8 +29,50 @@ export const yearsSourceIds=(cardData as {yearsSourceIds:string[]}).yearsSourceI
 export const cardById:Record<string,FutariCard>=Object.fromEntries(futariCards.map(c=>[c.id,c]));
 
 export const lessons=(lessonData as {lessons:Lesson[]}).lessons;
+export const lessonById:Record<string,Lesson>=Object.fromEntries(lessons.map(l=>[l.id,l]));
 export const lessonTopics=(lessonData as {topics:LessonTopic[]}).topics;
 export const lessonPace=(lessonData as {pace:{label:string,title:string,text:string}[]}).pace;
+export const lessonCalendar=(lessonData as {calendar?:LessonCalendar}).calendar;
+/** 同期前など startedAt がないとき、全員が同じ日になるよう使う固定の月曜（UTC）。 */
+const LESSON_EPOCH_MONDAY='2024-01-01';
+function mondayOf(date:string){const wd=new Date(date+'T00:00:00Z').getUTCDay();return plusDays(date,-((wd+6)%7));}
+/** 今日のレッスン枠（1はじまり）。始めた日の週の月曜を1日目。なければ暦の日付から（オフラインでも二人とも同じ）。365で一周。 */
+export function lessonDayNumber(today:string,startedAt:string){
+  const origin=startedAt?mondayOf(startedAt):LESSON_EPOCH_MONDAY;
+  const n=difference(today,origin);
+  if(n<0)return 1;
+  return (n%365)+1;
+}
+export type TodayLesson={
+  dayNumber:number,
+  kind:'lesson'|'practice'|'review'|'empty',
+  lesson:Lesson|null,
+  concept:string,
+  weekLessons:{date:string,label:string,dayNumber:number,kind:string,lesson:Lesson|null,concept:string,isToday:boolean}[],
+};
+const LABELS=['月','火','水','木','金','土','日'];
+export function todayLesson(today:string,startedAt:string):TodayLesson{
+  const dayNumber=lessonDayNumber(today,startedAt);
+  const entry=lessonCalendar?.days.find(d=>d.day===dayNumber);
+  const kind=(entry?.kind||'empty') as TodayLesson['kind'];
+  const lesson=entry?.lessonId?lessonById[entry.lessonId]||null:null;
+  const concept=entry?.concept||'';
+  // 今週（月曜はじまり）の一覧：見のがし用
+  const days=weekOf(today);
+  const weekLessons=days.map((date,i)=>{
+    const dn=lessonDayNumber(date,startedAt);
+    const e=lessonCalendar?.days.find(d=>d.day===dn);
+    return {
+      date,label:LABELS[i],dayNumber:dn,
+      kind:e?.kind||'empty',
+      lesson:e?.lessonId?lessonById[e.lessonId]||null:null,
+      concept:e?.concept||'',
+      isToday:date===today,
+    };
+  });
+  return {dayNumber,kind,lesson,concept,weekLessons};
+}
+
 
 export type TroubleStep={title:string,text:string,examples?:string[],choices?:{label:string,minutes:number}[],sourceIds:string[]};
 export const guide=guideData as unknown as {

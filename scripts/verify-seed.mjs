@@ -228,7 +228,7 @@ const fcards = loadJson('src/data/futari-cards.json') || {};
 const flessons = loadJson('src/data/futari-lessons.json') || {};
 const fguide = loadJson('src/data/futari-guide.json') || {};
 const gIds = new Set((gsrc.sources || []).map((x) => x.id));
-check('futari.sources', gIds.size, 44);
+check('futari.sources', gIds.size, 86);
 check('futari.ai_allowed_sources', (gsrc.ai_allowed || []).length, 17, true);
 for (const id of gsrc.ai_allowed || []) if (!gIds.has(id)) fail.push(`futari.ai_allowed: ${id} が出典表にありません`);
 for (const x of gsrc.sources || []) {
@@ -253,11 +253,25 @@ for (const d of DAYS) { const n = cardsArr.filter((c) => (c.days || []).includes
   if (new Set(ids).size !== ids.length) fail.push('futari.cards: id が重複しています');
   if (new Set(qs).size !== qs.length) fail.push('futari.cards: 同じ問いが重複しています'); }
 const lessonArr = flessons.lessons || [];
-check('futari.lesson_scripts', lessonArr.length, 25);
-check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 105);
+check('futari.lesson_scripts', lessonArr.length, 76);
+check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 258);
 check('futari.video_topics', (flessons.topics || []).length, 25);
 const videos = lessonArr.filter((l) => l.video);
 check('futari.lesson_videos', videos.length, 25);
+const calDays = (flessons.calendar && flessons.calendar.days) || [];
+check('futari.calendar_days', calDays.length, 91);
+for (const d of calDays) {
+  if (!['lesson', 'practice', 'review'].includes(d.kind)) fail.push(`futari.calendar: day ${d.day} の kind が不正です`);
+  if (d.kind === 'lesson') {
+    if (!d.lessonId) fail.push(`futari.calendar: day ${d.day} に lessonId がありません`);
+    else if (!lessonArr.some((l) => l.id === d.lessonId)) fail.push(`futari.calendar: day ${d.day} の ${d.lessonId} が lessons にありません`);
+  }
+}
+for (const l of lessonArr.filter((x) => !x.video)) {
+  if (!String(l.tryToday || '').trim()) fail.push(`futari.lessons: 文字レッスン ${l.id} に tryToday がありません`);
+  if (!Array.isArray(l.lines) || l.lines.length < 2) fail.push(`futari.lessons: 文字レッスン ${l.id} の本文が短すぎます`);
+}
+
 for (const l of videos) {
   if (l.video.startsWith('/') || !existsSync(join(root, 'public', l.video))) fail.push(`futari.lessons: 動画 ${l.video} が public/ にありません`);
   if (l.poster && !existsSync(join(root, 'public', l.poster))) fail.push(`futari.lessons: ポスター ${l.poster} が public/ にありません`);
