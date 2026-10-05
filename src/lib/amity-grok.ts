@@ -6,6 +6,9 @@
 
 export const GROK_KEY_LS = 'amity-grok-key';
 export const GROK_BASE_LS = 'amity-grok-base';
+/** Per-device: user wants AI/credits on. Absent → default ON only if a key exists. */
+export const GROK_ENABLED_LS = 'amity-grok-enabled';
+export const GROK_ENABLED_EVENT = 'amity-grok-enabled';
 export const DEFAULT_GROK_BASE = 'https://api.x.ai/v1';
 export const DEFAULT_GROK_MODEL = 'grok-3';
 
@@ -42,12 +45,17 @@ export function isGrokCreditsLimitResult(error: string): boolean {
 export const GROK_NO_KEY_JA =
   'AIのキーがまだ入っていません。設定 → 詳細設定 →「AIのキー」に xAI のキーを入れると、AIでもくわしく調べられます（キーはこの端末の中だけに保存されます）。';
 
+/** AIスイッチがオフのときの案内（チャット・調べもの・ふたりタブで共通）。 */
+export const GROK_AI_OFF_JA =
+  'いまはAIを使わない設定です。設定 → 詳細設定 →「AIを使う（クレジットを使う）」をオンにすると、AIでも調べられます（クレジットを使います）。';
+
 /** 通信エラーなどを、画面に出せる日本語に置きかえる（英語の生のエラーは出さない）。 */
 export const NETWORK_ERROR_JA = '通信できませんでした。電波を確かめて、もう一度お試しください。';
 export function grokErrorJa(error: string): string {
   if (!error || error === 'network') return NETWORK_ERROR_JA;
   if (error === 'aborted') return '中止しました。';
   if (error === 'no-key') return GROK_NO_KEY_JA;
+  if (error === 'ai-off') return GROK_AI_OFF_JA;
   if (error === 'empty') return 'AIから答えが返ってきませんでした。もう一度お試しください。';
   if (isGrokCreditsLimitResult(error)) return GROK_CREDITS_LIMIT_JA;
   const m = /^HTTP (\d{3})/.exec(error);
@@ -117,6 +125,32 @@ export function saveGrokBase(base: string) {
   }
 }
 
+/** True when the user wants AI calls (credits). Default: ON only if a key already exists. */
+export function isGrokEnabled(): boolean {
+  try {
+    const raw = localStorage.getItem(GROK_ENABLED_LS);
+    if (raw === '0' || raw === 'false') return false;
+    if (raw === '1' || raw === 'true') return true;
+  } catch {
+    /* ignore */
+  }
+  return !!loadGrokKey();
+}
+
+export function setGrokEnabled(on: boolean) {
+  try {
+    localStorage.setItem(GROK_ENABLED_LS, on ? '1' : '0');
+  } catch {
+    /* ignore */
+  }
+  try {
+    window.dispatchEvent(new CustomEvent(GROK_ENABLED_EVENT, {detail: {enabled: on}}));
+  } catch {
+    /* ignore */
+  }
+}
+
+
 export type GrokResearchResult =
   | {ok: true; text: string}
   | {ok: false; error: string};
@@ -126,6 +160,9 @@ export async function askGrokResearch(
   localContext?: string,
   signal?: AbortSignal,
 ): Promise<GrokResearchResult> {
+  if (!isGrokEnabled()) {
+    return {ok: false, error: 'ai-off'};
+  }
   const key = loadGrokKey();
   if (!key) {
     return {ok: false, error: 'no-key'};
@@ -182,6 +219,7 @@ export async function askGrokWithSystem(
   user: string,
   opts: {maxTokens?: number; temperature?: number; signal?: AbortSignal} = {},
 ): Promise<GrokResearchResult> {
+  if (!isGrokEnabled()) return {ok: false, error: 'ai-off'};
   const key = loadGrokKey();
   if (!key) return {ok: false, error: 'no-key'};
   const base = loadGrokBase().replace(/\/+$/, '') || DEFAULT_GROK_BASE;
