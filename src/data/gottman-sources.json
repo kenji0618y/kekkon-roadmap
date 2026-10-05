@@ -337,6 +337,350 @@
       "title": "gottman.com「What Makes Love Last?（書籍の紹介ページ）」",
       "short": "gottman.com",
       "url": "https://www.gottman.com/product/what-makes-love-last/"
+    },
+    {
+      "id": "G-SRHBUILD",
+      "kind": "web",
+      "title": "Building a Sound Relationship House（Gottman Institute）",
+      "short": "公式：家を建てる",
+      "url": "https://www.gottman.com/blog/building-a-sound-relationship-house/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FAIRYTALE",
+      "kind": "web",
+      "title": "How To Remove Fairytale Logic From Your Sound Relationship House",
+      "short": "公式：おとぎ話の論理",
+      "url": "https://www.gottman.com/blog/how-to-remove-fairytale-logic-from-your-sound-relationship-house/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SRHPOS",
+      "kind": "web",
+      "title": "The Sound Relationship House: The Positive Perspective",
+      "short": "公式：ポジティブな視点（家）",
+      "url": "https://www.gottman.com/blog/the-sound-relationship-house-the-positive-perspective/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-10Q",
+      "kind": "web",
+      "title": "10 Questions Happy Couples Are Constantly Asking One Another",
+      "short": "公式：幸せな夫婦の10の質問",
+      "url": "https://www.gottman.com/blog/10-questions-happy-couples-constantly-asking-one-another/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-75Q",
+      "kind": "web",
+      "title": "75 Insightful Questions to Deepen Emotional Intimacy",
+      "short": "公式：心の距離を縮める75の質問",
+      "url": "https://www.gottman.com/blog/75-insightful-questions-to-deepen-emotional-intimacy/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BUILDLOVEMAP",
+      "kind": "web",
+      "title": "Build Love Maps",
+      "short": "公式：ラブマップを作る",
+      "url": "https://www.gottman.com/blog/build-love-maps/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-4QPASS",
+      "kind": "web",
+      "title": "What Couples Can Learn from the Four Questions on Passover",
+      "short": "公式：4つの質問",
+      "url": "https://www.gottman.com/blog/couples-learn-four-questions-passover/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FALLINLOVE",
+      "kind": "web",
+      "title": "Falling in Love Again with Your Partner: Love Maps, Friendship, and Staying Connected",
+      "short": "公式：もう一度恋をする",
+      "url": "https://www.gottman.com/blog/falling-in-love-again-with-your-partner-love-maps-friendship-and-staying-connected/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-LMWEEKEND",
+      "kind": "web",
+      "title": "Love Map Building（週末の宿題）",
+      "short": "公式：ラブマップ宿題",
+      "url": "https://www.gottman.com/blog/love-map-building-weekend-homework-assignment/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-GRAT51",
+      "kind": "web",
+      "title": "An Attitude of Gratitude and the 5:1 Ratio During the Holidays",
+      "short": "公式：感謝と5:1",
+      "url": "https://www.gottman.com/blog/an-attitude-of-gratitude-and-the-51-ratio-during-the-holidays/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-APPRECULT",
+      "kind": "web",
+      "title": "Creating and Sustaining a Culture of Appreciation in Difficult Times",
+      "short": "公式：感謝の文化",
+      "url": "https://www.gottman.com/blog/creating-and-sustaining-a-culture-of-appreciation-in-difficult-times/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FONINT",
+      "kind": "web",
+      "title": "Fondness, Admiration, and Intimacy",
+      "short": "公式：好意・称賛・親密さ",
+      "url": "https://www.gottman.com/blog/fondness-admiration-and-intimacy/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FONQUIZ",
+      "kind": "web",
+      "title": "Love Quiz: Fondness and Admiration",
+      "short": "公式：好意と称賛の確認",
+      "url": "https://www.gottman.com/blog/fondness-and-admiration-assessment/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-GISGRAT",
+      "kind": "web",
+      "title": "G is for Gratitude",
+      "short": "公式：感謝のG",
+      "url": "https://www.gottman.com/blog/g-is-for-gratitude/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-ONGRAT",
+      "kind": "web",
+      "title": "On Gratitude: 3 Lessons This Realist Needs to Learn",
+      "short": "公式：感謝の3つの学び",
+      "url": "https://www.gottman.com/blog/on-gratitude-3-lessons-this-realist-needs-to-learn/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-RITGRAT",
+      "kind": "web",
+      "title": "Rituals of Gratitude",
+      "short": "公式：感謝の儀式",
+      "url": "https://www.gottman.com/blog/rituals-of-gratitude/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BETTERBID",
+      "kind": "web",
+      "title": "3 Ways to Make a Better Bid for Connection",
+      "short": "公式：よりよい呼びかけ",
+      "url": "https://www.gottman.com/blog/3-ways-to-make-a-better-bid-for-connection/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-TURNAWAY",
+      "kind": "web",
+      "title": "A Deeper Look Into Turning Away From Your Partner",
+      "short": "公式：そっぽを向く",
+      "url": "https://www.gottman.com/blog/a-deeper-look-into-turning-away-from-your-partner/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-TURNTO",
+      "kind": "web",
+      "title": "A Deeper Look Into Turning Towards Your Partner",
+      "short": "公式：向き合う",
+      "url": "https://www.gottman.com/blog/a-deeper-look-into-turning-towards-your-partner/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BIDBUST",
+      "kind": "web",
+      "title": "Bid Busters: Ways You Unintentionally Turn Away from Connection",
+      "short": "公式：呼びかけを壊す癖",
+      "url": "https://www.gottman.com/blog/bid-busters-ways-you-unintentionally-turn-away-from-connection/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-KNOWBIDS",
+      "kind": "web",
+      "title": "How to Know Your Bids",
+      "short": "公式：自分の呼びかけを知る",
+      "url": "https://www.gottman.com/blog/know-your-bids/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MINORBIDS",
+      "kind": "web",
+      "title": "Thanksgiving: A List Of Minor Bids for Connection",
+      "short": "公式：小さな呼びかけの例",
+      "url": "https://www.gottman.com/blog/list-minor-bids-connection/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-RECOGBIDS",
+      "kind": "web",
+      "title": "Dr. Gottman’s Guide to Recognizing Bids",
+      "short": "公式：呼びかけの見分け方",
+      "url": "https://www.gottman.com/blog/self-care-friendship-and-dr-gottmans-guide-to-recognizing-bids/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-TURNFRIEND",
+      "kind": "web",
+      "title": "Ways To Turn Towards Your Friends",
+      "short": "公式：友人への向き合い",
+      "url": "https://www.gottman.com/blog/self-care-ways-to-turn-towards-your-friends/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-3POS",
+      "kind": "web",
+      "title": "3 Ways to Keep Your Relationship in the Positive Perspective",
+      "short": "公式：ポジティブな視点の3つ",
+      "url": "https://www.gottman.com/blog/3-ways-to-keep-your-relationship-in-the-positive-perspective/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-TOOMUCHNEG",
+      "kind": "web",
+      "title": "Can a Relationship Have Too Much Negativity?",
+      "short": "公式：ネガティブは多すぎないか",
+      "url": "https://www.gottman.com/blog/can-a-relationship-have-too-much-negativity/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-12MYTHS",
+      "kind": "web",
+      "title": "Debunking 12 Myths About Relationships",
+      "short": "公式：関係の12の神話",
+      "url": "https://www.gottman.com/blog/debunking-12-myths-about-relationships/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-3MONEY",
+      "kind": "web",
+      "title": "Debunking 3 Myths About Money in Marriage",
+      "short": "公式：お金の3つの神話",
+      "url": "https://www.gottman.com/blog/debunking-3-myths-about-money-in-marriage/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-5PREMYTH",
+      "kind": "web",
+      "title": "Debunking 5 Myths About Premarital Conflict",
+      "short": "公式：結婚前の対立の神話",
+      "url": "https://www.gottman.com/blog/debunking-5-myths-about-premarital-conflict/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-TRIALSEP",
+      "kind": "web",
+      "title": "Do Trial Separations Work?",
+      "short": "公式：お試し別居",
+      "url": "https://www.gottman.com/blog/do-trial-separations-work/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。 2026-10-05：day66では使わず、新婚向けレッスンに差し替え。"
+    },
+    {
+      "id": "G-5MYTHS",
+      "kind": "web",
+      "title": "Five Relationship Myths That Refuse to Go Away",
+      "short": "公式：消えない5つの神話",
+      "url": "https://www.gottman.com/blog/five-relationship-myths-that-refuse-to-go-away/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-POSVIEW",
+      "kind": "web",
+      "title": "Love Quiz: How Positively Do You View Your Partner?",
+      "short": "公式：相手をどう見ているか",
+      "url": "https://www.gottman.com/blog/how-positively-do-you-view-your-partner/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-3HABITS",
+      "kind": "web",
+      "title": "3 Daily Habits That are Better for Your Marriage Than an Exotic Vacation",
+      "short": "公式：毎日の3つの習慣",
+      "url": "https://www.gottman.com/blog/3-daily-habits-that-are-better-for-your-marriage-than-an-exotic-vacation/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-3RITUALS",
+      "kind": "web",
+      "title": "3 Daily Rituals That Stop Spouses from Taking Each Other for Granted",
+      "short": "公式：当たり前にしない3つの儀式",
+      "url": "https://www.gottman.com/blog/3-daily-rituals-that-stop-spouses-from-taking-each-other-for-granted/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-STRESSHOL",
+      "kind": "web",
+      "title": "How to Stress-Proof Your Relationship This Holiday Season",
+      "short": "公式：季節のストレス対策",
+      "url": "https://www.gottman.com/blog/5-tips-to-stress-proof-your-marriage-this-holiday-season/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-TRUSTSTRESS",
+      "kind": "web",
+      "title": "Building Trust In Stressful Times",
+      "short": "公式：ストレス下の信頼",
+      "url": "https://www.gottman.com/blog/building-trust-in-stressful-times/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DITCHSTRESS",
+      "kind": "web",
+      "title": "Ditch the Holiday Stress and Reconnect",
+      "short": "公式：ストレスを置いてつながる",
+      "url": "https://www.gottman.com/blog/ditch-the-holiday-stress-and-reconnect/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-EMOATTR",
+      "kind": "web",
+      "title": "Emotional Attraction: The Stress-Reducing Conversation",
+      "short": "公式：ストレスを減らす会話（魅力）",
+      "url": "https://www.gottman.com/blog/emotional-attraction-the-stress-reducing-conversation/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-STRESSDIS",
+      "kind": "web",
+      "title": "How Stress Affects Relationships",
+      "short": "公式：ストレスと不満",
+      "url": "https://www.gottman.com/blog/how-stress-can-cause-relationship-dissatisfaction/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HOWSTRC",
+      "kind": "web",
+      "title": "How to Have A Stress-Reducing Conversation",
+      "short": "公式：ストレスを減らす会話のやり方",
+      "url": "https://www.gottman.com/blog/how-to-stress-reducing-conversation/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-COMPLAIN",
+      "kind": "web",
+      "title": "A Couple’s Guide to Complaining",
+      "short": "公式：不満の伝え方",
+      "url": "https://www.gottman.com/blog/a-couples-guide-to-complaining/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-ATLAS",
+      "kind": "web",
+      "title": "Brené Brown’s Atlas of the Heart: Defensiveness and Flooding",
+      "short": "公式：自己弁護とフラッディング",
+      "url": "https://www.gottman.com/blog/brene-browns-atlas-of-the-heart-defensiveness-and-flooding/",
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-NEWLYWED",
+      "kind": "web",
+      "title": "N is for Newlyweds",
+      "short": "公式：新婚の優先事項",
+      "url": "https://www.gottman.com/blog/n-is-for-newlyweds/",
+      "note": "Phase1b follow-up（2026-10-05）：day66の差し替え用。原文を読んでレッスン化した。"
     }
   ]
 }
