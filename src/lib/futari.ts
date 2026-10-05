@@ -43,34 +43,59 @@ export function lessonDayNumber(today:string,startedAt:string){
   if(n<0)return 1;
   return (n%365)+1;
 }
-export type TodayLesson={
-  dayNumber:number,
+/** いま書いてあるカレンダー枠の本数（Phase1b batch1＝91）。後続バッチで増える。 */
+export function lessonCalendarLength(){return lessonCalendar?.days?.length||0;}
+/**
+ * 1–365 の「何日目」を、いまあるカレンダー枠へ写す。
+ * 枠が91なら 92→1・93→2…（二周目以降）。空欄にしない。
+ */
+export function resolveCalendarEntry(dayNumber:number):{
+  contentDay:number,
+  revisit:boolean,
   kind:'lesson'|'practice'|'review'|'empty',
   lesson:Lesson|null,
   concept:string,
-  weekLessons:{date:string,label:string,dayNumber:number,kind:string,lesson:Lesson|null,concept:string,isToday:boolean}[],
+}{
+  const batch=lessonCalendar?.days||[];
+  const n=batch.length;
+  if(!n||dayNumber<1)return {contentDay:dayNumber,revisit:false,kind:'empty',lesson:null,concept:''};
+  const contentDay=((dayNumber-1)%n)+1;
+  const revisit=dayNumber>n;
+  const entry=batch.find(d=>d.day===contentDay);
+  if(!entry)return {contentDay,revisit,kind:'empty',lesson:null,concept:''};
+  const kind=entry.kind;
+  const lesson=entry.lessonId?lessonById[entry.lessonId]||null:null;
+  const concept=entry.concept||'';
+  return {contentDay,revisit,kind,lesson,concept};
+}
+export type TodayLesson={
+  dayNumber:number,
+  contentDay:number,
+  revisit:boolean,
+  kind:'lesson'|'practice'|'review'|'empty',
+  lesson:Lesson|null,
+  concept:string,
+  weekLessons:{date:string,label:string,dayNumber:number,contentDay:number,revisit:boolean,kind:string,lesson:Lesson|null,concept:string,isToday:boolean}[],
 };
 const LABELS=['月','火','水','木','金','土','日'];
 export function todayLesson(today:string,startedAt:string):TodayLesson{
   const dayNumber=lessonDayNumber(today,startedAt);
-  const entry=lessonCalendar?.days.find(d=>d.day===dayNumber);
-  const kind=(entry?.kind||'empty') as TodayLesson['kind'];
-  const lesson=entry?.lessonId?lessonById[entry.lessonId]||null:null;
-  const concept=entry?.concept||'';
+  const slot=resolveCalendarEntry(dayNumber);
   // 今週（月曜はじまり）の一覧：見のがし用
   const days=weekOf(today);
   const weekLessons=days.map((date,i)=>{
     const dn=lessonDayNumber(date,startedAt);
-    const e=lessonCalendar?.days.find(d=>d.day===dn);
+    const s=resolveCalendarEntry(dn);
     return {
       date,label:LABELS[i],dayNumber:dn,
-      kind:e?.kind||'empty',
-      lesson:e?.lessonId?lessonById[e.lessonId]||null:null,
-      concept:e?.concept||'',
+      contentDay:s.contentDay,revisit:s.revisit,
+      kind:s.kind,
+      lesson:s.lesson,
+      concept:s.concept,
       isToday:date===today,
     };
   });
-  return {dayNumber,kind,lesson,concept,weekLessons};
+  return {dayNumber,contentDay:slot.contentDay,revisit:slot.revisit,kind:slot.kind,lesson:slot.lesson,concept:slot.concept,weekLessons};
 }
 
 

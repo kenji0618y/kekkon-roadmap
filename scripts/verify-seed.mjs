@@ -228,7 +228,7 @@ const fcards = loadJson('src/data/futari-cards.json') || {};
 const flessons = loadJson('src/data/futari-lessons.json') || {};
 const fguide = loadJson('src/data/futari-guide.json') || {};
 const gIds = new Set((gsrc.sources || []).map((x) => x.id));
-check('futari.sources', gIds.size, 86);
+check('futari.sources', gIds.size, 87);
 check('futari.ai_allowed_sources', (gsrc.ai_allowed || []).length, 17, true);
 for (const id of gsrc.ai_allowed || []) if (!gIds.has(id)) fail.push(`futari.ai_allowed: ${id} が出典表にありません`);
 for (const x of gsrc.sources || []) {
@@ -265,6 +265,32 @@ for (const d of calDays) {
   if (d.kind === 'lesson') {
     if (!d.lessonId) fail.push(`futari.calendar: day ${d.day} に lessonId がありません`);
     else if (!lessonArr.some((l) => l.id === d.lessonId)) fail.push(`futari.calendar: day ${d.day} の ${d.lessonId} が lessons にありません`);
+  }
+}
+// 1–365 は空欄にしない：いまあるカレンダー枠を順に繰り返し（二周目以降＝もう一度）
+{
+  const n = calDays.length;
+  if (n < 1) fail.push('futari.calendar: days が空です');
+  else {
+    const byDay = new Map(calDays.map((d) => [d.day, d]));
+    for (let dayNumber = 1; dayNumber <= 365; dayNumber++) {
+      const contentDay = ((dayNumber - 1) % n) + 1;
+      const entry = byDay.get(contentDay);
+      if (!entry) { fail.push(`futari.calendar: contentDay ${contentDay} がありません（dayNumber=${dayNumber}）`); break; }
+      if (!['lesson', 'practice', 'review'].includes(entry.kind)) {
+        fail.push(`futari.calendar: day ${contentDay} の kind が不正（365写像）`); break;
+      }
+      if (entry.kind === 'lesson') {
+        if (!entry.lessonId || !lessonArr.some((l) => l.id === entry.lessonId)) {
+          fail.push(`futari.calendar: day ${contentDay} のレッスンが解決できません（365写像 dayNumber=${dayNumber}）`); break;
+        }
+      } else if (!String(entry.concept || '').trim()) {
+        fail.push(`futari.calendar: day ${contentDay} の ${entry.kind} に concept がありません（365写像）`); break;
+      }
+    }
+    if (!fail.some((f) => String(f).includes('365写像') || String(f).includes('contentDay'))) {
+      ok.push('futari.calendar: every day 1–365 resolves to real content (wrap)');
+    }
   }
 }
 for (const l of lessonArr.filter((x) => !x.video)) {
@@ -394,6 +420,7 @@ const uiChecks = [
   ['Site lock: 「この端末の合言葉を消す」 in 詳細設定 (IndexedDB only, notebook untouched)', notebook.includes('<SiteLockSettings/>') && (sl => sl.includes('この端末の合言葉を消す') && sl.includes('手帳の記録は消えません'))(readText('src/components/SiteLockSettings.tsx')) && (lib => lib.includes("const DB = 'site-lock'") && !/localStorage/.test(lib.replace(/^\s*(\/\*\*|\*).*$/gm, '')))(readText('src/lib/site-lock.ts'))],
   // 2026-10-03 xAI キーはアプリに同梱しない（難読化した同梱キーを削除）。キーは 設定 → 詳細設定 で入れた端末内の localStorage だけ。
   ['Grok key: user-entered only (no bundled key file / decoder / VITE_), no-key message points to 詳細設定', !existsSync(join(root, 'src/lib/amity-grok-bundle.ts')) && (g => !/amity-grok-bundle|loadBundledGrokKey|import\.meta\.env/.test(g) && g.includes("localStorage.getItem(GROK_KEY_LS)") && /GROK_NO_KEY_JA =[^;]*詳細設定/.test(g))(readText('src/lib/amity-grok.ts')) && readText('src/components/DeskChatPanel.tsx').includes('GROK_NO_KEY_JA') && !/VITE_[A-Z_]*(GROK|XAI)/.test(readText('vite.config.ts'))],
+  ['futari calendar wrap: resolveCalendarEntry + もう一度 UI', (f => f.includes('export function resolveCalendarEntry') && f.includes('lessonCalendarLength') && /\(\(dayNumber-1\)%n\)\+1/.test(f.replace(/\s/g,'')))(readText('src/lib/futari.ts')) && (fd => fd.includes('もう一度') && fd.includes('slot.revisit'))(readText('src/components/FutariDaily.tsx'))],
   ['futari answers in book schema', readText('src/lib/model.ts').includes('futari:futariSchema') && readText('src/lib/use-book.ts').includes("action==='futariAnswer'") && readText('src/lib/use-book.ts').includes('mergeFutari')],
 ];
 

@@ -576,7 +576,7 @@
       "title": "Do Trial Separations Work?",
       "short": "公式：お試し別居",
       "url": "https://www.gottman.com/blog/do-trial-separations-work/",
-      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+      "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。 2026-10-05：day66では使わず、新婚向けレッスンに差し替え。"
     },
     {
       "id": "G-5MYTHS",
@@ -673,6 +673,14 @@
       "short": "公式：自己弁護とフラッディング",
       "url": "https://www.gottman.com/blog/brene-browns-atlas-of-the-heart-defensiveness-and-flooding/",
       "note": "Phase1b batch1（2026-10-05）で追加。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-NEWLYWED",
+      "kind": "web",
+      "title": "N is for Newlyweds",
+      "short": "公式：新婚の優先事項",
+      "url": "https://www.gottman.com/blog/n-is-for-newlyweds/",
+      "note": "Phase1b follow-up（2026-10-05）：day66の差し替え用。原文を読んでレッスン化した。"
     }
   ]
 }

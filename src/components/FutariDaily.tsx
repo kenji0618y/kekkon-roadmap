@@ -302,15 +302,17 @@ function TodayLessonBlock({today,startedAt,onList,onMeeting}:{today:string,start
   const slot=todayLesson(today,startedAt);
   const [openId,setOpenId]=useState('');
   return <article className="fu-card" id="futari-lesson">
-    <div className="fu-card-h"><span><i className="fu-dot sage"/>今日のレッスン</span><small>{slot.kind==='practice'?'実践の日':slot.kind==='review'?'ふり返りの日':slot.lesson?.video?'字幕つき動画':'文字レッスン'} ・ {slot.dayNumber}日目</small></div>
-    {slot.kind==='lesson'&&slot.lesson&&<LessonBody lesson={slot.lesson} onList={onList}/>}
+    <div className="fu-card-h"><span><i className="fu-dot sage"/>今日のレッスン</span><small>{slot.kind==='practice'?'実践の日':slot.kind==='review'?'ふり返りの日':slot.lesson?.video?'字幕つき動画':'文字レッスン'} ・ {slot.dayNumber}日目{slot.revisit?' ・ もう一度':''}</small></div>
+    {slot.kind==='lesson'&&slot.lesson&&<>{slot.revisit&&<p className="fu-revisit" role="status">もう一度：以前みたレッスンです（{slot.contentDay}日目の内容）。忘れているところだけ、もう一度やってみてください。</p>}<LessonBody lesson={slot.lesson} onList={onList}/></>}
     {slot.kind==='practice'&&<div className="fu-lesson">
+      {slot.revisit&&<p className="fu-revisit" role="status">もう一度：以前の実践の日と同じ進め方です。</p>}
       <p className="eyebrow">実践の日</p>
       <h3>今週の「{slot.concept||'テーマ'}」を、一つやってみる</h3>
       <p>月〜金のレッスンから一つ選び、書いてある「今日やってみること」だけ試してください。うまくいかなくても、やったこと自体が前進です。</p>
       <WeekLessonList items={slot.weekLessons.filter(w=>w.kind==='lesson')} openId={openId} setOpenId={setOpenId}/>
     </div>}
     {slot.kind==='review'&&<div className="fu-lesson">
+      {slot.revisit&&<p className="fu-revisit" role="status">もう一度：以前のふり返りの日と同じ進め方です。</p>}
       <p className="eyebrow">ふり返りの日 ・ ふたり会議</p>
       <h3>今週の「{slot.concept||'テーマ'}」をふり返る</h3>
       <p>今週のレッスンをながめ、「いちばん心に残ったこと」を一言ずつ話します。そのあと、いつものふたり会議へ。</p>
@@ -318,9 +320,9 @@ function TodayLessonBlock({today,startedAt,onList,onMeeting}:{today:string,start
       <button type="button" className="fu-text-btn" onClick={onMeeting}>ふたり会議を開く<ChevronRight size={14}/></button>
     </div>}
     {slot.kind==='empty'&&<div className="fu-lesson">
-      <p className="eyebrow">これからのレッスン</p>
-      <h3>この日の本文は、これから足していきます</h3>
-      <p>いまは上の「今日の一問」を二人でやり、動画一覧から気になるテーマを見てください。</p>
+      <p className="eyebrow">レッスン</p>
+      <h3>この日の枠を読み込めませんでした</h3>
+      <p>上の「今日の一問」を二人でやり、動画一覧から気になるテーマを見てください。ふだんは1〜365日すべてにレッスンが割り当てられます。</p>
       <button type="button" className="fu-text-btn" onClick={onList}>動画一覧を見る<ChevronRight size={14}/></button>
     </div>}
     {slot.kind==='lesson'&&<div className="fu-week-lessons">
@@ -330,14 +332,14 @@ function TodayLessonBlock({today,startedAt,onList,onMeeting}:{today:string,start
   </article>;
 }
 
-function WeekLessonList({items,openId,setOpenId,compact}:{items:{date:string,label:string,dayNumber:number,kind:string,lesson:Lesson|null,concept:string,isToday:boolean}[],openId:string,setOpenId:(v:string)=>void,compact?:boolean}){
+function WeekLessonList({items,openId,setOpenId,compact}:{items:{date:string,label:string,dayNumber:number,kind:string,lesson:Lesson|null,concept:string,isToday:boolean,revisit?:boolean}[],openId:string,setOpenId:(v:string)=>void,compact?:boolean}){
   return <ul className={`fu-week-ll${compact?' compact':''}`}>
     {items.map(w=>{
       const key=w.date;
       const title=w.kind==='practice'?'実践の日':w.kind==='review'?'ふり返りの日':(w.lesson?.title||'準備中');
       return <li key={key} className={w.isToday?'now':''}>
         <button type="button" className="fu-week-ll-btn" onClick={()=>setOpenId(openId===key?'':key)} disabled={w.kind!=='lesson'||!w.lesson}>
-          <span className="d">{w.label}</span><span className="t">{title}</span>{w.lesson?.video?<span className="tag">動画</span>:w.kind==='lesson'&&w.lesson?<span className="tag">文字</span>:null}
+          <span className="d">{w.label}</span><span className="t">{title}</span>{w.revisit?<span className="tag revisit">もう一度</span>:null}{w.lesson?.video?<span className="tag">動画</span>:w.kind==='lesson'&&w.lesson?<span className="tag">文字</span>:null}
         </button>
         {openId===key&&w.lesson&&<div className="fu-week-ll-body"><LessonBody lesson={w.lesson} compact/></div>}
       </li>;
