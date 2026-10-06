@@ -7,7 +7,7 @@
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { unlockSiteJson, decryptFile, unb64 } from './core.mjs';
+import { unlockSiteJson, decryptFile, unb64, PLAIN_ICONS, plainIconProblem } from './core.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const dist = process.argv[2] || join(here, '../../dist');
@@ -40,10 +40,12 @@ const scrub = (rel, text) => rel !== 'site.json' ? text : JSON.stringify(JSON.pa
 const unlockTemplate = readFileSync(join(here, 'unlock.html'), 'utf8');
 const files = walk(dist).map((p) => relative(dist, p).split('\\').join('/'));
 const blobs = [];
+const icons = [];
 for (const rel of files) {
   const abs = join(dist, rel);
   if (/^enc\/[0-9a-f]{32}\.bin$/.test(rel)) { blobs.push(rel); continue; }
   if (rel === '.nojekyll') { if (statSync(abs).size) fail.push('.nojekyll は空のはず'); continue; }
+  if (PLAIN_ICONS.includes(rel)) { const why = plainIconProblem(readFileSync(abs)); if (why) fail.push(`${rel}（平文のアイコン）: ${why}`); else icons.push(rel); continue; }
   const isUnlock = rel === 'index.html' || /^[\w.-]+(\/[\w.-]+)*\/index\.html$/.test(rel);
   if (!(isUnlock || rel === 'sw.js' || rel === 'site.json')) { fail.push(`平文で残ってはいけないファイル: ${rel}`); continue; }
   const text = readFileSync(abs, 'utf8');
@@ -60,7 +62,13 @@ for (const rel of files) {
     if (/(src|href)="https?:/.test(text)) fail.push(`${rel} が外のファイルを読み込んでいる`);
   }
 }
-if (!fail.length) ok.push(`平文のファイルは解錠ページ・sw.js・site.json・.nojekyll だけ（暗号文 ${blobs.length} 個）`);
+if (!fail.length) ok.push(`平文のファイルは解錠ページ・sw.js・site.json・.nojekyll・ホーム画面のアイコン ${icons.length} 個だけ（暗号文 ${blobs.length} 個）`);
+if (existsSync(join(dist, 'index.html'))) {
+  const m = /<link rel="apple-touch-icon" href="([^"]+)">/.exec(readFileSync(join(dist, 'index.html'), 'utf8'));
+  const target = m && m[1].replace(/^\.\//, '');
+  if (!target || !icons.includes(target)) fail.push(`解錠ページの apple-touch-icon（${m ? m[1] : 'なし'}）が平文のアイコンを指していない`);
+  else ok.push(`解錠ページの apple-touch-icon → ${target}（平文・合言葉なしで取れる）`);
+}
 
 const MAGIC = [[0x89, 0x50, 0x4e, 0x47], [0xff, 0xd8, 0xff], [0x47, 0x49, 0x46, 0x38], [0x52, 0x49, 0x46, 0x46], [0x77, 0x4f, 0x46, 0x32]];
 const TEXTY = ['<!do', '<htm', '<svg', 'impo', 'expo', '{"', 'func', 'var ', 'cons', '/*'];

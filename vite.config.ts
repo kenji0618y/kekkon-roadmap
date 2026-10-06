@@ -21,7 +21,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "wedding-washi.png", "desk-mascot.png", "amity-shark.png", "icons/apple-touch-icon.png"],
+      includeAssets: ["favicon.svg", "wedding-washi.png", "desk-mascot.png", "amity-shark.png", "icons/apple-touch-icon.png", "icons/pwa-maskable-512.png"],
       manifest: {
         // ホーム画面の名前（2026-10-03〜）。チャットの機能名「Amityちゃんにきく」はアプリの中だけ。
         name: "結婚ロードマップ",
@@ -37,7 +37,7 @@ export default defineConfig({
         icons: [
           { src: "icons/pwa-192.png", sizes: "192x192", type: "image/png" },
           { src: "icons/pwa-512.png", sizes: "512x512", type: "image/png" },
-          { src: "icons/pwa-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          { src: "icons/pwa-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
       workbox: {
