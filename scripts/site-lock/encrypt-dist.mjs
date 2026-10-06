@@ -3,12 +3,13 @@
  * ビルド後の dist を合言葉で暗号化する（公開する前に必ず通す）。
  *   SITE_PASSPHRASE=… node scripts/site-lock/encrypt-dist.mjs [dist]
  * 合言葉が無いときは失敗する（平文のまま公開しない）。合言葉は表示もファイル出力もしない。
- * 平文で残すのは: 解錠ページ（index.html と各フォルダの index.html）・sw.js・site.json・.nojekyll・enc/*.bin（暗号文）だけ。
+ * 平文で残すのは: 解錠ページ（index.html と各フォルダの index.html）・sw.js・site.json・.nojekyll・enc/*.bin（暗号文）・
+ *   ホーム画面のアイコン（core.mjs の PLAIN_ICONS。絵だけ・文字なし）だけ。
  */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, rmSync, statSync, existsSync } from 'node:fs';
 import { join, relative, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ITERATIONS, SITE_KEY_SALT, CHUNK, pbkdf2, subKeys, encryptFile, gcmSeal, aesKey, b64, hex, crypto } from './core.mjs';
+import { ITERATIONS, SITE_KEY_SALT, CHUNK, PLAIN_ICONS, plainIconProblem, pbkdf2, subKeys, encryptFile, gcmSeal, aesKey, b64, hex, crypto } from './core.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const dist = process.argv[2] || join(here, '../../dist');
@@ -47,7 +48,12 @@ function walk(dir, out = []) {
 const all = walk(dist).map((p) => relative(dist, p).split('\\').join('/'));
 // vite-plugin-pwa の workbox の sw.js は使わない（中身のファイル名一覧が平文で入るため）。下で解錠つきの sw.js に置き換える。
 const drop = (rel) => rel === 'sw.js' || /^workbox-[\w-]+\.js(\.map)?$/.test(rel) || rel === 'registerSW.js' || rel === 'sw.js.map';
-const keepPlain = (rel) => rel === '.nojekyll';
+const keepPlain = (rel) => rel === '.nojekyll' || PLAIN_ICONS.includes(rel);
+for (const rel of PLAIN_ICONS) {
+  if (!all.includes(rel)) continue;
+  const why = plainIconProblem(readFileSync(join(dist, rel)));
+  if (why) die(`${rel} を平文で置けません: ${why}（文字の入らない PNG にしてください）`);
+}
 
 const siteKey = await pbkdf2(passphrase, SITE_KEY_SALT, ITERATIONS);
 const salt = crypto.getRandomValues(new Uint8Array(16));

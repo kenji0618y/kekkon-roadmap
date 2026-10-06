@@ -106,4 +106,27 @@ export async function unlockSiteJson(site, passphrase) {
   return { siteKey, keys, manifest };
 }
 
+/**
+ * ホーム画面のアイコンだけは平文で置く（2026-10-06〜・Kenji の依頼）。
+ * iPhone の「ホーム画面に追加」はアイコンを service worker を通さずに取りに行くことがあり、暗号文だと絵が出ないため。
+ * 絵だけで文字・名前は入れない（PNG の文字のかたまりは置かない＝verify-dist が確かめる）。
+ */
+export const PLAIN_ICONS = ['icons/apple-touch-icon.png', 'icons/pwa-192.png', 'icons/pwa-512.png', 'icons/pwa-maskable-512.png'];
+const PNG_SIG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+const PNG_TEXT = new Set(['tEXt', 'iTXt', 'zTXt', 'eXIf']);
+/** 平文で置いてよいアイコンか（PNG・30万バイト以下・文字のかたまりなし）。問題があれば理由、なければ null。 */
+export function plainIconProblem(buf) {
+  if (buf.length > 300000) return '大きすぎる';
+  if (!PNG_SIG.every((b, i) => buf[i] === b)) return 'PNG ではない';
+  let off = 8;
+  while (off + 8 <= buf.length) {
+    const len = buf.readUInt32BE(off);
+    const type = buf.subarray(off + 4, off + 8).toString('latin1');
+    if (PNG_TEXT.has(type)) return `文字のかたまり（${type}）が入っている`;
+    if (type === 'IEND') return off + 12 === buf.length ? null : 'IEND のあとに余分なデータ';
+    off += 12 + len;
+  }
+  return 'PNG が途中で切れている';
+}
+
 export { crypto };
