@@ -76,3 +76,18 @@ LINE Notify は終了済みなので、**無料の LINE 公式アカウント + 
 | 5秒以内にアプリを閉じた | 送らない（取り消しの猶予と同じ扱い） |
 
 ファイル: `src/lib/stamp-notify.ts`（決まりの本体・時計とタイマーを差しかえてテストできる）、`src/Notebook.tsx` の `noteStampChange`（`togglePairCheck` と `saveRecord` からだけ呼ぶ）、`scripts/tests/stamp-notify.test.ts`（`npm run test:line`）。
+
+## 手帳を開いたときも知らせる（2026-10-05）
+
+合言葉で解錠したあと、手帳アプリが使える状態になったとき、相手の LINE に「けんじさんが手帳を開きました」などと届く（掲示板と同じ `kind:"board"`）。
+
+| 決まり | 中身 |
+|---|---|
+| いつ送るか | 「LINE通知を使う」がオンで、解錠後のアプリが ready、かつ「この端末はどちら？」が決まっているとき |
+| 送らないとき | LINE オフ／準備中／どちら？未設定／合言葉入力失敗 |
+| 回数 | **この端末で6時間に1回**（localStorage `login-line-sent-v1`）。リロード連打では増やさない |
+| 誰が開いたか | `readMe()`（n1/n2）とプロフィールの呼び名。中継先が相手の LINE へ push（既存どおり） |
+| 待たせない | 開く動作は通知を待たない。失敗しても画面に出さない |
+
+ファイル: `src/lib/login-notify.ts`、`src/Notebook.tsx`（ready 時）、`scripts/tests/login-notify.test.ts`（`npm run test:line`）。
+
