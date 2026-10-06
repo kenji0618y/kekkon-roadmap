@@ -84,7 +84,6 @@ export default function FutureNotebook(){
  const pairExport=useMemo(():CalendarEvent[]=>(book.events||[]).filter(e=>e.date&&difference(e.date,today)>=0).map(e=>({id:`pair-${e.id}`,title:e.title,deadline:{date:e.date,label:e.title,basis:e.note||'ふたりのカレンダーに入れた予定です。',kind:'personal' as const,uncertain:false}})),[book.events,today]);
  const weddingExport=useMemo(():CalendarEvent[]=>validDate(p.wdate)&&difference(p.wdate,today)>=0?[{id:'wedding-day',title:'婚姻日（予定日）',deadline:{date:p.wdate,label:'婚姻日',basis:'プロフィールに入れた婚姻日・予定日です。',kind:'personal' as const,uncertain:false}}]:[],[p.wdate,today]);
  const calendarEvents=useMemo(():CalendarEvent[]=>[...weddingExport,...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline})),...absExport,...pairExport],[weddingExport,dated,absExport,pairExport]);
- const exportSummary=[weddingExport.length?'婚姻日':'',dated.length?`手続きの期限・予定日 ${dated.length}件`:'',absExport.length?`制度の締切 ${absExport.length}件`:'',pairExport.length?`カレンダーの予定 ${pairExport.length}件`:''].filter(Boolean).join('・');
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
   const da=nearestDeadline(a,p,book.records[a.id])?.date||'9999',db=nearestDeadline(b,p,book.records[b.id])?.date||'9999';
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
@@ -224,7 +223,7 @@ export default function FutureNotebook(){
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や「カレンダー」のタブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">
- <SectionTitle eyebrow="カレンダー" title="カレンダーで、ふたりの予定を。" sub={(()=>{const w=pairEventWhoLabels(p);return `月のカレンダーが中心です。制度の締切は日付に点で出ます。${w.male}・${w.female}・ふたりで予定を残せます。`;})()}><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action><p className="hint export-cal-hint">{calendarEvents.length?`書き出す内容：${exportSummary}。`:'書き出せる予定はまだありません。'}{missingDates.length?'引っ越し日・出生日などを入れると、届出の期限も入ります。':''}</p></div></SectionTitle>
+ <div className="section-title deadlines-head"><h1 className="sr-only">カレンダー</h1><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length&&<p className="hint export-cal-hint">書き出せる予定はまだありません。</p>}</div></div>
  <nav className="deadlines-mini-nav" aria-label="カレンダータブ内の節">
   <a href="#deadline-block-calendar">カレンダー</a>
   <a href="#deadline-block-hero">数字</a>
