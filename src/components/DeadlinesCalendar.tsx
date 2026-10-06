@@ -199,9 +199,6 @@ export function DeadlinesCalendar({
   return (
     <section id="deadline-block-calendar" className="deadline-block cal-block" aria-label="ふたりのカレンダー">
       <h2 className="deadline-block-label">ふたりのカレンダー</h2>
-      <p className="deadline-block-intro">
-        日付をタップして、{whoLabels.male}・{whoLabels.female}・ふたりの予定を残せます。制度の締切も同じ月に点で出ます。
-      </p>
 
       <div className="cal-month-bar">
         <button type="button" className="cal-nav-btn" onClick={() => shiftMonth(-1)} aria-label="前の月">
