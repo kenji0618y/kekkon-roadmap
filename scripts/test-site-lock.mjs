@@ -16,6 +16,7 @@ import { webcrypto } from 'node:crypto';
 import { unlockSiteJson, CHUNK } from './site-lock/core.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
+const ICON = readFileSync(join(here, '../public/icons/apple-touch-icon.png'));
 const ENC = join(here, 'site-lock/encrypt-dist.mjs');
 const VER = join(here, 'site-lock/verify-dist.mjs');
 const PASS = 'test-only passphrase 0123';
@@ -39,6 +40,7 @@ function makeDist() {
   w('futari/lesson1.mp4', video);
   w('sw.js', 'workbox precache');
   w('workbox-123abc.js', 'workbox');
+  w('icons/apple-touch-icon.png', ICON);
   w('.nojekyll', '');
   return { d, png, video };
 }
@@ -65,7 +67,11 @@ const { d, png, video } = makeDist();
   if (v.status !== 0) console.error(v.stdout, v.stderr);
   t('二重の暗号化は断る', run(ENC, d, { SITE_PASSPHRASE: PASS }).status !== 0);
   const plain = readdirSync(d).sort().join(',');
-  t('平文はトップに解錠ページ・sw.js・site.json だけ', plain === '.nojekyll,enc,index.html,site.json,sub,sw.js');
+  t('平文はトップに解錠ページ・sw.js・site.json・アイコンだけ', plain === '.nojekyll,enc,icons,index.html,site.json,sub,sw.js');
+  t('ホーム画面のアイコンは平文のまま（元どおり）', readFileSync(join(d, 'icons/apple-touch-icon.png')).equals(ICON));
+  t('解錠ページが平文のアイコンを指す', readFileSync(join(d, 'index.html'), 'utf8').includes('<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">'));
+  t('フォルダの解錠ページも上のアイコンを指す', readFileSync(join(d, 'sub/index.html'), 'utf8').includes('href="../icons/apple-touch-icon.png"'));
+  t('検査がアイコンを確かめる', /apple-touch-icon → icons\/apple-touch-icon\.png/.test(v.stdout));
   t('フォルダのページの場所にも解錠ページ', readFileSync(join(d, 'sub/index.html'), 'utf8').includes('<title>合言葉を入れてください</title>'));
   const site = JSON.parse(readFileSync(join(d, 'site.json'), 'utf8'));
   let bad = false;
@@ -74,6 +80,7 @@ const { d, png, video } = makeDist();
   const { manifest } = await unlockSiteJson(site, PASS);
   t('一覧にページ・フォルダのページ・画像・動画', ['index.html', 'sub/index.html', 'phases/a.png', 'futari/lesson1.mp4', 'assets/index-abc.js'].every((p) => manifest.files[p]));
   t('workbox の sw.js は一覧に入れない', !manifest.files['workbox-123abc.js'] && !manifest.files['sw.js']);
+  t('平文のアイコンは暗号文の一覧に入れない', !manifest.files['icons/apple-touch-icon.png']);
 }
 
 // 3) 平文が混ざると検査が落ちる
@@ -81,6 +88,8 @@ for (const [name, fn] of [
   ['平文の画像', (x) => writeFileSync(join(x, 'leak.png'), png)],
   ['平文の JS', (x) => writeFileSync(join(x, 'enc', '0123456789abcdef0123456789abcdef.bin'), 'import x from "./a.js";'.repeat(400))],
   ['アプリの index.html', (x) => writeFileSync(join(x, 'index.html'), '<title>結婚ロードマップ</title>')],
+  ['アイコンに文字のかたまり', (x) => { const b = readFileSync(join(x, 'icons/apple-touch-icon.png')); const txt = Buffer.from('\0\0\0\x08tEXtTitle\0abc\0\0\0\0', 'latin1'); writeFileSync(join(x, 'icons/apple-touch-icon.png'), Buffer.concat([b.subarray(0, 33), txt, b.subarray(33)])); }],
+  ['アイコンが PNG でない', (x) => writeFileSync(join(x, 'icons/apple-touch-icon.png'), '<svg>結婚</svg>')],
   ['解錠ページに og タグ', (x) => writeFileSync(join(x, 'index.html'), readFileSync(join(x, 'index.html'), 'utf8').replace('</head>', '<meta property="og:title" content="x"></head>'))],
 ]) {
   const x = mkdtempSync(join(tmpdir(), 'sitelock-bad-'));
@@ -159,6 +168,8 @@ async function makeSw(withKey) {
   t('鍵がない端末: フォルダのページも解錠ページ', (await r2.text()).includes('合言葉を入れてください'));
   const r3 = await locked.get('phases/a.png');
   t('鍵がない端末: 絵は返らない', r3.status === 404);
+  const r4 = await locked.get('icons/apple-touch-icon.png');
+  t('鍵がない端末でもホーム画面のアイコンは返る', r4.status === 200 && Buffer.from(await r4.arrayBuffer()).equals(ICON));
 
   const sw = await makeSw(true);
   const app = await sw.get('', { mode: 'navigate' });
@@ -169,6 +180,8 @@ async function makeSw(withKey) {
   t('鍵のある端末: フォルダのページはアプリに差し替わらない', (await pv.text()).includes('別のページ 結婚'));
   const pv2 = await sw.get('sub', { mode: 'navigate' });
   t('フォルダのページ（/なし）は / つきへ', pv2.status === 301);
+  const ic = await sw.get('icons/apple-touch-icon.png');
+  t('鍵のある端末: アイコンも返る', ic.status === 200 && Buffer.from(await ic.arrayBuffer()).equals(ICON));
   const img = await sw.get('phases/a.png');
   t('絵が元どおり', Buffer.from(await img.arrayBuffer()).equals(png) && img.headers.get('content-type') === 'image/png');
   const js = await sw.get('assets/index-abc.js');
