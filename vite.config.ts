@@ -23,9 +23,9 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "wedding-washi.png", "desk-mascot.png", "amity-shark.png", "icons/apple-touch-icon.png", "icons/pwa-maskable-512.png"],
       manifest: {
-        // ホーム画面の名前（2026-10-03〜）。チャットの機能名「Amityちゃんにきく」はアプリの中だけ。
-        name: "結婚ロードマップ",
-        short_name: "結婚ロードマップ",
+        // ホーム画面の名前（2026-10-07〜「Amityちゃん」。前は「結婚ロードマップ」）。チャットの機能名「Amityちゃんにきく」はそのまま。
+        name: "Amityちゃん",
+        short_name: "Amityちゃん",
         description: "広島市・式なし・共働き向けの結婚ロードマップ。手続きと除外。結婚新生活支援は未導入。",
         theme_color: "#183645",
         background_color: "#f6f4ee",
