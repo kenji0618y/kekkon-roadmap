@@ -31,7 +31,7 @@ export const KIND_LABELS: Record<QuickSearchKind, string> = {
   tab: '画面',
   deadline: '期限',
   setting: '設定',
-  pair: 'ふたり',
+  pair: '博士',
 };
 
 function norm(s: string) {
@@ -68,7 +68,7 @@ export const TAB_HITS: Omit<QuickSearchHit, 'score'>[] = [
   { id: 'tab-desk', kind: 'tab', title: 'デスク', hint: 'いまの進みぐあい', tab: 'desk' },
   { id: 'tab-journey', kind: 'tab', title: 'ロードマップ', hint: 'スタンプ・章ごとの項目', tab: 'journey' },
   { id: 'tab-deadlines', kind: 'tab', title: 'カレンダー', hint: 'カレンダー・制度締切・ふたりの予定', tab: 'deadlines' },
-  { id: 'tab-pair', kind: 'tab', title: 'ふたり', hint: '今日の一問・レッスン動画・練習帳', tab: 'pair' },
+  { id: 'tab-pair', kind: 'tab', title: '博士', hint: '今日の一問・レッスン動画・練習帳', tab: 'pair' },
   { id: 'tab-find', kind: 'tab', title: '探す', hint: '項目の一覧検索', tab: 'find' },
   { id: 'tab-settings', kind: 'tab', title: '設定', hint: 'プロフィール・バックアップ', tab: 'settings' },
 ];
@@ -77,7 +77,7 @@ const TAB_ALIASES: Record<string, string[]> = {
   'tab-desk': ['デスク', '机', 'ホーム', 'home', 'desk'],
   'tab-journey': ['マップ', 'ロードマップ', 'スタンプ', '旅', 'journey', '地図'],
   'tab-deadlines': ['期限', '時期', '締切', 'カレンダー', 'deadlines', '予定'],
-  'tab-pair': ['ふたり', '練習帳', '会話', '合意', 'pair'],
+  'tab-pair': ['博士', 'ふたり', '練習帳', '会話', '合意', 'pair'],
   'tab-find': ['探す', '検索', '制度', 'find', 'さがす'],
   'tab-settings': ['設定', 'プロフィール', 'settings', 'せってい'],
 };

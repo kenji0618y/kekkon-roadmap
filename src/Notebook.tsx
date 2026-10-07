@@ -44,7 +44,7 @@ import {absoluteDeadlines,excludeItems,groups,homeContent,practices,relativeDead
 import {buildQuickSearchHits,groupQuickSearchHits,taskMatchesQuery,type QuickSearchHit} from './lib/quick-search';
 import yearlyUpdateMd from './data/YEARLY_UPDATE.md?raw';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
-const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'pair',label:'ふたり',short:'ふたり',icon:HeartHandshake},{id:'find',label:'探す',short:'探す',icon:Search},{id:'settings',label:'設定',short:'設定',icon:Settings2}];
+const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'pair',label:'博士',short:'博士',icon:HeartHandshake},{id:'find',label:'探す',short:'探す',icon:Search},{id:'settings',label:'設定',short:'設定',icon:Settings2}];
 type Modal='profile'|'pair'|null;
 export default function FutureNotebook(){
  const [tab,setTab]=useState('desk'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[chatOpen,setChatOpen]=useState(false);
