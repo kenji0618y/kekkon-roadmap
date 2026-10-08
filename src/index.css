@@ -1828,3 +1828,29 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .household-field{width:100%;margin:8px 0}
 .household-src{font-size:12px;color:#6a7973;line-height:1.6;border-top:1px dashed #dedfd6;padding-top:8px;margin:12px 0 0;width:100%}
 .household-src a{color:#1c3c4a;text-decoration:underline;display:inline-flex;align-items:center;gap:3px;word-break:break-all}
+
+/* あとで見る（ふたりで共有） */
+.later-mark{display:inline-flex;align-items:center;gap:3px;font-size:12px;color:#99773c;font-weight:700;border:1px solid #e6d9bf;background:#fffaf0;border-radius:6px;padding:2px 8px;white-space:nowrap;flex:none;line-height:1.6;cursor:pointer}
+.later-mark.on{background:#99773c;color:#fffefa;border-color:#99773c}
+.later-mark:disabled{opacity:.6;cursor:default}
+.later-mark:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.later-row{display:flex;justify-content:flex-end;margin:0 0 6px}
+.later-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.later-title-row>h3,.later-title-row>strong{min-width:0}
+.later-list .later-head h3{display:flex;align-items:center;gap:8px;margin:0 0 8px}
+.later-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 8px}
+.later-tabs button{font-size:12.5px;padding:3px 10px;border-radius:6px;border:1px solid #dedfd6;color:#526c5c;white-space:nowrap;background:#fff}
+.later-tabs button.on{background:#1c3c4a;color:#fffefa;border-color:#1c3c4a}
+.later-items{list-style:none;margin:0;padding:0}
+.later-item{border:1px solid #e2e6d8;border-radius:9px;background:#fff;padding:10px 11px;margin:8px 0}
+.later-item-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.later-item-text{min-width:0}
+.later-item .k{font-size:11px;color:#6a7973;font-weight:700;letter-spacing:.05em}
+.later-item .t{font-size:14px;font-weight:700;color:#1c3c4a;margin:2px 0;overflow-wrap:anywhere}
+.later-item-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.later-meta{font-size:12px;color:#6a7973;white-space:nowrap}
+.later-actions{display:flex;gap:12px;font-size:12.5px}
+.later-actions button{display:inline-flex;align-items:center;gap:2px}
+.later-inline{border-top:1px dashed #dedfd6;margin-top:8px;padding-top:8px}
+.later-empty{margin:4px 0 6px}
+.later-note{margin:8px 0 0}
