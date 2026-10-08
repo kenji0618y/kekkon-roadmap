@@ -1,16 +1,19 @@
-import {useEffect, useMemo, useState} from 'react'
-import {ChevronLeft, ChevronRight, Plus, Pencil, Trash2, CalendarDays} from 'lucide-react'
+import {useEffect, useMemo, useState, type ReactNode} from 'react'
+import {ChevronLeft, ChevronRight, Plus, Pencil, Trash2, CalendarDays, Bell, HeartHandshake} from 'lucide-react'
 import {absoluteDeadlines} from '../data/catalog'
 import {deadlineClosedLabel, deadlineVisible} from '../lib/deadline-visibility'
 import {
   pairEventWhoLabels,
   type PairEvent,
   type Profile,
+  type Reminders,
 } from '../lib/model'
+import {meetingRuleText, offsetsText, remindOffsets, type CalItem, type CalKind} from '../lib/reminders'
 import {
   deadlineText,
   difference,
   monthDay,
+  plusDays,
   shortDate,
   todayJapan,
   validDate,
@@ -64,6 +67,10 @@ export function DeadlinesCalendar({
   onSave,
   onDelete,
   focus,
+  itemsFor,
+  reminders,
+  onOpenTask,
+  meetingEditor,
 }: {
   profile: Profile
   events: PairEvent[]
@@ -72,6 +79,13 @@ export function DeadlinesCalendar({
   onDelete: (id: string) => Promise<boolean>
   /** ほかの画面（デスクの「今週ふたりでやること」など）から、この日を開く。n が変わるたびに動く。 */
   focus?: {date: string; n: number} | null
+  /** 項目の予定日・記念日・月に一度のふたり会議（from〜to）。制度の締切と予定はこの部品がそのまま出す。 */
+  itemsFor?: (from: string, to: string) => CalItem[]
+  /** LINE のお知らせの設定（鈴の印を付ける）。 */
+  reminders?: Reminders
+  onOpenTask?: (id: string) => void
+  /** 月に一度のふたり会議の日の編集（設定と同じ部品・同じ値）。 */
+  meetingEditor?: ReactNode
 }) {
   const today = todayJapan()
   const [ty, tm] = today.split('-').map(Number)
@@ -79,6 +93,8 @@ export function DeadlinesCalendar({
   const [selected, setSelected] = useState(today)
   const [draft, setDraft] = useState<Draft | null>(null)
   const [formError, setFormError] = useState('')
+  const [meetingOpen, setMeetingOpen] = useState(false)
+  const bellOffsets = (kind: CalKind) => (reminders ? remindOffsets(kind, reminders) : [])
 
   const whoLabels = useMemo(() => pairEventWhoLabels(profile), [profile.name1, profile.name2])
 
@@ -121,7 +137,7 @@ export function DeadlinesCalendar({
     return map
   }, [seedMarks])
 
-  const comingSoon = useMemo(() => {
+  const comingSoonBase = useMemo(() => {
     const rows: DayMark[] = [
       ...seedMarks.map((s) => s as DayMark),
       ...events
@@ -131,7 +147,6 @@ export function DeadlinesCalendar({
     return rows
       .filter((r) => difference(r.date, today) <= 14)
       .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title))
-      .slice(0, 8)
   }, [seedMarks, events, today])
 
   const cells = useMemo(() => {
@@ -149,6 +164,48 @@ export function DeadlinesCalendar({
     return out
   }, [cursor])
 
+  const extraRange = useMemo(() => {
+    const first = `${ymKey(cursor.y, cursor.m)}-01`
+    const last = `${ymKey(cursor.y, cursor.m)}-${String(daysInMonth(cursor.y, cursor.m)).padStart(2, '0')}`
+    const soonEnd = plusDays(today, 14)
+    const from = [first, today, selected].filter(validDate).sort()[0]
+    const to = [last, soonEnd, selected].filter(validDate).sort().reverse()[0]
+    return {from, to}
+  }, [cursor, today, selected])
+  const extras = useMemo(() => (itemsFor ? itemsFor(extraRange.from, extraRange.to) : []), [itemsFor, extraRange])
+  const extraByDate = useMemo(() => {
+    const map = new Map<string, CalItem[]>()
+    for (const x of extras) {
+      const list = map.get(x.date) || []
+      list.push(x)
+      map.set(x.date, list)
+    }
+    return map
+  }, [extras])
+  const dayExtras = extraByDate.get(selected) || []
+  const extraChip: Record<CalKind, string> = {rule: '制度', task: '項目', event: '予定', anniv: '記念日', meeting: '会議'}
+  const extraSoon = extras.filter((x) => difference(x.date, today) >= 0 && difference(x.date, today) <= 14)
+  const anyBell = !!reminders && (reminders.on || reminders.meeting.on)
+  const BellNote = ({kind}: {kind: CalKind}) => {
+    const o = bellOffsets(kind)
+    return o.length ? (
+      <span className="cal-bell-note" title={`LINEでお知らせ：${offsetsText(o)}`}>
+        <Bell size={12} aria-hidden />
+        LINE {offsetsText(o)}
+      </span>
+    ) : null
+  }
+  type SoonRow = {key: string; date: string; title: string; chip: ReactNode; closed?: boolean; bell: boolean}
+  const comingSoon: SoonRow[] = [
+    ...comingSoonBase.map((r): SoonRow =>
+      r.kind === 'seed'
+        ? {key: `soon-${r.date}-${r.title}`, date: r.date, title: r.title, chip: <span className="cal-item-chip seed">制度</span>, closed: !!r.closed, bell: bellOffsets('rule').length > 0}
+        : {key: r.id, date: r.date, title: r.title, chip: <span className={`cal-item-chip who-${r.who}`}>{whoLabels[r.who]}</span>, bell: bellOffsets('event').length > 0},
+    ),
+    ...extraSoon.map((x): SoonRow => ({key: x.key, date: x.date, title: x.title, chip: <span className={`cal-item-chip ${x.kind}`}>{extraChip[x.kind]}</span>, bell: bellOffsets(x.kind).length > 0})),
+  ]
+    .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title))
+    .slice(0, 8)
   const daySeeds = seedByDate.get(selected) || []
   const dayCustoms = customByDate.get(selected) || []
 
@@ -245,6 +302,11 @@ export function DeadlinesCalendar({
             if (!c.iso) return <div key={`pad-${i}`} className="cal-day empty" aria-hidden />
             const seeds = seedByDate.get(c.iso) || []
             const customs = customByDate.get(c.iso) || []
+            const dayX = extraByDate.get(c.iso) || []
+            const belled =
+              (seeds.length > 0 && bellOffsets('rule').length > 0) ||
+              (customs.length > 0 && bellOffsets('event').length > 0) ||
+              dayX.some((x) => bellOffsets(x.kind).length > 0)
             const isToday = c.iso === today
             const isSelected = c.iso === selected
             const weekend = sundayWeekIndex(c.iso)
@@ -254,7 +316,7 @@ export function DeadlinesCalendar({
                 type="button"
                 role="gridcell"
                 className={`cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${weekend === 0 ? ' sun' : weekend === 6 ? ' sat' : ''}`}
-                aria-label={`${shortDate(c.iso)}${seeds.length || customs.length ? `・予定${seeds.length + customs.length}件` : ''}`}
+                aria-label={`${shortDate(c.iso)}${seeds.length || customs.length || dayX.length ? `・予定${seeds.length + customs.length + dayX.length}件` : ''}${belled ? '・LINEでお知らせ' : ''}`}
                 aria-pressed={isSelected}
                 onClick={() => {
                   setSelected(c.iso!)
@@ -263,12 +325,16 @@ export function DeadlinesCalendar({
                 }}
               >
                 <span className="cal-day-num">{c.day}</span>
+                {belled && <Bell className="cal-bell" size={9} aria-hidden />}
                 <span className="cal-dots" aria-hidden>
                   {seeds.slice(0, 2).map((_, j) => (
                     <i key={`s${j}`} className="cal-dot seed" />
                   ))}
                   {customs.slice(0, 3).map((e) => (
                     <i key={e.id} className={`cal-dot who-${e.who}`} />
+                  ))}
+                  {dayX.slice(0, 2).map((x) => (
+                    <i key={x.key} className={`cal-dot ${x.kind}`} />
                   ))}
                 </span>
               </button>
@@ -294,7 +360,40 @@ export function DeadlinesCalendar({
           <i className="cal-dot who-both" />
           ふたり
         </span>
+        <span>
+          <i className="cal-dot task" />
+          項目
+        </span>
+        <span>
+          <i className="cal-dot anniv" />
+          記念日
+        </span>
+        <span>
+          <i className="cal-dot meeting" />
+          ふたり会議
+        </span>
+        {anyBell && (
+          <span>
+            <Bell size={11} aria-hidden className="cal-bell-legend" />
+            LINEでお知らせ
+          </span>
+        )}
       </div>
+
+      {meetingEditor && (
+        <div className="cal-meeting" id="cal-meeting">
+          <div className="cal-meeting-row">
+            <HeartHandshake size={15} aria-hidden />
+            <span>
+              月に一度のふたり会議：<b>{reminders ? meetingRuleText(reminders.meeting) : 'まだ決めていません'}</b>
+            </span>
+            <button type="button" className="desk-board-link" aria-expanded={meetingOpen} onClick={() => setMeetingOpen(!meetingOpen)}>
+              {meetingOpen ? '閉じる' : '直す'}
+            </button>
+          </div>
+          {meetingOpen && meetingEditor}
+        </div>
+      )}
 
       <div className="cal-day-panel" aria-live="polite">
         <div className="cal-day-panel-head">
@@ -308,7 +407,7 @@ export function DeadlinesCalendar({
           </button>
         </div>
 
-        {!daySeeds.length && !dayCustoms.length && !draft && (
+        {!daySeeds.length && !dayCustoms.length && !dayExtras.length && !draft && (
           <p className="hint cal-day-empty">この日の予定はまだありません。上のボタンから残せます。</p>
         )}
 
@@ -321,6 +420,7 @@ export function DeadlinesCalendar({
                   <strong>{s.title}</strong>
                   {s.closed ? <span className="cal-closed">{s.closed}</span> : null}
                   {s.note ? <span className="hint">{s.note}</span> : null}
+                  <BellNote kind="rule" />
                 </div>
               </li>
             ))}
@@ -335,6 +435,7 @@ export function DeadlinesCalendar({
                 <div className="cal-item-body">
                   <strong>{e.title}</strong>
                   {e.note ? <span className="hint">{e.note}</span> : null}
+                  <BellNote kind="event" />
                 </div>
                 <div className="cal-item-actions">
                   <button type="button" className="icon-button" aria-label={`${e.title}を編集`} onClick={() => openEdit(e)} disabled={busy}>
@@ -349,6 +450,41 @@ export function DeadlinesCalendar({
                   >
                     <Trash2 size={15} />
                   </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {dayExtras.length > 0 && (
+          <ul className="cal-day-list">
+            {dayExtras.map((x) => (
+              <li key={x.key} className={`cal-item extra kind-${x.kind}`}>
+                <span className={`cal-item-chip ${x.kind}`}>{extraChip[x.kind]}</span>
+                <div className="cal-item-body">
+                  <strong>{x.title}</strong>
+                  {x.kind === 'meeting' && reminders ? <span className="hint">{meetingRuleText(reminders.meeting)}（くり返し）</span> : null}
+                  <BellNote kind={x.kind} />
+                </div>
+                <div className="cal-item-actions">
+                  {x.kind === 'task' && x.taskId && onOpenTask ? (
+                    <button type="button" className="desk-board-link" onClick={() => onOpenTask(x.taskId!)}>
+                      開く
+                    </button>
+                  ) : null}
+                  {x.kind === 'meeting' && meetingEditor ? (
+                    <button
+                      type="button"
+                      className="icon-button"
+                      aria-label="月に一度のふたり会議の日を直す"
+                      onClick={() => {
+                        setMeetingOpen(true)
+                        requestAnimationFrame(() => document.getElementById('cal-meeting')?.scrollIntoView({behavior: 'smooth', block: 'center'}))
+                      }}
+                    >
+                      <Pencil size={15} />
+                    </button>
+                  ) : null}
                 </div>
               </li>
             ))}
@@ -444,7 +580,7 @@ export function DeadlinesCalendar({
           </h3>
           <ul>
             {comingSoon.map((row) => (
-              <li key={row.kind === 'custom' ? row.id : `soon-${row.date}-${row.title}`}>
+              <li key={row.key}>
                 <button
                   type="button"
                   onClick={() => {
@@ -455,13 +591,10 @@ export function DeadlinesCalendar({
                   }}
                 >
                   <span className="cal-soon-date">{monthDay(row.date)}</span>
-                  {row.kind === 'seed' ? (
-                    <span className="cal-item-chip seed">制度</span>
-                  ) : (
-                    <span className={`cal-item-chip who-${row.who}`}>{whoLabels[row.who]}</span>
-                  )}
+                  {row.chip}
                   <strong>{row.title}</strong>
-                  {row.kind === 'seed' && row.closed ? <span className="cal-closed">予約受付は終了</span> : null}
+                  {row.bell ? <Bell size={12} className="cal-soon-bell" aria-label="LINEでお知らせ" /> : null}
+                  {row.closed ? <span className="cal-closed">予約受付は終了</span> : null}
                 </button>
               </li>
             ))}

@@ -1,6 +1,7 @@
 import {useCallback,useEffect,useState} from 'react';
 import type {Book} from './model';
 import type {Who} from './futari';
+import type {RemindersPayload} from './reminders';
 import {LINE_SECRET_OVERRIDE_KEY,lineMissing,type LineMissing,boardPayload,cleanRelayUrl,postRelay,resolveBoardSecret,statusPayload,type RelayResult} from './line-notify';
 
 /**
@@ -17,6 +18,8 @@ export type LineNotify={
   hasSecret:boolean,
   send:(who:Who,name:string,text:string)=>Promise<RelayResult>,
   status:()=>Promise<RelayResult>,
+  /** 期限・記念日・会議のお知らせの一覧を中継先へ（合言葉はここで足す）。 */
+  postReminders:(payload:Omit<RemindersPayload,'secret'>)=>Promise<RelayResult>,
   copySecret:()=>Promise<boolean>,
   refresh:()=>void,
 };
@@ -57,6 +60,14 @@ export function useLineNotify(book:Book,sync:{enabled:boolean,token:string}):Lin
       return await postRelay(url,statusPayload(secret));
     }catch{return {ok:false,error:'network'};}
   },[url,syncOn,token]);
+  const postReminders=useCallback(async(payload:Omit<RemindersPayload,'secret'>):Promise<RelayResult>=>{
+    try{
+      if(!on||!url)return {ok:false,error:'off'};
+      const secret=await resolveBoardSecret({enabled:syncOn,token});
+      if(!secret)return {ok:false,error:'no-local-secret'};
+      return await postRelay(url,{...payload,secret});
+    }catch{return {ok:false,error:'network'};}
+  },[on,url,syncOn,token]);
   const copySecret=useCallback(async()=>{
     try{
       const secret=await resolveBoardSecret({enabled:syncOn,token});
@@ -65,5 +76,5 @@ export function useLineNotify(book:Book,sync:{enabled:boolean,token:string}):Lin
       return true;
     }catch{return false;}
   },[syncOn,token]);
-  return {state,missing,url,hasSecret,send,status,copySecret,refresh:()=>setTick(t=>t+1)};
+  return {state,missing,url,hasSecret,send,status,postReminders,copySecret,refresh:()=>setTick(t=>t+1)};
 }
