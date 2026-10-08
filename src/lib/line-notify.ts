@@ -112,7 +112,7 @@ export function shouldNotifyBoard(origin:BoardNoteOrigin,note:{who:Who,editedAt?
 export function boardResultText(r:RelayResult,partnerName:string):{text:string,warn:boolean}{
   if(r.ok&&r.status==='sent')return {text:`${partnerName}さんのLINEにお知らせしました`,warn:false};
   if(r.ok&&r.status==='queued')return {text:'1分後にまとめてお知らせします',warn:false};
-  if(r.ok&&r.status==='capped')return {text:'今月の上限（180通）に達したので止めています。来月1日に再開します',warn:true};
+  if(r.ok&&r.status==='capped')return {text:'今月の上限に達したので止めています。来月1日に再開します',warn:true};
   if(r.error==='partner-not-registered')return {text:'相手のLINEがまだ登録されていません',warn:true};
   if(r.error==='bad-secret'||r.error==='no-secret')return {text:'合言葉が合っていません',warn:true};
   return {text:'お知らせを送れませんでした',warn:true};

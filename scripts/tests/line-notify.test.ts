@@ -80,7 +80,7 @@ async function main(){
   const t=(x:L.RelayResult)=>L.boardResultText(x,'はるか').text;
   ok('sent',t({ok:true,status:'sent',batched:1})==='はるかさんのLINEにお知らせしました');
   ok('queued',t({ok:true,status:'queued'})==='1分後にまとめてお知らせします');
-  ok('capped',t({ok:true,status:'capped'})==='今月の上限（180通）に達したので止めています。来月1日に再開します');
+  ok('capped',t({ok:true,status:'capped'})==='今月の上限に達したので止めています。来月1日に再開します');
   ok('partner-not-registered',t({ok:false,error:'partner-not-registered'})==='相手のLINEがまだ登録されていません');
   ok('bad-secret / no-secret',t({ok:false,error:'bad-secret'})==='合言葉が合っていません'&&t({ok:false,error:'no-secret'})==='合言葉が合っていません');
   ok('empty / bad-from / busy / server / network',['empty','bad-from','busy','server','network'].every(e=>t({ok:false,error:e})==='お知らせを送れませんでした'));

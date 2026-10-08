@@ -1783,6 +1783,51 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .fu-revisit{margin:0 0 10px;padding:8px 12px;border-radius:10px;background:color-mix(in srgb,var(--sage, #5a7a6a) 14%, transparent);font-size:12.5px;line-height:1.45;color:var(--ink-soft,#445);}
 .fu-week-ll .tag.revisit{background:#e8f0ea;color:#2f5a40;}
 
+/* デスク「今週ふたりでやること」（2026-10-08） */
+.week-together{margin:14px 0 0}
+.week-head h3{display:flex!important;align-items:center;gap:8px;font-family:"Shippori Mincho",serif;font-size:19px;font-weight:600;margin:2px 0 4px;color:#1c3c4a}
+.week-head .hint{margin:0 0 8px}
+.week-shares{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 10px}
+.week-share{border:1px solid #e2e6d8;border-radius:8px;padding:8px 6px;background:#fff;text-align:center;min-width:0}
+.week-share b{display:block;font-size:13px;color:#1c3c4a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.week-share small{display:block;font-size:11px;color:#6a7973;line-height:1.5}
+.week-bar{display:block;height:6px;border-radius:3px;background:#ecebe2;margin-top:6px;overflow:hidden}
+.week-bar i{display:block;height:6px;background:#99b8a3}
+.week-share.who-one .week-bar i{background:#9fb3c8}
+.week-share.who-two .week-bar i{background:#d1b48f}
+.week-list{list-style:none;margin:0;padding:0}
+.week-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #efefe6}
+.week-item:first-child{border-top:0}
+.week-item-main{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:3px;background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer}
+.week-item-title{font-weight:700;font-size:14px;color:#1c3c4a;line-height:1.5}
+.week-item.is-done .week-item-title{color:#7c8a80}
+.week-item-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.week-chip{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;white-space:nowrap;border:1px solid #cfdcc8;background:#eef3ea;color:#3f6a52}
+.week-chip.who-one{background:#eef1f6;color:#3b5870;border-color:#cfd8e4}
+.week-chip.who-two{background:#f7efe6;color:#80592f;border-color:#e6d3bc}
+.week-kind{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#5d6f69;background:#f2f0ea;border-radius:4px;padding:1px 6px;white-space:nowrap}
+.week-item.kind-rule .week-kind{background:#fbf4ea;color:#7a5236}
+.week-due{font-size:12px;color:#6a7973;white-space:nowrap}
+.week-checks{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#6a7973;flex:none}
+.week-checks label{display:flex;gap:4px;align-items:center;white-space:nowrap}
+.week-go{color:#9aa5a0;flex:none}
+.week-empty{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+
+/* 博士タブ「家計の分け方」（2026-10-08） */
+.household-card{margin:16px 0 0;padding:18px 16px}
+.household-card h2{display:flex;align-items:center;gap:8px;font-family:"Shippori Mincho",serif;font-size:19px;font-weight:600;margin:2px 0 6px;color:#1c3c4a}
+.household-lead{font-size:14px;line-height:1.75;margin:0 0 8px}
+.household-now{font-size:13px;margin:0 0 8px;padding:6px 10px;border-radius:6px;background:#eef6ea;color:#2f6a45}
+.household-list{display:flex;flex-direction:column;gap:7px;margin:0 0 10px}
+.household-option{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid #e2e6d8;border-radius:9px;background:#fff;padding:10px 11px;font:inherit;color:inherit;cursor:pointer}
+.household-option.is-on{border-color:#1c3c4a;box-shadow:0 0 0 1px #1c3c4a inset;background:#fbfcf8}
+.household-dot{width:16px;height:16px;border-radius:50%;border:2px solid #9aa8a2;flex:none;margin-top:3px}
+.household-option.is-on .household-dot{border-color:#1c3c4a;background:radial-gradient(#1c3c4a 0 4px,transparent 5px)}
+.household-option b{display:block;color:#1c3c4a;font-size:13.5px;line-height:1.55}
+.household-option small{display:block;color:#6a7973;font-size:12px;margin-top:2px}
+.household-field{width:100%;margin:8px 0}
+.household-src{font-size:12px;color:#6a7973;line-height:1.6;border-top:1px dashed #dedfd6;padding-top:8px;margin:12px 0 0;width:100%}
+.household-src a{color:#1c3c4a;text-decoration:underline;display:inline-flex;align-items:center;gap:3px;word-break:break-all}
 /* ===== 設定タブ（2026-10-08〜 見やすく：カード・状態チップ・「くわしく」・折りたたみ） ===== */
 .settings-overview{display:flex;flex-wrap:wrap;gap:8px;margin:-12px 0 18px}
 .settings-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border-radius:999px;border:1px solid #d9ddcf;background:#f4f4ee;color:#5a5f52;font-size:13px;font-weight:700;line-height:1.2;white-space:nowrap}

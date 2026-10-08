@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "verify:seed": "node scripts/verify-seed.mjs",
-    "prebuild": "npm run verify:seed && npm run test:sync && npm run test:line && npm run test:sitelock",
+    "prebuild": "npm run verify:seed && npm run test:sync && npm run test:line && npm run test:sitelock && npm run test:features",
     "predev": "npm run verify:seed",
     "prepreview": "npm run verify:seed",
     "sync:docs": "node scripts/sync-docs.mjs",
@@ -19,6 +19,7 @@
     "test:sync": "node scripts/test-sync-crypt.mjs",
     "test:line": "node scripts/test-line-notify.mjs",
     "test:sitelock": "node scripts/test-site-lock.mjs",
+    "test:features": "node scripts/test-features.mjs",
     "sitelock": "node scripts/site-lock/encrypt-dist.mjs dist && node scripts/site-lock/verify-dist.mjs dist"
   },
   "dependencies": {

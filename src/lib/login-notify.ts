@@ -3,19 +3,18 @@
  *
  * - 「開いた」= 解錠後のアプリが ready になったとき（合言葉入力・保存済み鍵の再訪問の両方）。
  * - 送るのはこの端末の「この端末はどちら？」（readMe）があるときだけ。相手の LINE へは既存の from=1|2 で届く。
- * - 端末ごと COOLDOWN（既定6時間）に1回。リロード連打で溢れない。例外を投げない。
+ * - 端末ごと COOLDOWN（既定22時間＝1日1回）に1回。リロード連打で溢れない。例外を投げない。
+ *   この通知だけは中継先の60秒のまとめに入らない（間隔が長いので必ず1通使う）。中継先の月180通を
+ *   掲示板とスタンプに残すため、ここは1日1回までにしている（2台で月60通まで）。
  */
-import {clipChars,LINE_NAME_MAX,LINE_TEXT_MAX} from './line-notify';
-
-export const LOGIN_COOLDOWN_MS=6*60*60*1000;
+export const LOGIN_COOLDOWN_MS=22*60*60*1000;
 export const LOGIN_SENT_KEY='login-line-sent-v1';
 
-/** LINE に送る本文（500文字まで）。 */
-export function loginOpenedText(name:string){
-  const n=clipChars((name||'').trim()||'だれか',LINE_NAME_MAX);
-  const text=`${n}さんが手帳を開きました`;
-  return clipChars(text,LINE_TEXT_MAX);
-}
+/**
+ * LINE に送る本文。名前は中継先が「名前：」として前に付けるので、ここには入れない
+ * （入れると名前が二重に出る）。
+ */
+export function loginOpenedText(){return '手帳を開きました';}
 
 type Store={getItem:(k:string)=>string|null,setItem:(k:string,v:string)=>void};
 export type LoginNotifierDeps={
