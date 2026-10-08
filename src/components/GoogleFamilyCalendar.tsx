@@ -1,4 +1,4 @@
-import {useEffect,useState,type ReactNode} from 'react';
+import {useEffect,useState} from 'react';
 import {CalendarDays,ExternalLink,Pencil} from 'lucide-react';
 import {Label} from './ui/label';
 import {Input} from './ui/input';
@@ -6,12 +6,20 @@ import {SaveAction} from './book-controls';
 import type {GoogleCal} from '../lib/model';
 import {CAL_ID_MAX,FAMILY_CAL_ID,GOOGLE_CAL_OPEN_URL,googleEmbedUrl,validCalId,type CalView} from '../lib/google-cal';
 
+/** カレンダータブのいちばん上の切り替え。「Google（ファミリー）」と「アプリの予定」（はじめは Google・端末ごとに覚える）。 */
+export function CalendarViewSwitch({view,onView}:{view:CalView,onView:(v:CalView)=>void}){
+  return <div className="calview-switch" role="radiogroup" aria-label="カレンダーの表示">
+    <button type="button" role="radio" aria-checked={view==='google'} className={view==='google'?'is-on':''} onClick={()=>onView('google')}>Google（ファミリー）</button>
+    <button type="button" role="radio" aria-checked={view==='app'} className={view==='app'?'is-on':''} onClick={()=>onView('app')}>アプリの予定</button>
+  </div>;
+}
+
 /**
- * カレンダータブのいちばん上。「Google（ファミリー）」と「アプリの予定」を切りかえる（はじめは Google）。
- * アプリの予定（app）はいままでのカレンダーそのもの。お知らせ・鈴の印・ふたり会議・.ics はそちらから作るので、消さない。
+ * 「Google（ファミリー）」のときに、アプリのカレンダー（DeadlinesCalendar）の場所に出す。
+ * アプリのカレンダーは「アプリの予定」に残す。お知らせ・鈴の印・ふたり会議・.ics はそちらから作るので、消さない。
  * 埋め込みの中身は Google が出す。ファミリー カレンダーは共有した人にしか見えないので、見られないときは「Googleカレンダーで開く」。
  */
-export function GoogleFamilyCalendar({view,onView,cal,busy,onSaveId,app}:{view:CalView,onView:(v:CalView)=>void,cal:GoogleCal,busy?:boolean,onSaveId:(id:string)=>Promise<boolean>,app:ReactNode}){
+export function GoogleFamilyCalendar({cal,busy,onSaveId}:{cal:GoogleCal,busy?:boolean,onSaveId:(id:string)=>Promise<boolean>}){
   const id=validCalId(cal.id)?cal.id.trim():FAMILY_CAL_ID;
   const isFamily=id===FAMILY_CAL_ID;
   const [editing,setEditing]=useState(false);
@@ -19,12 +27,7 @@ export function GoogleFamilyCalendar({view,onView,cal,busy,onSaveId,app}:{view:C
   useEffect(()=>{if(!editing)setDraft(id);},[id,editing]);
   const draftOk=validCalId(draft);
   const save=async(next:string)=>{if(await onSaveId(next.trim()))setEditing(false);};
-  return <>
-    <div className="calview-switch" role="radiogroup" aria-label="カレンダーの表示">
-      <button type="button" role="radio" aria-checked={view==='google'} className={view==='google'?'is-on':''} onClick={()=>onView('google')}>Google（ファミリー）</button>
-      <button type="button" role="radio" aria-checked={view==='app'} className={view==='app'?'is-on':''} onClick={()=>onView('app')}>アプリの予定</button>
-    </div>
-    {view==='app'?app:<section id="deadline-block-calendar" className="deadline-block gcal-block" aria-label="Googleカレンダー">
+  return <section id="deadline-block-calendar" className="deadline-block gcal-block" aria-label="Googleカレンダー">
       <div className="gcal-head">
         <h2 className="deadline-block-label"><CalendarDays size={17} aria-hidden/>Googleカレンダー<small>{isFamily?'ファミリー カレンダー':'設定したカレンダー'}</small></h2>
         {!editing&&<button type="button" className="gcal-fix" onClick={()=>setEditing(true)}><Pencil size={13} aria-hidden/>直す</button>}
@@ -49,6 +52,5 @@ export function GoogleFamilyCalendar({view,onView,cal,busy,onSaveId,app}:{view:C
         <p>iPhone の Safari や、ホーム画面に追加したアプリから開くと、ほかのサイトの Cookie を止めるしくみのため、ログインの画面や空のカレンダーが出ることがあります。「Cookie を許可してください」と出たら、押すと見られることがあります。それでも見られないときは「Googleカレンダーで開く」を使ってください。</p>
         <p>期限のお知らせ・ふたり会議・カレンダーへの書き出しは、「アプリの予定」のほうから作っています。</p>
       </div>
-    </section>}
-  </>;
+    </section>;
 }

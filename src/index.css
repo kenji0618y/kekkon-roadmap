@@ -1998,7 +1998,7 @@ button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
 .gcal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
 .gcal-head .deadline-block-label{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0}
 .gcal-head .deadline-block-label small{font-family:inherit;font-size:12px;color:#6a7973;letter-spacing:0}
-.gcal-fix{display:inline-flex;align-items:center;gap:4px;font:inherit;font-size:12px;font-weight:700;color:#526c5c;background:#fff;border:1px solid #d8e0d0;border-radius:999px;padding:5px 11px;cursor:pointer}
+.gcal-fix{flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;font:inherit;font-size:12px;font-weight:700;color:#526c5c;background:#fff;border:1px solid #d8e0d0;border-radius:999px;padding:5px 11px;cursor:pointer}
 .gcal-edit{border:1px solid #e2e6d8;border-radius:12px;background:#fbfcf8;padding:12px;margin:0 0 12px}
 .gcal-edit .hint{font-size:12px;line-height:1.6;margin:6px 0 8px}
 .gcal-edit-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}

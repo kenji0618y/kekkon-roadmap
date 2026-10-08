@@ -38,7 +38,7 @@ import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
-import {GoogleFamilyCalendar} from './components/GoogleFamilyCalendar';
+import {CalendarViewSwitch,GoogleFamilyCalendar} from './components/GoogleFamilyCalendar';
 import {readCalView,writeCalView,type CalView} from './lib/google-cal';
 import {WeekTogether} from './components/WeekTogether';
 import {MeetingCard,MeetingEditor,RemindersCard,type ReminderSave} from './components/ReminderSettings';
@@ -288,6 +288,7 @@ export default function FutureNotebook(){
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や「カレンダー」のタブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">
+<CalendarViewSwitch view={calView} onView={setCalView}/>
  <div className="section-title deadlines-head"><h1 className="sr-only">カレンダー</h1><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length&&<p className="hint export-cal-hint">書き出せる予定はまだありません。</p>}</div></div>
  <nav className="deadlines-mini-nav" aria-label="カレンダータブ内の節">
   <a href="#deadline-block-calendar">カレンダー</a>
@@ -296,7 +297,7 @@ export default function FutureNotebook(){
   <a href="#deadline-block-schedule">項目の予定</a>
   <a href="#deadline-block-phases">時期</a>
  </nav>
- <GoogleFamilyCalendar view={calView} onView={setCalView} cal={book.googleCal||emptyGoogleCal} busy={data.busy} onSaveId={async id=>!!(await data.mutate({action:'googleCal',patch:{id}},'カレンダーのIDを保存しました'))} app={<DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus} itemsFor={calExtrasFor} reminders={remindersVal} onOpenTask={openTask} meetingEditor={<MeetingEditor value={remindersVal} busy={data.busy} save={saveReminders}/>}/>}/>
+ {calView==='app'?<DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus} itemsFor={calExtrasFor} reminders={remindersVal} onOpenTask={openTask} meetingEditor={<MeetingEditor value={remindersVal} busy={data.busy} save={saveReminders}/>}/>:<GoogleFamilyCalendar cal={book.googleCal||emptyGoogleCal} busy={data.busy} onSaveId={async id=>!!(await data.mutate({action:'googleCal',patch:{id}},'カレンダーのIDを保存しました'))}/>}
  <section id="deadline-block-hero" className="deadline-block" aria-label="覚えておきたい数字">
   <details className="deadline-secondary-fold">
    <summary>
