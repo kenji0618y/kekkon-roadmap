@@ -11,6 +11,8 @@ import {
   other,readMe,weekOf,weekThemes,writeMe,onMeChange,yearIndex,yearModes,yearsSourceIds,todayLesson,type Lesson,type Who,
 } from '../lib/futari';
 import {askFutariFeedback,type Feedback} from '../lib/futari-ai';
+import {LaterButton} from './Later';
+import {laterLessonId} from '../lib/later';
 import {Sheet,SheetContent,SheetDescription,SheetHeader,SheetTitle} from './ui/sheet';
 
 /** 博士風イラスト（イメージ）。ふたりタブの中だけで使う。 */
@@ -347,12 +349,12 @@ function WeekLessonList({items,openId,setOpenId,compact}:{items:{date:string,lab
   </ul>;
 }
 
-function LessonBody({lesson,onList,compact}:{lesson:Lesson,onList?:()=>void,compact?:boolean}){
+export function LessonBody({lesson,onList,compact,hideMark}:{lesson:Lesson,onList?:()=>void,compact?:boolean,hideMark?:boolean}){
   return <>
     {!compact&&lesson.video&&<LessonPlayer lesson={lesson}/>}
     <div className="fu-lesson">
       {!compact&&<p className="eyebrow">{lesson.video?(lessonNo(lesson)?`レッスン ${lessonNo(lesson)} ・ 動画`:'動画レッスン'):'文字レッスン'} ・ {lesson.duration}</p>}
-      <h3>{lesson.title}</h3>
+      <div className="later-title-row"><h3>{lesson.title}</h3>{!hideMark&&<LaterButton item={{id:laterLessonId(lesson.id),kind:'lesson',ref:lesson.id,title:lesson.title}}/>}</div>
       <p>{lesson.summary}</p>
       {lesson.tryToday&&<p className="fu-try"><strong>今日やってみること</strong>{lesson.tryToday}</p>}
       {!lesson.video&&lesson.lines.length>0&&<details className="fu-script" open={!compact}><summary>本文を読む</summary><ol>{lesson.lines.map((l,i)=><li key={i}>{l.say}</li>)}</ol></details>}

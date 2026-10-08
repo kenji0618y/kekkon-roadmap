@@ -14,7 +14,7 @@ import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
 import {deadlineVisible} from './lib/deadline-visibility';
-import {chapters,emptyBook,emptyHousehold,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
+import {chapters,emptyBook,emptyHousehold,emptyLater,BOARD_TEXT_MAX,type BoardNote,type LaterItem,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -24,22 +24,25 @@ import {clearGrokLocalOnly,markGrokLocalOnly} from './lib/grok-mode';
 import {answerDeskQuery} from './lib/desk-chat';
 import {DeskChatPanel} from './components/DeskChatPanel';
 import {PairWorkbook} from './components/PairWorkbook';
-import {FutariDaily,type FutariSave} from './components/FutariDaily';
+import {FutariDaily,LessonBody,type FutariSave} from './components/FutariDaily';
 import {MarriageDesk} from './components/MarriageDesk';
 import {DeskBoard,type BoardSave} from './components/DeskBoard';
 import {LineNotifySettings} from './components/LineNotifySettings';
 import {SiteLockSettings} from './components/SiteLockSettings';
 import {Fold,More,SettingsCard,SettingsOverview,StatusChip} from './components/settings-ui';
 import {useLineNotify} from './lib/use-line-notify';
-import {boardResultText} from './lib/line-notify';
+import {boardResultText,shouldNotifyBoard} from './lib/line-notify';
 import {becameDone,createStampNotifier,stampDoneText} from './lib/stamp-notify';
 import {createLoginNotifier,loginOpenedText} from './lib/login-notify';
-import {readMe} from './lib/futari';
+import {lessonById,readMe} from './lib/futari';
 import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
 import {WeekTogether} from './components/WeekTogether';
+import {LaterList,LaterProvider} from './components/Later';
+import {hasLater} from './lib/later';
+import {newNoteId} from './lib/board';
 import {HouseholdSplitCard} from './components/HouseholdSplitCard';
 import {buildWeek} from './lib/week-together';
 import {OnboardingSheet,isOnboardingDone,markOnboardingDone} from './components/OnboardingSheet';
@@ -140,6 +143,25 @@ export default function FutureNotebook(){
  };
  const savePairEvent=async(event:PairEvent)=>{return !!(await data.mutate({action:'event',event},event.id&&book.events?.some(e=>e.id===event.id)?'予定を更新しました':'予定を手帳に残しました'));};
  const boardSave:BoardSave={put:async(note,message)=>!!(await data.mutate({action:'boardNote',note},message)),remove:async(id)=>!!(await data.mutate({action:'deleteBoardNote',id},'メモを消しました'))};
+ // 「あとで見る」（ふたりで共有）。印は同期で両方の端末にそろい、外した印も同期で外れる。
+ const laterBook=book.later||emptyLater;
+ const laterCtx=useMemo(()=>({later:laterBook,busy:data.busy,toggle:(item:Omit<LaterItem,'at'|'by'>)=>{const on=hasLater(laterBook,item.id);void data.mutate({action:'laterToggle',item:{...item,by:readMe()||''}},on?'あとで見るから外しました':'あとで見るに入れました');}}),[laterBook,data.busy,data.mutate]);
+ const openLater=(it:LaterItem)=>{if(taskById[it.ref])openTask(it.ref);else toast.message('この項目は見つかりませんでした');};
+ const shareLater=async(_it:LaterItem,text:string)=>{
+  const me=readMe();
+  if(!me){toast.message('掲示板に書くには、設定の「この端末はどちら？」を選んでください');return;}
+  const at=new Date().toISOString();
+  const note:BoardNote={id:newNoteId(),who:me,text:text.slice(0,BOARD_TEXT_MAX),pinned:false,at,updatedAt:at,editedAt:''};
+  if(!(await boardSave.put(note,'掲示板に書きました')))return;
+  const l=lineRef.current;
+  if(l.state!=='on'||!shouldNotifyBoard('compose',note,me))return;
+  try{
+   const w=pairEventWhoLabels(bookRef.current.profile),names={n1:w.male,n2:w.female};
+   const res=boardResultText(await l.send(me,names[me],note.text),names[me==='n1'?'n2':'n1']);
+   if(res.warn)toast.message(`LINE通知 — ${res.text}`);
+  }catch{toast.message('LINE通知 — お知らせを送れませんでした');}
+ };
+ const laterInline=(it:LaterItem)=>{if(it.kind!=='lesson')return null;const l=lessonById[it.ref];return l?<LessonBody lesson={l} compact hideMark/>:<p className="hint">このレッスンは見つかりませんでした。</p>;};
  const line=useLineNotify(book,{enabled:data.syncConfig.enabled,token:data.syncConfig.token});
  // ロードマップのスタンプを済にしたら相手の LINE へ（この端末で押したときだけ・5秒待って取り消しがなければ・同じ項目は30分に1回）。
  const lineRef=useRef(line);lineRef.current=line;
@@ -202,7 +224,7 @@ export default function FutureNotebook(){
  useEffect(()=>{if(!dirty)return;const before=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',before);return()=>window.removeEventListener('beforeunload',before);},[dirty]);
  const resetStampProgress=async()=>{if(resetTyped!=='リセット'||!resetAck)return;const result=await data.mutate({action:'resetRecords'},'スタンプ進捗をリセットしました（プロフィール・記念は残しています）');if(result){setResetOpen(false);setResetTyped('');setResetAck(false);}};
  const renderTask=(t:Task,compact=false)=>{const r=book.records[t.id],deadline=nearestDeadline(t,p,r);return <button key={t.id} className={`task-row ${compact?'compact':''} ${r?.status==='done'?'task-done':''}`} onClick={()=>openTask(t.id)}><span className="task-circle">{r?.status==='done'?<Check size={17}/>:t.type==='conversation'?<Heart size={16}/>:<span/>}</span><span className="task-row-body"><span className="task-row-top"><span className="task-type">{typeLabels[t.type]}</span>{r&&<StatusMark status={r.status}/>}</span><strong>{t.title}</strong>{!compact&&<span className="task-summary">{t.summary}</span>}<span className="task-meta">{deadline&&!['done','na'].includes(r?.status||'')&&<span className={difference(deadline.date,today)<=7?'urgency':''}><CalendarDays size={13}/>{monthDay(deadline.date)} · {deadline.kind==='personal'?'予定':deadline.uncertain?'原則日':'届出期限'}</span>}</span></span><ChevronRight size={17}/></button>;};
- return <><a className="skip-link" href="#main-content">本文へ進む</a><Toaster theme="light" position="top-center" richColors visibleToasts={1}/><PwaUpdateBanner/>
+ return <LaterProvider value={laterCtx}><a className="skip-link" href="#main-content">本文へ進む</a><Toaster theme="light" position="top-center" richColors visibleToasts={1}/><PwaUpdateBanner/>
  <Tabs value={tab} onValueChange={v=>{if(v==='pair')setChatOpen(false);setTab(v);}} className="notebook-tabs" ref={tabsRef}>
  <header className="masthead site-header"><div className="masthead-inner"><button className="brand" onClick={()=>setTab('desk')} aria-label="Amityちゃん（デスクへ戻る）" title="デスクへ戻る"><span className="brand-seal">結</span><span className="wordmark">Amityちゃん<small>広島市・式なし</small></span></button><div className="header-right"><button type="button" className="header-search-btn" onClick={()=>{setQuickOpen(true);setQuickQ('');}} aria-label="項目・画面・期限を検索"><Search size={16}/><span>検索</span></button><span className="city-tag"><MapPin size={15}/>広島市{p.ward!=='未設定'?` ${p.ward}`:''}</span><button className="pair-pill" onClick={()=>setModal('pair')}><Users size={16}/><span>ふたりで使う</span></button><span className="save-status header-save" role="status">{data.busy?<><LoaderCircle className="spin" size={14}/>保存中</>:data.phase==='loading'?<>読み込み中…</>:data.phase==='error'?<>接続を確認</>:data.book?<><CloudCheck size={15}/>この端末に保存済み</>:<>まだ手帳を始めていません</>}</span></div></div>
  <div className="nav-wrap"><TabsList className="main-nav has-ind" aria-label="メインメニュー" ref={navListRef}>{nav.map(n=><TabsTrigger key={n.id} value={n.id}><n.icon/><span className="nav-label-full">{n.label}</span><span className="nav-label-short">{n.short}</span>{n.id==='deadlines'&&soon.length>0&&<i className="nav-dot"/>}</TabsTrigger>)}<span className="nav-ind" ref={navIndRef} aria-hidden="true"/></TabsList></div></header>
@@ -211,6 +233,7 @@ export default function FutureNotebook(){
  <TabsContent value="desk" className="tab-surface">
  <DeskBoard book={book} busy={data.busy} syncStatus={data.syncStatus} save={boardSave} onOpenSync={()=>{setTab('settings');revealAndScroll('settings-gist-sync');}} line={line} onOpenLine={()=>{setTab('settings');revealAndScroll('settings-line-notify');}}/>
  <WeekTogether profile={p} range={week.range} items={week.items} shares={week.shares} records={book.records} busy={data.busy} onOpenTask={openTask} onOpenCalendar={openCalendarAt} onToggleCheck={(id,who)=>void togglePairCheck(id,who)}/>
+ <LaterList later={laterBook} profile={p} busy={data.busy} canShare={!!readMe()} onOpen={openLater} onShare={(it,text)=>void shareLater(it,text)} renderInline={laterInline}/>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'}));}}/>
  <HomeInsightPanels
   onOpenTask={openTask}
@@ -393,5 +416,5 @@ export default function FutureNotebook(){
  <OnboardingSheet open={onboardOpen&&!modal&&!taskId} profile={p} busy={data.busy} onSave={async(profile)=>{const ok=!!(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'));if(ok)setOnboardOpen(false);return ok;}} onSkip={()=>{markOnboardingDone();setOnboardOpen(false);}}/>
 
  <div className="print-book"><h1>Amityちゃん</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{statusNames[book.records[t.id].status]||book.records[t.id].status}{book.records[t.id].note?` · ${book.records[t.id].note}`:''}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
- </>;
+ </LaterProvider>;
 }

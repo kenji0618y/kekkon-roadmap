@@ -10,7 +10,7 @@ import { root } from './state.mjs';
 const dir = mkdtempSync(join(tmpdir(), 'features-'));
 let status = 0;
 try {
-  for (const name of ['week-together', 'household']) {
+  for (const name of ['week-together', 'household', 'later']) {
     const out = join(dir, `${name}.mjs`);
     await build({ entryPoints: [join(root, `scripts/tests/${name}.test.ts`)], bundle: true, platform: 'node', format: 'esm', target: 'node20', outfile: out, logLevel: 'error', loader: { '.json': 'json' } });
     const r = spawnSync(process.execPath, [out], { stdio: 'inherit' });
