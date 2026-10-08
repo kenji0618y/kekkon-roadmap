@@ -16,10 +16,10 @@ const T1='ghp_TESTONLY_'+'a'.repeat(30),T2='ghp_TESTONLY_'+'b'.repeat(30),TX='gh
 
 function sampleBook(tag:string):Book{
   const b:Book=structuredClone(emptyBook);
-  b.profile.name1='けんじ';b.profile.name2='みさき';
+  b.profile.name1='一人目';b.profile.name2='二人目';
   b.records['A必1']={...emptyRecord,status:'learned',note:`${tag} メモ 秘密の内容`,updatedAt:'2026-09-01T00:00:00.000Z'};
   b.memories=[{id:'m1',date:'2026-09-01',title:'はじめての記念',text:`${tag} 記念`,kind:'memory',complete:false}];
-  b.futari.days['2026-09-30']={cardId:'D01',mode:'answer',n1:{text:'けんじの答え',guess:'',changed:'',result:'',at:'2026-09-30T01:00:00.000Z'},n2:null};
+  b.futari.days['2026-09-30']={cardId:'D01',mode:'answer',n1:{text:'一人目の答え',guess:'',changed:'',result:'',at:'2026-09-30T01:00:00.000Z'},n2:null};
   b.board.notes=[{id:'b1',who:'n1',text:'掲示板メモ1',pinned:false,at:'2026-09-29T00:00:00.000Z',updatedAt:'2026-09-29T00:00:00.000Z',editedAt:''}];
   return b;
 }
@@ -30,7 +30,7 @@ async function main(){
   const env=await encryptJson(T1,payload);
   const envText=JSON.stringify(env);
   ok('envelope shape',isEnvelope(env)&&env.alg==='AES-256-GCM'&&env.kdf==='HKDF-SHA256');
-  ok('ciphertext has no plaintext (memo / board / futari / names)',!/秘密の内容|掲示板メモ|けんじ|futari-miraicho|A必1/.test(envText));
+  ok('ciphertext has no plaintext (memo / board / futari / names)',!/秘密の内容|掲示板メモ|一人目|futari-miraicho|A必1/.test(envText));
   ok('envelope has no key material',!envText.includes(T1)&&!envText.includes('TESTONLY'));
   const back=await decryptJson([T1],env);
   ok('roundtrip same payload',JSON.stringify(back.value)===JSON.stringify(payload)&&back.index===0);
@@ -49,7 +49,7 @@ async function main(){
   a.records['A必3']={...emptyRecord,status:'done',checkMale:true,checkFemale:true,updatedAt:'2026-09-02T00:00:00.000Z'};
   b.records['A必1']={...b.records['A必1'],status:'applied',updatedAt:'2026-09-05T00:00:00.000Z'};
   b.memories.push({id:'m2',date:'2026-09-02',title:'Bの記念',text:'',kind:'dream',complete:false});
-  b.futari.days['2026-09-30']={cardId:'D01',mode:'answer',n1:null,n2:{text:'みさきの答え',guess:'',changed:'',result:'',at:'2026-09-30T02:00:00.000Z'}};
+  b.futari.days['2026-09-30']={cardId:'D01',mode:'answer',n1:null,n2:{text:'二人目の答え',guess:'',changed:'',result:'',at:'2026-09-30T02:00:00.000Z'}};
   b.board.notes.push({id:'b2',who:'n2',text:'掲示板メモ2',pinned:true,at:'2026-09-30T00:00:00.000Z',updatedAt:'2026-09-30T00:00:00.000Z',editedAt:''});
   a.board.deleted={b0:'2026-09-28T00:00:00.000Z'};
   b.board.notes.push({id:'b0',who:'n2',text:'消したメモ',pinned:false,at:'2026-09-27T00:00:00.000Z',updatedAt:'2026-09-27T00:00:00.000Z',editedAt:''});
@@ -58,9 +58,9 @@ async function main(){
   const m=mergeBooks(a,b);
   ok('merge keeps both records (newer wins per item)',m.records['A必3']?.status==='done'&&m.records['A必1']?.status==='applied');
   ok('merge keeps memories from both',m.memories.some(x=>x.id==='m1')&&m.memories.some(x=>x.id==='m2'));
-  ok('merge keeps both futari answers',m.futari.days['2026-09-30']?.n1?.text==='けんじの答え'&&m.futari.days['2026-09-30']?.n2?.text==='みさきの答え');
+  ok('merge keeps both futari answers',m.futari.days['2026-09-30']?.n1?.text==='一人目の答え'&&m.futari.days['2026-09-30']?.n2?.text==='二人目の答え');
   ok('merge keeps board notes from both, deleted stays deleted',m.board.notes.some(n=>n.id==='b1')&&m.board.notes.some(n=>n.id==='b2')&&!m.board.notes.some(n=>n.id==='b0'));
-  ok('merge keeps events + fills empty profile',m.events.length===1&&m.profile.ward==='中区'&&m.profile.name1==='けんじ');
+  ok('merge keeps events + fills empty profile',m.events.length===1&&m.profile.ward==='中区'&&m.profile.name1==='一人目');
 
   // --- Gist の読み書き（まねの API） ---
   const gh=new MockGitHub({[T1]:'kenji',[TX]:'stranger'});
@@ -81,14 +81,14 @@ async function main(){
   const id=await gs.createEncryptedGist(cfg,gs.buildPayload(leg.payload!.book,8));
   cfg=gs.writeSyncConfig({...cfg,gistId:id});
   const created=gh.gists.get(id);
-  ok('new gist is secret and holds ciphertext only (incl. its whole history)',created.public===false&&Object.keys(created.files).join()===gs.ENC_FILENAME&&created.history.every((h:any)=>!/OLD|けんじ|futari-miraicho/.test(JSON.stringify(h))));
+  ok('new gist is secret and holds ciphertext only (incl. its whole history)',created.public===false&&Object.keys(created.files).join()===gs.ENC_FILENAME&&created.history.every((h:any)=>!/OLD|一人目|futari-miraicho/.test(JSON.stringify(h))));
   ok('nothing written to the old gist',gh.log.filter((l:any)=>l.path===`/gists/${LEGACY}`&&l.method!=='GET').length===0);
   const pulled=await gs.pullEncrypted(cfg);
   ok('encrypted pull decodes',pulled.payload?.revision===8&&pulled.payload.book.records['A必1']?.note.includes('OLD')===true);
   ok('device list recorded inside the ciphertext',Object.keys(pulled.payload?.devices||{}).includes(cfg.deviceId));
   const anon=await gh.fetch(`https://api.github.com/gists/${id}`);
   const anonText=await anon.text();
-  ok('anyone with the id sees only ciphertext',anon.status===200&&!/OLD|けんじ|秘密/.test(anonText));
+  ok('anyone with the id sees only ciphertext',anon.status===200&&!/OLD|一人目|秘密/.test(anonText));
   // 古い版が新しい同期先に平文を足してしまった場合
   gh.gists.get(id).files[gs.LEGACY_FILENAME]={filename:gs.LEGACY_FILENAME,content:JSON.stringify(gs.buildPayload(sampleBook('STRAY'),3))};
   const stray=await gs.pullEncrypted(cfg);
@@ -96,7 +96,7 @@ async function main(){
   await gs.pushEncrypted(cfg,gs.buildPayload(stray.payload!.book,9),{dropStrayPlain:true});
   ok('stray plaintext removed on next push',!gh.gists.get(id).files[gs.LEGACY_FILENAME]);
   const lastPush=gh.log.filter((l:any)=>l.method==='PATCH').pop();
-  ok('push body is ciphertext only',!!lastPush&&!/OLD|けんじ|STRAY|秘密/.test(lastPush.body));
+  ok('push body is ciphertext only',!!lastPush&&!/OLD|一人目|STRAY|秘密/.test(lastPush.body));
   // 違うキー
   const wrong={...cfg,token:T2,prevToken:''};
   gh.users[T2]='kenji';

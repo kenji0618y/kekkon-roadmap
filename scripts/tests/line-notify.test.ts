@@ -45,11 +45,11 @@ async function main(){
 
   // --- 送り方 ---
   const m=mock({ok:true,status:'sent',batched:1});
-  const r=await L.postRelay(URL_OK,L.boardPayload(s,'n2','はるか','土曜の午前10時'),{fetchImpl:m.f});
+  const r=await L.postRelay(URL_OK,L.boardPayload(s,'n2','二人目','土曜の午前10時'),{fetchImpl:m.f});
   ok('board: result passed through',r.ok&&r.status==='sent');
   const {init}=m.calls[0];
   ok('board: POST text/plain;charset=utf-8 and no other header',init.method==='POST'&&JSON.stringify(init.headers)===JSON.stringify({'Content-Type':'text/plain;charset=utf-8'}));
-  ok('board: body is JSON string with kind/secret/from/name/text',JSON.stringify(JSON.parse(String(init.body)))===JSON.stringify({kind:'board',secret:s,from:2,name:'はるか',text:'土曜の午前10時'}));
+  ok('board: body is JSON string with kind/secret/from/name/text',JSON.stringify(JSON.parse(String(init.body)))===JSON.stringify({kind:'board',secret:s,from:2,name:'二人目',text:'土曜の午前10時'}));
   const big=L.boardPayload(s,'n1','あ'.repeat(30),'い'.repeat(600));
   ok('board: from n1 → 1, name 20 chars, text 500 chars',big.from===1&&Array.from(big.name).length===20&&Array.from(big.text).length===500);
   const m2=mock({ok:true,registered:{1:true,2:false},month:{count:3,cap:180,capped:false},token:true});
@@ -77,15 +77,15 @@ async function main(){
   ok('synced book has no secret',!JSON.stringify(merged).includes(s));
 
   // --- 画面の文 ---
-  const t=(x:L.RelayResult)=>L.boardResultText(x,'はるか').text;
-  ok('sent',t({ok:true,status:'sent',batched:1})==='はるかさんのLINEにお知らせしました');
+  const t=(x:L.RelayResult)=>L.boardResultText(x,'二人目').text;
+  ok('sent',t({ok:true,status:'sent',batched:1})==='二人目さんのLINEにお知らせしました');
   ok('queued',t({ok:true,status:'queued'})==='1分後にまとめてお知らせします');
   ok('capped',t({ok:true,status:'capped'})==='今月の上限に達したので止めています。来月1日に再開します');
   ok('partner-not-registered',t({ok:false,error:'partner-not-registered'})==='相手のLINEがまだ登録されていません');
   ok('bad-secret / no-secret',t({ok:false,error:'bad-secret'})==='合言葉が合っていません'&&t({ok:false,error:'no-secret'})==='合言葉が合っていません');
   ok('empty / bad-from / busy / server / network',['empty','bad-from','busy','server','network'].every(e=>t({ok:false,error:e})==='お知らせを送れませんでした'));
-  const st=L.statusResultText({ok:true,registered:{1:true,2:true},month:{count:3,cap:180,capped:false},token:true},{n1:'けんじ',n2:'はるか'});
-  ok('status sentence',st.text.startsWith('つながりました。LINEの登録 1（けんじ）：登録ずみ / 2（はるか）：登録ずみ')&&!st.warn);
+  const st=L.statusResultText({ok:true,registered:{1:true,2:true},month:{count:3,cap:180,capped:false},token:true},{n1:'一人目',n2:'二人目'});
+  ok('status sentence',st.text.startsWith('つながりました。LINEの登録 1（一人目）：登録ずみ / 2（二人目）：登録ずみ')&&!st.warn);
 
   // --- 準備中の理由 ---
   ok('missing: auto-sync off → sync-off',L.lineMissing({syncEnabled:false,hasSecret:false,url:URL_OK})==='sync-off');
