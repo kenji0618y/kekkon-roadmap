@@ -5,12 +5,13 @@ import {Input} from './ui/input';
 import {Label} from './ui/label';
 import {Switch} from './ui/switch';
 import {Action} from './book-controls';
+import {Fold,SettingsCard,StatusChip} from './settings-ui';
 import {pairEventWhoLabels,type Book,type LineNotifySettings as LineNotifyPrefs} from '../lib/model';
 import {LINE_SECRET_MIN,isRelayUrl,linePrepText,readSecretOverride,statusResultText,writeSecretOverride} from '../lib/line-notify';
 import type {LineNotify} from '../lib/use-line-notify';
 
 /**
- * 設定 → 詳細設定 →「LINE通知」（端末どうしの自動同期のすぐ下）。
+ * 設定 →「通知（LINE）」のカード（同期のすぐ下）。中継先の URL・合言葉は折りたたみの中（URL が無いときだけ最初から開く）。
  * 中継先の URL とオン/オフは手帳に入れて同期（ふたりで共通）。合言葉は同期のキーからこの端末の中で作る（保存しない）。
  */
 export function LineNotifySettings({book,line,save,onOpenSync}:{book:Book,line:LineNotify,save:(patch:Partial<LineNotifyPrefs>,message:string)=>Promise<boolean>,onOpenSync:()=>void}){
@@ -49,46 +50,49 @@ export function LineNotifySettings({book,line,save,onOpenSync}:{book:Book,line:L
     writeSecretOverride(v);setManual('');setHasManual(true);line.refresh();
     toast.success('この端末に合言葉を保存しました');
   };
+  const [setupOpen]=useState(()=>!saved);
+  const chip=line.state==='on'?'オン':line.state==='off'?'オフ':'準備中';
   const clearManual=()=>{writeSecretOverride('');setHasManual(false);line.refresh();toast.success('手で入れた合言葉を消しました');};
 
   const stateText=line.state==='on'?'オン（この端末から送れます）'
     :line.state==='off'?'オフ'
     :linePrepText(line.missing).state;
 
-  return <div id="settings-line-notify" className="settings-sub">
-    <h3><MessageCircle size={17}/>LINE通知</h3>
-    <p>掲示板にメモを書くと、相手のLINEに「名前：メモ」が届きます。アプリを閉じていても届きます。使うには、LINE公式アカウントとGoogleのスクリプトを先に用意します。</p>
+  return <SettingsCard id="settings-line-notify" icon={<MessageCircle size={20}/>} title="通知（LINE）" chip={<StatusChip tone={line.state==='on'?'on':line.state==='off'?'off':'wait'}>{chip}</StatusChip>}
+    lead="掲示板のメモ・済・開いたことを、相手のLINEに知らせます。"
+    more={<><p>掲示板にメモを書くと、相手のLINEに「名前：メモ」が届きます。アプリを閉じていても届きます。使うには、LINE公式アカウントとGoogleのスクリプトを先に用意します。</p>
+      <p className="hint">オンのとき、掲示板・スタンプの済に加え、合言葉で開いたあとも相手のLINEに「開きました」が届きます（同じ端末では6時間に1回まで）。</p>
+      <p className="hint">公式アカウントには、{names.n1}さんのLINEから「登録 1」、{names.n2}さんのLINEから「登録 2」と送ります。</p></>}>
     <p className={`line-state${line.state==='on'?' is-on':line.state==='preparing'?' is-wait':''}`} role="status">いまの状態：{stateText}</p>
-
-    <div className="field" style={{width:'100%',marginBottom:12}}>
-      <Label htmlFor="line-relay-url">お知らせの中継先（GoogleのスクリプトのURL）</Label>
-      <Input id="line-relay-url" inputMode="url" autoComplete="off" spellCheck={false} value={url} onChange={e=>setUrl(e.target.value)} onBlur={()=>void saveUrl()} placeholder="https://script.google.com/macros/s/…/exec" maxLength={300} aria-invalid={urlBad||undefined}/>
-      {urlBad?<p className="hint warn" style={{marginTop:6}}>「https://script.google.com/macros/s/」で始まり「/exec」で終わるURLだけ使えます。</p>
-        :<p className="hint" style={{marginTop:6}}>このURLは手帳と一緒に、ふたりの端末にそろいます。</p>}
-    </div>
-
-    <label className="scope-toggle" style={{marginBottom:14}}><Switch checked={!!book.lineNotify?.on} onCheckedChange={v=>void save({on:v},v?'LINE通知をオンにしました':'LINE通知をオフにしました')}/><span>LINE通知を使う（ふたりの端末で共通）</span></label>
-    <p className="hint" style={{marginTop:8}}>オンのとき、掲示板・スタンプの済に加え、合言葉で開いたあとも相手のLINEに「開きました」が届きます（同じ端末では6時間に1回まで）。</p>
-
-    <p className="hint">合言葉は、端末どうしの自動同期のキーから、この端末の中で作ります。同じキーを入れたふたりの端末では、同じ合言葉になります。合言葉は手帳には保存されず、同期もされません。</p>
+    <label className="scope-toggle settings-switch"><Switch checked={!!book.lineNotify?.on} onCheckedChange={v=>void save({on:v},v?'LINE通知をオンにしました':'LINE通知をオフにしました')}/><span>LINE通知を使う（ふたりの端末で共通）</span></label>
     {(line.missing==='sync-off'||line.missing==='no-key')&&<p className="hint warn">準備中：{linePrepText(line.missing).fix} <button type="button" className="desk-board-link" onClick={onOpenSync}>端末どうしの自動同期を開く</button></p>}
     <div className="line-secret-actions">
-      <Action secondary disabled={!line.hasSecret} onClick={()=>void copy()}>合言葉をコピー</Action>
       <Action secondary disabled={testing} onClick={()=>void test()}>{testing?'確かめています…':'つながるか試す'}</Action>
     </div>
-    <p className="hint">コピーした合言葉は、Googleのスクリプトの「スクリプト プロパティ」（BOARD_SECRET）にだけ貼ってください。チャットやメモには貼らないでください。「つながるか試す」では、LINEには何も送りません。</p>
     {result&&<p className={`line-test-result${result.warn?' warn':''}`} role="status">{result.text}</p>}
 
-    <details className="line-secret-manual">
-      <summary>合言葉を手で入れる（ふたりの端末で自動同期のキーが違うとき）</summary>
-      <p className="hint" style={{marginTop:6}}>スクリプトに貼ったのと同じ合言葉を、ふたりの端末それぞれに入れます。この端末の中だけに保存されます。{hasManual?'いまは手で入れた合言葉を使っています。':''}</p>
-      <Input type="password" autoComplete="off" value={manual} onChange={e=>setManual(e.target.value)} placeholder={`${LINE_SECRET_MIN}文字以上`} maxLength={200} aria-label="合言葉を手で入れる"/>
-      <div className="line-secret-actions">
-        <Action secondary disabled={manual.trim().length<LINE_SECRET_MIN} onClick={saveManual}>この端末に保存</Action>
-        {hasManual&&<Action secondary onClick={clearManual}>手で入れた合言葉を消す</Action>}
+    <Fold title="中継先と合言葉" hint="Googleのスクリプトの URL・BOARD_SECRET" defaultOpen={setupOpen}>
+      <div className="field" style={{width:'100%',marginBottom:12}}>
+        <Label htmlFor="line-relay-url">お知らせの中継先（GoogleのスクリプトのURL）</Label>
+        <Input id="line-relay-url" inputMode="url" autoComplete="off" spellCheck={false} value={url} onChange={e=>setUrl(e.target.value)} onBlur={()=>void saveUrl()} placeholder="https://script.google.com/macros/s/…/exec" maxLength={300} aria-invalid={urlBad||undefined}/>
+        {urlBad?<p className="hint warn" style={{marginTop:6}}>「https://script.google.com/macros/s/」で始まり「/exec」で終わるURLだけ使えます。</p>
+          :<p className="hint" style={{marginTop:6}}>このURLは手帳と一緒に、ふたりの端末にそろいます。</p>}
       </div>
-    </details>
+      <p className="hint">合言葉は、端末どうしの自動同期のキーから、この端末の中で作ります。同じキーを入れたふたりの端末では、同じ合言葉になります。合言葉は手帳には保存されず、同期もされません。</p>
+      <div className="line-secret-actions">
+        <Action secondary disabled={!line.hasSecret} onClick={()=>void copy()}>合言葉をコピー</Action>
+      </div>
+      <p className="hint">コピーした合言葉は、Googleのスクリプトの「スクリプト プロパティ」（BOARD_SECRET）にだけ貼ってください。チャットやメモには貼らないでください。「つながるか試す」では、LINEには何も送りません。</p>
 
-    <p className="hint">公式アカウントには、{names.n1}さんのLINEから「登録 1」、{names.n2}さんのLINEから「登録 2」と送ります。</p>
-  </div>;
+      <details className="line-secret-manual">
+        <summary>合言葉を手で入れる（ふたりの端末で自動同期のキーが違うとき）</summary>
+        <p className="hint" style={{marginTop:6}}>スクリプトに貼ったのと同じ合言葉を、ふたりの端末それぞれに入れます。この端末の中だけに保存されます。{hasManual?'いまは手で入れた合言葉を使っています。':''}</p>
+        <Input type="password" autoComplete="off" value={manual} onChange={e=>setManual(e.target.value)} placeholder={`${LINE_SECRET_MIN}文字以上`} maxLength={200} aria-label="合言葉を手で入れる"/>
+        <div className="line-secret-actions">
+          <Action secondary disabled={manual.trim().length<LINE_SECRET_MIN} onClick={saveManual}>この端末に保存</Action>
+          {hasManual&&<Action secondary onClick={clearManual}>手で入れた合言葉を消す</Action>}
+        </div>
+      </details>
+    </Fold>
+  </SettingsCard>;
 }

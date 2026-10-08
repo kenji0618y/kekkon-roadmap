@@ -5,7 +5,7 @@ import {Action} from './book-controls';
 import {forgetSiteKey,hasSiteKey} from '../lib/site-lock';
 
 /**
- * 設定 → 詳細設定 →「この端末の合言葉」。公開ページは合言葉で開く。一度入れた端末は覚えているので、
+ * 設定 →「詳細」→「この端末の合言葉」。公開ページは合言葉で開く。一度入れた端末は覚えているので、
  * 人に貸す・手放すときなどにここで消す。手帳のデータ（この端末の記録）は消えない。
  */
 export function SiteLockSettings(){

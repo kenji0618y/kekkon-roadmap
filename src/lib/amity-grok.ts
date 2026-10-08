@@ -1,5 +1,5 @@
 /** Amityちゃん × Grok (xAI) research helper.
- * The key comes ONLY from what the user typed in 設定 → 詳細設定 →「AIのキー」
+ * The key comes ONLY from what the user typed in 設定 →「AI」→「AIのキーと接続先」
  * (localStorage `amity-grok-key`, this device only — not in the book, not synced, not in backups).
  * No key is bundled in the app (2026-10-03: the old obfuscated bundle was removed). Never use VITE_*.
  */
@@ -43,11 +43,11 @@ export function isGrokCreditsLimitResult(error: string): boolean {
 
 /** キーが無いときの案内（チャット・調べもの・ふたりタブで共通）。 */
 export const GROK_NO_KEY_JA =
-  'AIのキーがまだ入っていません。設定 → 詳細設定 →「AIのキー」に xAI のキーを入れると、AIでもくわしく調べられます（キーはこの端末の中だけに保存されます）。';
+  'AIのキーがまだ入っていません。設定 →「AI」→「AIのキーと接続先」に xAI のキーを入れると、AIでもくわしく調べられます（キーはこの端末の中だけに保存されます）。';
 
 /** AIスイッチがオフのときの案内（チャット・調べもの・ふたりタブで共通）。 */
 export const GROK_AI_OFF_JA =
-  'いまはAIを使わない設定です。設定 → 詳細設定 →「AIを使う（クレジットを使う）」をオンにすると、AIでも調べられます（クレジットを使います）。';
+  'いまはAIを使わない設定です。設定 →「AI」の「AIを使う（クレジットを使う）」をオンにすると、AIでも調べられます（クレジットを使います）。';
 
 /** 通信エラーなどを、画面に出せる日本語に置きかえる（英語の生のエラーは出さない）。 */
 export const NETWORK_ERROR_JA = '通信できませんでした。電波を確かめて、もう一度お試しください。';
@@ -61,7 +61,7 @@ export function grokErrorJa(error: string): string {
   const m = /^HTTP (\d{3})/.exec(error);
   if (m) {
     const code = Number(m[1]);
-    if (code === 401 || code === 403) return 'AIのキーが使えませんでした。設定の「詳細設定」を確かめてください。';
+    if (code === 401 || code === 403) return 'AIのキーが使えませんでした。設定の「AI」→「AIのキーと接続先」を確かめてください。';
     if (code === 429) return 'AIが混み合っています。少し時間をおいて、もう一度お試しください。';
     if (code >= 500) return 'AIのサービスが一時的に使えません。時間をおいて、もう一度お試しください。';
     return `AIにつながりませんでした（エラー番号 ${code}）。時間をおいて、もう一度お試しください。`;

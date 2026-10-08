@@ -174,10 +174,10 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
   if (!embedded && !open) return null;
 
   const keyHint = !isGrokEnabled()
-    ? 'この手帳の中から探すよ（AIはオフ。設定 → 詳細設定でオンにできます）'
+    ? 'この手帳の中から探すよ（AIはオフ。設定 →「AI」でオンにできます）'
     : loadGrokKey()
       ? 'この手帳の中から探して、AIでもくわしく調べるよ'
-      : 'この手帳の中から探すよ（AIのキーは 設定 → 詳細設定 で入れられます）';
+      : 'この手帳の中から探すよ（AIのキーは 設定 →「AI」で入れられます）';
 
   const panel = (
     <div className={`desk-chat-panel${embedded ? ' embedded' : ''}`}>
