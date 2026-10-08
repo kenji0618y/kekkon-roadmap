@@ -31,6 +31,7 @@
 - **Repo:** https://github.com/kenji0618y/kekkon-roadmap
 - デプロイ: `main` をビルドした `dist` を **`gh-pages` ブランチ**へ（`.nojekyll` 必須）
 - **2026-10-03〜 公開ページは合言葉で暗号化**（下の「公開ページの合言葉」）。**手で `npx gh-pages -d dist` しない**（平文のアプリ・絵・動画がそのまま出てしまう）。公開は CI だけ
+- **Never add a CNAME to kenji0618y.github.io; it moves kekkon-roadmap to that domain.**（ユーザーサイト `kenji0618y.github.io` に独自ドメインを付けると、`/kekkon-roadmap/` もそのドメインへ 301 で移り、オリジンが変わって端末の手帳・解錠の鍵・LINE 設定が見えなくなる。2026-10-07 に sauna-cospa.com で起き、CNAME は kenji0618y/sauna-cospa へ移した）
 - Actions の workflow ファイル push は OAuth に `workflow` scope が無く失敗しやすい（そのときは Kenji に workflow の変更を入れてもらう）
 
 ## プロダクト概要
