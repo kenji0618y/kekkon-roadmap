@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {toast} from 'sonner';
-import {bookSchema,emptyBoard,emptyBook,emptyFutari,emptyLineNotify,type LineNotifySettings,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
+import {bookSchema,emptyBoard,emptyBook,emptyFutari,emptyLineNotify,emptyHousehold,sameHousehold,type HouseholdSplit,type LineNotifySettings,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
 import {mergeFutari,sameFutari} from './futari';
 import {mergeBoard,pruneDeleted,sameBoard} from './board';
 import {newerLineNotify,sameLineNotify} from './line-notify';
@@ -9,12 +9,12 @@ import {newerLineNotify,sameLineNotify} from './line-notify';
  * 二人が同時に書き込むもの（今日の一問の答え・掲示板のメモ）は、同期のとき両方を残す。LINE 通知の設定は新しく変えた方。
  * ここは手帳を合わせるだけで、LINE には何も送らない（同期で入ってきたメモで通知すると相手に2通届く）。
  */
-type Shared={futari:Book['futari'],board:Book['board'],lineNotify:Book['lineNotify']};
+type Shared={futari:Book['futari'],board:Book['board'],lineNotify:Book['lineNotify'],household:Book['household']};
 function mergeShared(local:Book|null|undefined,remote:Book):Shared{
-  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board),lineNotify:newerLineNotify(local?.lineNotify,remote.lineNotify,emptyLineNotify)};
+  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board),lineNotify:newerLineNotify(local?.lineNotify,remote.lineNotify,emptyLineNotify),household:newerLineNotify(local?.household,remote.household,emptyHousehold)};
 }
 function sameShared(a:Partial<Shared>,b:Partial<Shared>){
-  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board)&&sameLineNotify(a.lineNotify,b.lineNotify);
+  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board)&&sameLineNotify(a.lineNotify,b.lineNotify)&&sameHousehold(a.household,b.household);
 }
 import {validateCatalogBook} from './backup';
 import {
@@ -426,6 +426,7 @@ export function useBook(_paused:boolean){
     }
     if(action==='deleteBoardNote')return `deleteBoardNote:${String(payload.id||'')}`;
     if(action==='lineNotify')return 'lineNotify';
+    if(action==='household')return 'household';
     return '';
   };
 
@@ -539,6 +540,10 @@ export function useBook(_paused:boolean){
         ensureBook();
         const prev=book!.lineNotify||emptyLineNotify;
         book!.lineNotify={...prev,...(payload.patch as Partial<LineNotifySettings>),updatedAt:new Date().toISOString()};
+      }else if(action==='household'){
+        ensureBook();
+        const prev=book!.household||emptyHousehold;
+        book!.household={...prev,...(payload.patch as Partial<HouseholdSplit>),updatedAt:new Date().toISOString()};
       }else if(action==='import'){
         book=structuredClone(payload.book as Book);
         revision=0;

@@ -135,9 +135,21 @@ export const lineNotifySchema=z.object({
 });
 export type LineNotifySettings=z.infer<typeof lineNotifySchema>;
 export const emptyLineNotify:LineNotifySettings={url:'',on:false,updatedAt:''};
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify)});
+/** 博士タブ「家計の分け方」（2026-10-08〜）。5つの型から1つ＋ふたりの決めごと（自由記入・金額は入れたいときだけ）。新しく変えた方を残して同期。 */
+export const householdSchema=z.object({
+  pattern:z.enum(['','p1','p2','p3','p4','p5']).catch(''),
+  note:z.string().max(2000).catch(''),
+  review:date.catch(''),
+  updatedAt:z.string().max(40).catch(''),
+});
+export type HouseholdSplit=z.infer<typeof householdSchema>;
+export const emptyHousehold:HouseholdSplit={pattern:'',note:'',review:'',updatedAt:''};
+export function sameHousehold(a:HouseholdSplit|undefined,b:HouseholdSplit|undefined){
+  return (a?.pattern||'')===(b?.pattern||'')&&(a?.note||'')===(b?.note||'')&&(a?.review||'')===(b?.review||'')&&(a?.updatedAt||'')===(b?.updatedAt||'');
+}
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold)});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};

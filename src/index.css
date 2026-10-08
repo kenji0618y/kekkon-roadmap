@@ -1812,3 +1812,19 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .week-checks label{display:flex;gap:4px;align-items:center;white-space:nowrap}
 .week-go{color:#9aa5a0;flex:none}
 .week-empty{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+
+/* 博士タブ「家計の分け方」（2026-10-08） */
+.household-card{margin:16px 0 0;padding:18px 16px}
+.household-card h2{display:flex;align-items:center;gap:8px;font-family:"Shippori Mincho",serif;font-size:19px;font-weight:600;margin:2px 0 6px;color:#1c3c4a}
+.household-lead{font-size:14px;line-height:1.75;margin:0 0 8px}
+.household-now{font-size:13px;margin:0 0 8px;padding:6px 10px;border-radius:6px;background:#eef6ea;color:#2f6a45}
+.household-list{display:flex;flex-direction:column;gap:7px;margin:0 0 10px}
+.household-option{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid #e2e6d8;border-radius:9px;background:#fff;padding:10px 11px;font:inherit;color:inherit;cursor:pointer}
+.household-option.is-on{border-color:#1c3c4a;box-shadow:0 0 0 1px #1c3c4a inset;background:#fbfcf8}
+.household-dot{width:16px;height:16px;border-radius:50%;border:2px solid #9aa8a2;flex:none;margin-top:3px}
+.household-option.is-on .household-dot{border-color:#1c3c4a;background:radial-gradient(#1c3c4a 0 4px,transparent 5px)}
+.household-option b{display:block;color:#1c3c4a;font-size:13.5px;line-height:1.55}
+.household-option small{display:block;color:#6a7973;font-size:12px;margin-top:2px}
+.household-field{width:100%;margin:8px 0}
+.household-src{font-size:12px;color:#6a7973;line-height:1.6;border-top:1px dashed #dedfd6;padding-top:8px;margin:12px 0 0;width:100%}
+.household-src a{color:#1c3c4a;text-decoration:underline;display:inline-flex;align-items:center;gap:3px;word-break:break-all}
