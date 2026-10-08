@@ -105,7 +105,8 @@ const hasText = (book, s) => JSON.stringify(book || {}).includes(s);
 const allSeedKept = (book) => ['MARK-REC0', 'MARK-REC1', 'MARK-MEM', 'MARK-EV', 'MARK-FUT1', 'MARK-FUT2', 'MARK-BOARD1', 'MARK-BOARD2'].every((m) => hasText(book, m));
 async function openSync(p, file) {
   await p.page.getByRole('tab', { name: /設定/ }).first().click();
-  await p.page.evaluate(() => { const d = document.getElementById('settings-advanced-fold'); if (d) d.open = true; });
+  // 2026-10-08〜 同期は独立したカード。キー・暗号化のようすは折りたたみの中なので開いておく
+  await p.page.evaluate(() => document.querySelectorAll('#settings-gist-sync details').forEach((d) => { d.open = true; }));
   await p.page.locator('#settings-gist-sync').scrollIntoViewIfNeeded();
   await sleep(600);
   if (file) {

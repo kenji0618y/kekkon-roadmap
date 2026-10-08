@@ -1828,6 +1828,65 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .household-field{width:100%;margin:8px 0}
 .household-src{font-size:12px;color:#6a7973;line-height:1.6;border-top:1px dashed #dedfd6;padding-top:8px;margin:12px 0 0;width:100%}
 .household-src a{color:#1c3c4a;text-decoration:underline;display:inline-flex;align-items:center;gap:3px;word-break:break-all}
+/* ===== 設定タブ（2026-10-08〜 見やすく：カード・状態チップ・「くわしく」・折りたたみ） ===== */
+.settings-overview{display:flex;flex-wrap:wrap;gap:8px;margin:-12px 0 18px}
+.settings-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border-radius:999px;border:1px solid #d9ddcf;background:#f4f4ee;color:#5a5f52;font-size:13px;font-weight:700;line-height:1.2;white-space:nowrap}
+.settings-chip::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.85}
+button.settings-chip{cursor:pointer;min-height:40px}
+button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
+.settings-chip.is-on{background:#eaf5ec;border-color:#bfdcc5;color:#24683f}
+.settings-chip.is-wait{background:#fbf3e6;border-color:#ead3ad;color:#8a5a22}
+.settings-chip.is-warn{background:#fdeeea;border-color:#efc3b8;color:#a33a26}
+.settings-chip.is-off{background:#f2f2ef;border-color:#dcdcd4;color:#6c6c64}
+.settings-stack{display:flex;flex-direction:column;gap:16px;max-width:760px}
+.settings-sec{padding:22px 22px 20px;gap:0}
+.settings-sec-head{display:flex;align-items:center;gap:12px;width:100%;margin-bottom:6px}
+.settings-sec-head h2{margin:0;font-size:19px;line-height:1.35;flex:1;min-width:0}
+.settings-sec-head .settings-chip{flex:none}
+.settings-sec-icon{flex:none;width:38px;height:38px;display:grid;place-content:center;border:1px solid #dadfc8;border-radius:10px;color:#6f8a5c;background:#f5f6ea}
+.settings-lead{margin:2px 0 10px;font-size:14px;line-height:1.6;color:#5d6656;width:100%}
+.settings-more{width:100%;margin:0 0 12px}
+.settings-more>summary{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:4px 0;color:#4d7a63;font-size:13px;font-weight:700;cursor:pointer;list-style:none}
+.settings-more>summary::-webkit-details-marker{display:none}
+.settings-more>summary::before{content:'▸';transition:transform .15s}
+.settings-more[open]>summary::before{transform:rotate(90deg)}
+.settings-more-body{border-left:3px solid #e3e8d8;padding:4px 0 2px 12px;margin-top:4px}
+.settings-more-body p{font-size:13px;line-height:1.7;margin:0 0 8px}
+.settings-switch{width:100%;min-height:52px;padding:10px 14px!important;margin:4px 0 10px;border:1px solid #e1e5d6;border-radius:12px;background:#fafbf5;font-size:15px!important;font-weight:700;color:#2f4a3c!important;gap:12px!important;cursor:pointer}
+.settings-status-line{margin:0 0 10px;font-size:13px}
+.settings-sec .stack-actions,.settings-sec .line-secret-actions{margin-top:4px}
+.settings-sec .stack-actions button,.settings-sec .line-secret-actions button,.settings-sec .settings-sub button[data-slot=button]{min-height:46px;font-size:15px}
+.settings-sec .line-state{width:100%}
+.settings-fold{width:100%;margin-top:14px;border:1px solid #e3e6da;border-radius:12px;background:#fcfcf8}
+.settings-fold>summary{display:flex;align-items:center;gap:10px;min-height:52px;padding:10px 14px;cursor:pointer;list-style:none}
+.settings-fold>summary::-webkit-details-marker{display:none}
+.settings-fold>summary>span{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.settings-fold>summary strong{font-size:15px;color:#2f4a3c}
+.settings-fold>summary small{font-size:12px;color:#7b8373}
+.settings-fold>summary::after{content:'＋';color:#8ca177;font-size:18px;flex:none}
+.settings-fold[open]>summary::after{content:'－'}
+.settings-fold-body{padding:4px 14px 14px;border-top:1px solid #eceee4}
+.settings-fold-body>.field:first-child,.settings-fold-body>.sync-crypt-box:first-child{margin-top:12px}
+.settings-tool{width:100%;border-top:1px solid #ececdb;margin-top:14px;padding-top:14px}
+.settings-tool h3{display:flex;align-items:center;gap:8px;font-size:16px;margin:0 0 4px;color:#2f4a3c}
+.settings-tool>.hint{margin:0 0 10px}
+.settings-sec.settings-advanced .settings-advanced-fold>summary{min-height:48px}
+.settings-sec.settings-advanced .settings-advanced-fold>summary h2{font-size:19px}
+.settings-sec .settings-sub.danger-reset-card{border:1px solid #e4c7c0;background:#fff8f6;border-radius:12px;padding:14px;margin-top:20px}
+.settings-sec .settings-sub.danger-reset-card h3{color:#8f2a1e}
+.settings-sec .profile-names{margin:8px 0 6px}
+.settings-sec dl{width:100%}
+@media(max-width:700px){.settings-overview{margin:-6px 0 14px}.settings-sec{padding:18px 16px 16px}.settings-sec-head h2{font-size:17px}.settings-sec-icon{width:34px;height:34px}}
+.settings-sec .line-secret-actions{display:flex;flex-direction:column;gap:10px;width:100%}
+.settings-sec .line-secret-actions button{width:100%}
+.settings-stack-after{margin-top:16px}
+
+.settings-more-h{font-size:14px;margin:12px 0 6px;color:#2f4a3c}
+.settings-more-body ul{margin:0 0 8px;padding-left:1.2em;font-size:13px;line-height:1.7}
+.settings-sec .text-button{min-height:44px}
+.settings-more-body h3.settings-more-h{font-size:14px!important;font-family:inherit;letter-spacing:0;margin:12px 0 6px!important}
+.settings-more-body ul{list-style:disc}
+.settings-more-body li{margin-bottom:4px}
 
 /* あとで見る（ふたりで共有） */
 .later-mark{display:inline-flex;align-items:center;gap:3px;font-size:12px;color:#99773c;font-weight:700;border:1px solid #e6d9bf;background:#fffaf0;border-radius:6px;padding:2px 8px;white-space:nowrap;flex:none;line-height:1.6;cursor:pointer}
