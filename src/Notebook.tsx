@@ -14,7 +14,7 @@ import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
 import {deadlineVisible} from './lib/deadline-visibility';
-import {chapters,emptyBook,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
+import {chapters,emptyBook,emptyHousehold,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -39,6 +39,7 @@ import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
 import {WeekTogether} from './components/WeekTogether';
+import {HouseholdSplitCard} from './components/HouseholdSplitCard';
 import {buildWeek} from './lib/week-together';
 import {OnboardingSheet,isOnboardingDone,markOnboardingDone} from './components/OnboardingSheet';
 import {PwaUpdateBanner} from './components/PwaUpdateBanner';
@@ -290,6 +291,7 @@ export default function FutureNotebook(){
 </TabsContent>
  <TabsContent value="pair" forceMount className="tab-surface pair-tab data-[state=inactive]:hidden">
   <FutariDaily book={book} busy={data.busy} save={futariSave} active={tab==='pair'}/>
+  <HouseholdSplitCard value={book.household||emptyHousehold} busy={data.busy} onSave={async patch=>!!(await data.mutate({action:'household',patch},'家計の分け方を、ふたりの合意として残しました'))}/>
   <details className="paper-card pair-workbook-fold" id="pair-workbook" open={pairBookOpen} onToggle={e=>setPairBookOpen((e.currentTarget as HTMLDetailsElement).open)}>
    <summary><strong>ふたりの練習帳（行動・会話・合意）</strong><span className="hint">これまでのスタンプ台と、書きためた合意</span></summary>
    <SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
