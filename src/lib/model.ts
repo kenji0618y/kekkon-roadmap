@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import {FAMILY_CAL_ID,validCalId} from './google-cal';
 export const statusNames={todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'スキップ'} as const;
 export type Status=keyof typeof statusNames;
 const short=z.string().max(100);
@@ -212,9 +213,16 @@ export const remindersSchema=z.object({
 });
 export type Reminders=z.infer<typeof remindersSchema>;
 export const emptyReminders:Reminders={on:false,kinds:{rule:true,task:true,event:true,anniv:true},before3:true,sameDay:true,slot:'morning',meeting:{on:false,week:'',weekday:-1,before3:true,sameDay:true},updatedAt:''};
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold),later:laterSchema.catch(emptyLater).default(emptyLater),shopping:shoppingSchema.catch(emptyShopping).default(emptyShopping),reminders:remindersSchema.catch(emptyReminders).default(emptyReminders)});
+/** カレンダータブの Google カレンダー（2026-10-09〜）。ID だけ（ふたりで共通・同期では新しく変えた方）。初期値はファミリー カレンダー。表示の切り替えは端末ごとなのでここには入れない。 */
+export const googleCalSchema=z.object({
+  id:z.string().max(200).refine(validCalId).catch(FAMILY_CAL_ID),
+  updatedAt:z.string().max(40).catch(''),
+});
+export type GoogleCal=z.infer<typeof googleCalSchema>;
+export const emptyGoogleCal:GoogleCal={id:FAMILY_CAL_ID,updatedAt:''};
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold),later:laterSchema.catch(emptyLater).default(emptyLater),shopping:shoppingSchema.catch(emptyShopping).default(emptyShopping),reminders:remindersSchema.catch(emptyReminders).default(emptyReminders),googleCal:googleCalSchema.catch(emptyGoogleCal).default(emptyGoogleCal)});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold,later:emptyLater,shopping:emptyShopping,reminders:emptyReminders};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold,later:emptyLater,shopping:emptyShopping,reminders:emptyReminders,googleCal:emptyGoogleCal};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};

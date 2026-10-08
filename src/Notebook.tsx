@@ -14,7 +14,7 @@ import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
 import {deadlineVisible} from './lib/deadline-visibility';
-import {chapters,emptyBook,emptyHousehold,emptyLater,emptyShopping,emptyReminders,BOARD_TEXT_MAX,type BoardNote,type LaterItem,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
+import {chapters,emptyBook,emptyGoogleCal,emptyHousehold,emptyLater,emptyShopping,emptyReminders,BOARD_TEXT_MAX,type BoardNote,type LaterItem,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,plusDays,plusYears,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -38,6 +38,8 @@ import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
+import {GoogleFamilyCalendar} from './components/GoogleFamilyCalendar';
+import {readCalView,writeCalView,type CalView} from './lib/google-cal';
 import {WeekTogether} from './components/WeekTogether';
 import {MeetingCard,MeetingEditor,RemindersCard,type ReminderSave} from './components/ReminderSettings';
 import {REMIND_WINDOW_DAYS,calendarItems,icsTriggers,meetingDates,meetingRrule,nextReminder,payloadKey,remindOffsets,remindersPayload} from './lib/reminders';
@@ -108,7 +110,10 @@ export default function FutureNotebook(){
  ],[weddingExport,anniversaryExport,dated,absExport,pairExport,meetingExport,remindR]);
  const week=useMemo(()=>buildWeek({today,tasks:scoped,profile:p,records:book.records,events:book.events||[],rules:absoluteDeadlines.filter(d=>deadlineVisible(d,p)&&validDate(d.date))}),[today,scoped,p,book.records,book.events]);
  const [calFocus,setCalFocus]=useState<{date:string,n:number}|null>(null);
- const openCalendarAt=(date:string)=>{setCalFocus(f=>({date,n:(f?.n||0)+1}));setTab('deadlines');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'})));};
+ // カレンダータブの表示（Google（ファミリー）／アプリの予定）。端末ごと。デスクから日付を開くときはアプリの予定に切りかえる（その日はアプリのカレンダーにある）。
+ const [calView,setCalViewState]=useState<CalView>(()=>readCalView());
+ const setCalView=(v:CalView)=>{setCalViewState(v);writeCalView(v);};
+ const openCalendarAt=(date:string)=>{setCalView('app');setCalFocus(f=>({date,n:(f?.n||0)+1}));setTab('deadlines');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'})));};
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
   const da=nearestDeadline(a,p,book.records[a.id])?.date||'9999',db=nearestDeadline(b,p,book.records[b.id])?.date||'9999';
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
@@ -291,7 +296,7 @@ export default function FutureNotebook(){
   <a href="#deadline-block-schedule">項目の予定</a>
   <a href="#deadline-block-phases">時期</a>
  </nav>
- <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus} itemsFor={calExtrasFor} reminders={remindersVal} onOpenTask={openTask} meetingEditor={<MeetingEditor value={remindersVal} busy={data.busy} save={saveReminders}/>}/>
+ <GoogleFamilyCalendar view={calView} onView={setCalView} cal={book.googleCal||emptyGoogleCal} busy={data.busy} onSaveId={async id=>!!(await data.mutate({action:'googleCal',patch:{id}},'カレンダーのIDを保存しました'))} app={<DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus} itemsFor={calExtrasFor} reminders={remindersVal} onOpenTask={openTask} meetingEditor={<MeetingEditor value={remindersVal} busy={data.busy} save={saveReminders}/>}/>}/>
  <section id="deadline-block-hero" className="deadline-block" aria-label="覚えておきたい数字">
   <details className="deadline-secondary-fold">
    <summary>
