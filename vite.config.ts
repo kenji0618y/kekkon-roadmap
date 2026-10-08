@@ -26,7 +26,7 @@ export default defineConfig({
         // ホーム画面の名前（2026-10-07〜「Amityちゃん」。前は「結婚ロードマップ」）。チャットの機能名「Amityちゃんにきく」はそのまま。
         name: "Amityちゃん",
         short_name: "Amityちゃん",
-        description: "広島市・式なし・共働き向けの結婚ロードマップ。手続きと除外。結婚新生活支援は未導入。",
+        description: "Amityちゃん：広島市・式なし・共働き向けの結婚の手続きガイド。手続きと除外。結婚新生活支援は未導入。",
         theme_color: "#183645",
         background_color: "#f6f4ee",
         display: "standalone",
