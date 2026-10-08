@@ -33,7 +33,6 @@ import {Fold,More,SettingsCard,SettingsOverview,StatusChip} from './components/s
 import {useLineNotify} from './lib/use-line-notify';
 import {boardResultText,remindersResultText,shouldNotifyBoard,type ReminderSync} from './lib/line-notify';
 import {becameDone,createStampNotifier,stampDoneText} from './lib/stamp-notify';
-import {createLoginNotifier,loginOpenedText} from './lib/login-notify';
 import {lessonById,readMe} from './lib/futari';
 import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
@@ -195,22 +194,6 @@ export default function FutureNotebook(){
   },
  }),[]);
  useEffect(()=>()=>stampNotifier.dispose(),[stampNotifier]);
- // 解錠後に手帳が開いたら相手の LINE へ（6時間に1回・この端末はどちら？があるときだけ）。
- const loginNotifier=useMemo(()=>createLoginNotifier({
-  canSend:()=>lineRef.current.state==='on'&&!!readMe()&&!!bookRef.current,
-  send:async()=>{
-   const l=lineRef.current,me=readMe();
-   if(l.state!=='on'||!me)return;
-   const w=pairEventWhoLabels(bookRef.current.profile),names={n1:w.male,n2:w.female};
-   await l.send(me,names[me],loginOpenedText());
-  },
- }),[]);
- useEffect(()=>{
-  if(data.phase!=='ready'||!data.book)return;
-  // LINE の合言葉解決が終わるまで少し待ってから試す（preparing→on）
-  const t=window.setTimeout(()=>{try{loginNotifier.opened();}catch{/* ignore */}},800);
-  return()=>clearTimeout(t);
- },[data.phase,data.book,loginNotifier,line.state]);
  /** この端末で押してスタンプの状態が変わったときだけ呼ぶ（同期・読み込みでは呼ばない）。待たせない。 */
  const noteStampChange=(id:string,prev:string|undefined,next:string|undefined)=>{
   try{
