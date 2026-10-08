@@ -59,9 +59,8 @@ export function LineNotifySettings({book,line,save,onOpenSync,children}:{book:Bo
     :linePrepText(line.missing).state;
 
   return <SettingsCard id="settings-line-notify" icon={<MessageCircle size={20}/>} title="通知（LINE）" chip={<StatusChip tone={line.state==='on'?'on':line.state==='off'?'off':'wait'}>{chip}</StatusChip>}
-    lead="掲示板のメモ・済・開いたことを、相手のLINEに知らせます。"
+    lead="掲示板のメモ・スタンプの済・期限と記念日を、相手のLINEに知らせます。"
     more={<><p>掲示板にメモを書くと、相手のLINEに「名前：メモ」が届きます。アプリを閉じていても届きます。使うには、LINE公式アカウントとGoogleのスクリプトを先に用意します。</p>
-      <p className="hint">オンのとき、掲示板・スタンプの済に加え、合言葉で開いたあとも相手のLINEに「開きました」が届きます（同じ端末では1日に1回まで）。</p>
       <p className="hint">公式アカウントには、{names.n1}さんのLINEから「登録 1」、{names.n2}さんのLINEから「登録 2」と送ります。</p></>}>
     <p className={`line-state${line.state==='on'?' is-on':line.state==='preparing'?' is-wait':''}`} role="status">いまの状態：{stateText}</p>
     <label className="scope-toggle settings-switch"><Switch checked={!!book.lineNotify?.on} onCheckedChange={v=>void save({on:v},v?'LINE通知をオンにしました':'LINE通知をオフにしました')}/><span>LINE通知を使う（ふたりの端末で共通）</span></label>
