@@ -1,20 +1,21 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {toast} from 'sonner';
-import {bookSchema,emptyBoard,emptyBook,emptyFutari,emptyLineNotify,emptyHousehold,sameHousehold,type HouseholdSplit,type LineNotifySettings,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
+import {bookSchema,emptyBoard,emptyBook,emptyFutari,emptyLineNotify,emptyHousehold,sameHousehold,type HouseholdSplit,type LaterItem,type LineNotifySettings,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
 import {mergeFutari,sameFutari} from './futari';
 import {mergeBoard,pruneDeleted,sameBoard} from './board';
 import {newerLineNotify,sameLineNotify} from './line-notify';
+import {mergeLater,sameLater,toggleLater} from './later';
 
 /**
  * 二人が同時に書き込むもの（今日の一問の答え・掲示板のメモ）は、同期のとき両方を残す。LINE 通知の設定は新しく変えた方。
  * ここは手帳を合わせるだけで、LINE には何も送らない（同期で入ってきたメモで通知すると相手に2通届く）。
  */
-type Shared={futari:Book['futari'],board:Book['board'],lineNotify:Book['lineNotify'],household:Book['household']};
+type Shared={futari:Book['futari'],board:Book['board'],lineNotify:Book['lineNotify'],household:Book['household'],later:Book['later']};
 function mergeShared(local:Book|null|undefined,remote:Book):Shared{
-  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board),lineNotify:newerLineNotify(local?.lineNotify,remote.lineNotify,emptyLineNotify),household:newerLineNotify(local?.household,remote.household,emptyHousehold)};
+  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board),lineNotify:newerLineNotify(local?.lineNotify,remote.lineNotify,emptyLineNotify),household:newerLineNotify(local?.household,remote.household,emptyHousehold),later:mergeLater(local?.later,remote.later)};
 }
 function sameShared(a:Partial<Shared>,b:Partial<Shared>){
-  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board)&&sameLineNotify(a.lineNotify,b.lineNotify)&&sameHousehold(a.household,b.household);
+  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board)&&sameLineNotify(a.lineNotify,b.lineNotify)&&sameHousehold(a.household,b.household)&&sameLater(a.later,b.later);
 }
 import {validateCatalogBook} from './backup';
 import {
@@ -544,6 +545,9 @@ export function useBook(_paused:boolean){
         ensureBook();
         const prev=book!.household||emptyHousehold;
         book!.household={...prev,...(payload.patch as Partial<HouseholdSplit>),updatedAt:new Date().toISOString()};
+      }else if(action==='laterToggle'){
+        ensureBook();
+        book!.later=toggleLater(book!.later,payload.item as Omit<LaterItem,'at'>);
       }else if(action==='import'){
         book=structuredClone(payload.book as Book);
         revision=0;

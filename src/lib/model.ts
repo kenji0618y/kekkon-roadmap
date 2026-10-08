@@ -147,9 +147,25 @@ export const emptyHousehold:HouseholdSplit={pattern:'',note:'',review:'',updated
 export function sameHousehold(a:HouseholdSplit|undefined,b:HouseholdSplit|undefined){
   return (a?.pattern||'')===(b?.pattern||'')&&(a?.note||'')===(b?.note||'')&&(a?.review||'')===(b?.review||'')&&(a?.updatedAt||'')===(b?.updatedAt||'');
 }
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold)});
+/** 「あとで見る」（2026-10-08〜）。項目・よくある質問・博士のレッスンに付けた印。ふたりで共有（同期）。外した印は deleted（id→外した時刻）で、もう一方の端末でも外れる。 */
+export const laterItemSchema=z.object({
+  id:z.string().min(1).max(200),
+  kind:z.enum(['task','faq','lesson']),
+  ref:z.string().max(200),
+  title:z.string().min(1).max(200),
+  by:z.enum(['','n1','n2']).catch(''),
+  at:z.string().max(40),
+});
+export type LaterItem=z.infer<typeof laterItemSchema>;
+export const laterSchema=z.object({
+  items:z.array(z.unknown()).catch([]).transform(list=>list.flatMap(v=>{const r=laterItemSchema.safeParse(v);return r.success?[r.data]:[];}).slice(0,300)),
+  deleted:z.record(z.string().max(40)).catch({}),
+});
+export type Later=z.infer<typeof laterSchema>;
+export const emptyLater:Later={items:[],deleted:{}};
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold),later:laterSchema.catch(emptyLater).default(emptyLater)});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold,later:emptyLater};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};
