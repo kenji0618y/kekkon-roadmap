@@ -1369,6 +1369,294 @@
       "short": "公式：予算の下の尊重",
       "url": "https://www.gottman.com/blog/money-bankrupting-marriage/",
       "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FAMRIT",
+      "kind": "web",
+      "title": "Creating Shared Meaning: Rituals for the Family",
+      "short": "公式：家族の儀式",
+      "url": "https://www.gottman.com/blog/create-shared-meaning-rituals-for-the-family/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HOLRIT",
+      "kind": "web",
+      "title": "Creating Your Own Holiday Rituals",
+      "short": "公式：休日の儀式",
+      "url": "https://www.gottman.com/blog/creating-your-own-holiday-rituals/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HOLTIPS",
+      "kind": "web",
+      "title": "Dr. Gottman's Tips for Holiday Rituals",
+      "short": "公式：休日の儀式の助言",
+      "url": "https://www.gottman.com/blog/dr-john-gottmans-tips-for-creating-your-own-holiday-rituals/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-INLAWS",
+      "kind": "web",
+      "title": "Navigating Holidays with In-laws",
+      "short": "公式：義家族との休日",
+      "url": "https://www.gottman.com/blog/how-navigate-holidays-with-your-in-laws/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HOLGRIEF",
+      "kind": "web",
+      "title": "Love, Loss, and Holidays",
+      "short": "公式：休日と喪失",
+      "url": "https://www.gottman.com/blog/love-loss-and-holidays/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HOLSEXY",
+      "kind": "web",
+      "title": "Make This Holiday Season Connected",
+      "short": "公式：休日の二人",
+      "url": "https://www.gottman.com/blog/make-this-holiday-season-sexy/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FAMEXP",
+      "kind": "web",
+      "title": "Managing Family Expectations",
+      "short": "公式：家族の期待",
+      "url": "https://www.gottman.com/blog/managing-family-expectations-navigating-relationships-and-boundaries/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HOLGRID",
+      "kind": "web",
+      "title": "Overcoming Gridlock in the Holiday Season",
+      "short": "公式：休日の膠着",
+      "url": "https://www.gottman.com/blog/overcoming-gridlock-holiday-season/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-PLAYFUL",
+      "kind": "web",
+      "title": "Choose a Partner Who Can Be Playful",
+      "short": "公式：遊び",
+      "url": "https://www.gottman.com/blog/choose-partner-can-playful/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HUMOR",
+      "kind": "web",
+      "title": "Humor and Relationships",
+      "short": "公式：ユーモア",
+      "url": "https://www.gottman.com/blog/humor-build-relationships/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DATENIGHT",
+      "kind": "web",
+      "title": "If You're Too Busy for Date Night",
+      "short": "公式：デートの時間",
+      "url": "https://www.gottman.com/blog/if-youre-too-busy-for-date-night-youre-too-busy/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FUNFIX",
+      "kind": "web",
+      "title": "Not Having Fun?",
+      "short": "公式：楽しさ",
+      "url": "https://www.gottman.com/blog/not-having-fun-in-your-relationship-heres-how-to-fix-it/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DATEJAR",
+      "kind": "web",
+      "title": "Date Night in a Jar",
+      "short": "公式：デートの瓶",
+      "url": "https://www.gottman.com/blog/weekend-homework-assignment-date-night-in-a-jar/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-COVENANT",
+      "kind": "web",
+      "title": "Culture Covenant",
+      "short": "公式：文化の約束",
+      "url": "https://www.gottman.com/blog/create-shared-meaning-culture-covenant/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SHAREDO",
+      "kind": "web",
+      "title": "Suggestions for Shared Meaning",
+      "short": "公式：共有された意味の提案",
+      "url": "https://www.gottman.com/blog/create-shared-meaning-suggestions-from-dr-gottman/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-ENRICH",
+      "kind": "web",
+      "title": "Enriching Marriage: Shared Meaning",
+      "short": "公式：意味で結婚を豊かにする",
+      "url": "https://www.gottman.com/blog/enriching-marriage-creating-shared-meaning/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-NEWLYMEAN",
+      "kind": "web",
+      "title": "Shared Meaning as Newlyweds",
+      "short": "公式：新婚の共有された意味",
+      "url": "https://www.gottman.com/blog/how-to-create-shared-meaning-as-newlyweds-or-newly-engaged/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SELFCARE2",
+      "kind": "web",
+      "title": "Invest in Yourself",
+      "short": "公式：自分への投資",
+      "url": "https://www.gottman.com/blog/invest-in-yourself-for-relationship-growth/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-NATURE",
+      "kind": "web",
+      "title": "Growth in Nature",
+      "short": "公式：自然の中の成長",
+      "url": "https://www.gottman.com/blog/relationship-growth-happens-in-nature/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MEANLIFE",
+      "kind": "web",
+      "title": "A Meaningful Life and Relationships",
+      "short": "公式：意味のある短い会話",
+      "url": "https://www.gottman.com/blog/secret-meaningful-life-meaningful-relationships/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BIDKID",
+      "kind": "web",
+      "title": "Rituals and Big Emotions",
+      "short": "公式：儀式と大きな感情",
+      "url": "https://www.gottman.com/blog/rituals-of-connection-the-antidote-to-big-emotions-and-challenging-behaviors/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FAMRIT2",
+      "kind": "web",
+      "title": "Why Family Rituals Matter",
+      "short": "公式：家族の儀式の力",
+      "url": "https://www.gottman.com/blog/the-power-of-everyday-connection-why-family-rituals-matter/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-VALENTINE",
+      "kind": "web",
+      "title": "Valentine's Day and Tradition",
+      "short": "公式：行事の伝統",
+      "url": "https://www.gottman.com/blog/valentines-day-a-timeless-dance-of-love-and-tradition/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-WARMRIT",
+      "kind": "web",
+      "title": "Warm-Weather Rituals",
+      "short": "公式：暖かい日の儀式",
+      "url": "https://www.gottman.com/blog/warm-weather-rituals-of-connection-ideas-for-couples-and-families/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SHAREGOAL",
+      "kind": "web",
+      "title": "Shared Goals",
+      "short": "公式：共有する目標",
+      "url": "https://www.gottman.com/blog/do-you-and-your-partner-have-shared-goals/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HURTTOO",
+      "kind": "web",
+      "title": "Support When You're Hurting Too",
+      "short": "公式：両方つらいとき",
+      "url": "https://www.gottman.com/blog/how-to-support-your-partner-when-youre-hurting-too/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DREAMCONF",
+      "kind": "web",
+      "title": "Dreams Within Conflict",
+      "short": "公式：争いの中の夢",
+      "url": "https://www.gottman.com/blog/make-life-dreams-come-true-dreams-within-conflict/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DREAMSUP",
+      "kind": "web",
+      "title": "How to Support Your Partner's Dreams",
+      "short": "公式：夢の支え方",
+      "url": "https://www.gottman.com/blog/make-life-dreams-come-true-how-to-support-your-partner/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DREAM15",
+      "kind": "web",
+      "title": "Dreams: Self-Discovery",
+      "short": "公式：夢を見つける15分",
+      "url": "https://www.gottman.com/blog/make-life-dreams-come-true-self-discovery/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DREAMTRUST",
+      "kind": "web",
+      "title": "Trusting Each Other with Dreams",
+      "short": "公式：夢を信頼して話す",
+      "url": "https://www.gottman.com/blog/make-life-dreams-come-true-trusting-each-other/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DREAMHOUSE",
+      "kind": "web",
+      "title": "Make Life Dreams Come True",
+      "short": "公式：夢と関係の家",
+      "url": "https://www.gottman.com/blog/make-life-dreams-come-true/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SUPDREAM",
+      "kind": "web",
+      "title": "Support Each Other's Dreams",
+      "short": "公式：互いの夢",
+      "url": "https://www.gottman.com/blog/support-each-others-dreams/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HABITGOAL",
+      "kind": "web",
+      "title": "Turn Goals into Habits",
+      "short": "公式：目標を習慣に",
+      "url": "https://www.gottman.com/blog/turn-your-relationship-goals-into-habits/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-AFTERBABY",
+      "kind": "web",
+      "title": "Stay Connected After Baby",
+      "short": "公式：子のあとのつながり",
+      "url": "https://www.gottman.com/blog/3-tips-for-couples-to-stay-connected-after-baby/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BABYLESS",
+      "kind": "web",
+      "title": "Lessons After Bringing Baby Home",
+      "short": "公式：赤ちゃんを迎えた教訓",
+      "url": "https://www.gottman.com/blog/lessons-we-have-learned-after-bringing-baby-home/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DIGIBABY",
+      "kind": "web",
+      "title": "Bringing Baby Home in the Digital Age",
+      "short": "公式：子と画面",
+      "url": "https://www.gottman.com/blog/the-digital-age-bringing-baby-home/",
+      "note": "Phase1b batch4（2026-10-09）：原文を読んでレッスン化した。"
     }
   ]
 }
