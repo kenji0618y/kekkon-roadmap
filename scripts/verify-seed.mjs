@@ -369,7 +369,7 @@ const uiChecks = [
   ['Notebook mounts InstitutionalDeadlines', notebook.includes('InstitutionalDeadlines')],
   ['Notebook mounts PhasesPanel', notebook.includes('PhasesPanel')],
   ['Notebook mounts ExcludeAndLiesPanel on find', notebook.includes('ExcludeAndLiesPanel')],
-  ['Notebook mounts HeroNumbersPanel on deadlines', notebook.includes('HeroNumbersPanel')],
+  ['Notebook mounts HeroNumbersPanel on the money tab', notebook.includes('HeroNumbersPanel') && /<TabsContent value="money"[\s\S]*<HeroNumbersPanel/.test(notebook)],
   ['PairWorkbook mounts TalkStartersPanel', readText('src/components/PairWorkbook.tsx').includes('TalkStartersPanel')],
   ['Notebook wires onOpenTask to HomeInsightPanels', /HomeInsightPanels[^>]*onOpenTask/.test(notebook)],
   ['TaskForm seed money memo', forms.includes('お金のめやす')],
@@ -406,6 +406,8 @@ const uiChecks = [
   // 2026-10-08 「あとで見る」（ふたりで共有）。項目・よくある質問・博士のレッスンに印。book.later は同期で合わせ、外した印は tombstone で相手の端末でも外れる。
   ['Later list shared (task/FAQ/lesson marks, synced with tombstones)', readText('src/lib/model.ts').includes('later:laterSchema.catch(emptyLater).default(emptyLater)') && readText('src/lib/use-book.ts').includes('later:mergeLater(local?.later,remote.later)') && readText('src/lib/use-book.ts').includes('sameLater(a.later,b.later)') && readText('src/lib/book-merge.ts').includes('later:mergeLater(p.later,s.later)') && /<WeekTogether[^\n]*\n\s*<LaterList /.test(notebook) && notebook.includes('<LaterProvider value={laterCtx}>') && readText('src/components/notebook-forms.tsx').includes('laterFaqId(t.id,f.q)') && readText('src/components/notebook-forms.tsx').includes('laterTaskId(t.id)') && readText('src/components/FutariDaily.tsx').includes('laterLessonId(lesson.id)') && readText('scripts/test-features.mjs').includes("'later'")],
   // 2026-10-08 博士タブ「家計の分け方」。ゼクシィの記事の5つの型（文言は記事のまま・出典リンクつき）。金額は出さない。book.household は既定値つきで、同期では新しい方。
+  // 2026-10-09 お金タブ。家計の分け方・金額の集計・覚えておきたい数字を移す。買い物リストとロードマップのスタンプは動かさない。制度の期限の全文はカレンダーに残し、お金タブは moneyOnly。
+  ['Money tab holds moved money blocks (shopping stays on roadmap)', /id:'money',label:'お金'/.test(notebook) && notebook.includes('<TabsContent value="money"') && /<TabsContent value="money"[\s\S]*<HouseholdSplitCard/.test(notebook) && notebook.includes('<MoneySummary') && notebook.includes('moneyOnly') && notebook.includes("{chapter==='life'&&<ShoppingList ") && readText('src/components/MarriageDesk.tsx').includes('export function MoneySummary') && readText('src/components/SeedContentPanels.tsx').includes('moneyOnly')],
   ['Household split card (5 patterns, source link, synced)', (h => h.patterns.length === 5 && h.source.url === 'https://zexy.net/article/app002112015/')(JSON.parse(readText('src/data/household-patterns.json'))) && readText('src/lib/model.ts').includes('household:householdSchema.catch(emptyHousehold).default(emptyHousehold)') && readText('src/lib/use-book.ts').includes('household:newerLineNotify(') && readText('src/lib/book-merge.ts').includes('household:newerLineNotify(') && notebook.includes('<HouseholdSplitCard') && readText('src/components/HouseholdSplitCard.tsx').includes('householdSource.url')],
   ['Desk board in book schema (defaulted)', readText('src/lib/model.ts').includes('board:boardSchema.catch(emptyBoard).default(emptyBoard)')],
   ['Desk board synced + merged', (ub => ub.includes("action==='boardNote'") && ub.includes("action==='deleteBoardNote'") && ub.includes('mergeBoard'))(readText('src/lib/use-book.ts')) && readText('src/lib/board.ts').includes('deleted')],

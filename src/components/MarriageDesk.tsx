@@ -147,6 +147,33 @@ function LatticeWire(){
 
 
 
+const MONEY_CARDS=[
+  {key:'received',label:'受け取った給付・祝金',unit:'円',sub:'受取を記録した金額'},
+  {key:'estimate',label:'これからの受取見込み',unit:'円',sub:'未受取・給付の確約ではありません'},
+  {key:'monthlySaving',label:'固定費の削減',unit:'円／月',sub:'二人が確認した月額の差'},
+  {key:'taxEstimate',label:'税負担の軽減見込み',unit:'円',sub:'控除対象額とは異なります'},
+] as const;
+
+/** お金タブの金額の集計（2026-10-09 にデスクから移動）。記録の分け方は変えない。 */
+export function MoneySummary({book}:{book:Book}){
+  const totals=moneyTotals(book);
+  return <section id="money-totals" className="desk-money" aria-label="金額の集計">
+    <div className="money-grid">
+      {MONEY_CARDS.map(m=>(
+        <div className={`money-card ${m.key==='received'?'primary':''}`} key={m.key}>
+          <span>{m.label}</span>
+          <strong>
+            {Object.values(book.records).some(r=>r.moneyKind===m.key&&r.amount!==null&&r.status!=='na')?formatMoney(totals[m.key]):'—'}
+            <small>{m.unit}</small>
+          </strong>
+          <p>{m.sub}</p>
+        </div>
+      ))}
+    </div>
+    <p className="hint">投資枠・運用益は集計しません。異なる期間や区分の金額を足した「総お得額」は表示していません。同じ給付を重複して入力していないか、記録を確認してください。</p>
+  </section>;
+}
+
 export type MarriageDeskProps={
   book:Book;
   profile:Profile;
@@ -161,9 +188,11 @@ export type MarriageDeskProps={
   onOpenProfile:()=>void;
   /** Jump to 期限 tab (InstitutionalDeadlines). Metric「次の期限」の単一CTA。 */
   onGoDeadlines?:()=>void;
+  /** 金額の集計はお金タブ。デスクには行き先だけ残す。 */
+  onGoMoney?:()=>void;
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoDeadlines}:MarriageDeskProps){
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoDeadlines,onGoMoney}:MarriageDeskProps){
   const [showDecor,setShowDecor]=useState(false);
 
   const progressPct=actionable.length?Math.round(done.length/actionable.length*100):0;
@@ -230,8 +259,6 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
     const d=ts.filter(t=>book.records[t.id]?.status==='done').length;
     return {id:g.id,short:g.short,kanji:g.kanji,done:d,total:ts.length,ratio:ts.length?d/ts.length:0};
   }),[scoped,book.records]);
-
-  const totals=moneyTotals(book);
 
   return (
     <div className="desk-root desk-washi">
@@ -309,24 +336,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
 
 
       <section className="desk-money" aria-label="金額の集計">
-        <div className="money-grid">
-          {([
-            {key:'received',label:'受け取った給付・祝金',unit:'円',sub:'受取を記録した金額'},
-            {key:'estimate',label:'これからの受取見込み',unit:'円',sub:'未受取・給付の確約ではありません'},
-            {key:'monthlySaving',label:'固定費の削減',unit:'円／月',sub:'二人が確認した月額の差'},
-            {key:'taxEstimate',label:'税負担の軽減見込み',unit:'円',sub:'控除対象額とは異なります'},
-          ] as const).map(m=>(
-            <div className={`money-card ${m.key==='received'?'primary':''}`} key={m.key}>
-              <span>{m.label}</span>
-              <strong>
-                {Object.values(book.records).some(r=>r.moneyKind===m.key&&r.amount!==null&&r.status!=='na')?formatMoney(totals[m.key]):'—'}
-                <small>{m.unit}</small>
-              </strong>
-              <p>{m.sub}</p>
-            </div>
-          ))}
-        </div>
-        <p className="hint">投資枠・運用益は集計しません。異なる期間や区分の金額を足した「総お得額」は表示していません。同じ給付を重複して入力していないか、記録を確認してください。</p>
+        <p className="money-moved">受け取った給付・祝金などの集計は、<button type="button" className="desk-linkish" onClick={()=>onGoMoney?.()}>お金</button>タブへ移動しました。</p>
       </section>
 
       <div className="desk-decor-fold">

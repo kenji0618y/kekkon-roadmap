@@ -1989,3 +1989,20 @@ button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
 .remind-line p.remind-line-head,.remind-line p.remind-line-name{color:#fff;opacity:1}
 .remind-line p.remind-line-head{font-size:12px;font-weight:700;margin:0 0 8px;line-height:1.5}
 .remind-line p.remind-line-name{font-size:11px;margin:0 0 3px;line-height:1.4}
+
+/* 2026-10-09 お金タブ。7つのタブを390px幅に収める（横スクロールさせない） */
+@media(max-width:700px){
+  .site-header .nav-wrap{overflow-x:hidden}
+  .site-header .main-nav[data-slot]{width:100%;min-width:0;justify-content:space-between}
+  .site-header .main-nav [data-slot=tabs-trigger]{flex:1 1 0;min-width:0;padding:0 1px;font-size:8px}
+  .site-header .main-nav [data-slot=tabs-trigger] .nav-label-short{font-size:8px;letter-spacing:-.07em;max-width:100%}
+}
+.money-tab .money-block{margin:16px 0}
+.money-tab details.money-block{padding:12px 14px}
+.money-tab details.money-block>summary{cursor:pointer;list-style:none;display:flex;flex-direction:column;gap:4px}
+.money-tab details.money-block>summary::-webkit-details-marker{display:none}
+.money-tab details.money-block[open]>summary{margin-bottom:8px}
+.money-tab .stack-actions{margin:8px 0 16px}
+.money-moved{font-size:13px;line-height:1.7;margin:0}
+.money-moved.paper-card{padding:14px 16px;margin:0 0 14px}
+#pair-household,#money-shopping,#money-totals,#money-hero,#money-deadlines,#money-faq,#money-contracts{scroll-margin-top:120px}

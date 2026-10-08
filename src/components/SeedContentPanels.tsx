@@ -69,21 +69,29 @@ function isProminentDeadline(date: string, today: string) {
   return days <= 60 && days >= 0
 }
 
-export function InstitutionalDeadlines({child, home}: {child: string; home: string}) {
+function deadlineIsMoney(d: {title?: string; money?: unknown; money_in?: unknown; money_out?: unknown}) {
+  if (d.money || d.money_in || d.money_out) return true
+  return /税|給付|補助|贈与|控除|納税|申告|家賃|iDeCo|掛金|保険料|NISA|みらいエコ|リノベ|省エネ/.test(d.title || '')
+}
+
+export function InstitutionalDeadlines({child, home, moneyOnly = false}: {child: string; home: string; moneyOnly?: boolean}) {
   const today = todayJapan()
   // 絶対日付は Asia/Tokyo の今日より前なら自動で非表示（シードJSONは残す）
-  const abs = [...absoluteDeadlines]
+  const absAll = [...absoluteDeadlines]
     .filter((d) => deadlineVisible(d, {child, home}) && difference(d.date, today) >= 0)
     .sort((a, b) => a.date.localeCompare(b.date))
-  const rel = relativeDeadlines.filter((d) => branchVisible(d.branch, child, home))
+  const relAll = relativeDeadlines.filter((d) => branchVisible(d.branch, child, home))
+  const abs = moneyOnly ? absAll.filter(deadlineIsMoney) : absAll
+  const rel = moneyOnly ? relAll.filter(deadlineIsMoney) : relAll
   const featured = abs.filter((d) => isProminentDeadline(d.date, today) && !deadlineClosedLabel(d))
   const rest = abs.filter((d) => !featured.includes(d))
 
+  const heading = moneyOnly ? '制度・お金の締切' : '制度・カレンダー締切'
   return (
-    <section id="institutional-deadlines" className="seed-block institutional-deadlines" aria-label="制度・カレンダー締切">
+    <section id={moneyOnly ? 'money-deadlines' : 'institutional-deadlines'} className="seed-block institutional-deadlines" aria-label={heading}>
       <div className="seed-block-head">
-        <h3>制度・カレンダー締切</h3>
-        <p className="hint">日付が決まっている締切です。金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。過ぎた日付は自動で消えます。</p>
+        <h3>{heading}</h3>
+        <p className="hint">{moneyOnly ? 'お金に関係する締切だけです（税・給付・補助など）。届出だけの期限はカレンダーに残しています。金額は収録した案内にあるものだけです。' : '日付が決まっている締切です。金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。過ぎた日付は自動で消えます。'}</p>
       </div>
       {abs.length === 0 ? (
         <p className="hint seed-deadline-empty">いま表示できる絶対締切はありません。相対期限は下を見てください。</p>
@@ -109,7 +117,7 @@ export function InstitutionalDeadlines({child, home}: {child: string; home: stri
       {rel.length > 0 && (
         <details className="seed-fold seed-fold-relative">
           <summary>
-            <span>届出・イベントの相対期限（{rel.length}）· 必要なときだけ</span>
+            <span>{moneyOnly ? `お金に関係する相対期限（${rel.length}）` : `届出・イベントの相対期限（${rel.length}）· 必要なときだけ`}</span>
           </summary>
           <div className="seed-relative seed-fold-body">
             <ul>
