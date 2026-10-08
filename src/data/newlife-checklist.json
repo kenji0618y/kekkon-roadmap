@@ -1,0 +1,424 @@
+{
+ "source": {
+  "title": "ふたりの新生活準備に！【家具・家電・キッチンツール】必要なものチェックリスト",
+  "publisher": "ゼクシィ",
+  "url": "https://zexy.net/newlife/manual/interior_checklist/",
+  "credit": "文／菅野純子 イラスト／コツジユイ 構成／小田真穂（編集部）",
+  "checked": "2026-10-08",
+  "note": "品目の名前は記事のまま。部屋の分け方も記事の見出しのまま（キッチンツール・食器は記事の見出しをそのまま1つの部屋に）。値段は載せない。"
+ },
+ "categories": [
+  {
+   "id": "furniture",
+   "label": "家具・インテリア",
+   "rooms": [
+    {
+     "id": "living",
+     "label": "リビング",
+     "items": [
+      {
+       "id": "furniture-living-1",
+       "name": "ソファ"
+      },
+      {
+       "id": "furniture-living-2",
+       "name": "クッション"
+      },
+      {
+       "id": "furniture-living-3",
+       "name": "ラグマット／カーペット／じゅうたん"
+      },
+      {
+       "id": "furniture-living-4",
+       "name": "リビングテーブル"
+      },
+      {
+       "id": "furniture-living-5",
+       "name": "テレビ台／AVボード"
+      },
+      {
+       "id": "furniture-living-6",
+       "name": "カーテン／ブラインド"
+      },
+      {
+       "id": "furniture-living-7",
+       "name": "リビングボード／キャビネット"
+      }
+     ]
+    },
+    {
+     "id": "dining",
+     "label": "キッチン・ダイニング",
+     "items": [
+      {
+       "id": "furniture-dining-1",
+       "name": "ダイニングテーブル"
+      },
+      {
+       "id": "furniture-dining-2",
+       "name": "ダイニングチェア"
+      },
+      {
+       "id": "furniture-dining-3",
+       "name": "食器棚"
+      },
+      {
+       "id": "furniture-dining-4",
+       "name": "ラグマット／カーペット／じゅうたん"
+      },
+      {
+       "id": "furniture-dining-5",
+       "name": "カーテン／ブラインド"
+      },
+      {
+       "id": "furniture-dining-6",
+       "name": "ダイニングボード"
+      },
+      {
+       "id": "furniture-dining-7",
+       "name": "レンジ台"
+      },
+      {
+       "id": "furniture-dining-8",
+       "name": "キッチンマット"
+      },
+      {
+       "id": "furniture-dining-9",
+       "name": "キッチンワゴン・バスケット"
+      },
+      {
+       "id": "furniture-dining-10",
+       "name": "キッチンストッカー"
+      }
+     ]
+    },
+    {
+     "id": "bedroom",
+     "label": "ベッドルーム",
+     "items": [
+      {
+       "id": "furniture-bedroom-1",
+       "name": "ベッド"
+      },
+      {
+       "id": "furniture-bedroom-2",
+       "name": "寝具"
+      },
+      {
+       "id": "furniture-bedroom-3",
+       "name": "サイドテーブル"
+      },
+      {
+       "id": "furniture-bedroom-4",
+       "name": "チェスト"
+      },
+      {
+       "id": "furniture-bedroom-5",
+       "name": "ワードローブ"
+      },
+      {
+       "id": "furniture-bedroom-6",
+       "name": "ラグマット／カーペット／じゅうたん"
+      },
+      {
+       "id": "furniture-bedroom-7",
+       "name": "カーテン／ブラインド"
+      },
+      {
+       "id": "furniture-bedroom-8",
+       "name": "スタンドミラー"
+      },
+      {
+       "id": "furniture-bedroom-9",
+       "name": "ドレッサー"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "appliance",
+   "label": "家電",
+   "rooms": [
+    {
+     "id": "living",
+     "label": "リビング",
+     "items": [
+      {
+       "id": "appliance-living-1",
+       "name": "テレビ"
+      },
+      {
+       "id": "appliance-living-2",
+       "name": "エアコン"
+      },
+      {
+       "id": "appliance-living-3",
+       "name": "空気清浄機"
+      },
+      {
+       "id": "appliance-living-4",
+       "name": "DVDなど映像・音響機器"
+      },
+      {
+       "id": "appliance-living-5",
+       "name": "照明器具"
+      },
+      {
+       "id": "appliance-living-6",
+       "name": "掃除機"
+      },
+      {
+       "id": "appliance-living-7",
+       "name": "電気カーペット"
+      },
+      {
+       "id": "appliance-living-8",
+       "name": "扇風機・サーキュレーター"
+      },
+      {
+       "id": "appliance-living-9",
+       "name": "パソコン"
+      }
+     ]
+    },
+    {
+     "id": "dining",
+     "label": "キッチン・ダイニング",
+     "items": [
+      {
+       "id": "appliance-dining-1",
+       "name": "冷蔵庫"
+      },
+      {
+       "id": "appliance-dining-2",
+       "name": "炊飯器"
+      },
+      {
+       "id": "appliance-dining-3",
+       "name": "電子レンジ／オーブンレンジ"
+      },
+      {
+       "id": "appliance-dining-4",
+       "name": "オーブントースター"
+      },
+      {
+       "id": "appliance-dining-5",
+       "name": "コーヒーメーカー"
+      },
+      {
+       "id": "appliance-dining-6",
+       "name": "ホットプレート"
+      },
+      {
+       "id": "appliance-dining-7",
+       "name": "電気鍋"
+      },
+      {
+       "id": "appliance-dining-8",
+       "name": "電気ポット"
+      },
+      {
+       "id": "appliance-dining-9",
+       "name": "カセットコンロ"
+      },
+      {
+       "id": "appliance-dining-10",
+       "name": "食器洗浄機"
+      },
+      {
+       "id": "appliance-dining-11",
+       "name": "照明器具"
+      }
+     ]
+    },
+    {
+     "id": "bath",
+     "label": "洗面所・バスルーム",
+     "items": [
+      {
+       "id": "appliance-bath-1",
+       "name": "洗濯機"
+      },
+      {
+       "id": "appliance-bath-2",
+       "name": "衣類乾燥機"
+      },
+      {
+       "id": "appliance-bath-3",
+       "name": "ヘアドライヤー"
+      },
+      {
+       "id": "appliance-bath-4",
+       "name": "衣類用アイロン"
+      },
+      {
+       "id": "appliance-bath-5",
+       "name": "ヘルスメーター"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kitchen",
+   "label": "キッチンツール",
+   "rooms": [
+    {
+     "id": "goods",
+     "label": "キッチングッズ",
+     "items": [
+      {
+       "id": "kitchen-goods-1",
+       "name": "包丁・まな板"
+      },
+      {
+       "id": "kitchen-goods-2",
+       "name": "ピーラー"
+      },
+      {
+       "id": "kitchen-goods-3",
+       "name": "おろし金"
+      },
+      {
+       "id": "kitchen-goods-4",
+       "name": "計量スプーン・カップ"
+      },
+      {
+       "id": "kitchen-goods-5",
+       "name": "スケール（はかり）"
+      },
+      {
+       "id": "kitchen-goods-6",
+       "name": "お玉・フライ返し"
+      },
+      {
+       "id": "kitchen-goods-7",
+       "name": "菜箸"
+      },
+      {
+       "id": "kitchen-goods-8",
+       "name": "泡だて器"
+      },
+      {
+       "id": "kitchen-goods-9",
+       "name": "木べら・ゴムべら"
+      },
+      {
+       "id": "kitchen-goods-10",
+       "name": "キッチンタイマー"
+      },
+      {
+       "id": "kitchen-goods-11",
+       "name": "キッチンばさみ"
+      },
+      {
+       "id": "kitchen-goods-12",
+       "name": "ボウル・ざる"
+      },
+      {
+       "id": "kitchen-goods-13",
+       "name": "食品保存容器"
+      },
+      {
+       "id": "kitchen-goods-14",
+       "name": "鍋つかみ"
+      },
+      {
+       "id": "kitchen-goods-15",
+       "name": "しゃもじ"
+      },
+      {
+       "id": "kitchen-goods-16",
+       "name": "両手鍋"
+      },
+      {
+       "id": "kitchen-goods-17",
+       "name": "片手鍋"
+      },
+      {
+       "id": "kitchen-goods-18",
+       "name": "天ぷら鍋"
+      },
+      {
+       "id": "kitchen-goods-19",
+       "name": "フライパン・ふた"
+      },
+      {
+       "id": "kitchen-goods-20",
+       "name": "中華鍋"
+      },
+      {
+       "id": "kitchen-goods-21",
+       "name": "土鍋"
+      },
+      {
+       "id": "kitchen-goods-22",
+       "name": "蒸し器"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tableware",
+   "label": "食器",
+   "rooms": [
+    {
+     "id": "dishes",
+     "label": "食器",
+     "items": [
+      {
+       "id": "tableware-dishes-1",
+       "name": "グラス"
+      },
+      {
+       "id": "tableware-dishes-2",
+       "name": "マグカップ"
+      },
+      {
+       "id": "tableware-dishes-3",
+       "name": "お皿・大（大皿料理で使えるもの）"
+      },
+      {
+       "id": "tableware-dishes-4",
+       "name": "お皿・中（一人分のメイン料理や食パンなどのサイズ）"
+      },
+      {
+       "id": "tableware-dishes-5",
+       "name": "お皿・小（取り皿サイズ）"
+      },
+      {
+       "id": "tableware-dishes-6",
+       "name": "茶碗"
+      },
+      {
+       "id": "tableware-dishes-7",
+       "name": "汁物茶碗"
+      },
+      {
+       "id": "tableware-dishes-8",
+       "name": "カレー皿"
+      },
+      {
+       "id": "tableware-dishes-9",
+       "name": "小鉢"
+      },
+      {
+       "id": "tableware-dishes-10",
+       "name": "どんぶり"
+      },
+      {
+       "id": "tableware-dishes-11",
+       "name": "箸"
+      },
+      {
+       "id": "tableware-dishes-12",
+       "name": "スプーン・フォーク"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
