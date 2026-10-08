@@ -1033,6 +1033,342 @@
       "short": "公式：夢の時間軸",
       "url": "https://www.gottman.com/blog/couple-dreams-different-timelines/",
       "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-NYCHECK",
+      "kind": "web",
+      "title": "How to Have a New Year's Relationship Check-In",
+      "short": "公式：年の節目の確認",
+      "url": "https://www.gottman.com/blog/how-to-have-a-new-years-relationship-check-in/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-CHECKIN",
+      "kind": "web",
+      "title": "This Relationship Skill Is Essential",
+      "short": "公式：定期の確認",
+      "url": "https://www.gottman.com/blog/this-relationship-skill-is-essential-how-to-have-a-relationship-check-in/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MINDLISTEN",
+      "kind": "web",
+      "title": "4 Mindful Listening Principles",
+      "short": "公式：意識して聞く",
+      "url": "https://www.gottman.com/blog/4-mindful-listening-principles-to-better-navigate-conflict/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-EMOCOACH",
+      "kind": "web",
+      "title": "An Introduction to Emotion Coaching",
+      "short": "公式：感情コーチング",
+      "url": "https://www.gottman.com/blog/an-introduction-to-emotion-coaching/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BECOMECOACH",
+      "kind": "web",
+      "title": "Becoming an Emotion Coach",
+      "short": "公式：感情を扱う子育て",
+      "url": "https://www.gottman.com/blog/becoming-an-emotion-coach/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-METAEMO",
+      "kind": "web",
+      "title": "The Story Beneath Your Relationship to Emotions",
+      "short": "公式：メタ感情",
+      "url": "https://www.gottman.com/blog/do-you-know-the-story-beneath-your-relationship-to-emotions/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-EISEMP",
+      "kind": "web",
+      "title": "E is for Empathy",
+      "short": "公式：共感",
+      "url": "https://www.gottman.com/blog/e-is-for-empathy/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-EMPATHY1",
+      "kind": "web",
+      "title": "Emotion Coaching Step 1: Empathy",
+      "short": "公式：共感が最初",
+      "url": "https://www.gottman.com/blog/emotion-coaching-step-1-empathy/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-EMOREG",
+      "kind": "web",
+      "title": "Emotion Regulation in Conflict",
+      "short": "公式：争いの最中の調整",
+      "url": "https://www.gottman.com/blog/emotion-regulation-transform-your-conflict-cycle/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-ATTRCONF",
+      "kind": "web",
+      "title": "Emotional Attraction in Conflict",
+      "short": "公式：争いと親密さ",
+      "url": "https://www.gottman.com/blog/emotional-attraction-maintaining-connection-in-conflict-discussions/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-EMODISC",
+      "kind": "web",
+      "title": "Emotional Disconnection",
+      "short": "公式：感情がつながらないとき",
+      "url": "https://www.gottman.com/blog/emotional-disconnection-in-relationships/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-3BETRAY",
+      "kind": "web",
+      "title": "3 Betrayals That Aren't Infidelity",
+      "short": "公式：不倫以外の裏切り",
+      "url": "https://www.gottman.com/blog/3-betrayals-ruin-relationships-arent-infidelity/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-4TRUST",
+      "kind": "web",
+      "title": "4 Tips to Build Everyday Trust",
+      "short": "公式：日常の信頼",
+      "url": "https://www.gottman.com/blog/4-tips-to-build-everyday-trust-in-relationships/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-COMMITDAY",
+      "kind": "web",
+      "title": "Commitment Is a Choice",
+      "short": "公式：毎日のコミットメント",
+      "url": "https://www.gottman.com/blog/commitment-is-a-choice/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-TRUSTQ",
+      "kind": "web",
+      "title": "Do You Trust Your Partner?",
+      "short": "公式：信頼の三つの問い",
+      "url": "https://www.gottman.com/blog/do-you-trust-your-partner/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-LDSAFE",
+      "kind": "web",
+      "title": "Emotional Safety in Long-Distance Relationships",
+      "short": "公式：離れているときの安全",
+      "url": "https://www.gottman.com/blog/emotional-safety-in-long-distance-relationships/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-4STYLES",
+      "kind": "web",
+      "title": "4 Conflict Styles That Hurt",
+      "short": "公式：傷つく争い方",
+      "url": "https://www.gottman.com/blog/4-conflict-styles-that-hurt-your-relationship/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MONEY5",
+      "kind": "web",
+      "title": "5 Rules for Money Conflict",
+      "short": "公式：お金の話し合い",
+      "url": "https://www.gottman.com/blog/5-rules-constructive-conflict-conversation-money/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FIGHT5",
+      "kind": "web",
+      "title": "5 Steps to Fight Better",
+      "short": "公式：うまく争う五手順",
+      "url": "https://www.gottman.com/blog/5-steps-to-fight-better-if-your-relationship-is-worth-fighting-for/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MONEY8",
+      "kind": "web",
+      "title": "8 Ways to Lower Money Conflict",
+      "short": "公式：お金の会話を低く",
+      "url": "https://www.gottman.com/blog/8-ways-to-have-lower-conflict-conversations-about-money/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HOLICONF",
+      "kind": "web",
+      "title": "A Couple's Guide to Holiday Conflict",
+      "short": "公式：休日の衝突",
+      "url": "https://www.gottman.com/blog/a-couples-guide-to-handling-holiday-conflict/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-AISARG",
+      "kind": "web",
+      "title": "A is for Arguments",
+      "short": "公式：議論も関係の一部",
+      "url": "https://www.gottman.com/blog/a-is-for-arguments/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-ARGCARE",
+      "kind": "web",
+      "title": "Arguments and Self-Care",
+      "short": "公式：争いと自分のケア",
+      "url": "https://www.gottman.com/blog/arguments-and-self-care/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MONEYNOT",
+      "kind": "web",
+      "title": "Arguments About Money Aren't About Money",
+      "short": "公式：お金の争いの中身",
+      "url": "https://www.gottman.com/blog/arguments-money-arent-money/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-ASKARG",
+      "kind": "web",
+      "title": "Ask Gottman: Arguments",
+      "short": "公式：説明が自己弁護に聞こえるとき",
+      "url": "https://www.gottman.com/blog/askgottman-arguments-answers/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-PASSION10",
+      "kind": "web",
+      "title": "10 Ways to Rekindle Passion",
+      "short": "公式：情熱を戻す",
+      "url": "https://www.gottman.com/blog/10-ways-rekindle-passion-marriage/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-CHEM3",
+      "kind": "web",
+      "title": "3 Things That Help Chemistry Last",
+      "short": "公式：化学を残す三つ",
+      "url": "https://www.gottman.com/blog/3-things-will-help-sexual-chemistry-stand-test-time/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SEXLESS",
+      "kind": "web",
+      "title": "Can a Sexless Marriage Be Saved",
+      "short": "公式：回数が減った関係",
+      "url": "https://www.gottman.com/blog/can-a-sexless-marriage-be-saved/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-INTIND",
+      "kind": "web",
+      "title": "The Dance of Intimacy and Independence",
+      "short": "公式：親密さと一人の時間",
+      "url": "https://www.gottman.com/blog/dance-intimacy-independence-marriage/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DESIRE3",
+      "kind": "web",
+      "title": "Desire in a Long-Term Relationship",
+      "short": "公式：長く続く欲望と信頼",
+      "url": "https://www.gottman.com/blog/desire-in-a-long-term-relationship-part-iii/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MONEYINT",
+      "kind": "web",
+      "title": "Low-Conflict Money Talks and Intimacy",
+      "short": "公式：お金と親密さ",
+      "url": "https://www.gottman.com/blog/have-low-conflict-conversations-about-money-and-enhance-intimacy/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HONESTSEX",
+      "kind": "web",
+      "title": "Honest Sex",
+      "short": "公式：正直な親密さ",
+      "url": "https://www.gottman.com/blog/honest-sex/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-INTPRAC",
+      "kind": "web",
+      "title": "Intentional Intimacy Practices",
+      "short": "公式：意図した親密さ",
+      "url": "https://www.gottman.com/blog/how-to-enhance-intimacy-with-intentional-practices/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FIN6",
+      "kind": "web",
+      "title": "6 Steps to Financial Freedom",
+      "short": "公式：お金の六手順",
+      "url": "https://www.gottman.com/blog/6-steps-to-financial-freedom-in-marriage/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MONEYASK",
+      "kind": "web",
+      "title": "Ask Gottman: Money",
+      "short": "公式：家計はチーム",
+      "url": "https://www.gottman.com/blog/askgottman-money-part-ii/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-AUTOMO",
+      "kind": "web",
+      "title": "Automate Money",
+      "short": "公式：お金の自動化の前に",
+      "url": "https://www.gottman.com/blog/automate-money-in-your-marriage-and-save-thousands/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-COMBINE",
+      "kind": "web",
+      "title": "Combining Finances",
+      "short": "公式：家計を一緒にする",
+      "url": "https://www.gottman.com/blog/combining-finances-and-responsibilities-a-complete-guide-for-couples/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FINVISION",
+      "kind": "web",
+      "title": "A Financial Vision in Stress",
+      "short": "公式：圧の中のお金の見通し",
+      "url": "https://www.gottman.com/blog/creating-a-financial-vision-for-your-stepfamily-during-covid-19/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FININF",
+      "kind": "web",
+      "title": "Financial Infidelity",
+      "short": "公式：お金の秘密",
+      "url": "https://www.gottman.com/blog/financial-infidelity-can-put-your-relationship-at-risk/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MINDMONEY",
+      "kind": "web",
+      "title": "Mindful About Money",
+      "short": "公式：お金を目的にしない",
+      "url": "https://www.gottman.com/blog/how-to-be-mindful-about-money/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MISMONEY",
+      "kind": "web",
+      "title": "M is for Money",
+      "short": "公式：お金は算数と意味",
+      "url": "https://www.gottman.com/blog/m-is-for-money/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BANKRUPT",
+      "kind": "web",
+      "title": "Money Bankrupting a Marriage",
+      "short": "公式：予算の下の尊重",
+      "url": "https://www.gottman.com/blog/money-bankrupting-marriage/",
+      "note": "Phase1b batch3（2026-10-09）：原文を読んでレッスン化した。"
     }
   ]
 }
