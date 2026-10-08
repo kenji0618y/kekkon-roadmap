@@ -1913,3 +1913,41 @@ button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
 .later-inline{border-top:1px dashed #dedfd6;margin-top:8px;padding-top:8px}
 .later-empty{margin:4px 0 6px}
 .later-note{margin:8px 0 0}
+
+/* 新生活の買い物リスト */
+.shopping-list .shopping-title{display:flex;align-items:center;gap:8px;margin:2px 0 8px}
+.shopping-tabs{display:flex;gap:6px;overflow-x:auto;margin:2px 0 8px;scrollbar-width:none}
+.shopping-tabs button{font-size:12.5px;padding:3px 10px;border-radius:6px;border:1px solid #dedfd6;color:#526c5c;white-space:nowrap;background:#fff}
+.shopping-tabs button.on{background:#1c3c4a;color:#fffefa;border-color:#1c3c4a}
+.shopping-room{border-top:1px solid #efefe6}
+.shopping-room:first-of-type{border-top:0}
+.shopping-room-head{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:15px;font-weight:700;color:#6a7973;padding:10px 0 8px;text-align:left;background:none}
+.shopping-room.open .shopping-room-head{color:#2f4a3c}
+.shopping-count{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:400;color:#6a7973;white-space:nowrap}
+.shopping-items{list-style:none;margin:0;padding:0}
+.shopping-item{border-top:1px solid #efefe6}
+.shopping-item:first-child{border-top:0}
+.shopping-row{display:flex;align-items:center;gap:9px;font-size:14px;padding:7px 0}
+.shopping-name{flex:1;min-width:0;text-align:left;background:none;color:inherit;font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+.shopping-note{display:block;font-size:12px;color:#6a7973}
+.shopping-item.shop-st-skip .shopping-name{color:#9aa5a0;text-decoration:line-through}
+.shopping-owner{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;white-space:nowrap;border:1px solid #d4d9d4;color:#807d6d;background:#f2f0e7;flex:none}
+.shopping-owner.who-both{background:#eef3ea;color:#3f6a52;border-color:#cfdcc8}
+.shopping-owner.who-one{background:#eef1f6;color:#3b5870;border-color:#cfd8e4}
+.shopping-owner.who-two{background:#f7efe6;color:#80592f;border-color:#e6d3bc}
+.shopping-status{font-size:11px;font-weight:700;padding:1px 7px;border-radius:4px;white-space:nowrap;background:#f2f0e7;color:#807d6d;flex:none;border:0}
+.shopping-status.s-got{background:#eaf0df;color:#4b7357}
+.shopping-status.s-have{background:#eaf0ef;color:#537d85}
+.shopping-status.s-skip{background:#f1efea;color:#9a958a}
+.shopping-note-edit,.shopping-add-form{display:flex;gap:8px;align-items:center;padding:0 0 8px 28px;flex-wrap:wrap}
+.shopping-add-form{padding-left:0}
+.shopping-note-edit input,.shopping-add-form input{flex:1;min-width:140px;border:1px solid #d4d9d4;border-radius:7px;background:#fff;padding:6px 9px;font-size:14px}
+.shopping-remove{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;color:#9a4b3c;background:none}
+.shopping-add{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #efefe6;padding:9px 0 10px;flex-wrap:wrap}
+.shopping-add .hint{font-size:12px;margin:0}
+.shopping-add-btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary);color:#fffefa;border-radius:7px;padding:6px 14px;font-size:14px;font-weight:700}
+.shopping-add-btn.sec{background:#fff;color:var(--primary);border:1px solid #cfd6cf}
+.shopping-add-btn:disabled{opacity:.55}
+.shopping-hint{margin:8px 0 0}
+.shopping-src{font-size:12px;color:#6a7973;line-height:1.6;border-top:1px dashed #dedfd6;padding-top:8px;margin:10px 0 0}
+.shopping-src a{color:#1c3c4a;text-decoration:underline;display:inline-flex;align-items:center;gap:3px;overflow-wrap:anywhere}

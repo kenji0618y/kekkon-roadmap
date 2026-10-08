@@ -3,6 +3,7 @@ import {newerLineNotify} from './line-notify';
 import {mergeFutari} from './futari';
 import {mergeBoard} from './board';
 import {mergeLater} from './later';
+import {mergeShopping} from './shopping';
 import {validateCatalogBook} from './backup';
 
 /**
@@ -56,6 +57,7 @@ export function mergeBooks(primary:Book,secondary:Book):Book{
     lineNotify:newerLineNotify(p.lineNotify,s.lineNotify,emptyLineNotify),
     household:newerLineNotify(p.household,s.household,emptyHousehold),
     later:mergeLater(p.later,s.later),
+    shopping:mergeShopping(p.shopping,s.shopping),
   };
   return validateCatalogBook(bookSchema.parse(merged));
 }

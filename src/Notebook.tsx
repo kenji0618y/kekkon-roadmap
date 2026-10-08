@@ -14,7 +14,7 @@ import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
 import {deadlineVisible} from './lib/deadline-visibility';
-import {chapters,emptyBook,emptyHousehold,emptyLater,BOARD_TEXT_MAX,type BoardNote,type LaterItem,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
+import {chapters,emptyBook,emptyHousehold,emptyLater,emptyShopping,BOARD_TEXT_MAX,type BoardNote,type LaterItem,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -40,6 +40,7 @@ import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
 import {WeekTogether} from './components/WeekTogether';
+import {ShoppingList,type ShopSave} from './components/ShoppingList';
 import {LaterList,LaterProvider} from './components/Later';
 import {hasLater} from './lib/later';
 import {newNoteId} from './lib/board';
@@ -143,6 +144,7 @@ export default function FutureNotebook(){
  };
  const savePairEvent=async(event:PairEvent)=>{return !!(await data.mutate({action:'event',event},event.id&&book.events?.some(e=>e.id===event.id)?'予定を更新しました':'予定を手帳に残しました'));};
  const boardSave:BoardSave={put:async(note,message)=>!!(await data.mutate({action:'boardNote',note},message)),remove:async(id)=>!!(await data.mutate({action:'deleteBoardNote',id},'メモを消しました'))};
+ const shopSave:ShopSave={set:(id,entry)=>void data.mutate({action:'shopSet',id,entry},''),add:async item=>!!(await data.mutate({action:'shopAdd',item},'品目を足しました')),remove:id=>void data.mutate({action:'shopRemove',id},'品目を消しました')};
  // 「あとで見る」（ふたりで共有）。印は同期で両方の端末にそろい、外した印も同期で外れる。
  const laterBook=book.later||emptyLater;
  const laterCtx=useMemo(()=>({later:laterBook,busy:data.busy,toggle:(item:Omit<LaterItem,'at'|'by'>)=>{const on=hasLater(laterBook,item.id);void data.mutate({action:'laterToggle',item:{...item,by:readMe()||''}},on?'あとで見るから外しました':'あとで見るに入れました');}}),[laterBook,data.busy,data.mutate]);
@@ -251,6 +253,7 @@ export default function FutureNotebook(){
 
  </>}
  </section>
+ {chapter==='life'&&<ShoppingList shopping={book.shopping||emptyShopping} profile={p} busy={data.busy} save={shopSave}/>}
  <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や「カレンダー」のタブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">

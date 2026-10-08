@@ -1,21 +1,22 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {toast} from 'sonner';
-import {bookSchema,emptyBoard,emptyBook,emptyFutari,emptyLineNotify,emptyHousehold,sameHousehold,type HouseholdSplit,type LaterItem,type LineNotifySettings,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
+import {bookSchema,emptyBoard,emptyBook,emptyFutari,emptyLineNotify,emptyHousehold,sameHousehold,type HouseholdSplit,type LaterItem,type ShopCustom,type ShopEntry,type LineNotifySettings,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
 import {mergeFutari,sameFutari} from './futari';
 import {mergeBoard,pruneDeleted,sameBoard} from './board';
 import {newerLineNotify,sameLineNotify} from './line-notify';
 import {mergeLater,sameLater,toggleLater} from './later';
+import {addShopCustom,mergeShopping,removeShopCustom,sameShopping,setShopEntry} from './shopping';
 
 /**
  * 二人が同時に書き込むもの（今日の一問の答え・掲示板のメモ）は、同期のとき両方を残す。LINE 通知の設定は新しく変えた方。
  * ここは手帳を合わせるだけで、LINE には何も送らない（同期で入ってきたメモで通知すると相手に2通届く）。
  */
-type Shared={futari:Book['futari'],board:Book['board'],lineNotify:Book['lineNotify'],household:Book['household'],later:Book['later']};
+type Shared={futari:Book['futari'],board:Book['board'],lineNotify:Book['lineNotify'],household:Book['household'],later:Book['later'],shopping:Book['shopping']};
 function mergeShared(local:Book|null|undefined,remote:Book):Shared{
-  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board),lineNotify:newerLineNotify(local?.lineNotify,remote.lineNotify,emptyLineNotify),household:newerLineNotify(local?.household,remote.household,emptyHousehold),later:mergeLater(local?.later,remote.later)};
+  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board),lineNotify:newerLineNotify(local?.lineNotify,remote.lineNotify,emptyLineNotify),household:newerLineNotify(local?.household,remote.household,emptyHousehold),later:mergeLater(local?.later,remote.later),shopping:mergeShopping(local?.shopping,remote.shopping)};
 }
 function sameShared(a:Partial<Shared>,b:Partial<Shared>){
-  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board)&&sameLineNotify(a.lineNotify,b.lineNotify)&&sameHousehold(a.household,b.household)&&sameLater(a.later,b.later);
+  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board)&&sameLineNotify(a.lineNotify,b.lineNotify)&&sameHousehold(a.household,b.household)&&sameLater(a.later,b.later)&&sameShopping(a.shopping,b.shopping);
 }
 import {validateCatalogBook} from './backup';
 import {
@@ -428,6 +429,7 @@ export function useBook(_paused:boolean){
     if(action==='deleteBoardNote')return `deleteBoardNote:${String(payload.id||'')}`;
     if(action==='lineNotify')return 'lineNotify';
     if(action==='household')return 'household';
+    if(action==='shopSet')return `shopSet:${String(payload.id||'')}`;
     return '';
   };
 
@@ -548,6 +550,15 @@ export function useBook(_paused:boolean){
       }else if(action==='laterToggle'){
         ensureBook();
         book!.later=toggleLater(book!.later,payload.item as Omit<LaterItem,'at'>);
+      }else if(action==='shopSet'){
+        ensureBook();
+        book!.shopping=setShopEntry(book!.shopping,String(payload.id),payload.entry as Omit<ShopEntry,'updatedAt'>);
+      }else if(action==='shopAdd'){
+        ensureBook();
+        book!.shopping=addShopCustom(book!.shopping,payload.item as Omit<ShopCustom,'updatedAt'>);
+      }else if(action==='shopRemove'){
+        ensureBook();
+        book!.shopping=removeShopCustom(book!.shopping,String(payload.id));
       }else if(action==='import'){
         book=structuredClone(payload.book as Book);
         revision=0;

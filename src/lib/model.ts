@@ -163,9 +163,35 @@ export const laterSchema=z.object({
 });
 export type Later=z.infer<typeof laterSchema>;
 export const emptyLater:Later={items:[],deleted:{}};
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold),later:laterSchema.catch(emptyLater).default(emptyLater)});
+/** 新生活の買い物リスト（2026-10-08〜）。品目はゼクシィのチェックリストの名前のまま（src/data/newlife-checklist.json）＋自分で足した品目。担当・状態・メモだけを残し、値段は持たない。ふたりで共有（同期）。 */
+export const SHOP_OWNERS=['none','both','one','two'] as const;
+export const SHOP_STATUSES=['todo','got','have','skip'] as const;
+export const shopEntrySchema=z.object({
+  owner:z.enum(SHOP_OWNERS).catch('none'),
+  status:z.enum(SHOP_STATUSES).catch('todo'),
+  note:z.string().max(100).catch(''),
+  updatedAt:z.string().max(40).catch(''),
+});
+export type ShopEntry=z.infer<typeof shopEntrySchema>;
+export const emptyShopEntry:ShopEntry={owner:'none',status:'todo',note:'',updatedAt:''};
+export const shopCustomSchema=z.object({
+  id:z.string().min(1).max(80),
+  cat:z.string().max(40),
+  room:z.string().max(40),
+  name:z.string().min(1).max(60),
+  updatedAt:z.string().max(40),
+});
+export type ShopCustom=z.infer<typeof shopCustomSchema>;
+export const shoppingSchema=z.object({
+  entries:z.record(z.unknown()).catch({}).transform(r=>Object.fromEntries(Object.entries(r).flatMap(([k,v])=>{const x=shopEntrySchema.safeParse(v);return x.success&&k.length<=80?[[k,x.data]]:[];})) as Record<string,ShopEntry>),
+  custom:z.array(z.unknown()).catch([]).transform(list=>list.flatMap(v=>{const r=shopCustomSchema.safeParse(v);return r.success?[r.data]:[];}).slice(0,200)),
+  deleted:z.record(z.string().max(40)).catch({}),
+});
+export type Shopping=z.infer<typeof shoppingSchema>;
+export const emptyShopping:Shopping={entries:{},custom:[],deleted:{}};
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold),later:laterSchema.catch(emptyLater).default(emptyLater),shopping:shoppingSchema.catch(emptyShopping).default(emptyShopping)});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold,later:emptyLater};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold,later:emptyLater,shopping:emptyShopping};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};
