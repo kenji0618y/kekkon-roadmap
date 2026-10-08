@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** LINE 通知（掲示板・ロードマップの済）の node テスト。TS を esbuild でまとめて動かす（本物の中継先にはつながない）。 */
+/** LINE 通知（掲示板・ロードマップの済・期限と記念日）の node テスト。解錠時の通知は外した（2026-10-09）。TS を esbuild でまとめて動かす（本物の中継先にはつながない）。 */
 import { build } from 'esbuild';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -10,7 +10,7 @@ import { root } from './state.mjs';
 const dir = mkdtempSync(join(tmpdir(), 'line-notify-'));
 let status = 0;
 try {
-  for (const name of ['line-notify', 'stamp-notify', 'login-notify']) {
+  for (const name of ['line-notify', 'stamp-notify']) {
     const out = join(dir, `${name}.mjs`);
     await build({ entryPoints: [join(root, `scripts/tests/${name}.test.ts`)], bundle: true, platform: 'node', format: 'esm', target: 'node20', outfile: out, logLevel: 'error', loader: { '.json': 'json' } });
     const r = spawnSync(process.execPath, [out], { stdio: 'inherit' });
