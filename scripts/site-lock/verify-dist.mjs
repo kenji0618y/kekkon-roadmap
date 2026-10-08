@@ -6,6 +6,7 @@
  */
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { join, relative, dirname } from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { unlockSiteJson, decryptFile, unb64, PLAIN_ICONS, plainIconProblem } from './core.mjs';
 
@@ -60,6 +61,16 @@ for (const rel of files) {
     if (title !== '合言葉を入れてください') fail.push(`${rel} の title が「${title}」`);
     if (/property="og:|name="twitter:|name="description"|rel="manifest"|apple-mobile-web-app-title/.test(text)) fail.push(`${rel} に og/meta/manifest が残っている`);
     if (/(src|href)="https?:/.test(text)) fail.push(`${rel} が外のファイルを読み込んでいる`);
+    if (rel === 'index.html') {
+      // CSP（2026-10-06〜）: インラインのスクリプトは CSP の sha256 と一致しないと動かない。unlock.html を直したら sha256 も直す。
+      const csp = (/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/.exec(text) || [])[1] || '';
+      const script = (/<script>([\s\S]*?)<\/script>/.exec(text) || [])[1];
+      const want = script == null ? '' : `'sha256-${createHash('sha256').update(script, 'utf8').digest('base64')}'`;
+      if (!csp) fail.push('解錠ページに CSP がない');
+      else if (!/(^|; )default-src 'none'/.test(csp)) fail.push('解錠ページの CSP が default-src \'none\' ではない');
+      else if (!want || !csp.includes(want)) fail.push(`解錠ページの CSP の sha256 がスクリプトと合わない（正しくは ${want}）`);
+      else ok.push('解錠ページの CSP: スクリプトの sha256 が一致');
+    }
   }
 }
 if (!fail.length) ok.push(`平文のファイルは解錠ページ・sw.js・site.json・.nojekyll・ホーム画面のアイコン ${icons.length} 個だけ（暗号文 ${blobs.length} 個）`);
@@ -112,6 +123,7 @@ if (pass) {
       if (plain.length !== e.s) fail.push(`${path}: 大きさが合わない`);
       else opened++;
       if (path === 'index.html' && !Buffer.from(plain).includes('<div id="root">')) fail.push('復号した index.html がアプリ本体ではない');
+      if (path === 'index.html' && !Buffer.from(plain).includes('http-equiv="Content-Security-Policy"')) fail.push('復号した index.html に CSP がない（vite.config.ts の cspMeta）');
     }
     const need = ['index.html', 'manifest.webmanifest'];
     for (const n of need) if (!manifest.files[n]) fail.push(`暗号文の一覧に ${n} がない`);

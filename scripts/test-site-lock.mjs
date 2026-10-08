@@ -24,10 +24,10 @@ let failed = 0;
 const t = (name, cond) => { if (cond) console.log('ok  ', name); else { failed++; console.error('FAIL', name); } };
 const run = (script, dir, env) => spawnSync(process.execPath, [script, dir], { env: { PATH: process.env.PATH, ...env }, encoding: 'utf8' });
 
-function makeDist() {
+function makeDist({ csp = true } = {}) {
   const d = mkdtempSync(join(tmpdir(), 'sitelock-'));
   const w = (rel, data) => { mkdirSync(dirname(join(d, rel)), { recursive: true }); writeFileSync(join(d, rel), data); };
-  w('index.html', '<!doctype html><html><head><title>結婚ロードマップ Amity</title><meta property="og:title" content="Amity"></head><body><div id="root"></div><script type="module" src="./assets/index-abc.js"></script></body></html>');
+  w('index.html', '<!doctype html><html><head>' + (csp ? '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'">' : '') + '<title>結婚ロードマップ Amity</title><meta property="og:title" content="Amity"></head><body><div id="root"></div><script type="module" src="./assets/index-abc.js"></script></body></html>');
   w('assets/index-abc.js', 'console.log("ふたりの手帳 ゴットマン 婚姻届");'.repeat(50));
   w('assets/index-abc.css', 'body{color:red}');
   w('manifest.webmanifest', '{"name":"Amityちゃんにきく"}');
@@ -97,6 +97,24 @@ for (const [name, fn] of [
   fn(x);
   t(`検査が「${name}」で落ちる`, run(VER, x, { SITE_PASSPHRASE: PASS }).status !== 0);
   rmSync(x, { recursive: true });
+}
+
+// 3b) CSP（2026-10-06〜）
+{
+  const tpl = readFileSync(join(here, 'site-lock/unlock.html'), 'utf8');
+  const csp = (/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/.exec(tpl) || [])[1] || '';
+  const script = (/<script>([\s\S]*?)<\/script>/.exec(tpl) || [])[1] || '';
+  const hash = webcrypto.subtle ? Buffer.from(await webcrypto.subtle.digest('SHA-256', new TextEncoder().encode(script))).toString('base64') : '';
+  t('解錠ページに CSP（default-src \'none\'）', /(^|; )default-src 'none'/.test(csp));
+  t('解錠ページの CSP の sha256 がスクリプトと一致（unlock.html を直したら sha256 も直す）', !!hash && csp.includes(`'sha256-${hash}'`));
+  t('解錠ページの CSP は unsafe-inline のスクリプトを許さない', !/script-src[^;]*unsafe-inline/.test(csp));
+  const v0 = run(VER, d, { SITE_PASSPHRASE: PASS });
+  t('検査が解錠ページの CSP を確かめる', /解錠ページの CSP: スクリプトの sha256 が一致/.test(v0.stdout));
+  const n = makeDist({ csp: false });
+  t('CSP なしのアプリも暗号化はできる', run(ENC, n.d, { SITE_PASSPHRASE: PASS }).status === 0);
+  const v = run(VER, n.d, { SITE_PASSPHRASE: PASS });
+  t('復号した index.html に CSP がないと検査が落ちる', v.status !== 0 && /CSP がない/.test(v.stderr));
+  rmSync(n.d, { recursive: true });
 }
 
 // 4) sw.js を Node で動かす
