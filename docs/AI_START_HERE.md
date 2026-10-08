@@ -10,7 +10,7 @@ Do **not** rediscover product history by chatting with Kenji.
 | One-liner | 広島市向け・共働き・式なし前提の結婚／新生活ハンドブック PWA（ブランド名 **Amityちゃんにきく**）|
 | Pages URL | https://kenji0618y.github.io/kekkon-roadmap/ |
 | Repo | https://github.com/kenji0618y/kekkon-roadmap |
-| Owner | Kenji Kadomoto · GitHub `kenji0618y` · timezone **Asia/Tokyo** |
+| Owner | オーナー · GitHub `kenji0618y` · timezone **Asia/Tokyo** |
 | Docs tip (main) | 下の「いまの状態」を見てください |
 <!-- ここは `npm run sync:docs` が書き込みます。手で直さないでください。 -->
 <!-- STATE:LINE -->

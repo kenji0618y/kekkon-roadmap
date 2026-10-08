@@ -64,10 +64,10 @@ ok('text: 「『婚姻届を出す』を済にしました」',txt==='『婚姻�
 ok('text has no name (the relay adds 名前：)',!txt.includes('さん'));
 const long=stampDoneText('い'.repeat(800));
 ok('text: ≤500 chars, title ellipsized',Array.from(long).length===500&&long.startsWith('『')&&long.endsWith('…』を済にしました'));
-const p=boardPayload('s'.repeat(64),'n2','はるか',stampDoneText('転入届'));
-ok('payload: kind board, from 2, name/text',p.kind==='board'&&p.from===2&&p.name==='はるか'&&p.text==='『転入届』を済にしました');
+const p=boardPayload('s'.repeat(64),'n2','二人目',stampDoneText('転入届'));
+ok('payload: kind board, from 2, name/text',p.kind==='board'&&p.from===2&&p.name==='二人目'&&p.text==='『転入届』を済にしました');
 // 中継先は「名前：本文」を40文字で切る。いちばん長い項目名でも切れないこと。
-ok('longest real title still fits the relay preview',Array.from('けんじ：'+stampDoneText('あ'.repeat(23))).length<=44);
+ok('longest real title still fits the relay preview',Array.from('一人目：'+stampDoneText('あ'.repeat(23))).length<=44);
 ok('no "Lean" / 男 / 女 in text',!/Lean|男|女/.test(txt));
 
 await Promise.resolve();
