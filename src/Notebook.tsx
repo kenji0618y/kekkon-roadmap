@@ -14,7 +14,7 @@ import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
 import {deadlineVisible} from './lib/deadline-visibility';
-import {chapters,emptyBook,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
+import {chapters,emptyBook,emptyHousehold,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
 import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
@@ -38,13 +38,16 @@ import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
+import {WeekTogether} from './components/WeekTogether';
+import {HouseholdSplitCard} from './components/HouseholdSplitCard';
+import {buildWeek} from './lib/week-together';
 import {OnboardingSheet,isOnboardingDone,markOnboardingDone} from './components/OnboardingSheet';
 import {PwaUpdateBanner} from './components/PwaUpdateBanner';
 import {absoluteDeadlines,excludeItems,groups,homeContent,practices,relativeDeadlines,reviewedOn,sources,talks,taskById,tasks} from './data/catalog';
 import {buildQuickSearchHits,groupQuickSearchHits,taskMatchesQuery,type QuickSearchHit} from './lib/quick-search';
 import yearlyUpdateMd from './data/YEARLY_UPDATE.md?raw';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
-const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'pair',label:'ふたり',short:'ふたり',icon:HeartHandshake},{id:'find',label:'探す',short:'探す',icon:Search},{id:'settings',label:'設定',short:'設定',icon:Settings2}];
+const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'pair',label:'博士',short:'博士',icon:HeartHandshake},{id:'find',label:'探す',short:'探す',icon:Search},{id:'settings',label:'設定',short:'設定',icon:Settings2}];
 type Modal='profile'|'pair'|null;
 export default function FutureNotebook(){
  const [tab,setTab]=useState('desk'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[chatOpen,setChatOpen]=useState(false);
@@ -84,6 +87,9 @@ export default function FutureNotebook(){
  const pairExport=useMemo(():CalendarEvent[]=>(book.events||[]).filter(e=>e.date&&difference(e.date,today)>=0).map(e=>({id:`pair-${e.id}`,title:e.title,deadline:{date:e.date,label:e.title,basis:e.note||'ふたりのカレンダーに入れた予定です。',kind:'personal' as const,uncertain:false}})),[book.events,today]);
  const weddingExport=useMemo(():CalendarEvent[]=>validDate(p.wdate)&&difference(p.wdate,today)>=0?[{id:'wedding-day',title:'婚姻日（予定日）',deadline:{date:p.wdate,label:'婚姻日',basis:'プロフィールに入れた婚姻日・予定日です。',kind:'personal' as const,uncertain:false}}]:[],[p.wdate,today]);
  const calendarEvents=useMemo(():CalendarEvent[]=>[...weddingExport,...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline})),...absExport,...pairExport],[weddingExport,dated,absExport,pairExport]);
+ const week=useMemo(()=>buildWeek({today,tasks:scoped,profile:p,records:book.records,events:book.events||[],rules:absoluteDeadlines.filter(d=>deadlineVisible(d,p)&&validDate(d.date))}),[today,scoped,p,book.records,book.events]);
+ const [calFocus,setCalFocus]=useState<{date:string,n:number}|null>(null);
+ const openCalendarAt=(date:string)=>{setCalFocus(f=>({date,n:(f?.n||0)+1}));setTab('deadlines');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'})));};
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
   const da=nearestDeadline(a,p,book.records[a.id])?.date||'9999',db=nearestDeadline(b,p,book.records[b.id])?.date||'9999';
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
@@ -197,12 +203,13 @@ export default function FutureNotebook(){
  const renderTask=(t:Task,compact=false)=>{const r=book.records[t.id],deadline=nearestDeadline(t,p,r);return <button key={t.id} className={`task-row ${compact?'compact':''} ${r?.status==='done'?'task-done':''}`} onClick={()=>openTask(t.id)}><span className="task-circle">{r?.status==='done'?<Check size={17}/>:t.type==='conversation'?<Heart size={16}/>:<span/>}</span><span className="task-row-body"><span className="task-row-top"><span className="task-type">{typeLabels[t.type]}</span>{r&&<StatusMark status={r.status}/>}</span><strong>{t.title}</strong>{!compact&&<span className="task-summary">{t.summary}</span>}<span className="task-meta">{deadline&&!['done','na'].includes(r?.status||'')&&<span className={difference(deadline.date,today)<=7?'urgency':''}><CalendarDays size={13}/>{monthDay(deadline.date)} · {deadline.kind==='personal'?'予定':deadline.uncertain?'原則日':'届出期限'}</span>}</span></span><ChevronRight size={17}/></button>;};
  return <><a className="skip-link" href="#main-content">本文へ進む</a><Toaster theme="light" position="top-center" richColors visibleToasts={1}/><PwaUpdateBanner/>
  <Tabs value={tab} onValueChange={v=>{if(v==='pair')setChatOpen(false);setTab(v);}} className="notebook-tabs" ref={tabsRef}>
- <header className="masthead site-header"><div className="masthead-inner"><button className="brand" onClick={()=>setTab('desk')} aria-label="結婚ロードマップ（デスクへ戻る）" title="デスクへ戻る"><span className="brand-seal">結</span><span className="wordmark">結婚ロードマップ<small>広島市・式なし</small></span></button><div className="header-right"><button type="button" className="header-search-btn" onClick={()=>{setQuickOpen(true);setQuickQ('');}} aria-label="項目・画面・期限を検索"><Search size={16}/><span>検索</span></button><span className="city-tag"><MapPin size={15}/>広島市{p.ward!=='未設定'?` ${p.ward}`:''}</span><button className="pair-pill" onClick={()=>setModal('pair')}><Users size={16}/><span>ふたりで使う</span></button><span className="save-status header-save" role="status">{data.busy?<><LoaderCircle className="spin" size={14}/>保存中</>:data.phase==='loading'?<>読み込み中…</>:data.phase==='error'?<>接続を確認</>:data.book?<><CloudCheck size={15}/>この端末に保存済み</>:<>まだ手帳を始めていません</>}</span></div></div>
+ <header className="masthead site-header"><div className="masthead-inner"><button className="brand" onClick={()=>setTab('desk')} aria-label="Amityちゃん（デスクへ戻る）" title="デスクへ戻る"><span className="brand-seal">結</span><span className="wordmark">Amityちゃん<small>広島市・式なし</small></span></button><div className="header-right"><button type="button" className="header-search-btn" onClick={()=>{setQuickOpen(true);setQuickQ('');}} aria-label="項目・画面・期限を検索"><Search size={16}/><span>検索</span></button><span className="city-tag"><MapPin size={15}/>広島市{p.ward!=='未設定'?` ${p.ward}`:''}</span><button className="pair-pill" onClick={()=>setModal('pair')}><Users size={16}/><span>ふたりで使う</span></button><span className="save-status header-save" role="status">{data.busy?<><LoaderCircle className="spin" size={14}/>保存中</>:data.phase==='loading'?<>読み込み中…</>:data.phase==='error'?<>接続を確認</>:data.book?<><CloudCheck size={15}/>この端末に保存済み</>:<>まだ手帳を始めていません</>}</span></div></div>
  <div className="nav-wrap"><TabsList className="main-nav has-ind" aria-label="メインメニュー" ref={navListRef}>{nav.map(n=><TabsTrigger key={n.id} value={n.id}><n.icon/><span className="nav-label-full">{n.label}</span><span className="nav-label-short">{n.short}</span>{n.id==='deadlines'&&soon.length>0&&<i className="nav-dot"/>}</TabsTrigger>)}<span className="nav-ind" ref={navIndRef} aria-hidden="true"/></TabsList></div></header>
  <main className="workspace" id="main-content">
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p><button onClick={()=>void data.refresh()}>再読み込み</button></div>}
  <TabsContent value="desk" className="tab-surface">
  <DeskBoard book={book} busy={data.busy} syncStatus={data.syncStatus} save={boardSave} onOpenSync={()=>{setTab('settings');revealAndScroll('settings-gist-sync');}} line={line} onOpenLine={()=>{setTab('settings');revealAndScroll('settings-line-notify');}}/>
+ <WeekTogether profile={p} range={week.range} items={week.items} shares={week.shares} records={book.records} busy={data.busy} onOpenTask={openTask} onOpenCalendar={openCalendarAt} onToggleCheck={(id,who)=>void togglePairCheck(id,who)}/>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'}));}}/>
  <HomeInsightPanels
   onOpenTask={openTask}
@@ -231,7 +238,7 @@ export default function FutureNotebook(){
   <a href="#deadline-block-schedule">項目の予定</a>
   <a href="#deadline-block-phases">時期</a>
  </nav>
- <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent}/>
+ <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus}/>
  <section id="deadline-block-hero" className="deadline-block" aria-label="覚えておきたい数字">
   <details className="deadline-secondary-fold">
    <summary>
@@ -284,6 +291,7 @@ export default function FutureNotebook(){
 </TabsContent>
  <TabsContent value="pair" forceMount className="tab-surface pair-tab data-[state=inactive]:hidden">
   <FutariDaily book={book} busy={data.busy} save={futariSave} active={tab==='pair'}/>
+  <HouseholdSplitCard value={book.household||emptyHousehold} busy={data.busy} onSave={async patch=>!!(await data.mutate({action:'household',patch},'家計の分け方を、ふたりの合意として残しました'))}/>
   <details className="paper-card pair-workbook-fold" id="pair-workbook" open={pairBookOpen} onToggle={e=>setPairBookOpen((e.currentTarget as HTMLDetailsElement).open)}>
    <summary><strong>ふたりの練習帳（行動・会話・合意）</strong><span className="hint">これまでのスタンプ台と、書きためた合意</span></summary>
    <SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
@@ -338,9 +346,9 @@ export default function FutureNotebook(){
  <div className="settings-sub"><h3><RefreshCw size={17}/>毎年の見直しメモ</h3><p className="hint">年に一度、締切や対象条件を見直すときの手順です。</p><details className="yearly-fold"><summary>メモを開く</summary><pre className="yearly-update-pre">{yearlyUpdateMd}</pre></details></div>
  </details></section>
 </div>
- <section className="source-policy paper-card"><div><ShieldCheck size={25}/><h2>安心して確かめるために。</h2><p>この手帳は、制度を調べて手続きを進めるための案内です。給付や税の適用は、二人の条件と申請先の判断で決まります。</p><p>内容を確認した日を参照先ごとに表示しています。未確認の案内はその旨を表示し、勤務先・契約ごとの条件は窓口への質問としてまとめています。</p><p>制度の更新は自動配信されません。申請・契約の前には、公式案内と予算・受付状況を再確認してください。</p></div><div><h3>使い続けるためのメモ</h3><ul><li>記録はこの端末のブラウザの中に保存されます。</li><li>端末を変えるときや二人で受け渡すときは、バックアップのファイルを使います。</li><li>端末どうしの自動同期と、AIのキーは「詳細設定」にあります。</li><li>スマートフォンのブラウザーの「ホーム画面に追加」から、すぐ開けるようにできます（名前は「結婚ロードマップ」）。合言葉を入れて開いたあとで追加してください。前に追加したものは、いったん消して追加し直すと新しい名前になります。</li></ul><button className="text-button" onClick={()=>void data.refresh()}><RefreshCw size={15}/>最新の保存内容を読み込む</button></div></section>
+ <section className="source-policy paper-card"><div><ShieldCheck size={25}/><h2>安心して確かめるために。</h2><p>この手帳は、制度を調べて手続きを進めるための案内です。給付や税の適用は、二人の条件と申請先の判断で決まります。</p><p>内容を確認した日を参照先ごとに表示しています。未確認の案内はその旨を表示し、勤務先・契約ごとの条件は窓口への質問としてまとめています。</p><p>制度の更新は自動配信されません。申請・契約の前には、公式案内と予算・受付状況を再確認してください。</p></div><div><h3>使い続けるためのメモ</h3><ul><li>記録はこの端末のブラウザの中に保存されます。</li><li>端末を変えるときや二人で受け渡すときは、バックアップのファイルを使います。</li><li>端末どうしの自動同期と、AIのキーは「詳細設定」にあります。</li><li>スマートフォンのブラウザーの「ホーム画面に追加」から、すぐ開けるようにできます（名前は「Amityちゃん」）。合言葉を入れて開いたあとで追加してください。前に追加したものは、いったん消して追加し直すと新しい名前になります。</li></ul><button className="text-button" onClick={()=>void data.refresh()}><RefreshCw size={15}/>最新の保存内容を読み込む</button></div></section>
  </TabsContent>
- <footer className="book-footer"><span>結婚ロードマップ · 広島市 · 情報の確認日 {reviewedOn}</span></footer>
+ <footer className="book-footer"><span>Amityちゃん · 広島市 · 情報の確認日 {reviewedOn}</span></footer>
  </main></Tabs>
  <Sheet open={!!task} onOpenChange={open=>{if(!open)callClose(forceClose);}}><SheetContent side="right" className="task-sheet"><SheetHeader><span className="eyebrow">{task?typeLabels[task.type]:''} <i> / </i> ふたりの一歩</span><SheetTitle>{task?.title}</SheetTitle><SheetDescription>{task?.summary}</SheetDescription></SheetHeader>{task&&<TaskForm key={task.id} task={task} profile={p} record={book.records[task.id]} onSave={saveRecord} busy={data.busy} onDirty={setDirty} hasBook={!!data.book} onProfile={openProfile} flushOnUnmountRef={flushTaskOnUnmountRef}/>}</SheetContent></Sheet>
  <Dialog open={!!modal} onOpenChange={open=>{if(!open)callClose(forceClose);}}><DialogContent className={`notebook-dialog dialog-${modal}`}><DialogHeader><p className="eyebrow">ふたりの手帳</p><DialogTitle>{modal==='profile'?'ふたりに合わせて、整える。':'同じ手帳を、ふたりで。'}</DialogTitle><DialogDescription>{modal==='profile'?'すべての項目はあとから変えられます。':'記録はこの端末の中に保存されます。もう一方の端末へは、バックアップのファイルで渡せます。'}</DialogDescription></DialogHeader>
@@ -379,6 +387,6 @@ export default function FutureNotebook(){
  <DeskChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} profile={p} onOpenTask={(id)=>{setChatOpen(false);openTask(id);}} onGoFind={(kw)=>{setChatOpen(false);if(kw)setQuery(kw);setTab('find');}}/>
  <OnboardingSheet open={onboardOpen&&!modal&&!taskId} profile={p} busy={data.busy} onSave={async(profile)=>{const ok=!!(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'));if(ok)setOnboardOpen(false);return ok;}} onSkip={()=>{markOnboardingDone();setOnboardOpen(false);}}/>
 
- <div className="print-book"><h1>結婚ロードマップ</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{statusNames[book.records[t.id].status]||book.records[t.id].status}{book.records[t.id].note?` · ${book.records[t.id].note}`:''}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
+ <div className="print-book"><h1>Amityちゃん</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{statusNames[book.records[t.id].status]||book.records[t.id].status}{book.records[t.id].note?` · ${book.records[t.id].note}`:''}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>
  </>;
 }
