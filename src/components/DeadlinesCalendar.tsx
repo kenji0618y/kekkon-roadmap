@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {ChevronLeft, ChevronRight, Plus, Pencil, Trash2, CalendarDays} from 'lucide-react'
 import {absoluteDeadlines} from '../data/catalog'
 import {deadlineClosedLabel, deadlineVisible} from '../lib/deadline-visibility'
@@ -63,12 +63,15 @@ export function DeadlinesCalendar({
   busy,
   onSave,
   onDelete,
+  focus,
 }: {
   profile: Profile
   events: PairEvent[]
   busy?: boolean
   onSave: (event: PairEvent) => Promise<boolean>
   onDelete: (id: string) => Promise<boolean>
+  /** ほかの画面（デスクの「今週ふたりでやること」など）から、この日を開く。n が変わるたびに動く。 */
+  focus?: {date: string; n: number} | null
 }) {
   const today = todayJapan()
   const [ty, tm] = today.split('-').map(Number)
@@ -78,6 +81,13 @@ export function DeadlinesCalendar({
   const [formError, setFormError] = useState('')
 
   const whoLabels = useMemo(() => pairEventWhoLabels(profile), [profile.name1, profile.name2])
+
+  useEffect(() => {
+    if (!focus || !validDate(focus.date)) return
+    const [fy, fm] = focus.date.split('-').map(Number)
+    setCursor({y: fy, m: fm})
+    setSelected(focus.date)
+  }, [focus?.n])
 
   const seedMarks = useMemo((): SeedMark[] => {
     return absoluteDeadlines
