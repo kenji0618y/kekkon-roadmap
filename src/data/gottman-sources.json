@@ -681,6 +681,358 @@
       "short": "公式：新婚の優先事項",
       "url": "https://www.gottman.com/blog/n-is-for-newlyweds/",
       "note": "Phase1b follow-up（2026-10-05）：day66の差し替え用。原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-CCONTEMPT",
+      "kind": "web",
+      "title": "C is for Contempt & Criticism",
+      "short": "公式：軽蔑と批判",
+      "url": "https://www.gottman.com/blog/c-is-for-contempt-criticism/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-STONEBOUND",
+      "kind": "web",
+      "title": "Conversational Boundaries Without Stonewalling",
+      "short": "公式：境界とストーンウォール",
+      "url": "https://www.gottman.com/blog/conversational-boundaries-without-stonewalling/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-CRITCYCLE",
+      "kind": "web",
+      "title": "The Criticism–Defensiveness Cycle",
+      "short": "公式：批判と自己弁護の循環",
+      "url": "https://www.gottman.com/blog/criticism-defensiveness-cycle/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DEFEND",
+      "kind": "web",
+      "title": "D is for Defensiveness",
+      "short": "公式：自己弁護",
+      "url": "https://www.gottman.com/blog/d-is-for-defensiveness/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-STONEHELP",
+      "kind": "web",
+      "title": "Help, Someone Told Me I'm Stonewalling",
+      "short": "公式：ストーンウォールの誤解",
+      "url": "https://www.gottman.com/blog/help-someone-told-me-im-stonewalling/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-CONTEMPTCHG",
+      "kind": "web",
+      "title": "How to Change Your Own Contempt",
+      "short": "公式：自分の軽蔑を変える",
+      "url": "https://www.gottman.com/blog/how-to-change-your-own-contempt/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-PASSAGG",
+      "kind": "web",
+      "title": "How to Deal with Passive-Aggressive Behavior",
+      "short": "公式：受動的な攻撃",
+      "url": "https://www.gottman.com/blog/how-to-deal-with-passive-aggressive-behavior-in-your-relationship/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-NOTMYFAULT",
+      "kind": "web",
+      "title": "It's Not My Fault: Why Defensiveness Is Damaging",
+      "short": "公式：自己弁護の害",
+      "url": "https://www.gottman.com/blog/its-not-my-fault-why-defensiveness-is-damaging/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-LISTENND",
+      "kind": "web",
+      "title": "Listen Without Getting Defensive",
+      "short": "公式：防御せずに聞く",
+      "url": "https://www.gottman.com/blog/listen-without-getting-defensive/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SELFCONT",
+      "kind": "web",
+      "title": "Self-Care and Contempt",
+      "short": "公式：軽蔑と感謝",
+      "url": "https://www.gottman.com/blog/self-care-contempt/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HEARTFUL",
+      "kind": "web",
+      "title": "How to Bring Heartfulness into Your Marriage",
+      "short": "公式：ハートフルネス",
+      "url": "https://www.gottman.com/blog/how-to-bring-heartfulness-into-your-marriage/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-PARTNEED",
+      "kind": "web",
+      "title": "Why You Need to Accept Your Partner's Needs",
+      "short": "公式：相手の必要を受け取る",
+      "url": "https://www.gottman.com/blog/why-you-need-to-accept-your-partners-needs/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-3FACTOR",
+      "kind": "web",
+      "title": "3 Factors That Will Make or Break a Relationship",
+      "short": "公式：妥協の三つの土台",
+      "url": "https://www.gottman.com/blog/3-factors-will-make-break-relationship/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BREAKSIL",
+      "kind": "web",
+      "title": "Break the Silence in Your Marriage",
+      "short": "公式：話さない関係",
+      "url": "https://www.gottman.com/blog/break-silence-marriage/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FLOODAVOID",
+      "kind": "web",
+      "title": "Flooding and Conflict Avoidance",
+      "short": "公式：回避とフラッディング",
+      "url": "https://www.gottman.com/blog/flooding-and-conflict-avoidance/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SOLVEWO",
+      "kind": "web",
+      "title": "How to Solve Relationship Problems Without Breaking Up",
+      "short": "公式：別れずに問題を扱う",
+      "url": "https://www.gottman.com/blog/how-to-solve-relationship-problems-without-breaking-up/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-LITTLEBID",
+      "kind": "web",
+      "title": "The Little Things That Make or Break a Relationship",
+      "short": "公式：小さなビッド",
+      "url": "https://www.gottman.com/blog/little-things-make-break-relationship/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-TAKEBREAK",
+      "kind": "web",
+      "title": "Love Smarter by Learning to Take a Break",
+      "short": "公式：休憩の取り方",
+      "url": "https://www.gottman.com/blog/love-smarter-learning-take-break/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FLOODCAP",
+      "kind": "web",
+      "title": "Making Sure Emotional Flooding Doesn't Capsize Your Relationship",
+      "short": "公式：感情の氾濫",
+      "url": "https://www.gottman.com/blog/making-sure-emotional-flooding-doesnt-capsize-your-relationship/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-PERIMENO",
+      "kind": "web",
+      "title": "Navigating Perimenopause Together",
+      "short": "公式：更年期前後のふたり",
+      "url": "https://www.gottman.com/blog/navigating-perimenopause-together-how-to-strengthen-your-relationship-in-midlife/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SELFSOOTHE",
+      "kind": "web",
+      "title": "Self-Soothing Tips for High-Conflict Couples",
+      "short": "公式：高ぶったときの自分を落ち着ける",
+      "url": "https://www.gottman.com/blog/self-soothing-tips-for-high-conflict-couples/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-BEGINAGAIN",
+      "kind": "web",
+      "title": "After the Argument: How to Begin Again",
+      "short": "公式：けんかのあと、やり直す",
+      "url": "https://www.gottman.com/blog/after-the-argument-how-to-begin-again/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FORGIVE",
+      "kind": "web",
+      "title": "Forgiveness Can Transform Your Marriage",
+      "short": "公式：許し",
+      "url": "https://www.gottman.com/blog/forgiveness-can-transform-marriage/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-AFTERMATH2",
+      "kind": "web",
+      "title": "How We Used the Aftermath of a Fight to Repair",
+      "short": "公式：けんかのあと処理",
+      "url": "https://www.gottman.com/blog/how-we-used-the-aftermath-of-a-fight-to-repair-our-relationship/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-REPAIRHOW",
+      "kind": "web",
+      "title": "How Well Do You Repair Your Relationship",
+      "short": "公式：修復のうまさ",
+      "url": "https://www.gottman.com/blog/how-well-do-you-repair-your-relationship/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-REPAIRLOVE",
+      "kind": "web",
+      "title": "Make Repair Attempts Your Partner Feels",
+      "short": "公式：相手に届く修復",
+      "url": "https://www.gottman.com/blog/make-repair-attempts-partner-feels-loved/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-REPAIRDE",
+      "kind": "web",
+      "title": "Manage Conflict: Repair and De-escalate",
+      "short": "公式：修復の言い方",
+      "url": "https://www.gottman.com/blog/manage-conflict-repair-and-de-escalate/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MULLIGAN",
+      "kind": "web",
+      "title": "Mulligans in Marriage Conflict",
+      "short": "公式：もう一度言い直す",
+      "url": "https://www.gottman.com/blog/mastering-marriage-conflict-mulligans/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-REPAIRPRAC",
+      "kind": "web",
+      "title": "Practices for Making Effective Repairs",
+      "short": "公式：効く修復の練習",
+      "url": "https://www.gottman.com/blog/protecting-your-relationship-practices-for-making-effective-repairs/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-RISREPAIR",
+      "kind": "web",
+      "title": "R is for Repair",
+      "short": "公式：修復とは軌道に戻すこと",
+      "url": "https://www.gottman.com/blog/r-is-for-repair/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-REPAIRSMALL",
+      "kind": "web",
+      "title": "Repair So Little Things Don't Become Big",
+      "short": "公式：小さな傷を早く直す",
+      "url": "https://www.gottman.com/blog/repair-little-things-dont-become-big-things/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-REHABREL",
+      "kind": "web",
+      "title": "Repair When a Loved One Enters Rehab",
+      "short": "公式：回復プログラムと関係",
+      "url": "https://www.gottman.com/blog/repair-rebuild-relationship-loved-one-enters-rehab/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-SAYYES",
+      "kind": "web",
+      "title": "Accepting Influence: Find Ways to Say Yes",
+      "short": "公式：影響を受け入れる",
+      "url": "https://www.gottman.com/blog/accepting-influence-find-ways-to-say-yes/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-ATTACH",
+      "kind": "web",
+      "title": "How Attachment Style Influences a Relationship",
+      "short": "公式：愛着の型",
+      "url": "https://www.gottman.com/blog/attachment-style-influences-success-relationship/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-EARLYATT",
+      "kind": "web",
+      "title": "How Early Attachment Can Influence Later Relationships",
+      "short": "公式：早い愛着とその後",
+      "url": "https://www.gottman.com/blog/how-early-attachment-styles-can-influence-later-relationships/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-HUSBANDINF",
+      "kind": "web",
+      "title": "Accepting Influence (from a partner)",
+      "short": "公式：影響を受けて勝つ",
+      "url": "https://www.gottman.com/blog/husband-can-influential-accept-influence/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DIGISO",
+      "kind": "web",
+      "title": "Isolation in the Digital Era",
+      "short": "公式：画面より人へ",
+      "url": "https://www.gottman.com/blog/isolation-in-the-digital-era-the-power-of-human-relationships/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-PARTNERPOW",
+      "kind": "web",
+      "title": "Partnership Over Power",
+      "short": "公式：力よりパートナー",
+      "url": "https://www.gottman.com/blog/partnership-over-power-why-accepting-influence-is-so-important/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-INFQUIZ",
+      "kind": "web",
+      "title": "Do You Accept Each Other's Influence?",
+      "short": "公式：影響の自己点検",
+      "url": "https://www.gottman.com/blog/quiz-do-you-and-your-partner-accept-each-others-influence/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-MUTUALINF",
+      "kind": "web",
+      "title": "The Mutual Benefits of Accepting Influence",
+      "short": "公式：影響を受け合う利点",
+      "url": "https://www.gottman.com/blog/the-mutual-benefits-of-accepting-influence-in-relationships/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-FINGRID",
+      "kind": "web",
+      "title": "4 Steps to Overcome Financial Gridlock",
+      "short": "公式：お金の膠着",
+      "url": "https://www.gottman.com/blog/4-steps-overcome-financial-gridlock/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-4SOLVABLE",
+      "kind": "web",
+      "title": "4 Typical Solvable Problems",
+      "short": "公式：解ける問題の四つ",
+      "url": "https://www.gottman.com/blog/4-typical-solvable-problems-relationships/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-COMPNOT",
+      "kind": "web",
+      "title": "Compromise: It's Not What You Think",
+      "short": "公式：妥協の二つの円",
+      "url": "https://www.gottman.com/blog/compromise-its-not-what-you-think/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
+    },
+    {
+      "id": "G-DREAMTIME",
+      "kind": "web",
+      "title": "Same Dreams, Different Timelines",
+      "short": "公式：夢の時間軸",
+      "url": "https://www.gottman.com/blog/couple-dreams-different-timelines/",
+      "note": "Phase1b batch2（2026-10-09）：原文を読んでレッスン化した。"
     }
   ]
 }
