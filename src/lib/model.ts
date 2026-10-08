@@ -189,9 +189,32 @@ export const shoppingSchema=z.object({
 });
 export type Shopping=z.infer<typeof shoppingSchema>;
 export const emptyShopping:Shopping={entries:{},custom:[],deleted:{}};
-export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold),later:laterSchema.catch(emptyLater).default(emptyLater),shopping:shoppingSchema.catch(emptyShopping).default(emptyShopping)});
+/**
+ * 期限と記念日の LINE お知らせ・月に一度のふたり会議（2026-10-08〜）。ふたりで共通（同期では新しく変えた方）。
+ * 会議の日はここだけに持ち、カレンダーの「くり返しの予定」・.ics・LINE のお知らせはここから作る（1か所で直せば全部そろう）。
+ */
+export const REMIND_SLOTS=['morning','noon','night'] as const;
+export const MEETING_WEEKS=['1','2','3','4','last'] as const;
+export const remindersSchema=z.object({
+  on:z.boolean().catch(false),
+  kinds:z.object({rule:z.boolean().catch(true),task:z.boolean().catch(true),event:z.boolean().catch(true),anniv:z.boolean().catch(true)}).catch({rule:true,task:true,event:true,anniv:true}),
+  before3:z.boolean().catch(true),
+  sameDay:z.boolean().catch(true),
+  slot:z.enum(REMIND_SLOTS).catch('morning'),
+  meeting:z.object({
+    on:z.boolean().catch(false),
+    week:z.enum(['',...MEETING_WEEKS]).catch(''),
+    weekday:z.number().int().min(-1).max(6).catch(-1),
+    before3:z.boolean().catch(true),
+    sameDay:z.boolean().catch(true),
+  }).catch({on:false,week:'',weekday:-1,before3:true,sameDay:true}),
+  updatedAt:z.string().max(40).catch(''),
+});
+export type Reminders=z.infer<typeof remindersSchema>;
+export const emptyReminders:Reminders={on:false,kinds:{rule:true,task:true,event:true,anniv:true},before3:true,sameDay:true,slot:'morning',meeting:{on:false,week:'',weekday:-1,before3:true,sameDay:true},updatedAt:''};
+export const bookSchema=z.object({profile:profileSchema,records:z.record(recordSchema),memories:z.array(memorySchema).max(1000),practices:z.record(practiceSchema).catch({}).default({}),agreements:z.record(agreementSchema).catch({}).default({}),events:z.array(pairEventSchema).max(500).catch([]).default([]),futari:futariSchema.catch(emptyFutari).default(emptyFutari),board:boardSchema.catch(emptyBoard).default(emptyBoard),lineNotify:lineNotifySchema.catch(emptyLineNotify).default(emptyLineNotify),household:householdSchema.catch(emptyHousehold).default(emptyHousehold),later:laterSchema.catch(emptyLater).default(emptyLater),shopping:shoppingSchema.catch(emptyShopping).default(emptyShopping),reminders:remindersSchema.catch(emptyReminders).default(emptyReminders)});
 export type Book=z.infer<typeof bookSchema>;
-export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold,later:emptyLater,shopping:emptyShopping};
+export const emptyBook:Book={profile:defaultProfile,records:{},memories:[],practices:{},agreements:{},events:[],futari:emptyFutari,board:emptyBoard,lineNotify:emptyLineNotify,household:emptyHousehold,later:emptyLater,shopping:emptyShopping,reminders:emptyReminders};
 export type Source={id:string,title:string,url:string,checked:string,kind:'official'|'provider'|'document'|'planning',note?:string};
 export type SeedMoney={amount_yen?:number|null,unit?:string|null,note?:string};
 export type Task={id:string,title:string,pad?:string,summary:string,steps:string[],questions:string[],need:string[],stage?:number,chapter:string,group:string,who:string,sources:string[],type:'procedure'|'benefit'|'tax'|'investment'|'contract'|'conversation',rule?:string,amountNote?:string,notice?:string,verified:boolean,review?:string,why?:string,miss?:string,window?:string,faq?:{q:string,a:string}[],money_in?:SeedMoney|null,money_out?:SeedMoney|null,track?:string,eligibility?:string,hidden_if?:string[]};

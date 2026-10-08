@@ -37,14 +37,15 @@ function foldIcs(line:string){let out='',part='',bytes=0;for(const c of line){co
 /** UID fragment: ASCII only, no % encodings (Apple/Google import-friendly). */
 function icsUidPart(s:string){return s.replace(/[^A-Za-z0-9._-]+/g,'_').replace(/_+/g,'_').replace(/-+/g,'-').replace(/^[-_]+|[-_]+$/g,'').slice(0,64)||'item';}
 function utcStamp(d=new Date()){const p=(n:number)=>String(n).padStart(2,'0');return `${d.getUTCFullYear()}${p(d.getUTCMonth()+1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}Z`;}
-export type CalendarEvent={id:string,title:string,deadline:Deadline};
+/** triggers：アラーム（未指定は3日前・[] はなし）。rrule：くり返し（月に一度のふたり会議・結婚記念日）。summary：見出しをそのまま使うとき。 */
+export type CalendarEvent={id:string,title:string,deadline:Deadline,triggers?:string[],rrule?:string,summary?:string};
 export function calendarFile(entries:CalendarEvent[],stamp=utcStamp()){
  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Amity-chan ni kiku//Hiroshima//JA','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Amityちゃんにきく'];
  const alarmDesc=icsEscape('Amityちゃんにきくの予定');
- for(const {id,title,deadline:d} of entries){
+ for(const {id,title,deadline:d,triggers,rrule,summary:head} of entries){
   if(!validDate(d.date))continue;
-  const uid=`${icsUidPart(id)}-${d.kind}-${d.date.replace(/-/g,'')}@amity-chan-ni-kiku`;
-  const summary=icsEscape(`【${d.kind==='personal'?'予定':'期限の確認'}】${title}`);
+  const uid=rrule?`${icsUidPart(id)}-repeat@amity-chan-ni-kiku`:`${icsUidPart(id)}-${d.kind}-${d.date.replace(/-/g,'')}@amity-chan-ni-kiku`;
+  const summary=icsEscape(head||`【${d.kind==='personal'?'予定':'期限の確認'}】${title}`);
   const description=icsEscape(d.basis+'\n公式案内で最新条件を確認してください。');
   lines.push(
    'BEGIN:VEVENT',
@@ -55,12 +56,9 @@ export function calendarFile(entries:CalendarEvent[],stamp=utcStamp()){
    'STATUS:CONFIRMED',
    'TRANSP:TRANSPARENT',
    `SUMMARY:${summary}`,
+   ...(rrule?[`RRULE:${rrule}`]:[]),
    `DESCRIPTION:${description}`,
-   'BEGIN:VALARM',
-   'TRIGGER:-P3D',
-   'ACTION:DISPLAY',
-   `DESCRIPTION:${alarmDesc}`,
-   'END:VALARM',
+   ...(triggers??['-P3D']).flatMap(t=>['BEGIN:VALARM',`TRIGGER:${t}`,'ACTION:DISPLAY',`DESCRIPTION:${alarmDesc}`,'END:VALARM']),
    'END:VEVENT',
   );
  }

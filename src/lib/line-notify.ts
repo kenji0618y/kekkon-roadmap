@@ -163,3 +163,16 @@ export function linePrepText(m:LineMissing):{state:string,board:string,fix:strin
     default:return {state:'',board:'',fix:''};
   }
 }
+
+/**
+ * 期限・記念日・会議のお知らせの一覧を中継先へ送ったあとの一行。
+ * 中継先のスクリプトが古い版（お知らせの受け口がない）だと {ok:false,error:'unknown'} が返る。そのときも設定は手帳に残る。
+ */
+export type ReminderSync={state:'idle'|'sending'|'ok'|'old-relay'|'error',text:string,at?:string};
+export function remindersResultText(r:RelayResult):ReminderSync{
+  if(r.ok)return {state:'ok',text:'中継先にお知らせの予定を渡しました'};
+  if(r.error==='unknown')return {state:'old-relay',text:'中継先のスクリプトが古い版のため、お知らせはまだ届きません。スクリプトを新しい版にすると届きます（設定は保存されています）'};
+  if(r.error==='bad-secret'||r.error==='no-secret')return {state:'error',text:'合言葉が合っていないため、中継先に渡せませんでした'};
+  if(r.error==='off')return {state:'idle',text:''};
+  return {state:'error',text:'中継先に渡せませんでした（あとでもう一度試します）'};
+}

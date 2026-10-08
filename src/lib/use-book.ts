@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {toast} from 'sonner';
-import {bookSchema,emptyBoard,emptyBook,emptyFutari,emptyLineNotify,emptyHousehold,sameHousehold,type HouseholdSplit,type LaterItem,type ShopCustom,type ShopEntry,type LineNotifySettings,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
+import {bookSchema,emptyBoard,emptyBook,emptyReminders,emptyFutari,emptyLineNotify,emptyHousehold,sameHousehold,type HouseholdSplit,type LaterItem,type Reminders,type ShopCustom,type ShopEntry,type LineNotifySettings,type AgreementRecord,type Book,type BoardNote,type FutariAnswer,type FutariMode,type Memory,type PairEvent,type PracticeRecord,type Profile,type TaskRecord} from './model';
 import {mergeFutari,sameFutari} from './futari';
 import {mergeBoard,pruneDeleted,sameBoard} from './board';
 import {newerLineNotify,sameLineNotify} from './line-notify';
@@ -11,12 +11,12 @@ import {addShopCustom,mergeShopping,removeShopCustom,sameShopping,setShopEntry} 
  * 二人が同時に書き込むもの（今日の一問の答え・掲示板のメモ）は、同期のとき両方を残す。LINE 通知の設定は新しく変えた方。
  * ここは手帳を合わせるだけで、LINE には何も送らない（同期で入ってきたメモで通知すると相手に2通届く）。
  */
-type Shared={futari:Book['futari'],board:Book['board'],lineNotify:Book['lineNotify'],household:Book['household'],later:Book['later'],shopping:Book['shopping']};
+type Shared={futari:Book['futari'],board:Book['board'],lineNotify:Book['lineNotify'],household:Book['household'],later:Book['later'],shopping:Book['shopping'],reminders:Book['reminders']};
 function mergeShared(local:Book|null|undefined,remote:Book):Shared{
-  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board),lineNotify:newerLineNotify(local?.lineNotify,remote.lineNotify,emptyLineNotify),household:newerLineNotify(local?.household,remote.household,emptyHousehold),later:mergeLater(local?.later,remote.later),shopping:mergeShopping(local?.shopping,remote.shopping)};
+  return {futari:mergeFutari(local?.futari,remote.futari),board:mergeBoard(local?.board,remote.board),lineNotify:newerLineNotify(local?.lineNotify,remote.lineNotify,emptyLineNotify),household:newerLineNotify(local?.household,remote.household,emptyHousehold),later:mergeLater(local?.later,remote.later),shopping:mergeShopping(local?.shopping,remote.shopping),reminders:newerLineNotify(local?.reminders,remote.reminders,emptyReminders)};
 }
 function sameShared(a:Partial<Shared>,b:Partial<Shared>){
-  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board)&&sameLineNotify(a.lineNotify,b.lineNotify)&&sameHousehold(a.household,b.household)&&sameLater(a.later,b.later)&&sameShopping(a.shopping,b.shopping);
+  return sameFutari(a.futari,b.futari)&&sameBoard(a.board,b.board)&&sameLineNotify(a.lineNotify,b.lineNotify)&&sameHousehold(a.household,b.household)&&sameLater(a.later,b.later)&&sameShopping(a.shopping,b.shopping)&&JSON.stringify(a.reminders||null)===JSON.stringify(b.reminders||null);
 }
 import {validateCatalogBook} from './backup';
 import {
@@ -429,6 +429,7 @@ export function useBook(_paused:boolean){
     if(action==='deleteBoardNote')return `deleteBoardNote:${String(payload.id||'')}`;
     if(action==='lineNotify')return 'lineNotify';
     if(action==='household')return 'household';
+    if(action==='reminders')return 'reminders';
     if(action==='shopSet')return `shopSet:${String(payload.id||'')}`;
     return '';
   };
@@ -550,6 +551,11 @@ export function useBook(_paused:boolean){
       }else if(action==='laterToggle'){
         ensureBook();
         book!.later=toggleLater(book!.later,payload.item as Omit<LaterItem,'at'>);
+      }else if(action==='reminders'){
+        ensureBook();
+        const prev=book!.reminders||emptyReminders;
+        const patch=payload.patch as Partial<Reminders>;
+        book!.reminders={...prev,...patch,kinds:{...prev.kinds,...(patch.kinds||{})},meeting:{...prev.meeting,...(patch.meeting||{})},updatedAt:new Date().toISOString()};
       }else if(action==='shopSet'){
         ensureBook();
         book!.shopping=setShopEntry(book!.shopping,String(payload.id),payload.entry as Omit<ShopEntry,'updatedAt'>);

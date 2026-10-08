@@ -1951,3 +1951,41 @@ button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
 .shopping-hint{margin:8px 0 0}
 .shopping-src{font-size:12px;color:#6a7973;line-height:1.6;border-top:1px dashed #dedfd6;padding-top:8px;margin:10px 0 0}
 .shopping-src a{color:#1c3c4a;text-decoration:underline;display:inline-flex;align-items:center;gap:3px;overflow-wrap:anywhere}
+
+/* 期限と記念日の LINE お知らせ・月に一度のふたり会議（設定「通知（LINE）」の中・カレンダー） */
+.remind-sub{border-top:1px solid #e6e9df;margin-top:16px;padding-top:14px}
+.remind-sub h3{display:flex;align-items:center;gap:7px;font-family:"Shippori Mincho",serif;font-size:17px;font-weight:600;color:#1c3c4a;margin:0 0 6px}
+.remind-sub>p{font-size:14px;line-height:1.75;margin:0 0 10px}
+.remind-sub h4,.meeting-editor h4{display:flex;align-items:center;gap:6px;font-size:14px;color:#2f4a3c;margin:12px 0 6px}
+.remind-checks{display:flex;flex-direction:column;gap:2px}
+.remind-check{display:flex;align-items:center;gap:8px;font-size:14px;padding:4px 0}
+.remind-pills{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.remind-pill{font-size:13px;padding:4px 12px;border-radius:999px;border:1px solid #d4d9d4;background:#fff;color:#526c5c}
+.remind-pill.on{background:var(--primary);color:#fffefa;border-color:var(--primary)}
+.remind-pill:disabled{opacity:.6}
+.remind-sync{margin:8px 0 0}
+.meeting-rule{margin-left:auto;font-size:12px;font-weight:400;color:#6a7973}
+.remind-line{background:#8cabd9;border-radius:14px;padding:12px 12px 14px;margin-top:10px}
+.remind-line-head{font-size:12px;color:#fff;font-weight:700;margin:0 0 8px}
+.remind-line-msg{display:flex;gap:8px;align-items:flex-start}
+.remind-line-ava{width:34px;height:34px;border-radius:50%;background:#fffefa;object-fit:cover;flex:none;border:1px solid #fff}
+.remind-line-name{font-size:11px;color:#fff;margin:0 0 3px}
+.remind-line-bubble{background:#fff;color:#222;border-radius:4px 16px 16px 16px;padding:8px 11px;font-size:13.5px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;max-width:270px;font-family:system-ui,"Hiragino Sans",sans-serif}
+.cal-day{position:relative}
+.cal-bell{position:absolute;top:3px;right:3px;color:#b0873e}
+.cal-dot.task{background:#5f7fa6}
+.cal-dot.anniv{background:#c9798a}
+.cal-dot.meeting{background:#b0873e}
+.cal-bell-legend{color:#b0873e;vertical-align:-1px}
+.cal-item-chip.task{background:#e8eef6;color:#3b5870}
+.cal-item-chip.anniv{background:#f8e9ec;color:#8c4656}
+.cal-item-chip.meeting{background:#f6eedd;color:#7d5b25}
+.cal-bell-note{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;color:#8a6a2f;margin-top:2px}
+.cal-soon-bell{color:#b0873e;flex:none}
+.cal-meeting{border:1px solid #e6dcc6;background:#fffaf0;border-radius:9px;padding:9px 11px;margin:10px 0}
+.cal-meeting-row{display:flex;align-items:center;gap:7px;font-size:13.5px;color:#4a4232}
+.cal-meeting-row>span{flex:1;min-width:0}
+.cal-meeting .meeting-editor{border-top:1px dashed #e6dcc6;margin-top:8px}
+.remind-line p.remind-line-head,.remind-line p.remind-line-name{color:#fff;opacity:1}
+.remind-line p.remind-line-head{font-size:12px;font-weight:700;margin:0 0 8px;line-height:1.5}
+.remind-line p.remind-line-name{font-size:11px;margin:0 0 3px;line-height:1.4}

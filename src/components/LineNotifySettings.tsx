@@ -1,4 +1,4 @@
-import {useEffect,useState} from 'react';
+import {useEffect,useState,type ReactNode} from 'react';
 import {MessageCircle} from 'lucide-react';
 import {toast} from 'sonner';
 import {Input} from './ui/input';
@@ -14,7 +14,7 @@ import type {LineNotify} from '../lib/use-line-notify';
  * 設定 →「通知（LINE）」のカード（同期のすぐ下）。中継先の URL・合言葉は折りたたみの中（URL が無いときだけ最初から開く）。
  * 中継先の URL とオン/オフは手帳に入れて同期（ふたりで共通）。合言葉は同期のキーからこの端末の中で作る（保存しない）。
  */
-export function LineNotifySettings({book,line,save,onOpenSync}:{book:Book,line:LineNotify,save:(patch:Partial<LineNotifyPrefs>,message:string)=>Promise<boolean>,onOpenSync:()=>void}){
+export function LineNotifySettings({book,line,save,onOpenSync,children}:{book:Book,line:LineNotify,save:(patch:Partial<LineNotifyPrefs>,message:string)=>Promise<boolean>,onOpenSync:()=>void,children?:ReactNode}){
   const w=pairEventWhoLabels(book.profile);
   const names={n1:w.male,n2:w.female};
   const saved=book.lineNotify?.url||'';
@@ -70,6 +70,7 @@ export function LineNotifySettings({book,line,save,onOpenSync}:{book:Book,line:L
       <Action secondary disabled={testing} onClick={()=>void test()}>{testing?'確かめています…':'つながるか試す'}</Action>
     </div>
     {result&&<p className={`line-test-result${result.warn?' warn':''}`} role="status">{result.text}</p>}
+    {children}
 
     <Fold title="中継先と合言葉" hint="Googleのスクリプトの URL・BOARD_SECRET" defaultOpen={setupOpen}>
       <div className="field" style={{width:'100%',marginBottom:12}}>

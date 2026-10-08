@@ -14,8 +14,8 @@ import {Checkbox} from './components/ui/checkbox';
 import {Action,Choice,downloadText,EmptyState,SaveAction,SectionTitle,SourceLink,StatusMark} from './components/book-controls';
 import {ProfileForm,TaskForm} from './components/notebook-forms';
 import {deadlineVisible} from './lib/deadline-visibility';
-import {chapters,emptyBook,emptyHousehold,emptyLater,emptyShopping,BOARD_TEXT_MAX,type BoardNote,type LaterItem,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
-import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
+import {chapters,emptyBook,emptyHousehold,emptyLater,emptyShopping,emptyReminders,BOARD_TEXT_MAX,type BoardNote,type LaterItem,inScope,isCeremonyTask,emptyRecord,pairChecks,applyPairCheck,pairEventWhoLabels,type AgreementRecord,type PairEvent,type Book,type PracticeRecord,type Profile,type Task,type TaskRecord,statusNames} from './lib/model';
+import {calendarFile,deadlineText,difference,monthDay,nearestDeadline,plusDays,plusYears,shortDate,taskDeadlines,todayJapan,validDate,type CalendarEvent} from './lib/dates';
 import {backupText,readBackup} from './lib/backup';
 import {useBook} from './lib/use-book';
 import {SyncSettings} from './components/SyncSettings';
@@ -31,7 +31,7 @@ import {LineNotifySettings} from './components/LineNotifySettings';
 import {SiteLockSettings} from './components/SiteLockSettings';
 import {Fold,More,SettingsCard,SettingsOverview,StatusChip} from './components/settings-ui';
 import {useLineNotify} from './lib/use-line-notify';
-import {boardResultText,shouldNotifyBoard} from './lib/line-notify';
+import {boardResultText,remindersResultText,shouldNotifyBoard,type ReminderSync} from './lib/line-notify';
 import {becameDone,createStampNotifier,stampDoneText} from './lib/stamp-notify';
 import {createLoginNotifier,loginOpenedText} from './lib/login-notify';
 import {lessonById,readMe} from './lib/futari';
@@ -40,6 +40,9 @@ import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
 import {WeekTogether} from './components/WeekTogether';
+import {MeetingCard,MeetingEditor,RemindersCard,type ReminderSave} from './components/ReminderSettings';
+import {REMIND_WINDOW_DAYS,calendarItems,icsTriggers,meetingDates,meetingRrule,nextReminder,payloadKey,remindOffsets,remindersPayload} from './lib/reminders';
+import {readRemindSync,writeRemindSync,appUrl} from './lib/remind-sync';
 import {ShoppingList,type ShopSave} from './components/ShoppingList';
 import {LaterList,LaterProvider} from './components/Later';
 import {hasLater} from './lib/later';
@@ -91,7 +94,19 @@ export default function FutureNotebook(){
  const absExport=useMemo(():CalendarEvent[]=>absoluteDeadlines.filter(d=>deadlineVisible(d,p)&&validDate(d.date)&&difference(d.date,today)>=0).map(d=>({id:`abs-${d.date}-${d.title}`,title:d.title,deadline:{date:d.date,label:d.title,basis:d.note||'制度・カレンダーの絶対期限です。公式案内で最新条件を確認してください。',kind:'rule' as const,uncertain:true}})),[p.child,p.home,today]);
  const pairExport=useMemo(():CalendarEvent[]=>(book.events||[]).filter(e=>e.date&&difference(e.date,today)>=0).map(e=>({id:`pair-${e.id}`,title:e.title,deadline:{date:e.date,label:e.title,basis:e.note||'ふたりのカレンダーに入れた予定です。',kind:'personal' as const,uncertain:false}})),[book.events,today]);
  const weddingExport=useMemo(():CalendarEvent[]=>validDate(p.wdate)&&difference(p.wdate,today)>=0?[{id:'wedding-day',title:'婚姻日（予定日）',deadline:{date:p.wdate,label:'婚姻日',basis:'プロフィールに入れた婚姻日・予定日です。',kind:'personal' as const,uncertain:false}}]:[],[p.wdate,today]);
- const calendarEvents=useMemo(():CalendarEvent[]=>[...weddingExport,...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline})),...absExport,...pairExport],[weddingExport,dated,absExport,pairExport]);
+ // .ics：お知らせがオンなら、アラームをお知らせと同じ日・時間帯に（オフの種類はアラームなし）。オフなら今までどおり3日前。会議は毎月のくり返し、結婚記念日は毎年のくり返し。
+ const remindR=book.reminders||emptyReminders;
+ const icsAlarm=(kind:'rule'|'task'|'event'|'anniv'|'meeting')=>kind==='meeting'?icsTriggers(remindOffsets('meeting',remindR),remindR.slot):remindR.on?icsTriggers(remindOffsets(kind,remindR),remindR.slot):undefined;
+ const meetingExport=useMemo(():CalendarEvent[]=>{const next=meetingDates(remindR.meeting,today,plusDays(today,62))[0];const rrule=meetingRrule(remindR.meeting);return next&&rrule?[{id:'futari-meeting',title:'月に一度のふたり会議',summary:'【ふたり会議】月に一度のふたり会議',rrule,deadline:{date:next,label:'月に一度のふたり会議',basis:'アプリの設定・カレンダーで決めた、毎月の会議の日です。',kind:'personal' as const,uncertain:false}}]:[];},[remindR.meeting,today]);
+ const anniversaryExport=useMemo(():CalendarEvent[]=>{if(!validDate(p.wdate)||p.wdate>=today)return [];const wy=Number(p.wdate.slice(0,4));let d='';for(let y=Number(today.slice(0,4));y<=Number(today.slice(0,4))+1&&!d;y++){const c=plusYears(p.wdate,y-wy);if(c>=today&&y>wy)d=c;}return d?[{id:'wedding-anniversary',title:'結婚記念日',summary:'【記念日】結婚記念日',rrule:'FREQ=YEARLY',deadline:{date:d,label:'結婚記念日',basis:'プロフィールに入れた婚姻日から（毎年）。',kind:'personal' as const,uncertain:false}}]:[];},[p.wdate,today]);
+ const calendarEvents=useMemo(():CalendarEvent[]=>[
+  ...weddingExport.map(e=>({...e,triggers:icsAlarm('anniv')})),
+  ...anniversaryExport.map(e=>({...e,triggers:icsAlarm('anniv')})),
+  ...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline,triggers:icsAlarm(deadline.kind==='personal'?'task':'rule')})),
+  ...absExport.map(e=>({...e,triggers:icsAlarm('rule')})),
+  ...pairExport.map(e=>({...e,triggers:icsAlarm('event')})),
+  ...meetingExport.map(e=>({...e,triggers:icsAlarm('meeting')})),
+ ],[weddingExport,anniversaryExport,dated,absExport,pairExport,meetingExport,remindR]);
  const week=useMemo(()=>buildWeek({today,tasks:scoped,profile:p,records:book.records,events:book.events||[],rules:absoluteDeadlines.filter(d=>deadlineVisible(d,p)&&validDate(d.date))}),[today,scoped,p,book.records,book.events]);
  const [calFocus,setCalFocus]=useState<{date:string,n:number}|null>(null);
  const openCalendarAt=(date:string)=>{setCalFocus(f=>({date,n:(f?.n||0)+1}));setTab('deadlines');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'})));};
@@ -204,6 +219,34 @@ export default function FutureNotebook(){
   }catch{/* 通知はおまけ */}
  };
  const saveLineNotify=async(patch:Partial<Book['lineNotify']>,message:string)=>!!(await data.mutate({action:'lineNotify',patch},message));
+ // 期限と記念日の LINE お知らせ・月に一度のふたり会議（2026-10-08〜）。カレンダーにのるものから作り、中継先へは「この先35日・お知らせするものだけ」を渡す。
+ const remindersVal=book.reminders||emptyReminders;
+ const saveReminders:ReminderSave=async(patch,message)=>!!(await data.mutate({action:'reminders',patch},message));
+ const rulesVisible=useMemo(()=>absoluteDeadlines.filter(d=>deadlineVisible(d,p)&&validDate(d.date)),[p.child,p.home]);
+ const itemsFor=useCallback((from:string,to:string)=>calendarItems({from,to,profile:p,tasks:scoped,records:book.records,events:book.events||[],rules:rulesVisible,reminders:remindersVal}),[p,scoped,book.records,book.events,rulesVisible,remindersVal]);
+ const calExtrasFor=useCallback((from:string,to:string)=>itemsFor(from,to).filter(x=>x.kind==='task'||x.kind==='anniv'||x.kind==='meeting'),[itemsFor]);
+ const remindNames=useMemo(()=>{const w=pairEventWhoLabels(p);return {n1:w.male,n2:w.female};},[p.name1,p.name2]);
+ const remindPayload=useMemo(()=>remindersPayload({secret:'',today,reminders:remindersVal,items:itemsFor(today,plusDays(today,REMIND_WINDOW_DAYS)),names:remindNames}),[today,remindersVal,itemsFor,remindNames]);
+ const remindKey=payloadKey(remindPayload);
+ const remindPreview=useMemo(()=>nextReminder(remindPayload,today,appUrl()),[remindPayload,today]);
+ const [remSync,setRemSync]=useState<ReminderSync>(()=>readRemindSync().result);
+ const postRemRef=useRef(line.postReminders);postRemRef.current=line.postReminders;
+ useEffect(()=>{
+  if(data.phase!=='ready'||!data.book||line.state!=='on')return;
+  const last=readRemindSync();
+  if(!remindPayload.on&&!last.on)return; // 使ったことがない／もう消した
+  const key=`${today}|${remindKey}`;
+  if(last.key===key)return; // 同じ内容は1日1回まで
+  const t=setTimeout(()=>{void(async()=>{
+   setRemSync({state:'sending',text:''});
+   const {secret:_secret,...rest}=remindPayload;
+   const r=await postRemRef.current(rest);
+   const res=remindersResultText(r);
+   setRemSync(res);
+   if(r.ok||res.state==='old-relay')writeRemindSync({key,on:remindPayload.on,result:res});
+  })();},1500);
+  return()=>clearTimeout(t);
+ },[data.phase,data.book,line.state,remindKey,today]);
  const deletePairEvent=async(id:string)=>{return !!(await data.mutate({action:'deleteEvent',id},'予定を削除しました'));};
  const exportBackup=()=>{if(!data.book){toast.info('手帳を始めてから保存できます');return;}downloadText(`futari-miraicho-${today}.json`,backupText(data.book));toast.success('バックアップを書き出しました');};
  const exportCalendar=()=>{
@@ -265,7 +308,7 @@ export default function FutureNotebook(){
   <a href="#deadline-block-schedule">項目の予定</a>
   <a href="#deadline-block-phases">時期</a>
  </nav>
- <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus}/>
+ <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus} itemsFor={calExtrasFor} reminders={remindersVal} onOpenTask={openTask} meetingEditor={<MeetingEditor value={remindersVal} busy={data.busy} save={saveReminders}/>}/>
  <section id="deadline-block-hero" className="deadline-block" aria-label="覚えておきたい数字">
   <details className="deadline-secondary-fold">
    <summary>
@@ -364,7 +407,7 @@ export default function FutureNotebook(){
  <SettingsCard id="settings-profile" icon={<Users size={20}/>} title="ふたりのプロフィール" lead="呼び名・住まい・婚姻日。表示する制度がこれで決まります。"><p className="profile-names">{p.name1||'一人目'} <span>&</span> {p.name2||'二人目'}</p><dl><div><dt>住まい</dt><dd>広島市 {p.ward==='未設定'?'（区は未設定）':p.ward}</dd></div><div><dt>婚姻日・予定日</dt><dd>{p.wdate?shortDate(p.wdate):'未設定'}</dd></div><div><dt>子育ての章</dt><dd>{['unknown','none'].includes(p.child)?'表示していません':'選んだ段階を表示'}</dd></div></dl><Action secondary onClick={openProfile}>プロフィールを整える<ArrowRight/></Action></SettingsCard>
  <SettingsCard id="settings-backup" icon={<ArrowDownToLine size={20}/>} title="データ（書き出し・バックアップ）" lead="記録はこの端末の中。受け渡しや機種変更はバックアップで。" more={<><p>記録（進みぐあい・メモ・金額）は、この端末のブラウザの中に保存されます。二人で同じ手帳を使うときや端末を変えるときは、バックアップのファイルを書き出して、もう一方の端末で読み込んでください。</p><p className="hint">バックアップには、名前・日付・メモが入ります。渡す相手と保管先を選んでください。</p><p className="hint">以前の版で書き出したファイルも読み込めます（自動では移りません）。</p></>}><input ref={uploadRef} type="file" accept=".json,application/json" className="sr-only" aria-label="手帳のバックアップ" onChange={e=>{const file=e.target.files?.[0];if(file)void loadBackup(file);e.target.value='';}}/><div className="stack-actions"><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>バックアップを書き出す</Action><Action secondary onClick={()=>uploadRef.current?.click()}><ArrowUpRight/>バックアップを読み込む</Action><Action secondary onClick={()=>window.print()}><Printer/>手帳を印刷・PDFにする</Action></div></SettingsCard>
  <SyncSettings data={data} profile={p}/>
- <LineNotifySettings book={book} line={line} save={saveLineNotify} onOpenSync={()=>revealAndScroll('settings-gist-sync')}/>
+ <LineNotifySettings book={book} line={line} save={saveLineNotify} onOpenSync={()=>revealAndScroll('settings-gist-sync')}><RemindersCard value={remindersVal} busy={data.busy} save={saveReminders} lineState={line.state} sync={remSync} preview={remindPreview}/><MeetingCard value={remindersVal} busy={data.busy} save={saveReminders} lineState={line.state} sync={remSync}/></LineNotifySettings>
  <SettingsCard id="settings-ai" icon={<Sparkles size={20}/>} title="AI（Amityちゃんの調べもの）" chip={<StatusChip tone={!grokEnabled?'off':grokKey.trim()?'on':'wait'}>{!grokEnabled?'オフ':grokKey.trim()?'オン':'キーなし'}</StatusChip>} lead="オンのときだけ xAI に送ります（クレジットを使います）。" more={<><p>Amityちゃんは、手帳の内容から探すのに加えて、AI（xAI の Grok）で調べた答えを足せます。AIで調べるには、下の「AIのキーと接続先」に xAI のキーを入れてください。キーはこの端末の中だけに保存され、同期やバックアップには入りません（もう一方の端末では、その端末でも入れてください）。キーが無くても、手帳の中から探す答えは出ます。</p><p className="hint">オフのときは、Amityちゃんのチャット・「今の制度を調べる」・博士タブのAI助言は、すべて手帳の中だけから答えます（xAIへは送りません）。オンでキーがあるときだけクレジットを使います。この端末だけに保存されます。</p></>}><label className="scope-toggle settings-switch"><Switch checked={grokEnabled} onCheckedChange={v=>{setGrokEnabled(v);setGrokEnabledState(v);toast.success(v?'AIを使う（クレジットを使う）をオンにしました':'AIをオフにしました（xAIへ送りません）');}}/><span>AIを使う（クレジットを使う）</span></label>
  <div id="settings-research" className="settings-tool"><h3><Search size={17}/>今の制度を調べる</h3><p className="hint">AIで短く調べます。「探す」タブで同じ言葉の項目も見られます。</p><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="policy-research-q">調べたいこと</Label><Input id="policy-research-q" value={researchQ} onChange={e=>setResearchQ(e.target.value)} placeholder="例：広島市 児童手当 申請、転入届の期限…" maxLength={200} autoComplete="off" disabled={researchBusy}/></div><div className="stack-actions"><Action secondary disabled={researchBusy||!researchQ.trim()} onClick={()=>void(async()=>{const q=researchQ.trim().slice(0,200);if(!q)return;setResearchBusy(true);setResearchOut('');try{if(!isGrokEnabled()){setResearchOut(GROK_AI_OFF_JA);toast.info('AIはオフです');}else{const r=await askGrokResearch(q);if(r.ok)setResearchOut(r.text);else if(r.error==='no-key'){markGrokLocalOnly('no-key');setResearchOut('AIのキーがまだ入っていません。下の「AIのキーと接続先」で xAI のキーを入れるか、まず「探す」タブで確認してね。');toast.info('キーがないため「探す」タブを開きます');setQuery(q);setTab('find');}else if(isGrokCreditsLimitResult(r.error)){markGrokLocalOnly('credits-limit');const local=answerDeskQuery(q,3,p);setResearchOut(`${GROK_CREDITS_LIMIT_JA}\n\n—— 手帳の中の案内 ——\n${local.text}`);toast.error(GROK_CREDITS_LIMIT_JA,{duration:8000});}else{setResearchOut(`調べられなかったよ。${grokErrorJa(r.error)} 公式案内もあわせて確認してね。`);toast.error(grokErrorJa(r.error));}}}finally{setResearchBusy(false);}})()}>{researchBusy?<><LoaderCircle className="spin" size={16}/>調べています…</>:<><Sparkles size={16}/>Amityに調べてもらう</>}</Action><Action secondary disabled={!researchQ.trim()} onClick={()=>{setQuery(researchQ.trim());setTab('find');}}>「探す」で見る<ArrowRight/></Action></div>{researchOut&&<div className="research-result" role="status"><p className="hint" style={{marginBottom:6}}>Amityの調べメモ（金額は勝手に作りません。結婚新生活支援は広島市では受けられません）</p><p style={{whiteSpace:'pre-wrap',fontSize:13,lineHeight:1.55,margin:0}}>{researchOut}</p></div>}<p className="hint" style={{marginTop:10}}>{!isGrokEnabled()?'AIはオフです（上のスイッチでオンにできます）。':loadGrokKey()?'AIで調べられます。':'AIのキーがなくても「探す」タブは使えます。'}</p></div>
  <Fold id="settings-grok" title="AIのキーと接続先" hint="xAI のキー・接続先・利用枠"><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="amity-grok-key">xAI のキー</Label><Input id="amity-grok-key" type="password" autoComplete="off" value={grokKey} onChange={e=>setGrokKey(e.target.value)} onBlur={()=>{saveGrokKey(grokKey);if(grokKey.trim()){clearGrokLocalOnly();}else{markGrokLocalOnly('no-key');}toast.success(grokKey.trim()?'AIのキーをこの端末に保存しました':'AIのキーを消しました');}} placeholder="xAI のキーを貼り付け" maxLength={200}/></div><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="amity-grok-base">接続先のURL（ふだんは変えません）</Label><Input id="amity-grok-base" value={grokBase} onChange={e=>setGrokBase(e.target.value)} onBlur={()=>{saveGrokBase(grokBase||DEFAULT_GROK_BASE);setGrokBase(loadGrokBase());}} placeholder={DEFAULT_GROK_BASE} maxLength={200} autoComplete="off"/><p className="hint" style={{marginTop:6}}>初期値 {DEFAULT_GROK_BASE}</p></div>

@@ -1,4 +1,4 @@
-import {bookSchema,emptyHousehold,emptyLineNotify,type Book,type Profile} from './model';
+import {bookSchema,emptyHousehold,emptyLineNotify,emptyReminders,type Book,type Profile} from './model';
 import {newerLineNotify} from './line-notify';
 import {mergeFutari} from './futari';
 import {mergeBoard} from './board';
@@ -58,6 +58,7 @@ export function mergeBooks(primary:Book,secondary:Book):Book{
     household:newerLineNotify(p.household,s.household,emptyHousehold),
     later:mergeLater(p.later,s.later),
     shopping:mergeShopping(p.shopping,s.shopping),
+    reminders:newerLineNotify(p.reminders,s.reminders,emptyReminders),
   };
   return validateCatalogBook(bookSchema.parse(merged));
 }
