@@ -31,7 +31,7 @@ const gh = new MockGitHub({ [T1]: 'kenji', [T2]: 'kenji' });
 
 const tasks = JSON.parse(readFileSync(new URL('../src/data/tasks.json', import.meta.url)));
 const taskIds = (Array.isArray(tasks) ? tasks : tasks.tasks).slice(0, 3).map((t) => t.id);
-const profile = { name1: 'けんじ', name2: 'みさき', ward: '中区', wdate: '2026-11-22', movedate: '', reported: '', birthdate: '', duedate: '', propertydate: '', carNameDate: '', carAddressDate: '', ceremony: 'no', employment1: 'company', employment2: 'company', work: 'dual', move: 'unknown', child: 'unknown', home: 'unknown', car: 'unknown', foreign: 'unknown', giver: '', letter: '' };
+const profile = { name1: '一人目', name2: '二人目', ward: '中区', wdate: '2026-11-22', movedate: '', reported: '', birthdate: '', duedate: '', propertydate: '', carNameDate: '', carAddressDate: '', ceremony: 'no', employment1: 'company', employment2: 'company', work: 'dual', move: 'unknown', child: 'unknown', home: 'unknown', car: 'unknown', foreign: 'unknown', giver: '', letter: '' };
 const rec = (status, note, at) => ({ status, steps: [], assignee: 'together', note, due: '', amount: null, moneyKind: 'none', confirmedAt: '', updatedAt: at, checkMale: false, checkFemale: false });
 const seedBook = {
   profile,
@@ -39,12 +39,12 @@ const seedBook = {
   memories: [{ id: 'mem1', date: '2026-09-01', title: '記念 MARK-MEM', text: 'はじめて', kind: 'memory', complete: false }],
   practices: {}, agreements: {},
   events: [{ id: 'ev1', title: '婚姻届 MARK-EV', date: '2026-11-22', note: '', who: 'both', updatedAt: '2026-09-22T00:00:00.000Z' }],
-  futari: { startedAt: '2026-09-28', modeOverride: 'auto', signal: '', settingsAt: '', days: { '2026-09-29': { cardId: 'D01', mode: 'answer', n1: { text: 'けんじ MARK-FUT1', guess: '', changed: '', result: '', at: '2026-09-29T01:00:00.000Z' }, n2: { text: 'みさき MARK-FUT2', guess: '', changed: '', result: '', at: '2026-09-29T02:00:00.000Z' } } }, meetings: {} },
+  futari: { startedAt: '2026-09-28', modeOverride: 'auto', signal: '', settingsAt: '', days: { '2026-09-29': { cardId: 'D01', mode: 'answer', n1: { text: '一人目 MARK-FUT1', guess: '', changed: '', result: '', at: '2026-09-29T01:00:00.000Z' }, n2: { text: '二人目 MARK-FUT2', guess: '', changed: '', result: '', at: '2026-09-29T02:00:00.000Z' } } }, meetings: {} },
   board: { notes: [{ id: 'bn1', who: 'n1', text: '牛乳 MARK-BOARD1', pinned: true, at: '2026-09-29T00:00:00.000Z', updatedAt: '2026-09-29T00:00:00.000Z', editedAt: '' }, { id: 'bn2', who: 'n2', text: '了解 MARK-BOARD2', pinned: false, at: '2026-09-29T03:00:00.000Z', updatedAt: '2026-09-29T03:00:00.000Z', editedAt: '' }], deleted: {} },
 };
 const savedAt = '2026-09-30T00:00:00.000Z';
 gh.seed({ id: LEGACY, owner: 'kenji', files: { 'futari-miraicho.json': JSON.stringify({ format: 'futari-miraicho', version: 1, revision: 7, book: seedBook, savedAt, updatedAt: savedAt }) } });
-const PLAIN_MARKS = /MARK-|けんじ|みさき|牛乳/;
+const PLAIN_MARKS = /MARK-|一人目|二人目|牛乳/;
 
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.mp4': 'video/mp4', '.woff2': 'font/woff2' };
 const browser = await chromium.launch();

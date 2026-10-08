@@ -235,7 +235,7 @@ npm run build                # prebuild → verify:seed
 
 ## 連絡・オーナー
 
-- ユーザー: Kenji Kadomoto（GitHub `kenji0618y`）
+- ユーザー: オーナー（GitHub `kenji0618y`）
 - タイムゾーン: Asia/Tokyo
 
 引き継いだら、要望を確認 → `npm run build` → `gh-pages` 更新 → スマホでハードリロード確認。
