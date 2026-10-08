@@ -8,8 +8,9 @@ let clock=2_000_000;
 const mem=new Map<string,string>();
 const storage={getItem:(k:string)=>mem.get(k)??null,setItem:(k:string,v:string)=>{mem.set(k,v);}};
 
-ok('loginOpenedText clips name',loginOpenedText('けんじ')==='けんじさんが手帳を開きました');
-ok('loginOpenedText empty → だれか',loginOpenedText('').startsWith('だれか'));
+ok('loginOpenedText is just the sentence',loginOpenedText()==='手帳を開きました');
+ok('loginOpenedText has no name (the relay adds 名前：)',!loginOpenedText().includes('さん'));
+ok('cooldown is once a day',LOGIN_COOLDOWN_MS===22*60*60*1000);
 
 {
   mem.clear();clock=2_000_000;

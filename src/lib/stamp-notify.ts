@@ -9,7 +9,7 @@
  * - 同じ項目は COOLDOWN_MS（30分）に1回まで（済→取り消し→済を繰り返しても1通）。端末ごと（localStorage）。
  * - スタンプの保存や絵の動きは待たせない（タイマーで後から送るだけ・例外を投げない）。
  */
-import {clipChars,LINE_NAME_MAX,LINE_TEXT_MAX} from './line-notify';
+import {LINE_TEXT_MAX} from './line-notify';
 
 export const STAMP_HOLD_MS=5000;
 export const STAMP_COOLDOWN_MS=30*60*1000;
@@ -18,10 +18,12 @@ export const STAMP_SENT_KEY='stamp-line-sent-v1';
 /** 済でなかったものが済になったときだけ true。 */
 export function becameDone(prev:string|undefined,next:string|undefined){return prev!=='done'&&next==='done';}
 
-/** LINE に送る本文（500文字まで）。名前は20文字まで。 */
-export function stampDoneText(name:string,title:string){
-  const n=clipChars((name||'').trim(),LINE_NAME_MAX);
-  const head=`${n}さんが『`,tail='』を済にしました';
+/**
+ * LINE に送る本文（500文字まで）。名前は中継先が「名前：」として前に付けるので、ここには入れない
+ * （入れると名前が二重に出る）。項目名に使える字数もその分増える。
+ */
+export function stampDoneText(title:string){
+  const head='『',tail='』を済にしました';
   const room=LINE_TEXT_MAX-Array.from(head+tail).length;
   const t=Array.from((title||'').trim());
   const shown=t.length>room?t.slice(0,room-1).join('')+'…':t.join('');
