@@ -820,7 +820,7 @@
     {
       "id": "T2",
       "title": "7つの原則の全体像",
-      "duration": "約1分",
+      "duration": "約37秒",
       "topic": "V1",
       "summary": "ゴットマン博士の「サウンド・リレーションシップ・ハウス」は、関係を一軒の家にたとえた全体の地図です。下の階から順に積み上がり、両側を信頼とコミットメントが支えます。",
       "tryToday": "今日は、家のどの階がいまのふたりにいちばん関係しそうか、一言だけ話し合う。",
@@ -841,12 +841,14 @@
       "sourceIds": [
         "G-SRH",
         "G-SRHBUILD"
-      ]
+      ],
+      "video": "futari/t2.mp4",
+      "poster": "futari/poster-t2.jpg"
     },
     {
       "id": "T3",
       "title": "関係の家を、どう建てるか",
-      "duration": "約1分",
+      "duration": "約33秒",
       "topic": "V1",
       "summary": "新しい関係でも、家づくりと同じく「土台→骨組み→中身→仕上げ」の順があります。最初に友情と礼儀が土台になります。",
       "tryToday": "今週、相手に共通の礼儀ややさしさを一つ意識して示す（例：おはようを顔を見て言う）。",
@@ -867,12 +869,14 @@
       "sourceIds": [
         "G-SRHBUILD",
         "G-SRH"
-      ]
+      ],
+      "video": "futari/t3.mp4",
+      "poster": "futari/poster-t3.jpg"
     },
     {
       "id": "T4",
       "title": "おとぎ話の関係観を外す",
-      "duration": "約1分",
+      "duration": "約35秒",
       "topic": "V1",
       "summary": "おとぎ話の物語は、関係への期待をゆがめやすい、と公式記事は書いています。「もう半分」や完璧な承認を相手に求める前提を外し、まず自分に属することから始める、という方向です。",
       "tryToday": "今日、「相手に完成してもらいたい自分」を一つ書き、代わりに自分でできる小さなことを一つ決める。",
@@ -893,12 +897,14 @@
       "sourceIds": [
         "G-FAIRYTALE",
         "G-LOVEMAP"
-      ]
+      ],
+      "video": "futari/t4.mp4",
+      "poster": "futari/poster-t4.jpg"
     },
     {
       "id": "T5",
       "title": "ポジティブな視点は家の何階？",
-      "duration": "約1分",
+      "duration": "約34秒",
       "topic": "V1",
       "summary": "ポジティブな視点は、同じ出来事を相手の善意寄りに受けとるフィルターです。関係の家では、対立の扱いより下の階にあり、日々の貯金の上に乗ります。",
       "tryToday": "今日起きた小さな行き違いを一つ選び、「わざとではないかも」と一度だけ考え直してみる。",
@@ -919,12 +925,14 @@
       "sourceIds": [
         "G-SRHPOS",
         "G-SRH"
-      ]
+      ],
+      "video": "futari/t5.mp4",
+      "poster": "futari/poster-t5.jpg"
     },
     {
       "id": "T11",
       "title": "ラブマップは、更新するもの",
-      "duration": "約1分",
+      "duration": "約25秒",
       "topic": "V2",
       "summary": "ラブマップは一度作って終わりではありません。好みも悩みも変わるので、定期的に聞き直すことが公式のラブマップ記事でも大切だとされています。",
       "tryToday": "相手に「最近、新しく好きになったこと（または悩んでいること）は？」と一つ聞く。",
@@ -945,12 +953,14 @@
       "sourceIds": [
         "G-LOVEMAP",
         "G-HOWLOVEMAP"
-      ]
+      ],
+      "video": "futari/t11.mp4",
+      "poster": "futari/poster-t11.jpg"
     },
     {
       "id": "T12",
       "title": "つながるための10の質問",
-      "duration": "約1分",
+      "duration": "約32秒",
       "topic": "V2",
       "summary": "事務的な会話ばかりになると、心の距離が開きやすくなります。意図的に、開かれた質問で対話の時間をとるのがよい、と記事は書いています。",
       "tryToday": "今夜（または休みの朝）20分、スマホを別の部屋に置き、下の質問から一つだけ聞き合う。",
@@ -971,12 +981,14 @@
       "sourceIds": [
         "G-10Q",
         "G-LOVEMAP"
-      ]
+      ],
+      "video": "futari/t12.mp4",
+      "poster": "futari/poster-t12.jpg"
     },
     {
       "id": "T15",
       "title": "心の距離を縮める質問",
-      "duration": "約1分",
+      "duration": "約27秒",
       "topic": "V2",
       "summary": "情緒的な親密さは、自分の内側を安心して見せ合えるつながりです。記事は、好奇心で一つずつ質問し、面接のように進めないよう注意しています。",
       "tryToday": "今週のあいだに、相手の内側が知りたい質問を一つだけ選び、自分の答えも先に話してから聞く。",
@@ -997,12 +1009,14 @@
       "sourceIds": [
         "G-75Q",
         "G-LOVEMAP"
-      ]
+      ],
+      "video": "futari/t15.mp4",
+      "poster": "futari/poster-t15.jpg"
     },
     {
       "id": "T16",
       "title": "ラブマップを、意識して作る",
-      "duration": "約1分",
+      "duration": "約22秒",
       "topic": "V2",
       "summary": "ラブマップは「なんとなく一緒にいる」だけでは厚くなりません。相手の世界について、質問して覚える時間をとります。",
       "tryToday": "今日、相手の週間の予定や、いまいちばん気になっていることを一つ聞いてメモする（見せなくてよい）。",
@@ -1023,12 +1037,14 @@
       "sourceIds": [
         "G-BUILDLOVEMAP",
         "G-LOVEMAP"
-      ]
+      ],
+      "video": "futari/t16.mp4",
+      "poster": "futari/poster-t16.jpg"
     },
     {
       "id": "T17",
       "title": "答えが広がる「4つの質問」",
-      "duration": "約1分",
+      "duration": "約29秒",
       "topic": "V2",
       "summary": "はい／いいえで終わる質問より、開かれた問いのほうが、相手の世界が見えます。公式記事は、過越の「4つの質問」から、夫婦が学べる好奇心の力を紹介しています。",
       "tryToday": "夕食のあと、「今年（または今週）いちばん心が動いたことは？」など、答えが一文で終わらない質問を一つする。",
@@ -1049,12 +1065,14 @@
       "sourceIds": [
         "G-4QPASS",
         "G-LOVEMAP"
-      ]
+      ],
+      "video": "futari/t17.mp4",
+      "poster": "futari/poster-t17.jpg"
     },
     {
       "id": "T18",
       "title": "友情にもどって、また恋をする",
-      "duration": "約1分",
+      "duration": "約26秒",
       "topic": "V2",
       "summary": "長く一緒にいると、相手を知っているつもりで聞き直さなくなりやすい、と公式記事は書いています。ラブマップを更新し、友情として聞き続けることが、再び近づく土台です。",
       "tryToday": "今日、恋人としてではなく友人として、相手の一日を5分だけ聞く（知っているつもりにしない）。",
@@ -1075,7 +1093,9 @@
       "sourceIds": [
         "G-FALLINLOVE",
         "G-LOVEMAP"
-      ]
+      ],
+      "video": "futari/t18.mp4",
+      "poster": "futari/poster-t18.jpg"
     },
     {
       "id": "T19",
