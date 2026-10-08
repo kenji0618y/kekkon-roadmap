@@ -38,6 +38,8 @@ import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
+import {WeekTogether} from './components/WeekTogether';
+import {buildWeek} from './lib/week-together';
 import {OnboardingSheet,isOnboardingDone,markOnboardingDone} from './components/OnboardingSheet';
 import {PwaUpdateBanner} from './components/PwaUpdateBanner';
 import {absoluteDeadlines,excludeItems,groups,homeContent,practices,relativeDeadlines,reviewedOn,sources,talks,taskById,tasks} from './data/catalog';
@@ -84,6 +86,9 @@ export default function FutureNotebook(){
  const pairExport=useMemo(():CalendarEvent[]=>(book.events||[]).filter(e=>e.date&&difference(e.date,today)>=0).map(e=>({id:`pair-${e.id}`,title:e.title,deadline:{date:e.date,label:e.title,basis:e.note||'ふたりのカレンダーに入れた予定です。',kind:'personal' as const,uncertain:false}})),[book.events,today]);
  const weddingExport=useMemo(():CalendarEvent[]=>validDate(p.wdate)&&difference(p.wdate,today)>=0?[{id:'wedding-day',title:'婚姻日（予定日）',deadline:{date:p.wdate,label:'婚姻日',basis:'プロフィールに入れた婚姻日・予定日です。',kind:'personal' as const,uncertain:false}}]:[],[p.wdate,today]);
  const calendarEvents=useMemo(():CalendarEvent[]=>[...weddingExport,...dated.map(({task,deadline})=>({id:task.id,title:task.title,deadline})),...absExport,...pairExport],[weddingExport,dated,absExport,pairExport]);
+ const week=useMemo(()=>buildWeek({today,tasks:scoped,profile:p,records:book.records,events:book.events||[],rules:absoluteDeadlines.filter(d=>deadlineVisible(d,p)&&validDate(d.date))}),[today,scoped,p,book.records,book.events]);
+ const [calFocus,setCalFocus]=useState<{date:string,n:number}|null>(null);
+ const openCalendarAt=(date:string)=>{setCalFocus(f=>({date,n:(f?.n||0)+1}));setTab('deadlines');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'})));};
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
   const da=nearestDeadline(a,p,book.records[a.id])?.date||'9999',db=nearestDeadline(b,p,book.records[b.id])?.date||'9999';
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
@@ -203,6 +208,7 @@ export default function FutureNotebook(){
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p><button onClick={()=>void data.refresh()}>再読み込み</button></div>}
  <TabsContent value="desk" className="tab-surface">
  <DeskBoard book={book} busy={data.busy} syncStatus={data.syncStatus} save={boardSave} onOpenSync={()=>{setTab('settings');revealAndScroll('settings-gist-sync');}} line={line} onOpenLine={()=>{setTab('settings');revealAndScroll('settings-line-notify');}}/>
+ <WeekTogether profile={p} range={week.range} items={week.items} shares={week.shares} records={book.records} busy={data.busy} onOpenTask={openTask} onOpenCalendar={openCalendarAt} onToggleCheck={(id,who)=>void togglePairCheck(id,who)}/>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'}));}}/>
  <HomeInsightPanels
   onOpenTask={openTask}
@@ -231,7 +237,7 @@ export default function FutureNotebook(){
   <a href="#deadline-block-schedule">項目の予定</a>
   <a href="#deadline-block-phases">時期</a>
  </nav>
- <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent}/>
+ <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus}/>
  <section id="deadline-block-hero" className="deadline-block" aria-label="覚えておきたい数字">
   <details className="deadline-secondary-fold">
    <summary>
