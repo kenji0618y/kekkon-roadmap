@@ -1,10 +1,10 @@
 /**
  * カレンダータブの「Google（ファミリー）」表示（2026-10-09〜・Kenji「カレンダーはGoogleのファミリーカレンダーを埋め込んでほしい」）。
  * - カレンダーの ID は book.googleCal.id（ふたりで共通・同期では新しく変えた方）。初期値はファミリー カレンダー。秘密ではない（見られるのは共有された Google アカウントだけ）。
- * - 「Google（ファミリー）」/「アプリの予定」の切り替えは端末ごと（localStorage）。相手の画面は変えない。
+ * - 2026-10-09 夕：カレンダータブは Google の埋め込みだけにした（切り替え・見出し・説明文・チップ・書き出しは Kenji の指定で削除）。
  * - 埋め込みの URL は Google の「カレンダーの統合 → 埋め込みコード → カスタマイズ」が作るものと同じパラメータだけを使う。
  *   カレンダーのタイムゾーンは UTC なので ctz=Asia/Tokyo を必ず付ける。
- * - アプリのカレンダー（お知らせ・鈴の印・ふたり会議・.ics のもと）は消さない。こちらは表示を足すだけ。
+ * - アプリのカレンダー（お知らせ・鈴の印・ふたり会議・.ics のもと）は消さない。設定 →「通知（LINE）」の「アプリの予定」にある。
  */
 export const FAMILY_CAL_ID='family06139282484236685542@group.calendar.google.com';
 export const CAL_ID_MAX=200;
@@ -21,13 +21,4 @@ export function validCalId(id:string){
 export function googleEmbedUrl(id:string){
   const q=new URLSearchParams({src:id.trim(),ctz:'Asia/Tokyo',mode:'MONTH',showTitle:'0',showPrint:'0',showTabs:'1',showCalendars:'0',hl:'ja'});
   return `${GOOGLE_CAL_ORIGIN}/calendar/embed?${q.toString()}`;
-}
-
-export type CalView='google'|'app';
-export const CAL_VIEW_KEY='amity-cal-view-v1';
-export function readCalView():CalView{
-  try{return localStorage.getItem(CAL_VIEW_KEY)==='app'?'app':'google';}catch{return 'google';}
-}
-export function writeCalView(v:CalView){
-  try{localStorage.setItem(CAL_VIEW_KEY,v);}catch{/* 保存できなくても表示は切りかわる */}
 }

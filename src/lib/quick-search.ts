@@ -67,7 +67,10 @@ function bestScore(fields: string[], q: string): number {
 export const TAB_HITS: Omit<QuickSearchHit, 'score'>[] = [
   { id: 'tab-desk', kind: 'tab', title: 'デスク', hint: 'いまの進みぐあい', tab: 'desk' },
   { id: 'tab-journey', kind: 'tab', title: 'ロードマップ', hint: 'スタンプ・章ごとの項目', tab: 'journey' },
-  { id: 'tab-deadlines', kind: 'tab', title: 'カレンダー', hint: 'カレンダー・制度締切・ふたりの予定', tab: 'deadlines' },
+  { id: 'tab-deadlines', kind: 'tab', title: 'カレンダー', hint: 'Googleのファミリー カレンダー', tab: 'deadlines' },
+  { id: 'blk-institutional', kind: 'tab', title: '制度の期限', hint: '届出もふくむ全部（お金タブ）', tab: 'money', scrollId: 'deadline-block-institutional' },
+  { id: 'blk-schedule', kind: 'tab', title: '項目の予定', hint: '日付のある項目（デスク）', tab: 'desk', scrollId: 'deadline-block-schedule' },
+  { id: 'blk-phases', kind: 'tab', title: '時期の区切り', hint: 'ロードマップのいちばん下', tab: 'journey', scrollId: 'deadline-block-phases' },
   { id: 'tab-pair', kind: 'tab', title: '博士', hint: '今日の一問・レッスン動画・練習帳', tab: 'pair' },
   { id: 'tab-find', kind: 'tab', title: '探す', hint: '項目の一覧検索', tab: 'find' },
   { id: 'tab-settings', kind: 'tab', title: '設定', hint: 'プロフィール・バックアップ', tab: 'settings' },
@@ -80,7 +83,10 @@ export const TAB_HITS: Omit<QuickSearchHit, 'score'>[] = [
 const TAB_ALIASES: Record<string, string[]> = {
   'tab-desk': ['デスク', '机', 'ホーム', 'home', 'desk'],
   'tab-journey': ['マップ', 'ロードマップ', 'スタンプ', '旅', 'journey', '地図'],
-  'tab-deadlines': ['期限', '時期', '締切', 'カレンダー', 'deadlines', '予定'],
+  'tab-deadlines': ['カレンダー', 'google', 'グーグル', 'ファミリー'],
+  'blk-institutional': ['期限', '締切', 'deadlines', '届出'],
+  'blk-schedule': ['予定', '日付', '手続きの日付'],
+  'blk-phases': ['時期', '区切り', 'フェーズ'],
   'tab-pair': ['博士', 'ふたり', '練習帳', '会話', '合意', 'pair'],
   'tab-find': ['探す', '検索', '制度', 'find', 'さがす'],
   'tab-settings': ['設定', 'プロフィール', 'settings', 'せってい'],
@@ -91,6 +97,7 @@ const TAB_ALIASES: Record<string, string[]> = {
 };
 
 export const SETTING_HITS: Omit<QuickSearchHit, 'score'>[] = [
+  { id: 'set-appcal', kind: 'setting', title: 'アプリの予定', hint: 'ふたりの予定・会議・カレンダーに書き出す（設定）', tab: 'settings', scrollId: 'settings-app-calendar' },
   { id: 'set-profile', kind: 'setting', title: 'プロフィール', hint: '呼び名・婚姻日・区', tab: 'settings', scrollId: 'settings-profile' },
   { id: 'set-gist', kind: 'setting', title: '端末どうしの自動同期', hint: '同期', tab: 'settings', scrollId: 'settings-gist-sync' },
   { id: 'set-line', kind: 'setting', title: 'LINE通知（掲示板）', hint: '通知（LINE）', tab: 'settings', scrollId: 'settings-line-notify' },
@@ -100,6 +107,7 @@ export const SETTING_HITS: Omit<QuickSearchHit, 'score'>[] = [
 ];
 
 const SETTING_ALIASES: Record<string, string[]> = {
+  'set-appcal': ['予定', '書き出し', 'ics', 'ふたり会議', 'アプリの予定'],
   'set-profile': ['プロフィール', '名前', '婚姻日', '区', 'ふたりに合わせ'],
   'set-gist': ['gist', '同期', 'pat', 'github'],
   'set-line': ['line', 'ライン', '通知', 'お知らせ', '合言葉'],
@@ -111,15 +119,15 @@ const SETTING_ALIASES: Record<string, string[]> = {
 export const EMPTY_SUGGESTIONS: QuickSearchHit[] = [
   { id: 'sug-desk', kind: 'tab', title: 'デスク', hint: 'いまの画面', tab: 'desk', score: 1 },
   { id: 'sug-map', kind: 'tab', title: 'ロードマップ', hint: 'スタンプ・章ごとの項目', tab: 'journey', score: 1 },
-  { id: 'sug-dead', kind: 'tab', title: 'カレンダー', hint: '制度締切・ふたりの予定', tab: 'deadlines', score: 1 },
+  { id: 'sug-dead', kind: 'tab', title: 'カレンダー', hint: 'Googleのファミリー カレンダー', tab: 'deadlines', score: 1 },
   { id: 'sug-find', kind: 'tab', title: '探す', hint: '項目の一覧検索', tab: 'find', score: 1 },
   { id: 'sug-set', kind: 'tab', title: '設定', hint: 'プロフィール・バックアップ', tab: 'settings', score: 1 },
   {
     id: 'sug-inst',
     kind: 'deadline',
     title: '今週の期限',
-    hint: '制度・カレンダー締切へ',
-    tab: 'deadlines',
+    hint: '制度の期限（お金タブ）へ',
+    tab: 'money',
     scrollId: 'institutional-deadlines',
     score: 1,
   },
@@ -211,7 +219,7 @@ export function buildQuickSearchHits(input: QuickSearchInput): QuickSearchHit[] 
         kind: 'deadline',
         title: d.title,
         hint: `${d.date}${d.note ? ` · ${d.note}` : ''}`,
-        tab: 'deadlines',
+        tab: 'money',
         scrollId: 'institutional-deadlines',
         score: s,
       });
@@ -226,7 +234,7 @@ export function buildQuickSearchHits(input: QuickSearchInput): QuickSearchHit[] 
         kind: 'deadline',
         title: d.title,
         hint: `目安：${d.offset}`,
-        tab: 'deadlines',
+        tab: 'money',
         scrollId: 'institutional-deadlines',
         score: s - 5,
       });
