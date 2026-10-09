@@ -257,7 +257,7 @@ check('futari.lesson_scripts', lessonArr.length, 198);
 check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 624);
 check('futari.video_topics', (flessons.topics || []).length, 25);
 const videos = lessonArr.filter((l) => l.video);
-check('futari.lesson_videos', videos.length, 25);
+check('futari.lesson_videos', videos.length, 35);
 const calDays = (flessons.calendar && flessons.calendar.days) || [];
 check('futari.calendar_days', calDays.length, 365);
 for (const d of calDays) {
