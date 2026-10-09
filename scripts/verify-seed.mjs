@@ -253,13 +253,13 @@ for (const d of DAYS) { const n = cardsArr.filter((c) => (c.days || []).includes
   if (new Set(ids).size !== ids.length) fail.push('futari.cards: id が重複しています');
   if (new Set(qs).size !== qs.length) fail.push('futari.cards: 同じ問いが重複しています'); }
 const lessonArr = flessons.lessons || [];
-check('futari.lesson_scripts', lessonArr.length, 76);
-check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 258);
+check('futari.lesson_scripts', lessonArr.length, 198);
+check('futari.lesson_lines', lessonArr.reduce((n, l) => n + (l.lines || []).length, 0), 624);
 check('futari.video_topics', (flessons.topics || []).length, 25);
 const videos = lessonArr.filter((l) => l.video);
-check('futari.lesson_videos', videos.length, 25);
+check('futari.lesson_videos', videos.length, 35);
 const calDays = (flessons.calendar && flessons.calendar.days) || [];
-check('futari.calendar_days', calDays.length, 91);
+check('futari.calendar_days', calDays.length, 365);
 for (const d of calDays) {
   if (!['lesson', 'practice', 'review'].includes(d.kind)) fail.push(`futari.calendar: day ${d.day} の kind が不正です`);
   if (d.kind === 'lesson') {
