@@ -266,7 +266,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
         <a href="#pair-stamp-agreements">合意</a>
       </nav>
       <details className="paper-card pair-top-fold">
-        <summary><strong>使い方・安全・いまの選び</strong><span className="hint">スタンプから始めて大丈夫</span></summary>
+        <summary><strong>使い方・安全・いまの選び</strong></summary>
 <section className="paper-card pair-summary" aria-label="選んだもののまとめ">
         <p className="hint" style={{margin: 0}}>
           いま選んでいる行動は <strong>{chosen.length}</strong> 個、合意を書いた話題は <strong>{agreedCount}</strong> 件です。点数ではありません。
@@ -323,7 +323,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
         <div>
           <p className="eyebrow">スタンプで選ぶ</p>
           <h2>試してみる行動</h2>
-          <p className="hint">テーマごとにスタンプ台。気になるマスを押すと下に詳しく出ます（全{practices.length}項目）。</p>
+          
         </div>
       </div>
 
@@ -430,7 +430,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
           <div>
             <p className="eyebrow">話すきっかけ</p>
             <h2>制度の話の糸口</h2>
-            <p className="hint">届出・お金・暮らしの前提を、そのまま読んでもよい文。閉じておいて大丈夫です。</p>
+            
           </div>
         </div>
         <TalkStartersPanel />
@@ -440,7 +440,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
         <div>
           <p className="eyebrow">言い方の下書き</p>
           <h2>言葉にしにくい場面</h2>
-          <p className="hint">{talks.length}場面。スタンプを押すと下書きが出ます。</p>
+          
         </div>
       </div>
       <TalkStampBoard
@@ -454,7 +454,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
         <div>
           <p className="eyebrow">二人の合意</p>
           <h2>話題ごとに書く</h2>
-          <p className="hint">{agreements.length}の話題。スタンプから開いて、合意できたところだけ残します。</p>
+          
         </div>
       </div>
       <AgreeStampBoard
@@ -474,7 +474,7 @@ export function PairWorkbook({book, busy, onSavePractice, onSaveAgreement, jump,
       <details className="paper-card pair-refs-card">
         <summary>
           <strong><BookOpen size={16} aria-hidden /> 根拠の読み方</strong>
-          <span className="hint">閉じたまま使えます</span>
+          
         </summary>
         <p>
           研究で分かったことと、専門家がすすめていることは別のものです。ここでは分けて書いてあります。
@@ -599,7 +599,7 @@ function PracticeDetail({
           onChange={(e) => changeNote(e.target.value)}
           placeholder="試したこと・合わなかったことなど"
         />
-        <p className="hint">メモは自動で保存されます。「続いている」を選ぶと詳細を閉じます。</p>
+        
       </div>
       {noteDirty && (
         <div className="pair-agree-actions">

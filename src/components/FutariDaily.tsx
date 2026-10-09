@@ -68,7 +68,7 @@ export function FutariDaily({book,busy,save,active=true}:{book:Book,busy:boolean
         <div className="fu-hello-text">
           <p className="eyebrow">ふたりの時間 ・ 1日1分</p>
           <h1>{p.name1&&p.name2?`${p.name1}さんと${p.name2}さんの、今日の一問。`:'ふたりの、今日の一問。'}</h1>
-          <p>ゴットマン博士の研究をもとにした、ふたりのための小さな習慣です。</p>
+          
         </div>
       </div>
       <WeekStrip today={today} book={book}/>
@@ -146,7 +146,7 @@ function DailyCard({today,book,me,names,busy,save,onChooseMe,onMeeting}:{today:s
       <div className="fu-sec">
         <p className="fu-step-h">この端末で答えるのはどちら？</p>
         <div className="fu-choose">{(['n1','n2'] as Who[]).map(v=><button key={v} type="button" className="fu-btn ghost" onClick={()=>onChooseMe(v)}>{names[v]}</button>)}</div>
-        <p className="fu-note">あとから切り替えられます。答えは、ふたりの手帳（この端末）に残ります。自動同期を使っていれば、相手の端末にも届きます。</p>
+        <p className="fu-note">あとから切り替えられます。</p>
       </div>
     </article>;
   }
@@ -258,7 +258,7 @@ function GuessReveal({me,names,mine,theirs,busy,onResult,onEdit}:{me:Who,names:R
       <div className="fu-box"><span className="fu-pl">あなたの答え</span>{mine.text}</div>
     </div>
     {theirs!.result&&<p className="fu-note">{names[pt]}さん：{theirs!.result==='hit'?'当たった':'新しく知った'}</p>}
-    <p className="fu-note">点数やランキングはつけません</p>
+    
     <Sources ids={['G-LMPDF','G-LOVEMAP']}/>
   </div>;
 }
@@ -310,7 +310,7 @@ function TodayLessonBlock({today,startedAt,onList,onMeeting}:{today:string,start
       {slot.revisit&&<p className="fu-revisit" role="status">もう一度：以前の実践の日と同じ進め方です。</p>}
       <p className="eyebrow">実践の日</p>
       <h3>今週の「{slot.concept||'テーマ'}」を、一つやってみる</h3>
-      <p>月〜金のレッスンから一つ選び、書いてある「今日やってみること」だけ試してください。うまくいかなくても、やったこと自体が前進です。</p>
+      <p>今週のレッスンから一つ、「今日やってみること」を試す。</p>
       <WeekLessonList items={slot.weekLessons.filter(w=>w.kind==='lesson')} openId={openId} setOpenId={setOpenId}/>
     </div>}
     {slot.kind==='review'&&<div className="fu-lesson">
@@ -324,7 +324,7 @@ function TodayLessonBlock({today,startedAt,onList,onMeeting}:{today:string,start
     {slot.kind==='empty'&&<div className="fu-lesson">
       <p className="eyebrow">レッスン</p>
       <h3>この日の枠を読み込めませんでした</h3>
-      <p>上の「今日の一問」を二人でやり、動画一覧から気になるテーマを見てください。ふだんは1〜365日すべてにレッスンが割り当てられます。</p>
+      <p>この日のレッスンを読み込めませんでした。</p>
       <button type="button" className="fu-text-btn" onClick={onList}>動画一覧を見る<ChevronRight size={14}/></button>
     </div>}
     {slot.kind==='lesson'&&<div className="fu-week-lessons">
@@ -422,7 +422,7 @@ function MeetingView({today,book,busy,save}:{today:string,book:Book,busy:boolean
       <label className="fu-lbl" htmlFor="fu-meeting-note">今週の会議のメモ（{Number(sunday.slice(5,7))}月{Number(sunday.slice(8))}日の日曜）</label>
       <textarea id="fu-meeting-note" className="fu-input lg" rows={3} maxLength={2000} value={note} onChange={e=>setNote(e.target.value)} placeholder="決めたこと・来週してほしいこと"/>
       <button type="button" className="fu-btn ghost" style={{marginTop:8}} disabled={busy||note===saved} onClick={()=>void save.meeting(sunday,note)}>メモを残す</button>
-      <p className="fu-note">メモはふたりの手帳に残ります。</p>
+      
       {past.length>0&&<div className="fu-past"><p className="fu-step-h">前の会議のメモ</p>{past.map(([d,v])=><div key={d} className="fu-prev"><span className="fu-pl">{Number(d.slice(5,7))}月{Number(d.slice(8))}日</span>{v.note}</div>)}</div>}
     </div></article>
   </section>;
@@ -433,7 +433,7 @@ function VideosView(){
   return <section className="fu-page">
     <p className="eyebrow">レッスン動画 ・ 約30〜60秒ずつ</p>
     <h1 className="fu-title">動画一覧</h1>
-    <p className="fu-lead">ゴットマン博士の本と gottman.com にもとづくテーマです。番号は動画の中の「ふたりのレッスン」の番号と同じです。</p>
+    <p className="fu-lead">ゴットマン博士の本と gottman.com にもとづくテーマです。</p>
     <article className="fu-card">
       <div className="fu-card-h"><span><i className="fu-dot sage"/>テーマ一覧</span><small>「本」＝『The Seven Principles…』改訂版</small></div>
       <ul className="fu-vlist">
@@ -465,7 +465,7 @@ function LongView({today,book,busy,save}:{today:string,book:Book,busy:boolean,sa
   return <section className="fu-page">
     <p className="eyebrow">長く使う仕組み</p>
     <h1 className="fu-title">毎日1分を、何年も<br/>続けられる形に。</h1>
-    <p className="fu-lead">曜日ごとにテーマを決めて、年ごとに答え方を変えます。同じ問いにもう一度答えることにも意味があります（ラブマップは「定期的に更新する」もの）。</p>
+    <p className="fu-lead">曜日ごとのテーマ、年ごとの答え方。</p>
     <article className="fu-card"><div className="fu-card-h"><span><i className="fu-dot"/>曜日ごとのテーマ</span><small>毎週おなじ流れ</small></div><div className="fu-sec">
       <ul className="fu-wk">{weekThemes.map(t=><li key={t.day} className={`${t.day==='sun'?'sun':''}${t.day===key?' now':''}`}><span className="d">{t.label}</span><div>{t.theme}<small>{t.sub}</small></div></li>)}</ul>
       <Teach ids={[...new Set(weekThemes.flatMap(t=>t.sourceIds))]}/>
@@ -480,7 +480,7 @@ function LongView({today,book,busy,save}:{today:string,book:Book,busy:boolean,sa
         <option value="compare">いつも：{modeLabel.compare}</option>
         <option value="guess">いつも：{modeLabel.guess}</option>
       </select>
-      <p className="fu-note" style={{textAlign:'left'}}>すでに答えた日は、そのときの答え方のまま残ります。</p>
+      
     </div></article>
   </section>;
 }

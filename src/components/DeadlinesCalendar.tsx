@@ -408,7 +408,7 @@ export function DeadlinesCalendar({
         </div>
 
         {!daySeeds.length && !dayCustoms.length && !dayExtras.length && !draft && (
-          <p className="hint cal-day-empty">この日の予定はまだありません。上のボタンから残せます。</p>
+          <p className="hint cal-day-empty">この日の予定はありません。</p>
         )}
 
         {daySeeds.length > 0 && (

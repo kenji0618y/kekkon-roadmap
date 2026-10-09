@@ -109,7 +109,7 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync,line,onOpenLine}
       <img className="desk-board-mascot" src="./amity-shark.png" alt="" width={56} height={56} decoding="async"/>
       <div className="desk-board-title">
         <h3><MessageSquareHeart className="desk-board-icon" size={22} aria-hidden/>ふたりの掲示板{unread.length>0&&<span className="desk-board-unread" aria-label={`新着 ${unread.length}件`}><i aria-hidden/>新着 {unread.length}</span>}</h3>
-        <p className="hint">買い物・連絡・ひとこと。書いたメモは相手の画面にも出ます。</p>
+        
       </div>
     </div>
 
@@ -117,7 +117,7 @@ export function DeskBoard({book,busy,syncStatus,save,onOpenSync,line,onOpenLine}
       <div className="desk-board-who">
         <p>この端末で書くのはどちら？</p>
         <div className="desk-board-who-btns">{(['n1','n2'] as Who[]).map(v=><button key={v} type="button" className="quiet-button" onClick={()=>writeMe(v)}>{names[v]}</button>)}</div>
-        <small>ふたりタブの「今日の一問」と同じ設定です。あとから切り替えられます。</small>
+        
       </div>
     ):(
       <form className="desk-board-compose" onSubmit={e=>{e.preventDefault();void add();}}>

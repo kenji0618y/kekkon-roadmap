@@ -360,7 +360,7 @@ export function StampIllustBoard({
 
       {!showDone && foldOpen && foldedCards.length > 0 ? (
         <div className="stamp-folded-tray" aria-label="完了したまとまり">
-          <p className="hint">すべて完了したイラスト台です。スタンプを押すと詳細を開けます。</p>
+          
           <div className="stamp-rally" role="list">
             {foldedCards.map((m) => renderCard(m, true))}
           </div>

@@ -23,7 +23,7 @@ export function HouseholdSplitCard({value,busy,onSave}:{value:HouseholdSplit,bus
   return <section id="pair-household" className="paper-card household-card" aria-label="家計の分け方">
     <p className="eyebrow">ふたりの合意</p>
     <h2><Wallet size={19} aria-hidden/>家計の分け方</h2>
-    <p className="household-lead">共働きの家計の分け方は5つの型があります。ふたりに合うものを1つ選んで、合意として残します。</p>
+    <p className="household-lead">5つの型から1つ選びます。</p>
     {chosen&&<p className="household-now" role="status">いまの合意：{chosen.name}{value.review&&validDate(value.review)?` · 見直す日 ${shortDate(value.review)}`:''}</p>}
     <div className="household-list" role="radiogroup" aria-label="家計の分け方の型">
       {householdPatterns.map((p,i)=><button key={p.id} type="button" role="radio" aria-checked={pattern===p.id} className={`household-option${pattern===p.id?' is-on':''}`} disabled={busy} onClick={()=>setPattern(pattern===p.id?'':p.id)}>

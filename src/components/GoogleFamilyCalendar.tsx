@@ -30,7 +30,7 @@ export function GoogleFamilyCalendar({cal,busy,onSaveId}:{cal:GoogleCal,busy?:bo
       {editing&&<div className="gcal-edit">
         <div className="field"><Label htmlFor="gcal-id">GoogleカレンダーのID</Label>
           <Input id="gcal-id" value={draft} maxLength={CAL_ID_MAX} inputMode="email" autoCapitalize="off" autoCorrect="off" spellCheck={false} onChange={e=>setDraft(e.target.value)} disabled={busy}/></div>
-        <p className="hint">パソコンの Googleカレンダーで、設定 → カレンダーの名前 →「カレンダーの統合」にある「カレンダー ID」です。ふたりの端末で同じになります。</p>
+        <p className="hint">パソコンの Googleカレンダーで、設定 → カレンダーの名前 →「カレンダーの統合」にある「カレンダー ID」です。</p>
         {!draftOk&&draft.trim()!==''&&<p className="gcal-error" role="alert">「…@group.calendar.google.com」のような形のIDを入れてください。</p>}
         <div className="gcal-edit-actions">
           <SaveAction busy={!!busy} disabled={!draftOk||draft.trim()===id} onClick={()=>void save(draft)}>保存する</SaveAction>

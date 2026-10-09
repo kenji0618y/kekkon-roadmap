@@ -276,7 +276,7 @@ export default function FutureNotebook(){
  <TabsContent value="journey" className="tab-surface">
  <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">暮らしの道のり</p><h2>スタンプで進める、暮らしロードマップ</h2></div></div>
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
- <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.label}</span><h3>{activeChapter.description}</h3></div><span className="hint">絵の縁のスタンプを押すと、その項目が開きます。</span></div>
+ <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.label}</span><h3>{activeChapter.description}</h3></div></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:!chapterGroups.length?<EmptyState symbol={<Map/>} title="この章に、今の二人向けのスタンプはありません。" action={<Action secondary onClick={openProfile}>設定を開く</Action>}>式の有無や働き方を変えると、表示されるマスが変わります。</EmptyState>:<>
  <StampIllustBoard groups={chapterGroups} tasksFor={g=>scoped.filter(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na')} recordStatus={id=>book.records[id]?.status} profile={p} activeId={activeGroup?.id} activeTaskId={taskId||undefined} onSelectGroup={setGroupId} onPressStamp={openTask} recordPair={id=>pairChecks(book.records[id])} onTogglePair={(id,who)=>void togglePairCheck(id,who)} />
 
@@ -290,7 +290,7 @@ export default function FutureNotebook(){
  <WeekTogether profile={p} range={week.range} items={week.items} shares={week.shares} records={book.records} busy={data.busy} onToggleCheck={(id,who)=>void togglePairCheck(id,who)}/>
  </TabsContent>
  <TabsContent value="money" className="tab-surface money-tab">
- <SectionTitle eyebrow="お金" title="お金のことを、ひとつに。" sub="家計の分け方、記録した金額、お金の締切。ロードマップのスタンプはここへ移していません。"/>
+ <SectionTitle eyebrow="お金" title="お金のことを、ひとつに。"/>
  <nav className="deadlines-mini-nav" aria-label="お金タブ内の節">
   <a href="#pair-household">家計の分け方</a>
   <a href="#money-shopping">買い物リスト</a>
@@ -302,7 +302,7 @@ export default function FutureNotebook(){
  <HouseholdSplitCard value={book.household||emptyHousehold} busy={data.busy} onSave={async patch=>!!(await data.mutate({action:'household',patch},'家計の分け方を、ふたりの合意として残しました'))}/>
  <section id="money-shopping" className="paper-card money-block" aria-label="新生活の買い物リスト">
   <h2 className="deadline-block-label">新生活の買い物リスト</h2>
-  <p className="hint">ロードマップの「新生活」にあります。こちらへは移していません。</p>
+  
   <button type="button" className="text-button" onClick={openShopping}>ロードマップの新生活で開く</button>
  </section>
  <MoneySummary book={book}/>
@@ -313,24 +313,23 @@ export default function FutureNotebook(){
   <Action secondary onClick={()=>openBlock('archive','deadline-block-phases')}>時期の区切り</Action>
  </div>
  <details id="money-faq" className="paper-card money-block">
-  <summary><strong>給付・税・資産の項目（{moneyTasks.length}）</strong><span className="hint">質問は項目を開くと読めます。ロードマップのスタンプはそのままです。</span></summary>
+  <summary><strong>給付・税・資産の項目（{moneyTasks.length}）</strong></summary>
   <div className="results-list">{moneyTasks.map(t=>renderTask(t,true))}</div>
  </details>
  <details id="money-contracts" className="paper-card money-block">
-  <summary><strong>契約・固定費の項目（{moneyContracts.length}）</strong><span className="hint">保険・光熱・カードなど。質問は項目を開くと読めます。</span></summary>
+  <summary><strong>契約・固定費の項目（{moneyContracts.length}）</strong><span className="hint">保険・光熱・カードなど</span></summary>
   <div className="results-list">{moneyContracts.map(t=>renderTask(t,true))}</div>
  </details>
  </TabsContent>
  <TabsContent value="pair" forceMount className="tab-surface pair-tab data-[state=inactive]:hidden">
   <FutariDaily book={book} busy={data.busy} save={futariSave} active={tab==='pair'}/>
-  <p className="money-moved paper-card">家計の分け方は<button type="button" className="desk-linkish" onClick={()=>openMoney('pair-household')}>お金</button>タブへ移動しました。</p>
   <details className="paper-card pair-workbook-fold" id="pair-workbook" open={pairBookOpen} onToggle={e=>setPairBookOpen((e.currentTarget as HTMLDetailsElement).open)}>
    <summary><strong>ふたりの練習帳（行動・会話・合意）</strong><span className="hint">これまでのスタンプ台と、書きためた合意</span></summary>
-   <SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>
+   <SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。"/>
    <PairWorkbook book={book} busy={data.busy} onSavePractice={savePractice} onSaveAgreement={saveAgreement} jump={pairJump} onJumpHandled={()=>setPairJump(null)}/>
   </details>
  </TabsContent>
- <TabsContent value="find" className="tab-surface find-tab"><SectionTitle eyebrow="探す" title="二人に必要な制度を探す。" sub={`手続き、税、勤務先の制度、暮らしの工夫。全部で${tasks.length}項目を収録しています。デスクとロードマップに出る数（${actionable.length}項目）は、そのうち、いまの二人の候補（スキップしたものを除く）です。`}/>
+ <TabsContent value="find" className="tab-surface find-tab"><SectionTitle eyebrow="探す" title="二人に必要な制度を探す。" sub={`全${tasks.length}項目`}/>
  <div className="search-panel find-search-sticky"><label className="search-box"><Search size={21}/><Input aria-label="制度を検索" value={query} onChange={e=>setQuery(e.target.value)} placeholder="例：結婚祝金、引っ越し、NISA、育休…"/>{query&&<button className="icon-button" onClick={()=>setQuery('')} aria-label="検索をクリア"><X size={17}/></button>}</label><div className="search-filters find-filters-compact"><Choice label="暮らしの章" value={category} onChange={setCategory} options={{all:'すべての章',...Object.fromEntries(chapters.map(c=>[c.id,c.label]))}}/><Choice label="記録の状況" value={statusFilter} onChange={setStatusFilter} options={{all:'すべての状況',todo:'これから',learned:'確認した',preparing:'準備中',applied:'申請した',waiting:'結果待ち',done:'完了',na:'スキップ'}}/><label className="scope-toggle"><Switch checked={scopeOnly} onCheckedChange={setScopeOnly}/><span>いまの二人の候補だけ</span></label></div></div>
   <nav className="find-pin-nav" aria-label="探すタブ内の近道">
   <a href="#find-where-to-look" onClick={(e)=>{e.preventDefault();const el=document.getElementById('find-where-to-look');if(el instanceof HTMLDetailsElement){el.open=true;}el?.scrollIntoView({behavior:'smooth',block:'start'});}}>どこを見るか</a>
@@ -344,7 +343,7 @@ export default function FutureNotebook(){
   <DeskRoleLabels/>
   <FilingWeekPath onOpenTask={openTask}/>
  </details>
- <div className="results-label"><strong>{filtered.length}件</strong><span>章ごとにまとめています。表示は対象の確定ではありません。</span></div>
+ <div className="results-label"><strong>{filtered.length}件</strong><span>表示は対象の確定ではありません。</span></div>
  {filtered.length?<Accordion type="single" collapsible value={findOpenChapter} onValueChange={v=>setFindOpenChapter(v||'')} className="find-by-chapter">
   {(category==='all'?chapters:chapters.filter(c=>c.id===category)).map(c=>{
    const rows=filtered.filter(t=>t.chapter===c.id);
@@ -358,7 +357,7 @@ export default function FutureNotebook(){
  <details id="find-exclude-lies" className="find-exclude-outer paper-card">
   <summary>
    <strong>思い込み・もらえない制度（{homeContent.lies_not_to_buy.length}+{excludeItems.length}）</strong>
-   <span className="hint">検索のあとで読む用 · 誤解 {homeContent.lies_not_to_buy.length} · 対象外 {excludeItems.length}</span>
+   <span className="hint">誤解 {homeContent.lies_not_to_buy.length} · 対象外 {excludeItems.length}</span>
   </summary>
   <ExcludeAndLiesPanel/>
  </details>
@@ -366,19 +365,19 @@ export default function FutureNotebook(){
  <TabsContent value="archive" className="tab-surface archive-tab">
  <h1 className="sr-only">アーカイブ</h1>
  <details id="deadline-block-institutional" className="paper-card moved-fold">
-  <summary><strong>制度の期限</strong><span className="hint">届出の期限もふくむ全部</span></summary>
+  <summary><strong>制度の期限</strong></summary>
   <InstitutionalDeadlines child={p.child} home={p.home}/>
   <p className="hint moved-note">日付は原則の計算です。出生届の休日は2026・2027年の祝日で補正しています。<SourceLink source={sources.holidays} compact/></p>
  </details>
  <details id="deadline-block-schedule" className="paper-card moved-fold">
   <summary><strong>項目の予定</strong><span className="hint">日付 {dated.length}件 · 14日以内 {soon.length}件</span></summary>
   <div className="schedule-layout schedule-layout-solo"><section className="schedule-main"><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>手続きの日付を入れる</button></div>
- {dated.length?<div className="timeline timeline-dense">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={validDate(p.wdate)?undefined:<Action secondary onClick={openProfile}>婚姻日を入れる</Action>}>日付が分かれば、ここに期限が出ます。</EmptyState>}
- {missingDates.length>0&&<details className="missing-dates missing-dates-fold"><summary><strong>日付が分かったら確認</strong><span className="hint">{missingDates.length}件 · 閉じたまま大丈夫</span></summary>{missingDates.map(({task:t,deadline:d})=><button key={t.id} onClick={()=>openTask(t.id)}><span><strong>{t.title}</strong><small>{d.missing}が未設定</small></span><ChevronRight size={16}/></button>)}</details>}
+ {dated.length?<div className="timeline timeline-dense">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={validDate(p.wdate)?undefined:<Action secondary onClick={openProfile}>婚姻日を入れる</Action>}/>}
+ {missingDates.length>0&&<details className="missing-dates missing-dates-fold"><summary><strong>日付が分かったら確認</strong><span className="hint">{missingDates.length}件</span></summary>{missingDates.map(({task:t,deadline:d})=><button key={t.id} onClick={()=>openTask(t.id)}><span><strong>{t.title}</strong><small>{d.missing}が未設定</small></span><ChevronRight size={16}/></button>)}</details>}
  </section></div>
  </details>
  <details id="deadline-block-phases" className="paper-card moved-fold">
-  <summary><strong>時期の区切り</strong><span className="hint">結婚前後から暮らしまで</span></summary>
+  <summary><strong>時期の区切り</strong></summary>
   <PhasesPanel child={p.child} home={p.home} onOpenProfile={openProfile}/>
  </details>
  <details id="archive-app-calendar" className="paper-card moved-fold app-cal-fold"><summary><strong>アプリの予定</strong><span className="hint">お知らせのもと · カレンダーに書き出す</span></summary>
@@ -390,28 +389,28 @@ export default function FutureNotebook(){
  <LaterList later={laterBook} profile={p} busy={data.busy} canShare={!!readMe()} onOpen={openLater} onShare={(it,text)=>void shareLater(it,text)} renderInline={laterInline}/>
  </details>
  <details id="archive-desk-detail" className="paper-card moved-fold">
-  <summary><strong>くわしく見る</strong><span className="hint">章ごとの進み・最近の動き・つながり・重さ・種類</span></summary>
+  <summary><strong>くわしく見る</strong></summary>
   <MarriageDesk detailOnly book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} onOpenTask={openTask} onOpenProfile={openProfile}/>
  </details>
  </TabsContent>
- <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="設定" title="ふたりらしい手帳に。" sub="よく使うものから順に並べています。"/>
+ <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="設定" title="ふたりらしい手帳に。"/>
  <SettingsOverview sync={{on:data.syncConfig.enabled,status:data.syncStatus,problem:!!data.syncProblem}} line={line.state} ai={{on:grokEnabled,key:!!grokKey.trim()}} go={revealAndScroll}/>
  <div className="settings-stack">
- <SettingsCard id="settings-profile" icon={<Users size={20}/>} title="ふたりのプロフィール" lead="呼び名・住まい・婚姻日。表示する制度がこれで決まります。"><p className="profile-names">{p.name1||'一人目'} <span>&</span> {p.name2||'二人目'}</p><dl><div><dt>住まい</dt><dd>広島市 {p.ward==='未設定'?'（区は未設定）':p.ward}</dd></div><div><dt>婚姻日・予定日</dt><dd>{p.wdate?shortDate(p.wdate):'未設定'}</dd></div><div><dt>子育ての章</dt><dd>{['unknown','none'].includes(p.child)?'表示していません':'選んだ段階を表示'}</dd></div></dl><Action secondary onClick={openProfile}>プロフィールを整える<ArrowRight/></Action></SettingsCard>
- <SettingsCard id="settings-backup" icon={<ArrowDownToLine size={20}/>} title="データ（書き出し・バックアップ）" lead="記録はこの端末の中。受け渡しや機種変更はバックアップで。" more={<><p>記録（進みぐあい・メモ・金額）は、この端末のブラウザの中に保存されます。二人で同じ手帳を使うときや端末を変えるときは、バックアップのファイルを書き出して、もう一方の端末で読み込んでください。</p><p className="hint">バックアップには、名前・日付・メモが入ります。渡す相手と保管先を選んでください。</p><p className="hint">以前の版で書き出したファイルも読み込めます（自動では移りません）。</p></>}><input ref={uploadRef} type="file" accept=".json,application/json" className="sr-only" aria-label="手帳のバックアップ" onChange={e=>{const file=e.target.files?.[0];if(file)void loadBackup(file);e.target.value='';}}/><div className="stack-actions"><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>バックアップを書き出す</Action><Action secondary onClick={()=>uploadRef.current?.click()}><ArrowUpRight/>バックアップを読み込む</Action><Action secondary onClick={()=>window.print()}><Printer/>手帳を印刷・PDFにする</Action></div></SettingsCard>
+ <SettingsCard id="settings-profile" icon={<Users size={20}/>} title="ふたりのプロフィール" lead="呼び名・住まい・婚姻日"><p className="profile-names">{p.name1||'一人目'} <span>&</span> {p.name2||'二人目'}</p><dl><div><dt>住まい</dt><dd>広島市 {p.ward==='未設定'?'（区は未設定）':p.ward}</dd></div><div><dt>婚姻日・予定日</dt><dd>{p.wdate?shortDate(p.wdate):'未設定'}</dd></div><div><dt>子育ての章</dt><dd>{['unknown','none'].includes(p.child)?'表示していません':'選んだ段階を表示'}</dd></div></dl><Action secondary onClick={openProfile}>プロフィールを整える<ArrowRight/></Action></SettingsCard>
+ <SettingsCard id="settings-backup" icon={<ArrowDownToLine size={20}/>} title="データ（書き出し・バックアップ）" lead="記録はこの端末の中。受け渡しや機種変更はバックアップで。" more={<><p>記録（進みぐあい・メモ・金額）は、この端末のブラウザの中に保存されます。二人で同じ手帳を使うときや端末を変えるときは、バックアップのファイルを書き出して、もう一方の端末で読み込んでください。</p><p className="hint">バックアップには、名前・日付・メモが入ります。渡す相手と保管先を選んでください。</p></>}><input ref={uploadRef} type="file" accept=".json,application/json" className="sr-only" aria-label="手帳のバックアップ" onChange={e=>{const file=e.target.files?.[0];if(file)void loadBackup(file);e.target.value='';}}/><div className="stack-actions"><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>バックアップを書き出す</Action><Action secondary onClick={()=>uploadRef.current?.click()}><ArrowUpRight/>バックアップを読み込む</Action><Action secondary onClick={()=>window.print()}><Printer/>手帳を印刷・PDFにする</Action></div></SettingsCard>
  <SyncSettings data={data} profile={p}/>
  <LineNotifySettings book={book} line={line} save={saveLineNotify} onOpenSync={()=>revealAndScroll('settings-gist-sync')}><RemindersCard value={remindersVal} busy={data.busy} save={saveReminders} lineState={line.state} sync={remSync} preview={remindPreview}/><MeetingCard value={remindersVal} busy={data.busy} save={saveReminders} lineState={line.state} sync={remSync}/>
 </LineNotifySettings>
- <SettingsCard id="settings-ai" icon={<Sparkles size={20}/>} title="AI（Amityちゃんの調べもの）" chip={<StatusChip tone={!grokEnabled?'off':grokKey.trim()?'on':'wait'}>{!grokEnabled?'オフ':grokKey.trim()?'オン':'キーなし'}</StatusChip>} lead="オンのときだけ xAI に送ります（クレジットを使います）。" more={<><p>Amityちゃんは、手帳の内容から探すのに加えて、AI（xAI の Grok）で調べた答えを足せます。AIで調べるには、下の「AIのキーと接続先」に xAI のキーを入れてください。キーはこの端末の中だけに保存され、同期やバックアップには入りません（もう一方の端末では、その端末でも入れてください）。キーが無くても、手帳の中から探す答えは出ます。</p><p className="hint">オフのときは、Amityちゃんのチャット・「今の制度を調べる」・博士タブのAI助言は、すべて手帳の中だけから答えます（xAIへは送りません）。オンでキーがあるときだけクレジットを使います。この端末だけに保存されます。</p></>}><label className="scope-toggle settings-switch"><Switch checked={grokEnabled} onCheckedChange={v=>{setGrokEnabled(v);setGrokEnabledState(v);toast.success(v?'AIを使う（クレジットを使う）をオンにしました':'AIをオフにしました（xAIへ送りません）');}}/><span>AIを使う（クレジットを使う）</span></label>
- <div id="settings-research" className="settings-tool"><h3><Search size={17}/>今の制度を調べる</h3><p className="hint">AIで短く調べます。「探す」タブで同じ言葉の項目も見られます。</p><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="policy-research-q">調べたいこと</Label><Input id="policy-research-q" value={researchQ} onChange={e=>setResearchQ(e.target.value)} placeholder="例：広島市 児童手当 申請、転入届の期限…" maxLength={200} autoComplete="off" disabled={researchBusy}/></div><div className="stack-actions"><Action secondary disabled={researchBusy||!researchQ.trim()} onClick={()=>void(async()=>{const q=researchQ.trim().slice(0,200);if(!q)return;setResearchBusy(true);setResearchOut('');try{if(!isGrokEnabled()){setResearchOut(GROK_AI_OFF_JA);toast.info('AIはオフです');}else{const r=await askGrokResearch(q);if(r.ok)setResearchOut(r.text);else if(r.error==='no-key'){markGrokLocalOnly('no-key');setResearchOut('AIのキーがまだ入っていません。下の「AIのキーと接続先」で xAI のキーを入れるか、まず「探す」タブで確認してね。');toast.info('キーがないため「探す」タブを開きます');setQuery(q);setTab('find');}else if(isGrokCreditsLimitResult(r.error)){markGrokLocalOnly('credits-limit');const local=answerDeskQuery(q,3,p);setResearchOut(`${GROK_CREDITS_LIMIT_JA}\n\n—— 手帳の中の案内 ——\n${local.text}`);toast.error(GROK_CREDITS_LIMIT_JA,{duration:8000});}else{setResearchOut(`調べられなかったよ。${grokErrorJa(r.error)} 公式案内もあわせて確認してね。`);toast.error(grokErrorJa(r.error));}}}finally{setResearchBusy(false);}})()}>{researchBusy?<><LoaderCircle className="spin" size={16}/>調べています…</>:<><Sparkles size={16}/>Amityに調べてもらう</>}</Action><Action secondary disabled={!researchQ.trim()} onClick={()=>{setQuery(researchQ.trim());setTab('find');}}>「探す」で見る<ArrowRight/></Action></div>{researchOut&&<div className="research-result" role="status"><p className="hint" style={{marginBottom:6}}>Amityの調べメモ（金額は勝手に作りません。結婚新生活支援は広島市では受けられません）</p><p style={{whiteSpace:'pre-wrap',fontSize:13,lineHeight:1.55,margin:0}}>{researchOut}</p></div>}<p className="hint" style={{marginTop:10}}>{!isGrokEnabled()?'AIはオフです（上のスイッチでオンにできます）。':loadGrokKey()?'AIで調べられます。':'AIのキーがなくても「探す」タブは使えます。'}</p></div>
+ <SettingsCard id="settings-ai" icon={<Sparkles size={20}/>} title="AI（Amityちゃんの調べもの）" chip={<StatusChip tone={!grokEnabled?'off':grokKey.trim()?'on':'wait'}>{!grokEnabled?'オフ':grokKey.trim()?'オン':'キーなし'}</StatusChip>} lead="オンのときだけ xAI に送ります（クレジットを使います）。" more={<><p>Amityちゃんは、手帳の内容から探すのに加えて、AI（xAI の Grok）で調べた答えを足せます。AIで調べるには、下の「AIのキーと接続先」に xAI のキーを入れてください。キーはこの端末の中だけに保存され、同期やバックアップには入りません（もう一方の端末では、その端末でも入れてください）。キーが無くても、手帳の中から探す答えは出ます。</p><p className="hint">オフのときはxAIへ送りません。</p></>}><label className="scope-toggle settings-switch"><Switch checked={grokEnabled} onCheckedChange={v=>{setGrokEnabled(v);setGrokEnabledState(v);toast.success(v?'AIを使う（クレジットを使う）をオンにしました':'AIをオフにしました（xAIへ送りません）');}}/><span>AIを使う（クレジットを使う）</span></label>
+ <div id="settings-research" className="settings-tool"><h3><Search size={17}/>今の制度を調べる</h3><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="policy-research-q">調べたいこと</Label><Input id="policy-research-q" value={researchQ} onChange={e=>setResearchQ(e.target.value)} placeholder="例：広島市 児童手当 申請、転入届の期限…" maxLength={200} autoComplete="off" disabled={researchBusy}/></div><div className="stack-actions"><Action secondary disabled={researchBusy||!researchQ.trim()} onClick={()=>void(async()=>{const q=researchQ.trim().slice(0,200);if(!q)return;setResearchBusy(true);setResearchOut('');try{if(!isGrokEnabled()){setResearchOut(GROK_AI_OFF_JA);toast.info('AIはオフです');}else{const r=await askGrokResearch(q);if(r.ok)setResearchOut(r.text);else if(r.error==='no-key'){markGrokLocalOnly('no-key');setResearchOut('AIのキーがまだ入っていません。下の「AIのキーと接続先」で xAI のキーを入れるか、まず「探す」タブで確認してね。');toast.info('キーがないため「探す」タブを開きます');setQuery(q);setTab('find');}else if(isGrokCreditsLimitResult(r.error)){markGrokLocalOnly('credits-limit');const local=answerDeskQuery(q,3,p);setResearchOut(`${GROK_CREDITS_LIMIT_JA}\n\n—— 手帳の中の案内 ——\n${local.text}`);toast.error(GROK_CREDITS_LIMIT_JA,{duration:8000});}else{setResearchOut(`調べられなかったよ。${grokErrorJa(r.error)} 公式案内もあわせて確認してね。`);toast.error(grokErrorJa(r.error));}}}finally{setResearchBusy(false);}})()}>{researchBusy?<><LoaderCircle className="spin" size={16}/>調べています…</>:<><Sparkles size={16}/>Amityに調べてもらう</>}</Action><Action secondary disabled={!researchQ.trim()} onClick={()=>{setQuery(researchQ.trim());setTab('find');}}>「探す」で見る<ArrowRight/></Action></div>{researchOut&&<div className="research-result" role="status"><p className="hint" style={{marginBottom:6}}>Amityの調べメモ（金額は勝手に作りません。結婚新生活支援は広島市では受けられません）</p><p style={{whiteSpace:'pre-wrap',fontSize:13,lineHeight:1.55,margin:0}}>{researchOut}</p></div>}<p className="hint" style={{marginTop:10}}>{!isGrokEnabled()?'AIはオフです（上のスイッチでオンにできます）。':loadGrokKey()?'AIで調べられます。':'AIのキーがなくても「探す」タブは使えます。'}</p></div>
  <Fold id="settings-grok" title="AIのキーと接続先" hint="xAI のキー・接続先・利用枠"><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="amity-grok-key">xAI のキー</Label><Input id="amity-grok-key" type="password" autoComplete="off" value={grokKey} onChange={e=>setGrokKey(e.target.value)} onBlur={()=>{saveGrokKey(grokKey);if(grokKey.trim()){clearGrokLocalOnly();}else{markGrokLocalOnly('no-key');}toast.success(grokKey.trim()?'AIのキーをこの端末に保存しました':'AIのキーを消しました');}} placeholder="xAI のキーを貼り付け" maxLength={200}/></div><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="amity-grok-base">接続先のURL（ふだんは変えません）</Label><Input id="amity-grok-base" value={grokBase} onChange={e=>setGrokBase(e.target.value)} onBlur={()=>{saveGrokBase(grokBase||DEFAULT_GROK_BASE);setGrokBase(loadGrokBase());}} placeholder={DEFAULT_GROK_BASE} maxLength={200} autoComplete="off"/><p className="hint" style={{marginTop:6}}>初期値 {DEFAULT_GROK_BASE}</p></div>
 <p className="hint" style={{marginTop:8}}>AIで調べるには、xAI の利用枠が必要です。このアプリからは購入できません。枠が上限のときは <a href={GROK_CREDITS_CONSOLE_URL} target="_blank" rel="noopener noreferrer">xAI コンソール（console.x.ai）</a> で増やしてください。</p>
 <div className="stack-actions" style={{marginTop:10}}><Action secondary onClick={()=>window.open(GROK_CREDITS_CONSOLE_URL,'_blank','noopener,noreferrer')}><ExternalLink size={16}/>利用枠を増やす（xAIコンソール）</Action></div></Fold>
  </SettingsCard>
- <section id="settings-advanced" className="paper-card settings-card settings-sec settings-advanced"><details className="settings-advanced-fold" id="settings-advanced-fold"><summary><span className="settings-sec-icon" aria-hidden="true"><Settings2 size={20}/></span><span><h2>詳細</h2><span className="hint">ふだんは開かなくて大丈夫（この端末の合言葉・見直しメモ・リセット）</span></span></summary>
+ <section id="settings-advanced" className="paper-card settings-card settings-sec settings-advanced"><details className="settings-advanced-fold" id="settings-advanced-fold"><summary><span className="settings-sec-icon" aria-hidden="true"><Settings2 size={20}/></span><span><h2>詳細</h2><span className="hint">合言葉・見直しメモ・リセット</span></span></summary>
  <SiteLockSettings/>
- <div className="settings-sub"><h3><RefreshCw size={17}/>毎年の見直しメモ</h3><p className="hint">年に一度、締切や対象条件を見直すときの手順です。</p><details className="yearly-fold"><summary>メモを開く</summary><pre className="yearly-update-pre">{yearlyUpdateMd}</pre></details></div>
- <div className="settings-sub danger-reset-card"><h3><Trash2 size={17}/>スタンプ進捗をリセット</h3><p className="hint">スタンプ・金額・メモだけを消します（プロフィールと記念手帳は残ります）。</p><More><p>各項目のスタンプ状態・金額・メモだけを消します。プロフィールと記念手帳の文章は残します。バックアップを先に書き出すことをおすすめします。</p><p className="hint">誤タップ防止のため、確認ダイアログで「リセット」と入力し、もう一度チェックを入れる必要があります。</p></More><div className="stack-actions"><Action secondary onClick={()=>{setResetTyped('');setResetAck(false);setResetOpen(true);}} disabled={!data.book||data.busy}><Trash2/>スタンプ進捗をリセット…</Action></div></div>
+ <div className="settings-sub"><h3><RefreshCw size={17}/>毎年の見直しメモ</h3><details className="yearly-fold"><summary>メモを開く</summary><pre className="yearly-update-pre">{yearlyUpdateMd}</pre></details></div>
+ <div className="settings-sub danger-reset-card"><h3><Trash2 size={17}/>スタンプ進捗をリセット</h3><p className="hint">スタンプ・金額・メモだけを消します（プロフィールと記念手帳は残ります）。</p><More><p>各項目のスタンプ状態・金額・メモだけを消します。プロフィールと記念手帳の文章は残します。バックアップを先に書き出すことをおすすめします。</p></More><div className="stack-actions"><Action secondary onClick={()=>{setResetTyped('');setResetAck(false);setResetOpen(true);}} disabled={!data.book||data.busy}><Trash2/>スタンプ進捗をリセット…</Action></div></div>
  </details></section>
 </div>
  <div className="settings-stack settings-stack-after"><SettingsCard id="settings-policy" icon={<ShieldCheck size={20}/>} title="安心して確かめるために" lead="制度の適用は申請先が決めます。申請や契約の前に、公式案内を確かめてください。" more={<><p>この手帳は、制度を調べて手続きを進めるための案内です。給付や税の適用は、二人の条件と申請先の判断で決まります。</p><p>内容を確認した日を参照先ごとに表示しています。未確認の案内はその旨を表示し、勤務先・契約ごとの条件は窓口への質問としてまとめています。</p><p>制度の更新は自動配信されません。申請・契約の前には、公式案内と予算・受付状況を再確認してください。</p><h3 className="settings-more-h">使い続けるためのメモ</h3><ul><li>記録はこの端末のブラウザの中に保存されます。</li><li>端末を変えるときや二人で受け渡すときは、バックアップのファイルを使います。</li><li>端末どうしの自動同期は「同期」、AIのキーは「AI」のカードにあります。</li><li>スマートフォンのブラウザーの「ホーム画面に追加」から、すぐ開けるようにできます（名前は「Amityちゃん」）。合言葉を入れて開いたあとで追加してください。前に追加したものは、いったん消して追加し直すと新しい名前になります。</li></ul></>}><button className="text-button" onClick={()=>void data.refresh()}><RefreshCw size={15}/>最新の保存内容を読み込む</button></SettingsCard></div>
@@ -433,7 +432,7 @@ export default function FutureNotebook(){
 </div>
 <details className="pair-legacy-fold">
  <summary>詳細設定</summary>
- <p className="hint">ファイルを渡さずに自動でそろえたいときは、設定の「同期（端末どうし）」を使えます（GitHub のアカウントが必要です）。</p>
+ <p className="hint">自動でそろえるなら同期を使えます。</p>
  <Action secondary onClick={()=>{forceClose();setTab('settings');revealAndScroll('settings-gist-sync');}}><Cloud/>自動同期の設定を開く</Action>
  <p className="hint" style={{marginTop:12}}>以前に受け取った招待コードでは、いまはつながりません。バックアップのファイルで受け渡してください。</p>
  <div className="field"><Label htmlFor="join-code">以前の招待コード</Label><Input id="join-code" value={joinCode} onChange={e=>setJoinCode(e.target.value)} placeholder="受け取ったコード" maxLength={100} autoComplete="off"/></div>

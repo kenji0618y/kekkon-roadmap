@@ -31,7 +31,7 @@ function uid() {
 const WELCOME: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
-  text: 'Amityちゃんです。スタンプ・手続き・期限・対象外・フェーズ・会話練習まで横断して探すよ。候補は多めに出すね。AIが使えるときは、もっとくわしく調べるよ。',
+  text: 'Amityちゃんです。なんでも聞いてね。',
   at: 0,
 };
 
@@ -174,10 +174,10 @@ export function DeskChatPanel({open, onClose, onOpenTask, onGoFind, profile = nu
   if (!embedded && !open) return null;
 
   const keyHint = !isGrokEnabled()
-    ? 'この手帳の中から探すよ（AIはオフ。設定 →「AI」でオンにできます）'
+    ? '手帳の中から探すよ（AIオフ）'
     : loadGrokKey()
       ? 'この手帳の中から探して、AIでもくわしく調べるよ'
-      : 'この手帳の中から探すよ（AIのキーは 設定 →「AI」で入れられます）';
+      : '手帳の中から探すよ（AIキーなし）';
 
   const panel = (
     <div className={`desk-chat-panel${embedded ? ' embedded' : ''}`}>

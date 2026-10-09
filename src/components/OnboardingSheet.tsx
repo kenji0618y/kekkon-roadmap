@@ -83,7 +83,7 @@ export function OnboardingSheet({
           <fieldset disabled={busy}>
             <div className="condition-note">
               <Heart size={18} />
-              <p>呼び名は、スタンプやカレンダーでの表示に使います。区・働き方・式の有無で、表示する制度の候補が整います。あとから設定で変えられます。</p>
+              
             </div>
             <div className="field-grid">
               <div className="field">
@@ -136,7 +136,7 @@ export function OnboardingSheet({
                 options={{company: '会社員', public: '公務員', self: '自営業・フリーランス', other: 'その他', unknown: '未設定'}}
               />
             </div>
-            <p className="hint">金額はここでは入れません。あとから各項目に、実際に分かった額だけを記録できます。</p>
+            
             {err && (
               <p role="alert" className="inline-error">
                 {err}

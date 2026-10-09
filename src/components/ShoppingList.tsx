@@ -73,7 +73,7 @@ export function ShoppingList({shopping,profile,busy,save}:{shopping:Shopping,pro
         </>}
       </div>;
     })}
-    <p className="hint shopping-hint">状態：まだ／買った／持っている／いらない。値段は出しません（メモに入れたいときだけ自分で入れます）。品目の名前を押すとメモ。リストはふたりの端末で同期します。</p>
+    
     <p className="shopping-src">品目の出典：{shopSource.publisher}「{shopSource.title}」<br/><a href={shopSource.url} target="_blank" rel="noopener noreferrer">{shopSource.url}<ExternalLink size={11} aria-hidden/></a></p>
   </section>;
 }

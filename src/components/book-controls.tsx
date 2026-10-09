@@ -17,6 +17,6 @@ export function SourceLink({source:s,compact=false}:{source:Source,compact?:bool
  <span>{s.kind==='document'?'勤務先・契約先で確認':s.kind==='planning'?'話し合いの提案':s.checked?`内容確認 ${s.checked}${stale?' · 更新の有無を再確認':''}`:'内容の最新確認は未実施'}</span>{!compact&&s.note&&<p>{s.note}</p>}
  </div>;}
 export function SectionTitle({eyebrow,title,sub,children}:{eyebrow:string,title:string,sub?:string,children?:ReactNode}){return <div className="section-title"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1>{sub&&<p className="muted">{sub}</p>}</div>{children}</div>;}
-export function EmptyState({symbol,title,children,action}:{symbol:ReactNode,title:string,children:ReactNode,action?:ReactNode}){return <div className="empty-state"><span className="empty-icon">{symbol}</span><h3>{title}</h3><p>{children}</p>{action}</div>;}
+export function EmptyState({symbol,title,children,action}:{symbol:ReactNode,title:string,children?:ReactNode,action?:ReactNode}){return <div className="empty-state"><span className="empty-icon">{symbol}</span><h3>{title}</h3><p>{children}</p>{action}</div>;}
 export function NextArrow(){return <ArrowRight size={18}/>;}
 export function downloadText(name:string,text:string,type='application/json'){const blob=new Blob([new TextEncoder().encode(text)],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
