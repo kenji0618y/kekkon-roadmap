@@ -190,10 +190,11 @@ export type MarriageDeskProps={
   onGoDeadlines?:()=>void;
   /** 金額の集計はお金タブ。デスクには行き先だけ残す。 */
   onGoMoney?:()=>void;
+  /** 2026-10-10 「くわしく見る」の図（章ごとの進み・最近の動き・つながり・重さ・種類）はアーカイブに折りたたみで置く。true のときは図だけを出す。 */
+  detailOnly?:boolean;
 };
 
-export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoDeadlines,onGoMoney}:MarriageDeskProps){
-  const [showDecor,setShowDecor]=useState(false);
+export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,today,hasBook,syncStatus='off',onOpenTask,onOpenProfile,onGoDeadlines,detailOnly}:MarriageDeskProps){
 
   const progressPct=actionable.length?Math.round(done.length/actionable.length*100):0;
 
@@ -260,96 +261,8 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
     return {id:g.id,short:g.short,kanji:g.kanji,done:d,total:ts.length,ratio:ts.length?d/ts.length:0};
   }),[scoped,book.records]);
 
-  return (
-    <div className="desk-root desk-washi">
-      {/* デスクのあいさつ文は 2026-10-02 に削除。ここは同期と日付のみ。 */}
-      <div className="desk-meta-bar" aria-label="デスクの状態">
-        {syncStatus!=='off'&&(
-          <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
-            {syncStatus==='syncing'?'同期中…':syncStatus==='ok'?'同期済み':syncStatus==='error'?'同期できず':'同期'}
-          </span>
-        )}
-        <time className="desk-clock" dateTime={today}>{japanToday()}</time>
-      </div>
-
-      {/* 市の窓口リンクと届出週の手順は探すタブ（WhereToLook.tsx）へ移動（2026-09-30）。 */}
-
-      <section className="desk-metrics" aria-label="主要指標">
-        <article className="desk-metric">
-          <span className="desk-metric-label">これまで</span>
-          <strong className="desk-metric-value">{actionable.length?`${progressPct}%`:'—'}</strong>
-          <span className="desk-metric-sub">{done.length}/{actionable.length} 完了 · 二人の候補</span>
-          <div className="desk-metric-bar" aria-hidden><i style={{width:`${progressPct}%`}}/></div>
-        </article>
-        <article className={`desk-metric ${weddingMetric.tone?`tone-${weddingMetric.tone}`:''}`}>
-          <span className="desk-metric-label">{weddingMetric.label}</span>
-          <strong className="desk-metric-value">{weddingMetric.value}{weddingMetric.sub&&weddingMetric.value!=='—'&&weddingMetric.value!=='今日'&&<small>{weddingMetric.sub}</small>}</strong>
-          <span className="desk-metric-sub">{validDate(p.wdate)?`婚姻日 ${shortDate(p.wdate)}`:'プロフィールで設定'}</span>
-        </article>
-        <button
-          type="button"
-          className={`desk-metric desk-metric-btn ${soonCount>0?'tone-warn':''}`}
-          onClick={()=>onGoDeadlines?.()}
-          aria-label="次の期限。アーカイブの制度の期限へ"
-        >
-          <span className="desk-metric-label">次の期限</span>
-          <strong className="desk-metric-value">{soonCount}<small>件</small></strong>
-          <span className="desk-metric-sub">手帳の予定・14日以内 · アーカイブへ</span>
-        </button>
-      </section>
-
-      <section className="amity-brief" aria-label="ペア確認のすきま">
-        <header className="amity-brief-head">
-          <strong>ペア確認のすきま</strong>
-          <span>片方だけ進んだ項目</span>
-        </header>
-        <p className="amity-brief-cross">
-          明日の一手・次にやることは下の
-          <a href="#desk-next-actions" className="amity-brief-jump" onClick={(e)=>{e.preventDefault();document.getElementById('desk-next-actions')?.scrollIntoView({behavior:'smooth',block:'start'});}}>次のアクション</a>
-          にまとめてあります。期限と日付つきの予定は「アーカイブ」タブに。
-        </p>
-        <div className="amity-brief-col">
-          {amityBrief.half.length?(
-            <ul>
-              {amityBrief.half.map((h)=>(
-                <li key={h.id}>
-                  <button type="button" className="amity-brief-link" onClick={()=>onOpenTask(h.id)}>
-                    <span>{h.title}</span>
-                    <small>{h.sub}</small>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ):<p className="amity-brief-empty">片方だけの確認はいまないよ</p>}
-        </div>
-      </section>
-
-      {!hasBook&&(
-        <div className="desk-start">
-          <div>
-            <strong>この画面を使いはじめるには、まず手帳を整えよう</strong>
-            <p>呼び名や婚姻日を入れると、進捗・期限・活動がここに集まります。</p>
-          </div>
-          <button type="button" className="desk-cta" onClick={onOpenProfile}>手帳を整える <ArrowRight size={15}/></button>
-        </div>
-      )}
-
-
-      <section className="desk-money" aria-label="金額の集計">
-        <p className="money-moved">受け取った給付・祝金などの集計は、<button type="button" className="desk-linkish" onClick={()=>onGoMoney?.()}>お金</button>タブへ移動しました。</p>
-      </section>
-
-      <div className="desk-decor-fold">
-        {!showDecor?(
-          <button type="button" className="desk-more-viz" onClick={()=>setShowDecor(true)}>
-            くわしく見る · 章ごとの進み／最近の動き／つながり／重さ／種類のバランス
-          </button>
-        ):(
-          <>
-            <div className="desk-decor-toolbar">
-              <span className="hint">章ごとの進み・最近の動き・つながりの図</span>
-              <button type="button" className="desk-linkish" onClick={()=>setShowDecor(false)}>閉じる</button>
-            </div>
+  if(detailOnly)return (
+<>
             <div className="desk-main-grid">
               <section className="desk-card desk-ridge-card">
                 <div className="desk-card-head"><span className="desk-dot"/>章ごとの進みぐあい</div>
@@ -438,9 +351,76 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
                 </div>
               </section>
             </div>
-          </>
+</>
+  );
+  return (
+    <div className="desk-root desk-washi">
+      {/* デスクのあいさつ文は 2026-10-02 に削除。ここは同期と日付のみ。 */}
+      <div className="desk-meta-bar" aria-label="デスクの状態">
+        {syncStatus!=='off'&&(
+          <span className={`desk-sync-pill sync-${syncStatus}`} title="Gist同期" aria-label={`同期 ${syncStatus}`}>
+            {syncStatus==='syncing'?'同期中…':syncStatus==='ok'?'同期済み':syncStatus==='error'?'同期できず':'同期'}
+          </span>
         )}
+        <time className="desk-clock" dateTime={today}>{japanToday()}</time>
       </div>
+
+      {/* 市の窓口リンクと届出週の手順は探すタブ（WhereToLook.tsx）へ移動（2026-09-30）。 */}
+
+      <section className="desk-metrics" aria-label="主要指標">
+        <article className="desk-metric">
+          <span className="desk-metric-label">これまで</span>
+          <strong className="desk-metric-value">{actionable.length?`${progressPct}%`:'—'}</strong>
+          <span className="desk-metric-sub">{done.length}/{actionable.length} 完了 · 二人の候補</span>
+          <div className="desk-metric-bar" aria-hidden><i style={{width:`${progressPct}%`}}/></div>
+        </article>
+        <article className={`desk-metric ${weddingMetric.tone?`tone-${weddingMetric.tone}`:''}`}>
+          <span className="desk-metric-label">{weddingMetric.label}</span>
+          <strong className="desk-metric-value">{weddingMetric.value}{weddingMetric.sub&&weddingMetric.value!=='—'&&weddingMetric.value!=='今日'&&<small>{weddingMetric.sub}</small>}</strong>
+          <span className="desk-metric-sub">{validDate(p.wdate)?`婚姻日 ${shortDate(p.wdate)}`:'プロフィールで設定'}</span>
+        </article>
+        <button
+          type="button"
+          className={`desk-metric desk-metric-btn ${soonCount>0?'tone-warn':''}`}
+          onClick={()=>onGoDeadlines?.()}
+          aria-label="次の期限。アーカイブの制度の期限へ"
+        >
+          <span className="desk-metric-label">次の期限</span>
+          <strong className="desk-metric-value">{soonCount}<small>件</small></strong>
+          <span className="desk-metric-sub">手帳の予定・14日以内 · アーカイブへ</span>
+        </button>
+      </section>
+
+      {amityBrief.half.length>0&&<section className="amity-brief" aria-label="ペア確認のすきま">
+        <header className="amity-brief-head">
+          <strong>ペア確認のすきま</strong>
+        </header>
+        <div className="amity-brief-col">
+          <ul>
+            {amityBrief.half.map((h)=>(
+              <li key={h.id}>
+                <button type="button" className="amity-brief-link" onClick={()=>onOpenTask(h.id)}>
+                  <span>{h.title}</span>
+                  <small>{h.sub}</small>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>}
+
+      {!hasBook&&(
+        <div className="desk-start">
+          <div>
+            <strong>この画面を使いはじめるには、まず手帳を整えよう</strong>
+            <p>呼び名や婚姻日を入れると、進捗・期限・活動がここに集まります。</p>
+          </div>
+          <button type="button" className="desk-cta" onClick={onOpenProfile}>手帳を整える <ArrowRight size={15}/></button>
+        </div>
+      )}
+
+
+
 
     </div>
   );
