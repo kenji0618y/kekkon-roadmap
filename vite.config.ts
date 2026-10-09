@@ -13,7 +13,7 @@ const root = path.dirname(fileURLToPath(import.meta.url))
  * - script.google.com / script.googleusercontent.com … LINE 通知の中継（Apps Script は googleusercontent へ転送する）
  * - api.x.ai … Amityちゃんの調べもの（src/lib/amity-grok.ts の初期値。ほかの URL に変えると通信できない）
  * - fonts.googleapis.com / fonts.gstatic.com … 文字（index.html）
- * - frame-src calendar.google.com / www.google.com … カレンダータブに Google カレンダー（ファミリー）を埋め込む予定（iframe）。埋め込み以外の外部フレームは不可
+ * - frame-src calendar.google.com / www.google.com … カレンダータブに Google カレンダー（ファミリー）を埋め込む（iframe・src/components/GoogleFamilyCalendar.tsx）。埋め込み以外の外部フレームは不可
  * 同じ kenji0618y.github.io にある別のページのスクリプトからは守れない（CSP はこのページ自身が読むものを絞るだけ）。
  * dev サーバーは React の更新用にインラインのスクリプトを使うので、ビルドのときだけ付ける。
  * 解錠ページ（scripts/site-lock/unlock.html）には別の CSP がある。
