@@ -68,9 +68,11 @@ export const TAB_HITS: Omit<QuickSearchHit, 'score'>[] = [
   { id: 'tab-desk', kind: 'tab', title: 'デスク', hint: 'いまの進みぐあい', tab: 'desk' },
   { id: 'tab-journey', kind: 'tab', title: 'ロードマップ', hint: 'スタンプ・章ごとの項目', tab: 'journey' },
   { id: 'tab-deadlines', kind: 'tab', title: 'カレンダー', hint: 'Googleのファミリー カレンダー', tab: 'deadlines' },
-  { id: 'blk-institutional', kind: 'tab', title: '制度の期限', hint: '届出もふくむ全部（お金タブ）', tab: 'money', scrollId: 'deadline-block-institutional' },
-  { id: 'blk-schedule', kind: 'tab', title: '項目の予定', hint: '日付のある項目（デスク）', tab: 'desk', scrollId: 'deadline-block-schedule' },
-  { id: 'blk-phases', kind: 'tab', title: '時期の区切り', hint: 'ロードマップのいちばん下', tab: 'journey', scrollId: 'deadline-block-phases' },
+  { id: 'tab-archive', kind: 'tab', title: 'アーカイブ', hint: '制度の期限・項目の予定・時期の区切り・アプリの予定', tab: 'archive' },
+  { id: 'blk-institutional', kind: 'tab', title: '制度の期限', hint: '届出もふくむ全部（アーカイブ）', tab: 'archive', scrollId: 'deadline-block-institutional' },
+  { id: 'blk-schedule', kind: 'tab', title: '項目の予定', hint: '日付のある項目（アーカイブ）', tab: 'archive', scrollId: 'deadline-block-schedule' },
+  { id: 'blk-appcal', kind: 'tab', title: 'アプリの予定', hint: 'ふたりの予定・カレンダーに書き出す（アーカイブ）', tab: 'archive', scrollId: 'archive-app-calendar' },
+  { id: 'blk-phases', kind: 'tab', title: '時期の区切り', hint: 'アーカイブ', tab: 'archive', scrollId: 'deadline-block-phases' },
   { id: 'tab-pair', kind: 'tab', title: '博士', hint: '今日の一問・レッスン動画・練習帳', tab: 'pair' },
   { id: 'tab-find', kind: 'tab', title: '探す', hint: '項目の一覧検索', tab: 'find' },
   { id: 'tab-settings', kind: 'tab', title: '設定', hint: 'プロフィール・バックアップ', tab: 'settings' },
@@ -84,6 +86,8 @@ const TAB_ALIASES: Record<string, string[]> = {
   'tab-desk': ['デスク', '机', 'ホーム', 'home', 'desk'],
   'tab-journey': ['マップ', 'ロードマップ', 'スタンプ', '旅', 'journey', '地図'],
   'tab-deadlines': ['カレンダー', 'google', 'グーグル', 'ファミリー'],
+  'tab-archive': ['アーカイブ', 'archive', '過去', 'しまう'],
+  'blk-appcal': ['予定', '書き出し', 'ics', 'アプリの予定'],
   'blk-institutional': ['期限', '締切', 'deadlines', '届出'],
   'blk-schedule': ['予定', '日付', '手続きの日付'],
   'blk-phases': ['時期', '区切り', 'フェーズ'],
@@ -97,7 +101,6 @@ const TAB_ALIASES: Record<string, string[]> = {
 };
 
 export const SETTING_HITS: Omit<QuickSearchHit, 'score'>[] = [
-  { id: 'set-appcal', kind: 'setting', title: 'アプリの予定', hint: 'ふたりの予定・会議・カレンダーに書き出す（設定）', tab: 'settings', scrollId: 'settings-app-calendar' },
   { id: 'set-profile', kind: 'setting', title: 'プロフィール', hint: '呼び名・婚姻日・区', tab: 'settings', scrollId: 'settings-profile' },
   { id: 'set-gist', kind: 'setting', title: '端末どうしの自動同期', hint: '同期', tab: 'settings', scrollId: 'settings-gist-sync' },
   { id: 'set-line', kind: 'setting', title: 'LINE通知（掲示板）', hint: '通知（LINE）', tab: 'settings', scrollId: 'settings-line-notify' },
@@ -107,7 +110,6 @@ export const SETTING_HITS: Omit<QuickSearchHit, 'score'>[] = [
 ];
 
 const SETTING_ALIASES: Record<string, string[]> = {
-  'set-appcal': ['予定', '書き出し', 'ics', 'ふたり会議', 'アプリの予定'],
   'set-profile': ['プロフィール', '名前', '婚姻日', '区', 'ふたりに合わせ'],
   'set-gist': ['gist', '同期', 'pat', 'github'],
   'set-line': ['line', 'ライン', '通知', 'お知らせ', '合言葉'],
@@ -126,8 +128,8 @@ export const EMPTY_SUGGESTIONS: QuickSearchHit[] = [
     id: 'sug-inst',
     kind: 'deadline',
     title: '今週の期限',
-    hint: '制度の期限（お金タブ）へ',
-    tab: 'money',
+    hint: '制度の期限（アーカイブ）へ',
+    tab: 'archive',
     scrollId: 'institutional-deadlines',
     score: 1,
   },
@@ -219,7 +221,7 @@ export function buildQuickSearchHits(input: QuickSearchInput): QuickSearchHit[] 
         kind: 'deadline',
         title: d.title,
         hint: `${d.date}${d.note ? ` · ${d.note}` : ''}`,
-        tab: 'money',
+        tab: 'archive',
         scrollId: 'institutional-deadlines',
         score: s,
       });
@@ -234,7 +236,7 @@ export function buildQuickSearchHits(input: QuickSearchInput): QuickSearchHit[] 
         kind: 'deadline',
         title: d.title,
         hint: `目安：${d.offset}`,
-        tab: 'money',
+        tab: 'archive',
         scrollId: 'institutional-deadlines',
         score: s - 5,
       });

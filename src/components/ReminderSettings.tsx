@@ -78,7 +78,7 @@ export function MeetingEditor({value,busy,save}:{value:Reminders,busy?:boolean,s
       <Pill on={m.before3} disabled={busy} onClick={()=>void save({meeting:{before3:!m.before3}},'保存しました')}>3日前</Pill>
       <Pill on={m.sameDay} disabled={busy} onClick={()=>void save({meeting:{sameDay:!m.sameDay}},'保存しました')}>当日</Pill>
     </div>
-    {!meetingReady(m)&&<p className="hint">第何週と曜日を選ぶと、カレンダーにくり返しの予定として出ます。</p>}
+    {!meetingReady(m)&&<p className="hint">第何週と曜日を選ぶと、アプリの予定にくり返し出ます。</p>}
   </div>;
 }
 
@@ -86,9 +86,9 @@ export function MeetingEditor({value,busy,save}:{value:Reminders,busy?:boolean,s
 export function MeetingCard({value,busy,save,lineState,sync}:{value:Reminders,busy?:boolean,save:ReminderSave,lineState:LineState,sync:ReminderSync}){
   return <div className="remind-sub" id="settings-meeting">
     <h3><HeartHandshake size={17} aria-hidden/>月に一度のふたり会議</h3>
-    <p>毎月の会議の日を決めると、カレンダーにくり返しの予定として出て、LINEで知らせます。日曜の「ふたり会議」はそのまま使えます。</p>
+    <p>毎月の会議の日を決めると、アプリの予定にくり返し出て、LINEで知らせます。日曜の「ふたり会議」はそのまま使えます。</p>
     <MeetingEditor value={value} busy={busy} save={save}/>
-    <p className="hint">会議の日はカレンダーからも直せます（ここと同じ設定です）。期限・記念日のお知らせと同じ日になったときは、1通にまとめます。会議のメモは記念手帳の「月に一度のふたり会議」に残ります。</p>
+    <p className="hint">期限・記念日のお知らせと同じ日になったときは、1通にまとめます。会議のメモは記念手帳の「月に一度のふたり会議」に残ります。</p>
     {syncLine(lineState,sync,value.meeting.on&&!value.on)}
   </div>;
 }

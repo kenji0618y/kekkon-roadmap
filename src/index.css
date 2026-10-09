@@ -1997,6 +1997,11 @@ button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
   .site-header .main-nav [data-slot=tabs-trigger]{flex:1 1 0;min-width:0;padding:0 1px;font-size:8px}
   .site-header .main-nav [data-slot=tabs-trigger] .nav-label-short{font-size:8px;letter-spacing:-.07em;max-width:100%}
 }
+/* 2026-10-09 アーカイブタブで8つ。幅は文字の長さに合わせて配る（ロードマップ・アーカイブを切らない）。文字の大きさは7つのときのまま。 */
+@media(max-width:700px){
+  .site-header .main-nav [data-slot=tabs-trigger]{flex:1 1 auto}
+  .site-header .main-nav [data-slot=tabs-trigger] .nav-label-short{overflow:visible;text-overflow:clip}
+}
 .money-tab .money-block{margin:16px 0}
 .money-tab details.money-block{padding:12px 14px}
 .money-tab details.money-block>summary{cursor:pointer;list-style:none;display:flex;flex-direction:column;gap:4px}
@@ -2022,11 +2027,10 @@ button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
 .gcal-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 2px 0}
 .gcal-open{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#526c5c;text-decoration:underline}
 /* 設定 →「通知（LINE）」の「アプリの予定」（もとはカレンダータブ）。 */
-.app-cal-fold>summary{cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:4px 0}
-.app-cal-fold[open]>summary{margin-bottom:8px}
 .app-cal-fold .export-cal-wrap{margin:0 0 12px}
 .app-cal-fold .cal-block{margin-bottom:0}
-/* カレンダータブから移した折りたたみ（デスク：項目の予定／お金：制度の期限／ロードマップ：時期の区切り）。 */
+/* アーカイブタブ（カレンダータブから移した折りたたみ：制度の期限・項目の予定・時期の区切り・アプリの予定）。 */
+.archive-tab .moved-fold:first-of-type{margin-top:0}
 .moved-fold{margin:14px 0;padding:12px 14px}
 .moved-fold>summary{cursor:pointer;display:flex;flex-direction:column;gap:4px;list-style:none}
 .moved-fold>summary::-webkit-details-marker{display:none}
@@ -2034,4 +2038,4 @@ button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
 .moved-fold[open]>summary{margin-bottom:12px}
 .moved-fold .seed-block-head h3,.moved-fold .seed-block-head .eyebrow{display:none}
 .moved-note{font-size:12px;margin:8px 0 0}
-#deadline-block-institutional,#deadline-block-schedule,#deadline-block-phases,#institutional-deadlines,#settings-app-calendar{scroll-margin-top:120px}
+#deadline-block-institutional,#deadline-block-schedule,#deadline-block-phases,#institutional-deadlines,#archive-app-calendar{scroll-margin-top:120px}
