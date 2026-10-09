@@ -12,7 +12,7 @@ type PatternId=HouseholdSplit['pattern'];
 export const householdPatterns=data.patterns as {id:Exclude<PatternId,''>,name:string,suits:string}[];
 export const householdSource=data.source;
 
-/** 博士タブ「家計の分け方」。ゼクシィの記事の5つの型から1つ選び、ふたりの合意として残す（同期でそろう）。 */
+/** お金タブ「家計の分け方」（2026-10-09 に博士タブから移動）。ゼクシィの記事の5つの型から1つ選び、ふたりの合意として残す（同期でそろう）。 */
 export function HouseholdSplitCard({value,busy,onSave}:{value:HouseholdSplit,busy?:boolean,onSave:(patch:Partial<HouseholdSplit>)=>Promise<boolean>}){
   const [pattern,setPattern]=useState<PatternId>(value.pattern);
   const [note,setNote]=useState(value.note);

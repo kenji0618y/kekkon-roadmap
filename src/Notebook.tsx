@@ -1,5 +1,5 @@
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
-import {ArrowDownToLine,ArrowRight,ArrowUpRight,CalendarDays,Check,ChevronRight,Cloud,CloudCheck,Download,ExternalLink,Heart,HeartHandshake,House,Info,LoaderCircle,Map,MapPin,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,X} from 'lucide-react';
+import {ArrowDownToLine,ArrowRight,ArrowUpRight,CalendarDays,Check,ChevronRight,Cloud,CloudCheck,Download,ExternalLink,Heart,HeartHandshake,House,Info,LoaderCircle,Map,MapPin,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,Wallet,X} from 'lucide-react';
 import {toast} from 'sonner';
 import {Tabs,TabsContent,TabsList,TabsTrigger} from './components/ui/tabs';
 import {Accordion,AccordionContent,AccordionItem,AccordionTrigger} from './components/ui/accordion';
@@ -25,7 +25,7 @@ import {answerDeskQuery} from './lib/desk-chat';
 import {DeskChatPanel} from './components/DeskChatPanel';
 import {PairWorkbook} from './components/PairWorkbook';
 import {FutariDaily,LessonBody,type FutariSave} from './components/FutariDaily';
-import {MarriageDesk} from './components/MarriageDesk';
+import {MarriageDesk,MoneySummary} from './components/MarriageDesk';
 import {DeskBoard,type BoardSave} from './components/DeskBoard';
 import {LineNotifySettings} from './components/LineNotifySettings';
 import {SiteLockSettings} from './components/SiteLockSettings';
@@ -56,7 +56,7 @@ import {absoluteDeadlines,excludeItems,groups,homeContent,practices,relativeDead
 import {buildQuickSearchHits,groupQuickSearchHits,taskMatchesQuery,type QuickSearchHit} from './lib/quick-search';
 import yearlyUpdateMd from './data/YEARLY_UPDATE.md?raw';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
-const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'pair',label:'博士',short:'博士',icon:HeartHandshake},{id:'find',label:'探す',short:'探す',icon:Search},{id:'settings',label:'設定',short:'設定',icon:Settings2}];
+const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'money',label:'お金',short:'お金',icon:Wallet},{id:'pair',label:'博士',short:'博士',icon:HeartHandshake},{id:'find',label:'探す',short:'探す',icon:Search},{id:'settings',label:'設定',short:'設定',icon:Settings2}];
 type Modal='profile'|'pair'|null;
 export default function FutureNotebook(){
  const [tab,setTab]=useState('desk'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[chatOpen,setChatOpen]=useState(false);
@@ -114,6 +114,8 @@ export default function FutureNotebook(){
  const [calView,setCalViewState]=useState<CalView>(()=>readCalView());
  const setCalView=(v:CalView)=>{setCalViewState(v);writeCalView(v);};
  const openCalendarAt=(date:string)=>{setCalView('app');setCalFocus(f=>({date,n:(f?.n||0)+1}));setTab('deadlines');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'})));};
+ const moneyTasks=scoped.filter(t=>(t.type==='benefit'||t.type==='tax'||t.type==='investment')&&book.records[t.id]?.status!=='na');
+ const moneyContracts=scoped.filter(t=>t.type==='contract'&&/保険|固定費|財形|貸付|カード|火災|電気|ガス|預金|NHK|賠償|ポイント|回線|携帯|プライム/.test(t.title)&&book.records[t.id]?.status!=='na');
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
   const da=nearestDeadline(a,p,book.records[a.id])?.date||'9999',db=nearestDeadline(b,p,book.records[b.id])?.date||'9999';
   if(da!==db)return da.localeCompare(db);const priority=['A無1','A必1','P1','A必3','C14-1'];const ai=priority.indexOf(a.id),bi=priority.indexOf(b.id);return (ai<0?999:ai)-(bi<0?999:bi);
@@ -148,10 +150,10 @@ export default function FutureNotebook(){
  };
  const quickHits=useMemo(()=>buildQuickSearchHits({query:quickQ,tasks,absoluteDeadlines:absoluteDeadlines.filter(d=>deadlineVisible(d,p)),relativeDeadlines,practices,talks,excludeItems,includeTask:t=>p.ceremony!=='no'||!isCeremonyTask(t),limit:20}),[quickQ,p.ceremony,p.child,p.home]);
  const quickGroups=useMemo(()=>groupQuickSearchHits(quickHits),[quickHits]);
- const runQuickHit=(hit:QuickSearchHit)=>{setQuickOpen(false);setQuickQ('');if(hit.tab)setTab(hit.tab);if(hit.taskId){if(hit.tab==='find')setQuery(hit.title);requestAnimationFrame(()=>openTask(hit.taskId!));}else if(hit.kind==='pair'){setPairJump({theme:hit.pairTheme,practiceId:hit.pairPracticeId,talkId:hit.pairTalkId,agreementId:hit.pairAgreementId,scrollId:hit.scrollId});}else if(hit.scrollId){revealAndScroll(hit.scrollId);}else if(hit.tab==='find'&&quickQ.trim()){setQuery(quickQ.trim());}};
+ const runQuickHit=(hit:QuickSearchHit)=>{setQuickOpen(false);setQuickQ('');if(hit.tab)setTab(hit.tab);if(hit.scrollId==='journey-shopping')selectChapter('life');if(hit.taskId){if(hit.tab==='find')setQuery(hit.title);requestAnimationFrame(()=>openTask(hit.taskId!));}else if(hit.kind==='pair'){setPairJump({theme:hit.pairTheme,practiceId:hit.pairPracticeId,talkId:hit.pairTalkId,agreementId:hit.pairAgreementId,scrollId:hit.scrollId});}else if(hit.scrollId){revealAndScroll(hit.scrollId);}else if(hit.tab==='find'&&quickQ.trim()){setQuery(quickQ.trim());}};
  const revealAndScroll=(id:string)=>{const go=(tries=0)=>{const el=document.getElementById(id);if(!el){if(tries<40)requestAnimationFrame(()=>go(tries+1));return;}let n:HTMLElement|null=el;while(n){if(n instanceof HTMLDetailsElement)n.open=true;n=n.parentElement;}el.scrollIntoView({behavior:'smooth',block:'start'});};requestAnimationFrame(()=>go());};
  const openProfile=()=>{callClose(()=>{setTaskId(null);setDirty(false);setModal('profile');});};
- const selectChapter=(id:string)=>{setChapter(id);setGroupId(groups.find(g=>g.chapter===id&&scoped.some(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na'))?.id||groups.find(g=>g.chapter===id)?.id||'');};
+ const selectChapter=(id:string)=>{setChapter(id);setGroupId(groups.find(g=>g.chapter===id&&scoped.some(t=>g.ids.includes(t.id)&&book.records[t.id]?.status!=='na'))?.id||groups.find(g=>g.chapter===id)?.id||'');};const openShopping=()=>{setTab('journey');selectChapter('life');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('journey-shopping')?.scrollIntoView({behavior:'smooth',block:'start'})));};const openMoney=(id:string)=>{setTab('money');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})));};
  const saveRecord=async(r:TaskRecord,mode:'quiet'|'status'='status')=>{if(!task)return false;const msg=mode==='quiet'?'':r.status==='done'?'記録を保存しました':r.status==='na'?'スキップとして保存しました':'ふたりの記録を保存しました';const prevStatus=book.records[task.id]?.status;const result=await data.mutate({action:'record',id:task.id,record:r},msg);if(result){noteStampChange(task.id,prevStatus,r.status);setDirty(false);if(mode==='status'&&(r.status==='done'||r.status==='na'))forceClose();}return !!result;};
  const saveProfile=async(profile:Profile)=>{if(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'))forceClose();};
  const savePractice=async(id:string,record:PracticeRecord)=>{return !!(await data.mutate({action:'practice',id,record},''));};
@@ -267,7 +269,7 @@ export default function FutureNotebook(){
  <DeskBoard book={book} busy={data.busy} syncStatus={data.syncStatus} save={boardSave} onOpenSync={()=>{setTab('settings');revealAndScroll('settings-gist-sync');}} line={line} onOpenLine={()=>{setTab('settings');revealAndScroll('settings-line-notify');}}/>
  <WeekTogether profile={p} range={week.range} items={week.items} shares={week.shares} records={book.records} busy={data.busy} onOpenTask={openTask} onOpenCalendar={openCalendarAt} onToggleCheck={(id,who)=>void togglePairCheck(id,who)}/>
  <LaterList later={laterBook} profile={p} busy={data.busy} canShare={!!readMe()} onOpen={openLater} onShare={(it,text)=>void shareLater(it,text)} renderInline={laterInline}/>
- <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'}));}}/>
+ <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'}));}} onGoMoney={()=>openMoney('money-totals')}/>
  <HomeInsightPanels
   onOpenTask={openTask}
   profile={p}
@@ -302,10 +304,10 @@ export default function FutureNotebook(){
   <details className="deadline-secondary-fold">
    <summary>
     <h2 className="deadline-block-label">覚えておきたい数字</h2>
-    <span className="hint">いまの二人の前提に合わせた目安</span>
+    <span className="hint">お金タブへ移動しました</span>
    </summary>
-   <p className="deadline-block-intro">いまの二人の前提に合わせて並べた、覚えておきたい目安です。</p>
-   <HeroNumbersPanel profile={p}/>
+   <p className="deadline-block-intro">覚えておきたい数字は、お金タブへ移動しました。</p>
+   <button type="button" className="text-button" onClick={()=>openMoney('money-hero')}>お金タブで見る</button>
   </details>
  </section>
  <section id="deadline-block-institutional" className="deadline-block" aria-label="制度の期限">
@@ -348,9 +350,43 @@ export default function FutureNotebook(){
   </details>
  </section>
 </TabsContent>
+ <TabsContent value="money" className="tab-surface money-tab">
+ <SectionTitle eyebrow="お金" title="お金のことを、ひとつに。" sub="家計の分け方、記録した金額、お金の締切。ロードマップのスタンプはここへ移していません。"/>
+ <nav className="deadlines-mini-nav" aria-label="お金タブ内の節">
+  <a href="#pair-household">家計の分け方</a>
+  <a href="#money-shopping">買い物リスト</a>
+  <a href="#money-totals">金額の集計</a>
+  <a href="#money-hero">数字</a>
+  <a href="#money-deadlines">締切</a>
+  <a href="#money-faq">項目と質問</a>
+ </nav>
+ <HouseholdSplitCard value={book.household||emptyHousehold} busy={data.busy} onSave={async patch=>!!(await data.mutate({action:'household',patch},'家計の分け方を、ふたりの合意として残しました'))}/>
+ <section id="money-shopping" className="paper-card money-block" aria-label="新生活の買い物リスト">
+  <h2 className="deadline-block-label">新生活の買い物リスト</h2>
+  <p className="hint">ロードマップの「新生活」にあります。こちらへは移していません。</p>
+  <button type="button" className="text-button" onClick={openShopping}>ロードマップの新生活で開く</button>
+ </section>
+ <MoneySummary book={book}/>
+ <div id="money-hero"><HeroNumbersPanel profile={p}/></div>
+ <InstitutionalDeadlines moneyOnly child={p.child} home={p.home}/>
+ <p className="hint money-moved">届出だけの期限と、時期の区切りはカレンダーに残しています。</p>
+ <div className="stack-actions">
+  <Action secondary onClick={()=>{setTab('deadlines');revealAndScroll('deadline-block-institutional');}}>カレンダーの制度の期限</Action>
+  <Action secondary onClick={()=>{setPairBookOpen(true);setPairJump({theme:'お金・働き方'});setTab('pair');}}>博士の「お金・働き方」</Action>
+  <Action secondary onClick={()=>{setTab('deadlines');revealAndScroll('deadline-block-phases');}}>時期の区切り</Action>
+ </div>
+ <details id="money-faq" className="paper-card money-block">
+  <summary><strong>給付・税・資産の項目（{moneyTasks.length}）</strong><span className="hint">質問は項目を開くと読めます。ロードマップのスタンプはそのままです。</span></summary>
+  <div className="results-list">{moneyTasks.map(t=>renderTask(t,true))}</div>
+ </details>
+ <details id="money-contracts" className="paper-card money-block">
+  <summary><strong>契約・固定費の項目（{moneyContracts.length}）</strong><span className="hint">保険・光熱・カードなど。質問は項目を開くと読めます。</span></summary>
+  <div className="results-list">{moneyContracts.map(t=>renderTask(t,true))}</div>
+ </details>
+ </TabsContent>
  <TabsContent value="pair" forceMount className="tab-surface pair-tab data-[state=inactive]:hidden">
   <FutariDaily book={book} busy={data.busy} save={futariSave} active={tab==='pair'}/>
-  <HouseholdSplitCard value={book.household||emptyHousehold} busy={data.busy} onSave={async patch=>!!(await data.mutate({action:'household',patch},'家計の分け方を、ふたりの合意として残しました'))}/>
+  <p className="money-moved paper-card">家計の分け方は<button type="button" className="desk-linkish" onClick={()=>openMoney('pair-household')}>お金</button>タブへ移動しました。</p>
   <details className="paper-card pair-workbook-fold" id="pair-workbook" open={pairBookOpen} onToggle={e=>setPairBookOpen((e.currentTarget as HTMLDetailsElement).open)}>
    <summary><strong>ふたりの練習帳（行動・会話・合意）</strong><span className="hint">これまでのスタンプ台と、書きためた合意</span></summary>
    <SectionTitle eyebrow="ふたりの練習帳" title="スタンプで試す、日々の過ごし方。" sub="行動・会話・合意をスタンプ台で。押して試し、合わなければやめる表です。"/>

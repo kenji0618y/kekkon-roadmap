@@ -71,6 +71,10 @@ export const TAB_HITS: Omit<QuickSearchHit, 'score'>[] = [
   { id: 'tab-pair', kind: 'tab', title: '博士', hint: '今日の一問・レッスン動画・練習帳', tab: 'pair' },
   { id: 'tab-find', kind: 'tab', title: '探す', hint: '項目の一覧検索', tab: 'find' },
   { id: 'tab-settings', kind: 'tab', title: '設定', hint: 'プロフィール・バックアップ', tab: 'settings' },
+  { id: 'tab-money', kind: 'tab', title: 'お金', hint: '家計の分け方・金額の集計・お金の締切', tab: 'money' },
+  { id: 'money-household', kind: 'tab', title: '家計の分け方', hint: '5つの型・お金タブ', tab: 'money', scrollId: 'pair-household' },
+  { id: 'money-shop', kind: 'tab', title: '新生活の買い物リスト', hint: 'ロードマップの新生活', tab: 'journey', scrollId: 'journey-shopping' },
+  { id: 'money-totals', kind: 'tab', title: '金額の集計', hint: '受け取った給付・祝金', tab: 'money', scrollId: 'money-totals' },
 ];
 
 const TAB_ALIASES: Record<string, string[]> = {
@@ -80,6 +84,10 @@ const TAB_ALIASES: Record<string, string[]> = {
   'tab-pair': ['博士', 'ふたり', '練習帳', '会話', '合意', 'pair'],
   'tab-find': ['探す', '検索', '制度', 'find', 'さがす'],
   'tab-settings': ['設定', 'プロフィール', 'settings', 'せってい'],
+  'tab-money': ['お金', '家計', '費用', '給付', 'money'],
+  'money-household': ['家計の分け方', '家計管理', '共同口座'],
+  'money-shop': ['買い物リスト', '買い物', '新生活の買い物'],
+  'money-totals': ['金額', '祝金', '受取', '集計'],
 };
 
 export const SETTING_HITS: Omit<QuickSearchHit, 'score'>[] = [
