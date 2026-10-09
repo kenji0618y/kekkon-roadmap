@@ -1,5 +1,5 @@
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
-import {ArrowDownToLine,ArrowRight,ArrowUpRight,CalendarDays,Check,ChevronRight,Cloud,CloudCheck,Download,ExternalLink,Heart,HeartHandshake,House,Info,LoaderCircle,Map,MapPin,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,Wallet,X} from 'lucide-react';
+import {Archive,ArrowDownToLine,ArrowRight,ArrowUpRight,CalendarDays,Check,ChevronRight,Cloud,CloudCheck,Download,ExternalLink,Heart,HeartHandshake,House,Info,LoaderCircle,Map,MapPin,Printer,RefreshCw,Search,Settings2,ShieldCheck,Sparkles,Trash2,Users,Wallet,X} from 'lucide-react';
 import {toast} from 'sonner';
 import {Tabs,TabsContent,TabsList,TabsTrigger} from './components/ui/tabs';
 import {Accordion,AccordionContent,AccordionItem,AccordionTrigger} from './components/ui/accordion';
@@ -38,10 +38,9 @@ import {DeskRoleLabels,FilingWeekPath} from './components/WhereToLook';
 import {StampIllustBoard} from './components/StampIllustBoard';
 import {ExcludeAndLiesPanel,HeroNumbersPanel,HomeInsightPanels,InstitutionalDeadlines,PhasesPanel} from './components/SeedContentPanels';
 import {DeadlinesCalendar} from './components/DeadlinesCalendar';
-import {CalendarViewSwitch,GoogleFamilyCalendar} from './components/GoogleFamilyCalendar';
-import {readCalView,writeCalView,type CalView} from './lib/google-cal';
+import {GoogleFamilyCalendar} from './components/GoogleFamilyCalendar';
 import {WeekTogether} from './components/WeekTogether';
-import {MeetingCard,MeetingEditor,RemindersCard,type ReminderSave} from './components/ReminderSettings';
+import {MeetingCard,RemindersCard,type ReminderSave} from './components/ReminderSettings';
 import {REMIND_WINDOW_DAYS,calendarItems,icsTriggers,meetingDates,meetingRrule,nextReminder,payloadKey,remindOffsets,remindersPayload} from './lib/reminders';
 import {readRemindSync,writeRemindSync,appUrl} from './lib/remind-sync';
 import {ShoppingList,type ShopSave} from './components/ShoppingList';
@@ -56,7 +55,7 @@ import {absoluteDeadlines,excludeItems,groups,homeContent,practices,relativeDead
 import {buildQuickSearchHits,groupQuickSearchHits,taskMatchesQuery,type QuickSearchHit} from './lib/quick-search';
 import yearlyUpdateMd from './data/YEARLY_UPDATE.md?raw';
 const typeLabels={procedure:'手続き',benefit:'給付・助成',tax:'税の制度',investment:'資産形成',contract:'契約の見直し',conversation:'ふたりで話す'};
-const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'money',label:'お金',short:'お金',icon:Wallet},{id:'pair',label:'博士',short:'博士',icon:HeartHandshake},{id:'find',label:'探す',short:'探す',icon:Search},{id:'settings',label:'設定',short:'設定',icon:Settings2}];
+const nav=[{id:'desk',label:'デスク',short:'デスク',icon:House},{id:'journey',label:'ロードマップ',short:'ロードマップ',icon:Map},{id:'deadlines',label:'カレンダー',short:'カレンダー',icon:CalendarDays},{id:'money',label:'お金',short:'お金',icon:Wallet},{id:'pair',label:'博士',short:'博士',icon:HeartHandshake},{id:'find',label:'探す',short:'探す',icon:Search},{id:'archive',label:'アーカイブ',short:'アーカイブ',icon:Archive},{id:'settings',label:'設定',short:'設定',icon:Settings2}];
 type Modal='profile'|'pair'|null;
 export default function FutureNotebook(){
  const [tab,setTab]=useState('desk'),[chapter,setChapter]=useState('prepare'),[groupId,setGroupId]=useState(groups[0].id),[chatOpen,setChatOpen]=useState(false);
@@ -110,10 +109,10 @@ export default function FutureNotebook(){
  ],[weddingExport,anniversaryExport,dated,absExport,pairExport,meetingExport,remindR]);
  const week=useMemo(()=>buildWeek({today,tasks:scoped,profile:p,records:book.records,events:book.events||[],rules:absoluteDeadlines.filter(d=>deadlineVisible(d,p)&&validDate(d.date))}),[today,scoped,p,book.records,book.events]);
  const [calFocus,setCalFocus]=useState<{date:string,n:number}|null>(null);
- // カレンダータブの表示（Google（ファミリー）／アプリの予定）。端末ごと。デスクから日付を開くときはアプリの予定に切りかえる（その日はアプリのカレンダーにある）。
- const [calView,setCalViewState]=useState<CalView>(()=>readCalView());
- const setCalView=(v:CalView)=>{setCalViewState(v);writeCalView(v);};
- const openCalendarAt=(date:string)=>{setCalView('app');setCalFocus(f=>({date,n:(f?.n||0)+1}));setTab('deadlines');requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'})));};
+ // 2026-10-09 カレンダータブは Google の埋め込みだけ。外した中身は「アーカイブ」タブ（Kenji 18:15「アーカイブのタブを作ってそこに整理して置く」）：
+ // 制度の期限（deadline-block-institutional）・項目の予定（deadline-block-schedule）・時期の区切り（deadline-block-phases）・アプリの予定＋書き出し（archive-app-calendar）。どれも折りたたみ。
+ const openCalendarAt=(date:string)=>{setCalFocus(f=>({date,n:(f?.n||0)+1}));openBlock('archive','archive-app-calendar');};
+ const openBlock=(t:string,id:string)=>{setTab(t);revealAndScroll(id);};
  const moneyTasks=scoped.filter(t=>(t.type==='benefit'||t.type==='tax'||t.type==='investment')&&book.records[t.id]?.status!=='na');
  const moneyContracts=scoped.filter(t=>t.type==='contract'&&/保険|固定費|財形|貸付|カード|火災|電気|ガス|預金|NHK|賠償|ポイント|回線|携帯|プライム/.test(t.title)&&book.records[t.id]?.status!=='na');
  const next=actionable.filter(t=>!['done','applied','waiting'].includes(book.records[t.id]?.status||'todo')).sort((a,b)=>{
@@ -262,14 +261,14 @@ export default function FutureNotebook(){
  return <LaterProvider value={laterCtx}><a className="skip-link" href="#main-content">本文へ進む</a><Toaster theme="light" position="top-center" richColors visibleToasts={1}/><PwaUpdateBanner/>
  <Tabs value={tab} onValueChange={v=>{if(v==='pair')setChatOpen(false);setTab(v);}} className="notebook-tabs" ref={tabsRef}>
  <header className="masthead site-header"><div className="masthead-inner"><button className="brand" onClick={()=>setTab('desk')} aria-label="Amityちゃん（デスクへ戻る）" title="デスクへ戻る"><span className="brand-seal">結</span><span className="wordmark">Amityちゃん<small>広島市・式なし</small></span></button><div className="header-right"><button type="button" className="header-search-btn" onClick={()=>{setQuickOpen(true);setQuickQ('');}} aria-label="項目・画面・期限を検索"><Search size={16}/><span>検索</span></button><span className="city-tag"><MapPin size={15}/>広島市{p.ward!=='未設定'?` ${p.ward}`:''}</span><button className="pair-pill" onClick={()=>setModal('pair')}><Users size={16}/><span>ふたりで使う</span></button><span className="save-status header-save" role="status">{data.busy?<><LoaderCircle className="spin" size={14}/>保存中</>:data.phase==='loading'?<>読み込み中…</>:data.phase==='error'?<>接続を確認</>:data.book?<><CloudCheck size={15}/>この端末に保存済み</>:<>まだ手帳を始めていません</>}</span></div></div>
- <div className="nav-wrap"><TabsList className="main-nav has-ind" aria-label="メインメニュー" ref={navListRef}>{nav.map(n=><TabsTrigger key={n.id} value={n.id}><n.icon/><span className="nav-label-full">{n.label}</span><span className="nav-label-short">{n.short}</span>{n.id==='deadlines'&&soon.length>0&&<i className="nav-dot"/>}</TabsTrigger>)}<span className="nav-ind" ref={navIndRef} aria-hidden="true"/></TabsList></div></header>
+ <div className="nav-wrap"><TabsList className="main-nav has-ind" aria-label="メインメニュー" ref={navListRef}>{nav.map(n=><TabsTrigger key={n.id} value={n.id}><n.icon/><span className="nav-label-full">{n.label}</span><span className="nav-label-short">{n.short}</span></TabsTrigger>)}<span className="nav-ind" ref={navIndRef} aria-hidden="true"/></TabsList></div></header>
  <main className="workspace" id="main-content">
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p><button onClick={()=>void data.refresh()}>再読み込み</button></div>}
  <TabsContent value="desk" className="tab-surface">
  <DeskBoard book={book} busy={data.busy} syncStatus={data.syncStatus} save={boardSave} onOpenSync={()=>{setTab('settings');revealAndScroll('settings-gist-sync');}} line={line} onOpenLine={()=>{setTab('settings');revealAndScroll('settings-line-notify');}}/>
  <WeekTogether profile={p} range={week.range} items={week.items} shares={week.shares} records={book.records} busy={data.busy} onOpenTask={openTask} onOpenCalendar={openCalendarAt} onToggleCheck={(id,who)=>void togglePairCheck(id,who)}/>
  <LaterList later={laterBook} profile={p} busy={data.busy} canShare={!!readMe()} onOpen={openLater} onShare={(it,text)=>void shareLater(it,text)} renderInline={laterInline}/>
- <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>{setTab('deadlines');requestAnimationFrame(()=>document.getElementById('deadline-block-calendar')?.scrollIntoView({behavior:'smooth',block:'start'}));}} onGoMoney={()=>openMoney('money-totals')}/>
+ <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>openBlock('archive','deadline-block-institutional')} onGoMoney={()=>openMoney('money-totals')}/>
  <HomeInsightPanels
   onOpenTask={openTask}
   profile={p}
@@ -287,69 +286,11 @@ export default function FutureNotebook(){
  </>}
  </section>
  {chapter==='life'&&<ShoppingList shopping={book.shopping||emptyShopping} profile={p} busy={data.busy} save={shopSave}/>}
- <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章や「カレンダー」のタブで、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
+ <div className={`milestone ${newLifeReady?'reached':''}`}><span className="milestone-seal">進</span><div><h3>{newLifeReady?'結婚準備と新生活の項目をひと通り確認しました。':'一歩ずつ、ふたりの暮らしに。'}</h3><p>{newLifeReady?'ほかの章で、次の一歩を続けられます。':'結婚準備と新生活の項目を進めると、ここに進捗がまとまります。'}</p></div></div>
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">
-<CalendarViewSwitch view={calView} onView={setCalView}/>
- <div className="section-title deadlines-head"><h1 className="sr-only">カレンダー</h1><div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length&&<p className="hint export-cal-hint">書き出せる予定はまだありません。</p>}</div></div>
- <nav className="deadlines-mini-nav" aria-label="カレンダータブ内の節">
-  <a href="#deadline-block-calendar">カレンダー</a>
-  <a href="#deadline-block-hero">数字</a>
-  <a href="#deadline-block-institutional">制度</a>
-  <a href="#deadline-block-schedule">項目の予定</a>
-  <a href="#deadline-block-phases">時期</a>
- </nav>
- {calView==='app'?<DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus} itemsFor={calExtrasFor} reminders={remindersVal} onOpenTask={openTask} meetingEditor={<MeetingEditor value={remindersVal} busy={data.busy} save={saveReminders}/>}/>:<GoogleFamilyCalendar cal={book.googleCal||emptyGoogleCal} busy={data.busy} onSaveId={async id=>!!(await data.mutate({action:'googleCal',patch:{id}},'カレンダーのIDを保存しました'))}/>}
- <section id="deadline-block-hero" className="deadline-block" aria-label="覚えておきたい数字">
-  <details className="deadline-secondary-fold">
-   <summary>
-    <h2 className="deadline-block-label">覚えておきたい数字</h2>
-    <span className="hint">お金タブへ移動しました</span>
-   </summary>
-   <p className="deadline-block-intro">覚えておきたい数字は、お金タブへ移動しました。</p>
-   <button type="button" className="text-button" onClick={()=>openMoney('money-hero')}>お金タブで見る</button>
-  </details>
- </section>
- <section id="deadline-block-institutional" className="deadline-block" aria-label="制度の期限">
-  <details className="deadline-secondary-fold" open>
-   <summary>
-    <h2 className="deadline-block-label">制度の期限（一覧）</h2>
-    <span className="hint">カレンダーと同じ締切を、リストでも確認</span>
-   </summary>
-   <p className="deadline-block-intro">日付が決まっている締切と、届出の相対期限。近いものだけ先に出します。</p>
-   <InstitutionalDeadlines child={p.child} home={p.home}/>
-  </details>
- </section>
- <section id="deadline-block-schedule" className="deadline-block" aria-label="これからの予定">
-  <details className="deadline-secondary-fold" open>
-   <summary>
-    <h2 className="deadline-block-label">項目の予定</h2>
-    <span className="hint">手帳の項目に紐づく日付・未設定</span>
-   </summary>
-   <p className="deadline-block-intro">二人の手帳に入っている日付つきの予定と、未設定の項目です。</p>
-   <div className="schedule-layout schedule-layout-solo"><section className="schedule-main"><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>手続きの日付を入れる</button></div>
- {dated.length?<div className="timeline timeline-dense">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={validDate(p.wdate)?undefined:<Action secondary onClick={openProfile}>婚姻日を入れる</Action>}>日付が分かれば期限を確認できます。各項目に、二人で決めた予定日を入れることもできます。</EmptyState>}
- {missingDates.length>0&&<details className="missing-dates missing-dates-fold"><summary><strong>日付が分かったら確認</strong><span className="hint">{missingDates.length}件 · 閉じたまま大丈夫</span></summary>{missingDates.map(({task:t,deadline:d})=><button key={t.id} onClick={()=>openTask(t.id)}><span><strong>{t.title}</strong><small>{d.missing}が未設定</small></span><ChevronRight size={16}/></button>)}</details>}
- <details className="paper-card schedule-tips-fold">
-  <summary><strong>窓口・カレンダーのメモ</strong><span className="hint">必要なときだけ開く</span></summary>
-  <div className="schedule-tips-body">
-   <div><h3>窓口へ行く、その前に。</h3><p>表示した日付は原則の計算です。対象条件や受付方法も、各手続きの公式案内で確認してください。</p><p>出生届の休日補正は、確認できた2026・2027年の祝日を使っています。それ以外の年や他の手続きの休日は、窓口への確認を表示します。</p><SourceLink source={sources.holidays} compact/></div>
-   <div><h3>いつものカレンダーへ。</h3><p>書き出したファイルをGoogle・Appleなどのカレンダーへ読み込めます。3日前の通知を含みますが、通知されるかはカレンダー側の設定によります。</p><p className="hint">この手帳自体から通知は届きません。予定を変えた場合は、取り込んだ予定も更新してください。</p></div>
-  </div>
- </details>
- </section></div>
-  </details>
- </section>
- <section id="deadline-block-phases" className="deadline-block phases-in-deadlines" aria-label="時期の区切り">
-  <details className="deadline-phases-fold" open>
-   <summary>
-    <h2 className="deadline-block-label">時期の区切り</h2>
-    <span className="hint">結婚前後から暮らしまでの案内（スタンプの進みぐあいとは別）</span>
-   </summary>
-   <PhasesPanel child={p.child} home={p.home} onOpenProfile={openProfile}/>
-  </details>
- </section>
-</TabsContent>
+ <GoogleFamilyCalendar cal={book.googleCal||emptyGoogleCal} busy={data.busy} onSaveId={async id=>!!(await data.mutate({action:'googleCal',patch:{id}},'カレンダーのIDを保存しました'))}/>
+ </TabsContent>
  <TabsContent value="money" className="tab-surface money-tab">
  <SectionTitle eyebrow="お金" title="お金のことを、ひとつに。" sub="家計の分け方、記録した金額、お金の締切。ロードマップのスタンプはここへ移していません。"/>
  <nav className="deadlines-mini-nav" aria-label="お金タブ内の節">
@@ -369,11 +310,9 @@ export default function FutureNotebook(){
  <MoneySummary book={book}/>
  <div id="money-hero"><HeroNumbersPanel profile={p}/></div>
  <InstitutionalDeadlines moneyOnly child={p.child} home={p.home}/>
- <p className="hint money-moved">届出だけの期限と、時期の区切りはカレンダーに残しています。</p>
  <div className="stack-actions">
-  <Action secondary onClick={()=>{setTab('deadlines');revealAndScroll('deadline-block-institutional');}}>カレンダーの制度の期限</Action>
   <Action secondary onClick={()=>{setPairBookOpen(true);setPairJump({theme:'お金・働き方'});setTab('pair');}}>博士の「お金・働き方」</Action>
-  <Action secondary onClick={()=>{setTab('deadlines');revealAndScroll('deadline-block-phases');}}>時期の区切り</Action>
+  <Action secondary onClick={()=>openBlock('archive','deadline-block-phases')}>時期の区切り</Action>
  </div>
  <details id="money-faq" className="paper-card money-block">
   <summary><strong>給付・税・資産の項目（{moneyTasks.length}）</strong><span className="hint">質問は項目を開くと読めます。ロードマップのスタンプはそのままです。</span></summary>
@@ -426,13 +365,37 @@ export default function FutureNotebook(){
   <ExcludeAndLiesPanel/>
  </details>
  </TabsContent>
+ <TabsContent value="archive" className="tab-surface archive-tab">
+ <h1 className="sr-only">アーカイブ</h1>
+ <details id="deadline-block-institutional" className="paper-card moved-fold">
+  <summary><strong>制度の期限</strong><span className="hint">届出の期限もふくむ全部</span></summary>
+  <InstitutionalDeadlines child={p.child} home={p.home}/>
+  <p className="hint moved-note">日付は原則の計算です。出生届の休日は2026・2027年の祝日で補正しています。<SourceLink source={sources.holidays} compact/></p>
+ </details>
+ <details id="deadline-block-schedule" className="paper-card moved-fold">
+  <summary><strong>項目の予定</strong><span className="hint">日付 {dated.length}件 · 14日以内 {soon.length}件</span></summary>
+  <div className="schedule-layout schedule-layout-solo"><section className="schedule-main"><div className="schedule-summary"><div><strong>{dated.length}</strong><span>日付のある予定</span></div><div><strong>{soon.length}</strong><span>14日以内・経過した原則日</span></div><button onClick={openProfile}><Settings2 size={17}/>手続きの日付を入れる</button></div>
+ {dated.length?<div className="timeline timeline-dense">{dated.map(({task:t,deadline:d},i)=><button className={`timeline-item ${difference(d.date,today)<=7?'near':''}`} key={`${t.id}-${d.kind}`} onClick={()=>openTask(t.id)}><span className="timeline-date"><small>{d.date.slice(0,4)}年</small><strong>{monthDay(d.date)}</strong><span>{new Intl.DateTimeFormat('ja-JP',{weekday:'short',timeZone:'UTC'}).format(new Date(d.date+'T00:00:00Z'))}曜日</span></span><span className="timeline-body"><span className="timeline-top"><span className={`status ${d.kind==='personal'?'status-learned':''}`}>{d.kind==='personal'?'二人の予定':d.uncertain?'原則日・要確認':'届出期限'}</span><span className="countdown">{deadlineText(d.date,today)}</span></span><strong>{t.title}</strong><span>{d.basis}</span></span><ChevronRight size={18}/></button>)}</div>:<EmptyState symbol={<CalendarDays/>} title="次の予定を、ひとつ決めよう。" action={validDate(p.wdate)?undefined:<Action secondary onClick={openProfile}>婚姻日を入れる</Action>}>日付が分かれば、ここに期限が出ます。</EmptyState>}
+ {missingDates.length>0&&<details className="missing-dates missing-dates-fold"><summary><strong>日付が分かったら確認</strong><span className="hint">{missingDates.length}件 · 閉じたまま大丈夫</span></summary>{missingDates.map(({task:t,deadline:d})=><button key={t.id} onClick={()=>openTask(t.id)}><span><strong>{t.title}</strong><small>{d.missing}が未設定</small></span><ChevronRight size={16}/></button>)}</details>}
+ </section></div>
+ </details>
+ <details id="deadline-block-phases" className="paper-card moved-fold">
+  <summary><strong>時期の区切り</strong><span className="hint">結婚前後から暮らしまで</span></summary>
+  <PhasesPanel child={p.child} home={p.home} onOpenProfile={openProfile}/>
+ </details>
+ <details id="archive-app-calendar" className="paper-card moved-fold app-cal-fold"><summary><strong>アプリの予定</strong><span className="hint">お知らせのもと · カレンダーに書き出す</span></summary>
+  <div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length&&<p className="hint export-cal-hint">書き出せる予定はまだありません。</p>}</div>
+  <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus} itemsFor={calExtrasFor} reminders={remindersVal} onOpenTask={openTask}/>
+ </details>
+ </TabsContent>
  <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="設定" title="ふたりらしい手帳に。" sub="よく使うものから順に並べています。"/>
  <SettingsOverview sync={{on:data.syncConfig.enabled,status:data.syncStatus,problem:!!data.syncProblem}} line={line.state} ai={{on:grokEnabled,key:!!grokKey.trim()}} go={revealAndScroll}/>
  <div className="settings-stack">
  <SettingsCard id="settings-profile" icon={<Users size={20}/>} title="ふたりのプロフィール" lead="呼び名・住まい・婚姻日。表示する制度がこれで決まります。"><p className="profile-names">{p.name1||'一人目'} <span>&</span> {p.name2||'二人目'}</p><dl><div><dt>住まい</dt><dd>広島市 {p.ward==='未設定'?'（区は未設定）':p.ward}</dd></div><div><dt>婚姻日・予定日</dt><dd>{p.wdate?shortDate(p.wdate):'未設定'}</dd></div><div><dt>子育ての章</dt><dd>{['unknown','none'].includes(p.child)?'表示していません':'選んだ段階を表示'}</dd></div></dl><Action secondary onClick={openProfile}>プロフィールを整える<ArrowRight/></Action></SettingsCard>
  <SettingsCard id="settings-backup" icon={<ArrowDownToLine size={20}/>} title="データ（書き出し・バックアップ）" lead="記録はこの端末の中。受け渡しや機種変更はバックアップで。" more={<><p>記録（進みぐあい・メモ・金額）は、この端末のブラウザの中に保存されます。二人で同じ手帳を使うときや端末を変えるときは、バックアップのファイルを書き出して、もう一方の端末で読み込んでください。</p><p className="hint">バックアップには、名前・日付・メモが入ります。渡す相手と保管先を選んでください。</p><p className="hint">以前の版で書き出したファイルも読み込めます（自動では移りません）。</p></>}><input ref={uploadRef} type="file" accept=".json,application/json" className="sr-only" aria-label="手帳のバックアップ" onChange={e=>{const file=e.target.files?.[0];if(file)void loadBackup(file);e.target.value='';}}/><div className="stack-actions"><Action secondary onClick={exportBackup} disabled={!data.book}><Download/>バックアップを書き出す</Action><Action secondary onClick={()=>uploadRef.current?.click()}><ArrowUpRight/>バックアップを読み込む</Action><Action secondary onClick={()=>window.print()}><Printer/>手帳を印刷・PDFにする</Action></div></SettingsCard>
  <SyncSettings data={data} profile={p}/>
- <LineNotifySettings book={book} line={line} save={saveLineNotify} onOpenSync={()=>revealAndScroll('settings-gist-sync')}><RemindersCard value={remindersVal} busy={data.busy} save={saveReminders} lineState={line.state} sync={remSync} preview={remindPreview}/><MeetingCard value={remindersVal} busy={data.busy} save={saveReminders} lineState={line.state} sync={remSync}/></LineNotifySettings>
+ <LineNotifySettings book={book} line={line} save={saveLineNotify} onOpenSync={()=>revealAndScroll('settings-gist-sync')}><RemindersCard value={remindersVal} busy={data.busy} save={saveReminders} lineState={line.state} sync={remSync} preview={remindPreview}/><MeetingCard value={remindersVal} busy={data.busy} save={saveReminders} lineState={line.state} sync={remSync}/>
+</LineNotifySettings>
  <SettingsCard id="settings-ai" icon={<Sparkles size={20}/>} title="AI（Amityちゃんの調べもの）" chip={<StatusChip tone={!grokEnabled?'off':grokKey.trim()?'on':'wait'}>{!grokEnabled?'オフ':grokKey.trim()?'オン':'キーなし'}</StatusChip>} lead="オンのときだけ xAI に送ります（クレジットを使います）。" more={<><p>Amityちゃんは、手帳の内容から探すのに加えて、AI（xAI の Grok）で調べた答えを足せます。AIで調べるには、下の「AIのキーと接続先」に xAI のキーを入れてください。キーはこの端末の中だけに保存され、同期やバックアップには入りません（もう一方の端末では、その端末でも入れてください）。キーが無くても、手帳の中から探す答えは出ます。</p><p className="hint">オフのときは、Amityちゃんのチャット・「今の制度を調べる」・博士タブのAI助言は、すべて手帳の中だけから答えます（xAIへは送りません）。オンでキーがあるときだけクレジットを使います。この端末だけに保存されます。</p></>}><label className="scope-toggle settings-switch"><Switch checked={grokEnabled} onCheckedChange={v=>{setGrokEnabled(v);setGrokEnabledState(v);toast.success(v?'AIを使う（クレジットを使う）をオンにしました':'AIをオフにしました（xAIへ送りません）');}}/><span>AIを使う（クレジットを使う）</span></label>
  <div id="settings-research" className="settings-tool"><h3><Search size={17}/>今の制度を調べる</h3><p className="hint">AIで短く調べます。「探す」タブで同じ言葉の項目も見られます。</p><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="policy-research-q">調べたいこと</Label><Input id="policy-research-q" value={researchQ} onChange={e=>setResearchQ(e.target.value)} placeholder="例：広島市 児童手当 申請、転入届の期限…" maxLength={200} autoComplete="off" disabled={researchBusy}/></div><div className="stack-actions"><Action secondary disabled={researchBusy||!researchQ.trim()} onClick={()=>void(async()=>{const q=researchQ.trim().slice(0,200);if(!q)return;setResearchBusy(true);setResearchOut('');try{if(!isGrokEnabled()){setResearchOut(GROK_AI_OFF_JA);toast.info('AIはオフです');}else{const r=await askGrokResearch(q);if(r.ok)setResearchOut(r.text);else if(r.error==='no-key'){markGrokLocalOnly('no-key');setResearchOut('AIのキーがまだ入っていません。下の「AIのキーと接続先」で xAI のキーを入れるか、まず「探す」タブで確認してね。');toast.info('キーがないため「探す」タブを開きます');setQuery(q);setTab('find');}else if(isGrokCreditsLimitResult(r.error)){markGrokLocalOnly('credits-limit');const local=answerDeskQuery(q,3,p);setResearchOut(`${GROK_CREDITS_LIMIT_JA}\n\n—— 手帳の中の案内 ——\n${local.text}`);toast.error(GROK_CREDITS_LIMIT_JA,{duration:8000});}else{setResearchOut(`調べられなかったよ。${grokErrorJa(r.error)} 公式案内もあわせて確認してね。`);toast.error(grokErrorJa(r.error));}}}finally{setResearchBusy(false);}})()}>{researchBusy?<><LoaderCircle className="spin" size={16}/>調べています…</>:<><Sparkles size={16}/>Amityに調べてもらう</>}</Action><Action secondary disabled={!researchQ.trim()} onClick={()=>{setQuery(researchQ.trim());setTab('find');}}>「探す」で見る<ArrowRight/></Action></div>{researchOut&&<div className="research-result" role="status"><p className="hint" style={{marginBottom:6}}>Amityの調べメモ（金額は勝手に作りません。結婚新生活支援は広島市では受けられません）</p><p style={{whiteSpace:'pre-wrap',fontSize:13,lineHeight:1.55,margin:0}}>{researchOut}</p></div>}<p className="hint" style={{marginTop:10}}>{!isGrokEnabled()?'AIはオフです（上のスイッチでオンにできます）。':loadGrokKey()?'AIで調べられます。':'AIのキーがなくても「探す」タブは使えます。'}</p></div>
  <Fold id="settings-grok" title="AIのキーと接続先" hint="xAI のキー・接続先・利用枠"><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="amity-grok-key">xAI のキー</Label><Input id="amity-grok-key" type="password" autoComplete="off" value={grokKey} onChange={e=>setGrokKey(e.target.value)} onBlur={()=>{saveGrokKey(grokKey);if(grokKey.trim()){clearGrokLocalOnly();}else{markGrokLocalOnly('no-key');}toast.success(grokKey.trim()?'AIのキーをこの端末に保存しました':'AIのキーを消しました');}} placeholder="xAI のキーを貼り付け" maxLength={200}/></div><div className="field" style={{width:'100%',marginBottom:12}}><Label htmlFor="amity-grok-base">接続先のURL（ふだんは変えません）</Label><Input id="amity-grok-base" value={grokBase} onChange={e=>setGrokBase(e.target.value)} onBlur={()=>{saveGrokBase(grokBase||DEFAULT_GROK_BASE);setGrokBase(loadGrokBase());}} placeholder={DEFAULT_GROK_BASE} maxLength={200} autoComplete="off"/><p className="hint" style={{marginTop:6}}>初期値 {DEFAULT_GROK_BASE}</p></div>
@@ -483,7 +446,7 @@ export default function FutureNotebook(){
  
  <Sheet open={quickOpen} onOpenChange={open=>{setQuickOpen(open);if(!open)setQuickQ('');}}><SheetContent side="bottom" className="quick-search-sheet" showCloseButton={true}><SheetHeader><SheetTitle>さがす</SheetTitle><SheetDescription>項目・画面・期限・設定・ふたりの練習へジャンプできます。</SheetDescription></SheetHeader><div className="quick-search-body"><label className="search-box quick-search-input"><Search size={20}/><Input autoFocus value={quickQ} onChange={e=>setQuickQ(e.target.value)} placeholder="項目・画面・期限を検索" aria-label="項目・画面・期限を検索" maxLength={80}/>{quickQ&&<button type="button" className="icon-button" onClick={()=>setQuickQ('')} aria-label="クリア"><X size={16}/></button>}</label><div className="quick-search-list" role="listbox" aria-label="検索結果">{!quickQ.trim()&&<p className="quick-search-hint">よく使う画面</p>}{quickGroups.map(g=><div key={g.kind} className="quick-search-group"><h3>{g.label}</h3>{g.items.map(hit=><button type="button" key={hit.id} className="quick-search-item" onClick={()=>runQuickHit(hit)}><span className="quick-search-item-main"><strong>{hit.title}</strong>{hit.hint&&<small>{hit.hint}</small>}</span><ChevronRight size={16}/></button>)}</div>)}{quickQ.trim()&&!quickHits.length&&<p className="quick-search-empty">見つかりませんでした。別の言葉で試してください。</p>}</div></div></SheetContent></Sheet>
 
- <DeskChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} profile={p} onOpenTask={(id)=>{setChatOpen(false);openTask(id);}} onGoFind={(kw)=>{setChatOpen(false);if(kw)setQuery(kw);setTab('find');}}/>
+ <DeskChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} profile={p} onOpenTask={(id)=>{setChatOpen(false);if(id==='deadlines')openBlock('archive','institutional-deadlines');else if(id==='phases')openBlock('archive','deadline-block-phases');else if(id==='exclude')openBlock('find','find-exclude-lies');else openTask(id);}} onGoFind={(kw)=>{setChatOpen(false);if(kw)setQuery(kw);setTab('find');}}/>
  <OnboardingSheet open={onboardOpen&&!modal&&!taskId} profile={p} busy={data.busy} onSave={async(profile)=>{const ok=!!(await data.mutate({action:'profile',profile},'ふたりに合わせて手帳を整えました'));if(ok)setOnboardOpen(false);return ok;}} onSkip={()=>{markOnboardingDone();setOnboardOpen(false);}}/>
 
  <div className="print-book"><h1>Amityちゃん</h1><h2>{p.name1||'一人目'}さん & {p.name2||'二人目'}さん</h2><p>広島市 {p.ward!=='未設定'?p.ward:''} · 書き出し {shortDate(today)}</p><h2>これまでの一歩</h2><p>{done.length}項目が完了</p><table><thead><tr><th>項目</th><th>状況・記録</th></tr></thead><tbody>{tasks.filter(t=>(p.ceremony!=='no'||!isCeremonyTask(t))&&book.records[t.id]).map(t=><tr key={t.id}><td>{t.title}</td><td>{statusNames[book.records[t.id].status]||book.records[t.id].status}{book.records[t.id].note?` · ${book.records[t.id].note}`:''}<br/>{book.records[t.id].due&&`予定：${book.records[t.id].due}`}</td></tr>)}</tbody></table><h2>これからの予定</h2>{dated.map(({task:t,deadline:d})=><p key={`${t.id}-${d.kind}`}>{d.date} · {t.title} · {d.kind==='personal'?'二人の予定':'原則・条件を確認'}<br/>{d.basis}</p>)}<h2>ふたりの言葉</h2>{book.memories.map(m=><section key={m.id}><h3>{m.date} {m.title}</h3><p className="print-letter">{m.text}</p></section>)}<p>各制度の最新条件は手帳内の公式参照先で確認してください。案内の内容確認日：{reviewedOn}</p></div>

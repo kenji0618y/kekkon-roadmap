@@ -86,12 +86,12 @@ export function InstitutionalDeadlines({child, home, moneyOnly = false}: {child:
   const featured = abs.filter((d) => isProminentDeadline(d.date, today) && !deadlineClosedLabel(d))
   const rest = abs.filter((d) => !featured.includes(d))
 
-  const heading = moneyOnly ? '制度・お金の締切' : '制度・カレンダー締切'
+  const heading = moneyOnly ? '制度・お金の締切' : '制度の締切'
   return (
     <section id={moneyOnly ? 'money-deadlines' : 'institutional-deadlines'} className="seed-block institutional-deadlines" aria-label={heading}>
       <div className="seed-block-head">
         <h3>{heading}</h3>
-        <p className="hint">{moneyOnly ? 'お金に関係する締切だけです（税・給付・補助など）。届出だけの期限はカレンダーに残しています。金額は収録した案内にあるものだけです。' : '日付が決まっている締切です。金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。過ぎた日付は自動で消えます。'}</p>
+        <p className="hint">{moneyOnly ? 'お金に関係する締切だけです。金額は収録した案内にあるものだけです。' : '金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。'}</p>
       </div>
       {abs.length === 0 ? (
         <p className="hint seed-deadline-empty">いま表示できる絶対締切はありません。相対期限は下を見てください。</p>

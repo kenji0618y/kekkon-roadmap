@@ -25,7 +25,7 @@ export function WeekTogether({profile,range,items,shares,records,busy,onOpenTask
   return <section id="desk-week" className="seed-block week-together" aria-label="今週ふたりでやること">
     <div className="week-head">
       <h3><ListChecks size={20} aria-hidden/>今週ふたりでやること</h3>
-      <p className="hint">{md(range.start)}〜{md(range.end)} · 項目の期限とカレンダーの予定から</p>
+      <p className="hint">{md(range.start)}〜{md(range.end)} · 項目の期限とアプリの予定から</p>
     </div>
     <div className="week-shares">
       {shares.map(s=><div key={s.who} className={`week-share who-${s.who}`}>
@@ -35,14 +35,14 @@ export function WeekTogether({profile,range,items,shares,records,busy,onOpenTask
       </div>)}
     </div>
     {items.length===0?<div className="week-empty">
-      <p className="hint">今週の期限や予定はまだありません。カレンダーに予定を入れると、ここにも出ます。</p>
-      <button type="button" className="desk-board-link" onClick={()=>onOpenCalendar(range.start)}>カレンダーを開く</button>
+      <p className="hint">今週の期限や予定はまだありません。</p>
+      <button type="button" className="desk-board-link" onClick={()=>onOpenCalendar(range.start)}>アプリの予定を開く</button>
     </div>:<ul className="week-list">
       {items.map(it=>{
         const open=()=>it.kind==='task'&&it.taskId?onOpenTask(it.taskId):onOpenCalendar(it.date);
         const pc=it.taskId?pairChecks(records[it.taskId]):null;
         return <li key={it.key} className={`week-item kind-${it.kind}${it.done?' is-done':''}`}>
-          <button type="button" className="week-item-main" onClick={open} aria-label={`${it.title}（${it.kind==='task'?'項目を開く':'カレンダーで開く'}）`}>
+          <button type="button" className="week-item-main" onClick={open} aria-label={`${it.title}（${it.kind==='task'?'項目を開く':'アプリの予定で開く'}）`}>
             <span className="week-item-title">{it.title}</span>
             <span className="week-item-meta">
               {it.who!=='none'&&<span className={`week-chip who-${it.who}`}>{name[it.who]}</span>}
