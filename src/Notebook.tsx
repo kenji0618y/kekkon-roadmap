@@ -111,7 +111,6 @@ export default function FutureNotebook(){
  const [calFocus,setCalFocus]=useState<{date:string,n:number}|null>(null);
  // 2026-10-09 カレンダータブは Google の埋め込みだけ。外した中身は「アーカイブ」タブ（Kenji 18:15「アーカイブのタブを作ってそこに整理して置く」）：
  // 制度の期限（deadline-block-institutional）・項目の予定（deadline-block-schedule）・時期の区切り（deadline-block-phases）・アプリの予定＋書き出し（archive-app-calendar）。どれも折りたたみ。
- const openCalendarAt=(date:string)=>{setCalFocus(f=>({date,n:(f?.n||0)+1}));openBlock('archive','archive-app-calendar');};
  const openBlock=(t:string,id:string)=>{setTab(t);revealAndScroll(id);};
  const moneyTasks=scoped.filter(t=>(t.type==='benefit'||t.type==='tax'||t.type==='investment')&&book.records[t.id]?.status!=='na');
  const moneyContracts=scoped.filter(t=>t.type==='contract'&&/保険|固定費|財形|貸付|カード|火災|電気|ガス|預金|NHK|賠償|ポイント|回線|携帯|プライム/.test(t.title)&&book.records[t.id]?.status!=='na');
@@ -266,8 +265,6 @@ export default function FutureNotebook(){
  {data.error&&<div className="connection-error" role="alert"><Info size={18}/><p>{data.error}</p><button onClick={()=>void data.refresh()}>再読み込み</button></div>}
  <TabsContent value="desk" className="tab-surface">
  <DeskBoard book={book} busy={data.busy} syncStatus={data.syncStatus} save={boardSave} onOpenSync={()=>{setTab('settings');revealAndScroll('settings-gist-sync');}} line={line} onOpenLine={()=>{setTab('settings');revealAndScroll('settings-line-notify');}}/>
- <WeekTogether profile={p} range={week.range} items={week.items} shares={week.shares} records={book.records} busy={data.busy} onOpenTask={openTask} onOpenCalendar={openCalendarAt} onToggleCheck={(id,who)=>void togglePairCheck(id,who)}/>
- <LaterList later={laterBook} profile={p} busy={data.busy} canShare={!!readMe()} onOpen={openLater} onShare={(it,text)=>void shareLater(it,text)} renderInline={laterInline}/>
  <MarriageDesk book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} syncStatus={data.syncStatus} onOpenTask={openTask} onOpenProfile={openProfile} onGoDeadlines={()=>openBlock('archive','deadline-block-institutional')} onGoMoney={()=>openMoney('money-totals')}/>
  <HomeInsightPanels
   onOpenTask={openTask}
@@ -277,7 +274,7 @@ export default function FutureNotebook(){
  />
  </TabsContent>
  <TabsContent value="journey" className="tab-surface">
- <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">暮らしの道のり</p><h2>スタンプで進める、暮らしロードマップ</h2><p className="hint" style={{marginTop:6}}>章を選んで、絵の縁にあるスタンプを押していきます。項目の多い章は、絵が何枚かに分かれます。</p></div></div>
+ <div className="section-heading" id="journey-stamp-board"><div><p className="eyebrow">暮らしの道のり</p><h2>スタンプで進める、暮らしロードマップ</h2></div></div>
  <div className="chapter-nav" role="group" aria-label="暮らしの章">{chapters.map(c=>{const count=scoped.filter(t=>t.chapter===c.id&&book.records[t.id]?.status!=='na');const n=count.filter(t=>book.records[t.id]?.status==='done').length;return <button key={c.id} className={chapter===c.id?'active':''} onClick={()=>selectChapter(c.id)} aria-pressed={chapter===c.id}><span className="chapter-kanji">{c.kanji}</span><span>{c.label}<small>{count.length?`${n} / ${count.length}`:'必要になったら'}</small></span>{count.length>0&&n===count.length&&<Check size={15}/>}</button>;})}</div>
  <section className="journey-panel"><div className="journey-heading"><div><span className="eyebrow">{activeChapter.label}</span><h3>{activeChapter.description}</h3></div><span className="hint">絵の縁のスタンプを押すと、その項目が開きます。</span></div>
  {chapter==='child'&&['unknown','none'].includes(p.child)?<EmptyState symbol={<Heart/>} title="必要になった時に、この章を。" action={<Action secondary onClick={openProfile}>表示する段階を選ぶ</Action>}>妊娠・出産・子育ての項目は、今の二人の希望に合わせて開けます。</EmptyState>:!chapterGroups.length?<EmptyState symbol={<Map/>} title="この章に、今の二人向けのスタンプはありません。" action={<Action secondary onClick={openProfile}>設定を開く</Action>}>式の有無や働き方を変えると、表示されるマスが変わります。</EmptyState>:<>
@@ -290,6 +287,7 @@ export default function FutureNotebook(){
  </TabsContent>
  <TabsContent value="deadlines" className="tab-surface deadlines-tab">
  <GoogleFamilyCalendar cal={book.googleCal||emptyGoogleCal} busy={data.busy} onSaveId={async id=>!!(await data.mutate({action:'googleCal',patch:{id}},'カレンダーのIDを保存しました'))}/>
+ <WeekTogether profile={p} range={week.range} items={week.items} shares={week.shares} records={book.records} busy={data.busy} onToggleCheck={(id,who)=>void togglePairCheck(id,who)}/>
  </TabsContent>
  <TabsContent value="money" className="tab-surface money-tab">
  <SectionTitle eyebrow="お金" title="お金のことを、ひとつに。" sub="家計の分け方、記録した金額、お金の締切。ロードマップのスタンプはここへ移していません。"/>
@@ -386,6 +384,14 @@ export default function FutureNotebook(){
  <details id="archive-app-calendar" className="paper-card moved-fold app-cal-fold"><summary><strong>アプリの予定</strong><span className="hint">お知らせのもと · カレンダーに書き出す</span></summary>
   <div className="export-cal-wrap"><Action secondary onClick={exportCalendar}><Download/>カレンダーに書き出す</Action>{!calendarEvents.length&&<p className="hint export-cal-hint">書き出せる予定はまだありません。</p>}</div>
   <DeadlinesCalendar profile={p} events={book.events||[]} busy={data.busy} onSave={savePairEvent} onDelete={deletePairEvent} focus={calFocus} itemsFor={calExtrasFor} reminders={remindersVal} onOpenTask={openTask}/>
+ </details>
+ <details id="archive-later" className="paper-card moved-fold">
+  <summary><strong>あとで見る</strong><span className="hint">項目・質問・レッスンにつけた印（{laterBook.items.length}件）</span></summary>
+ <LaterList later={laterBook} profile={p} busy={data.busy} canShare={!!readMe()} onOpen={openLater} onShare={(it,text)=>void shareLater(it,text)} renderInline={laterInline}/>
+ </details>
+ <details id="archive-desk-detail" className="paper-card moved-fold">
+  <summary><strong>くわしく見る</strong><span className="hint">章ごとの進み・最近の動き・つながり・重さ・種類</span></summary>
+  <MarriageDesk detailOnly book={book} profile={p} scoped={scoped} actionable={actionable} done={done} soonCount={soon.length} today={today} hasBook={!!data.book} onOpenTask={openTask} onOpenProfile={openProfile}/>
  </details>
  </TabsContent>
  <TabsContent value="settings" className="tab-surface"><SectionTitle eyebrow="設定" title="ふたりらしい手帳に。" sub="よく使うものから順に並べています。"/>

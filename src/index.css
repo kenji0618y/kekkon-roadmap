@@ -1798,7 +1798,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .week-list{list-style:none;margin:0;padding:0}
 .week-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #efefe6}
 .week-item:first-child{border-top:0}
-.week-item-main{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:3px;background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer}
+.week-item-main{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:3px;background:none;border:0;padding:0;color:inherit;font:inherit;cursor:default}
 .week-item-title{font-weight:700;font-size:14px;color:#1c3c4a;line-height:1.5}
 .week-item.is-done .week-item-title{color:#7c8a80}
 .week-item-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -2038,4 +2038,5 @@ button.settings-chip:focus-visible{outline:2px solid #557;outline-offset:2px}
 .moved-fold[open]>summary{margin-bottom:12px}
 .moved-fold .seed-block-head h3,.moved-fold .seed-block-head .eyebrow{display:none}
 .moved-note{font-size:12px;margin:8px 0 0}
-#deadline-block-institutional,#deadline-block-schedule,#deadline-block-phases,#institutional-deadlines,#archive-app-calendar{scroll-margin-top:120px}
+#deadline-block-institutional,#deadline-block-schedule,#deadline-block-phases,#institutional-deadlines,#archive-app-calendar,#archive-later,#archive-desk-detail{scroll-margin-top:120px}
+.deadlines-tab .week-together{margin-top:18px}
