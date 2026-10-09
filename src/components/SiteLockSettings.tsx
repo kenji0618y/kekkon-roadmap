@@ -26,7 +26,7 @@ export function SiteLockSettings(){
   };
   return <div id="settings-site-lock" className="settings-sub">
     <h3><KeyRound size={17}/>この端末の合言葉</h3>
-    <p>このページは合言葉で開きます。一度入れた端末では、次から入れなくても開けます（合言葉そのものは保存していません）。</p>
+    <p>一度入れた端末では次から入れなくても開けます。</p>
     <p className="hint">{saved===null?'確かめています…':saved?'この端末は合言葉を覚えています。':'この端末には合言葉が保存されていません。'}消しても、手帳の記録は消えません。次に開くときに合言葉を入れ直します。</p>
     {!confirm
       ?<div className="stack-actions" style={{marginTop:10}}><Action secondary disabled={!saved||busy} onClick={()=>setConfirm(true)}><KeyRound size={16}/>この端末の合言葉を消す</Action></div>

@@ -170,7 +170,7 @@ export function MoneySummary({book}:{book:Book}){
         </div>
       ))}
     </div>
-    <p className="hint">投資枠・運用益は集計しません。異なる期間や区分の金額を足した「総お得額」は表示していません。同じ給付を重複して入力していないか、記録を確認してください。</p>
+    <p className="hint">同じ給付を二重に入れていないか確かめてください。</p>
   </section>;
 }
 
@@ -299,7 +299,7 @@ export function MarriageDesk({book,profile:p,scoped,actionable,done,soonCount,to
                       </button>
                     );
                   }):(
-                    <div className="desk-empty">まだ記録の変化がありません。ロードマップで一歩進めるとここに流れます。</div>
+                    <div className="desk-empty">まだ記録の変化はありません。</div>
                   )}
                 </div>
               </section>

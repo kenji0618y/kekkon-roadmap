@@ -85,7 +85,7 @@ export function SyncSettings({data,profile}:{data:BookData,profile:Profile}){
         <div className="field" style={{width:'100%',margin:'10px 0 4px'}}>
           <Label htmlFor="gist-id">同期先のID</Label>
           <Input id="gist-id" value={gistId} onChange={e=>setGistId(e.target.value.trim())} onBlur={()=>persist()} placeholder="空のままで、自動で見つけます" maxLength={64} autoComplete="off"/>
-          <p className="hint" style={{marginTop:6}}>空のままにしておけば、キーから自動で見つけます。</p>
+          
         </div>
       </details>
     </Fold>

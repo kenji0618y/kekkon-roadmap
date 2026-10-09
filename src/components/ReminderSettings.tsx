@@ -55,7 +55,7 @@ export function RemindersCard({value,busy,save,lineState,sync,preview}:{value:Re
     <div className="remind-pills">
       {REMIND_SLOTS.map(s=><Pill key={s} on={r.slot===s} disabled={busy} onClick={()=>void save({slot:s},`送る時間帯を「${SLOT_LABEL[s]}」にしました`)}>{SLOT_LABEL[s]}</Pill>)}
     </div>
-    <p className="hint">日付は、手帳に入っている日付と、ふたりが入れた日付だけを使います。カレンダーに入れた予定も自動で入り、お知らせする予定にはカレンダーで<Bell size={12} aria-label="鈴"/>の印が付きます。LINE公式アカウントの無料プランは送れる数に上限があるので、その日の分を1通にまとめ、送るものがない日は送りません。</p>
+    <p className="hint">その日の分は1通にまとめ、ない日は送りません。</p>
     {syncLine(lineState,sync,r.on)}
     {r.on&&(preview?<LinePreview head={`LINEでの見え方（次のお知らせ：${monthDay(preview.date)}）`} text={preview.text}/>:<p className="hint">この先35日に、お知らせする日はありません。</p>)}
   </div>;
@@ -86,9 +86,9 @@ export function MeetingEditor({value,busy,save}:{value:Reminders,busy?:boolean,s
 export function MeetingCard({value,busy,save,lineState,sync}:{value:Reminders,busy?:boolean,save:ReminderSave,lineState:LineState,sync:ReminderSync}){
   return <div className="remind-sub" id="settings-meeting">
     <h3><HeartHandshake size={17} aria-hidden/>月に一度のふたり会議</h3>
-    <p>毎月の会議の日を決めると、アプリの予定にくり返し出て、LINEで知らせます。日曜の「ふたり会議」はそのまま使えます。</p>
+    <p>毎月の会議の日をLINEで知らせます。</p>
     <MeetingEditor value={value} busy={busy} save={save}/>
-    <p className="hint">期限・記念日のお知らせと同じ日になったときは、1通にまとめます。会議のメモは記念手帳の「月に一度のふたり会議」に残ります。</p>
+    
     {syncLine(lineState,sync,value.meeting.on&&!value.on)}
   </div>;
 }

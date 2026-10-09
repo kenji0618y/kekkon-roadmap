@@ -94,7 +94,7 @@ export function InstitutionalDeadlines({child, home, moneyOnly = false}: {child:
         <p className="hint">{moneyOnly ? 'お金に関係する締切だけです。金額は収録した案内にあるものだけです。' : '金額は収録した案内にあるものだけ。最新は公式ページで確かめてください。'}</p>
       </div>
       {abs.length === 0 ? (
-        <p className="hint seed-deadline-empty">いま表示できる絶対締切はありません。相対期限は下を見てください。</p>
+        <p className="hint seed-deadline-empty">近い締切はありません。</p>
       ) : (
       <div className="seed-deadline-list">
         {featured.map((d) => (
@@ -117,7 +117,7 @@ export function InstitutionalDeadlines({child, home, moneyOnly = false}: {child:
       {rel.length > 0 && (
         <details className="seed-fold seed-fold-relative">
           <summary>
-            <span>{moneyOnly ? `お金に関係する相対期限（${rel.length}）` : `届出・イベントの相対期限（${rel.length}）· 必要なときだけ`}</span>
+            <span>{moneyOnly ? `お金に関係する相対期限（${rel.length}）` : `届出の期限（${rel.length}）`}</span>
           </summary>
           <div className="seed-relative seed-fold-body">
             <ul>
@@ -212,7 +212,7 @@ export function HomeInsightPanels({
       <section id="desk-next-actions" className="seed-block tomorrow" aria-label="次のアクション">
         <div className="seed-block-head">
           <h3>次のアクション</h3>
-          <p className="hint">まず取りかかる5つ。埋まらないぶんは、期限の近い項目で補っています。</p>
+          
         </div>
         {nextRows.length > 0 ? (
           <ol className="seed-tomorrow-list">
@@ -243,7 +243,7 @@ export function HomeInsightPanels({
             })}
           </ol>
         ) : (
-          <p className="hint seed-next-empty">今の候補はひと通り確認できました。結果待ちや、次の楽しみを手帳で確かめましょう。</p>
+          <p className="hint seed-next-empty">ひと通り確認できました。</p>
         )}
       </section>
     </div>
@@ -352,7 +352,7 @@ export function HeroNumbersPanel({profile}: {profile?: Profile | null} = {}) {
     <section className="seed-block" aria-label="覚えておきたい数字">
       <div className="seed-block-head">
         <h3>覚えておきたい数字</h3>
-        <p className="hint">いまの二人の前提に合わせて並べています。公式の案内は各項目でも確認できます。</p>
+        
       </div>
       <div className="seed-hero-grid">
         {heroOrdered.map((h) => (
@@ -385,7 +385,7 @@ export function PhasesPanel({
       <div className="seed-block-head">
         <h3>時期の区切りと出来事</h3>
         <p className="hint">
-          婚姻日 = {m0_definition} · 情報の確認日 {as_of} · {visible.length}の区切り / {eventTotal}の出来事
+          婚姻日 = {m0_definition} · 情報の確認日 {as_of}
         </p>
       </div>
       {visible.length === 0 ? (
@@ -400,7 +400,7 @@ export function PhasesPanel({
             ) : undefined
           }
         >
-          子どもの希望や住まいの計画を設定すると、合わせて案内が出ます。ロードマップの章でも進め方を確認できます。
+          設定すると案内が出ます。
         </EmptyState>
       ) : (
         <div className="seed-phase-list">

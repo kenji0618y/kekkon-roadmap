@@ -76,9 +76,9 @@ export function LineNotifySettings({book,line,save,onOpenSync,children}:{book:Bo
         <Label htmlFor="line-relay-url">お知らせの中継先（GoogleのスクリプトのURL）</Label>
         <Input id="line-relay-url" inputMode="url" autoComplete="off" spellCheck={false} value={url} onChange={e=>setUrl(e.target.value)} onBlur={()=>void saveUrl()} placeholder="https://script.google.com/macros/s/…/exec" maxLength={300} aria-invalid={urlBad||undefined}/>
         {urlBad?<p className="hint warn" style={{marginTop:6}}>「https://script.google.com/macros/s/」で始まり「/exec」で終わるURLだけ使えます。</p>
-          :<p className="hint" style={{marginTop:6}}>このURLは手帳と一緒に、ふたりの端末にそろいます。</p>}
+          :null}
       </div>
-      <p className="hint">合言葉は、端末どうしの自動同期のキーから、この端末の中で作ります。同じキーを入れたふたりの端末では、同じ合言葉になります。合言葉は手帳には保存されず、同期もされません。</p>
+      
       <div className="line-secret-actions">
         <Action secondary disabled={!line.hasSecret} onClick={()=>void copy()}>合言葉をコピー</Action>
       </div>
