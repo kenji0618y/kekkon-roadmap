@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Th3GYYc+K/3FC59QYNbd0gLXWDB2FRyqhDkLPx+dbpg='; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#f6f4ee">
+<meta name="site-root" content="./">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='7' y='14' width='18' height='14' rx='3' fill='%23555'/%3E%3Cpath d='M11 14v-4a5 5 0 0 1 10 0v4' fill='none' stroke='%23555' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<title>合言葉を入れてください</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#f6f4ee;color:#222;display:flex;align-items:center;justify-content:center;padding:24px}
+main{width:100%;max-width:360px;background:#fff;border:1px solid #ddd8cc;border-radius:16px;padding:28px 22px;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+h1{font-size:19px;margin:0 0 18px;text-align:center;font-weight:600}
+label{display:block;font-size:13px;margin-bottom:6px;color:#555}
+input{width:100%;font-size:17px;padding:12px;border:1px solid #bbb;border-radius:10px;background:#fff;color:#222}
+input:focus{outline:2px solid #557;outline-offset:1px}
+button{margin-top:14px;width:100%;font-size:16px;padding:12px;border:0;border-radius:10px;background:#333;color:#fff;font-weight:600}
+button:disabled{opacity:.6}
+#msg{min-height:1.4em;margin:12px 0 0;font-size:14px;line-height:1.5}
+#msg.err{color:#b3261e}
+p.note{font-size:12px;color:#666;line-height:1.6;margin:14px 0 0}
+</style>
+</head>
+<body>
+<main>
+<h1>合言葉を入れてください</h1>
+<form id="f" autocomplete="off">
+<label for="p">合言葉</label>
+<input id="p" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+<button id="b" type="submit">開く</button>
+</form>
+<p id="msg" role="status" aria-live="polite"></p>
+<button id="r" type="button" hidden>読み込み直す</button>
+<p class="note">一度入れると、この端末では次から入れなくて大丈夫です（合言葉そのものは保存しません）。</p>
+<p class="note">ホーム画面に追加するときは、開いたあとで追加してください。</p>
+</main>
+<script>
+(function(){
+'use strict';
+var ROOT=new URL(document.querySelector('meta[name="site-root"]').content,location.href);
+// service worker が別の場所で返したときもアイコン（平文）を指すように
+try{document.querySelector('link[rel="apple-touch-icon"]').href=new URL('icons/apple-touch-icon.png',ROOT).href}catch(e){}
+var $=function(id){return document.getElementById(id)};
+var msg=function(t,err){var m=$('msg');m.textContent=t||'';m.className=err?'err':''};
+var busy=function(on){$('b').disabled=on;$('p').disabled=on};
+var te=new TextEncoder(),S=crypto&&crypto.subtle;
+var u8=function(s){var b=atob(s),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a};
+function limit(p,ms){return new Promise(function(ok,ng){var t=setTimeout(function(){var e=new Error('timeout');e.timeout=1;ng(e)},ms);p.then(function(v){clearTimeout(t);ok(v)},function(e){clearTimeout(t);ng(e)})})}
+function db(){return limit(new Promise(function(ok,ng){var r=indexedDB.open('site-lock',1);r.onupgradeneeded=function(){r.result.createObjectStore('k')};r.onsuccess=function(){var d=r.result;d.onversionchange=function(){d.close()};ok(d)};r.onerror=function(){ng(r.error)}}),8000)}
+function tx(mode,fn){return db().then(function(d){return limit(new Promise(function(ok,ng){var t=d.transaction('k',mode),s=t.objectStore('k'),q=fn(s);t.oncomplete=function(){d.close();ok(q&&q.result)};t.onerror=t.onabort=function(){d.close();ng(t.error)}}),8000)})}
+var getKey=function(){return tx('readonly',function(s){return s.get('site')})};
+var putKey=function(v){return tx('readwrite',function(s){return s.put(v,'site')})};
+var delKey=function(){return tx('readwrite',function(s){return s.delete('site')})};
+// key changed: move the old key to 'site-prev'（at-rest data re-key; keep an existing one）
+var retireKey=function(old){return tx('readwrite',function(s){var q=s.get('site-prev');q.onsuccess=function(){if(!q.result)s.put(old,'site-prev');s.delete('site')};return q})};
+function site(){return limit(fetch(new URL('site.json',ROOT),{cache:'no-store'}),20000).then(function(r){if(!r.ok)throw new Error('net');return r.json()})}
+function open(key,box,aad){return S.decrypt({name:'AES-GCM',iv:u8(box.iv),additionalData:te.encode(aad)},key,u8(box.ct))}
+function baseKey(v){return v instanceof CryptoKey?Promise.resolve(v):S.importKey('raw',v,'HKDF',false,['deriveKey'])}
+function check(stored,s){return baseKey(stored).then(function(b){return S.deriveKey({name:'HKDF',hash:'SHA-256',salt:new Uint8Array(0),info:te.encode('site-lock/v1/content')},b,{name:'AES-GCM',length:256},false,['decrypt'])}).then(function(ck){return open(ck,s.manifest,'site-lock/v1/manifest')})}
+var reg=null;
+function sw(){if(!('serviceWorker' in navigator))return Promise.reject(new Error('nosw'));return navigator.serviceWorker.register(new URL('sw.js',ROOT).href,{scope:ROOT.href,updateViaCache:'none'}).then(function(r){reg=r;return r})}
+// 読み込み直す：sw とキャッシュだけ消す（保存データには触れない）
+function reset(){location.href=new URL('enc/reset.html',ROOT).href;return;
+  msg('読み込み直しています…');$('r').hidden=true;
+  var sc=navigator.serviceWorker;
+  var un=sc&&sc.getRegistrations?sc.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister()}))}):Promise.resolve();
+  var cl=window.caches?caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k.indexOf('site-lock-')===0||k.indexOf('workbox-')===0}).map(function(k){return caches.delete(k)}))}):Promise.resolve();
+  limit(Promise.all([un.catch(function(){}),cl.catch(function(){})]),5000).catch(function(){}).then(function(){sessionStorage.removeItem('site-lock-tries');sessionStorage.setItem('site-lock-reset','1');location.reload()});
+}
+function stuck(){
+  busy(false);sessionStorage.removeItem('site-lock-tries');
+  msg('開けませんでした。「読み込み直す」を押してください（保存した内容は消えません）。',true);$('r').hidden=false;
+}
+function go(){
+  var n=+(sessionStorage.getItem('site-lock-tries')||0);
+  if(n>=2){stuck();return}
+  sessionStorage.setItem('site-lock-tries',String(n+1));
+  msg('ひらいています…');
+  var sc=navigator.serviceWorker,done=false;
+  var to=setTimeout(function(){if(!done){done=true;stuck()}},15000);
+  var ready=sc.ready.then(function(){
+    if(sc.controller)return;
+    return new Promise(function(ok){sc.addEventListener('controllerchange',ok);setTimeout(ok,4000)});
+  });
+  // 新しい sw が入れられなかった（redundant）ときは待たない
+  if(reg&&reg.installing)reg.installing.addEventListener('statechange',function(e){if(e.target.state==='redundant'&&!done&&!sc.controller){done=true;clearTimeout(to);stuck()}});
+  ready.then(function(){
+    if(done)return;done=true;clearTimeout(to);
+    if(!sc.controller){stuck();return}
+    sc.controller.postMessage({type:'SITE_LOCK_KEY_CHANGED'});
+    setTimeout(function(){location.reload()},150);
+    // 再読み込みが返ってこない（古い sw が止まっている）ときも、このページは生きているので知らせる
+    setTimeout(stuck,12000);
+  });
+}
+function start(){
+  if(!S||!window.indexedDB){msg('このブラウザーでは開けません。Safari か Chrome の新しい版で開いてください。',true);busy(true);return}
+  sw().catch(function(){msg('このブラウザーでは開けません。プライベートブラウズをやめて、Safari か Chrome で開いてください。',true);busy(true)});
+  getKey().then(function(stored){
+    if(!stored){sessionStorage.removeItem('site-lock-tries');$('p').focus();return}
+    return site().then(function(s){return check(stored,s).then(go,function(){return retireKey(stored).then(function(){sessionStorage.removeItem('site-lock-tries');msg('合言葉が変わりました。新しい合言葉を入れてください。',true)})})});
+  }).catch(function(){});
+}
+$('r').addEventListener('click',reset);
+$('f').addEventListener('submit',function(e){
+  e.preventDefault();
+  var pass=$('p').value;if(!pass)return;
+  busy(true);msg('たしかめています…');
+  var s;
+  site().then(function(x){
+    s=x;if(!(s.kdf&&s.kdf.iter>=600000))throw new Error('net');
+    return S.importKey('raw',te.encode(pass),'PBKDF2',false,['deriveKey']);
+  }).then(function(pk){
+    return S.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:u8(s.kdf.salt),iterations:s.kdf.iter},pk,{name:'AES-GCM',length:256},false,['decrypt']);
+  }).then(function(kek){
+    return open(kek,s.wrap,'site-lock/v1/wrap').then(null,function(){var e=new Error('bad');e.bad=1;throw e});
+  }).then(function(raw){
+    return S.importKey('raw',raw,'HKDF',false,['deriveKey']).then(function(k){
+      return check(k,s).then(function(){return putKey(k).then(null,function(){return putKey(new Uint8Array(raw))})});
+    });
+  }).then(function(){
+    $('p').value='';sessionStorage.removeItem('site-lock-tries');go();
+  }).catch(function(e){
+    busy(false);
+    if(e&&e.bad){msg('合言葉がちがいます。もう一度入れてください。',true);$('p').select()}
+    else{msg('うまく確かめられませんでした。「読み込み直す」を押してください（保存した内容は消えません）。',true);$('r').hidden=false}
+  });
+});
+start();
+})();
+</script>
+</body>
+</html>
