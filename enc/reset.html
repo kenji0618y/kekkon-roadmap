@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>読み込み直し</title>
+<style>body{font:16px/1.7 system-ui,sans-serif;background:#f4f2ec;color:#222;margin:0;display:grid;place-items:center;min-height:100vh}main{background:#fff;border:1px solid #ddd;border-radius:14px;padding:24px;max-width:340px;margin:16px}a{color:#235}</style>
+</head>
+<body>
+<main>
+<h1 style="font-size:20px;margin:0 0 12px">読み込み直しています…</h1>
+<p id="s">少しお待ちください。</p>
+<p><a id="go" href="../">開く</a></p>
+</main>
+<script>
+// 古い service worker がどの版でも素通しする場所（enc/）に置いた復旧ページ。
+// service worker とキャッシュだけを消す。保存したデータ（ブラウザーのデータ・合言葉の鍵）には触れない。
+(function(){
+var s=document.getElementById('s');
+function lim(p,ms){return Promise.race([p,new Promise(function(ok){setTimeout(ok,ms)})])}
+var sc=navigator.serviceWorker;
+var un=sc&&sc.getRegistrations?sc.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister().catch(function(){})}))}):Promise.resolve();
+var cl=window.caches?caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k.indexOf('site-lock-')===0||k.indexOf('workbox-')===0}).map(function(k){return caches.delete(k)}))}):Promise.resolve();
+try{sessionStorage.removeItem('site-lock-tries')}catch(e){}
+lim(Promise.all([un.catch(function(){}),cl.catch(function(){})]),6000).then(function(){
+  s.textContent='できました。開いています…';
+  setTimeout(function(){location.replace('../?r='+Date.now())},600);
+});
+})();
+</script>
+</body>
+</html>
